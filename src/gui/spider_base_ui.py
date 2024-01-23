@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLine
     QLabel, QVBoxLayout, QScrollArea
 from loguru import logger
 
-from src.utils.base_event import about_message_lookup, visit_web, \
+from utils.base_event import about_message_lookup, visit_web, \
     edit_config_msg
 
 

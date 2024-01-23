@@ -2,14 +2,15 @@
 
 
 block_cipher = None
-datas=[('D:\\FTPTools\\config\\config.ini','.')]
+datas=[('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\gui\\config\\config.ini','.')]
 
 a = Analysis(
     ['ui_main.py'],
     pathex=[],
     binaries=[],
     datas=[
-    ('C:\\Users\\Administrator\\PycharmProjects\\calmcar_sf_server\\src\\test\\utils','utils')
+    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\utils','utils'),
+     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\log','log')
     ],
     hiddenimports=["PyQt5","numpy","opencv-python","loguru","configparser","selenium","requests"],
     hookspath=[],

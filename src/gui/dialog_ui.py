@@ -3,9 +3,9 @@ from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QLabel
     QCheckBox, QHBoxLayout, QWidget
 from loguru import logger
 
-from src.gui.constants import visit_url, s1_url, s2_url, target_url, r18_mode, all_show, proxy_flag
-from src.utils.SpiderConfigModel import SpiderConfigModel
-from src.utils.ini_file_spider import write_minio_config_to_file
+from gui.constants import visit_url, s1_url, s2_url, target_url, r18_mode, all_show, proxy_flag
+from utils.SpiderConfigModel import SpiderConfigModel
+from utils.ini_file_spider import write_minio_config_to_file
 
 
 class Dialog(QDialog):
@@ -143,37 +143,48 @@ def save_data(self):
     :param self:
     :return:
     """
-    s1_url = self.s1_url_line.text()
-    s2_url = self.s2_url_line.text()
-    visit_url = self.visit_url_line.text()
-    target_url = self.target_url_line.text()
-    r18_mode = self.checkBox_r18.currentText()
-    all_show = self.checkBox_all_show.currentText()
-    proxy_flag = self.checkBox_proxy.currentText()
+    s1_url_txt = self.s1_url_line.text()
+    s2_url_txt = self.s2_url_line.text()
+    visit_url_txt = self.visit_url_line.text()
+    target_url_txt = self.target_url_line.text()
+    if self.checkBox_r18.isChecked():
+        r18_mode_txt = True
+    else:
+        r18_mode_txt = False
+    if self.checkBox_all_show.isChecked():
+        all_show_txt = True
+    else:
+        all_show_txt = False
+    # all_show_txt = self.checkBox_all_show.currentText()
+    if self.checkBox_proxy.isChecked():
+        proxy_flag_txt = True
+    else:
+        proxy_flag_txt = False
     search_delta_time = int(self.search_delta_time_line.text()) if self.search_delta_time_line else None
     detail_delta_time = int(self.detail_delta_time_line.text()) if self.detail_delta_time_line else None
     # 在这里你可以根据需要保存这些数据，例如保存到文件或发送到服务器
-    logger.debug(f"Source1 URL: {s1_url}")
-    logger.debug(f"Source2 URL: {s2_url}")
-    logger.debug(f"visit URL: {visit_url}")
-    logger.debug(f"Target URL: {target_url}")
-    logger.debug(f"R18 Mode: {r18_mode}")
-    logger.debug(f"All Show: {all_show}")
-    logger.debug(f"Proxy Flag: {proxy_flag}")
+    logger.debug(f"Source1 URL: {s1_url_txt}")
+    logger.debug(f"Source2 URL: {s2_url_txt}")
+    logger.debug(f"visit URL: {visit_url_txt}")
+    logger.debug(f"Target URL: {target_url_txt}")
+    logger.debug(f"R18 Mode: {r18_mode_txt}")
+    logger.debug(f"All Show: {all_show_txt}")
+    logger.debug(f"Proxy Flag: {proxy_flag_txt}")
     logger.debug(f"Search Delta Time: {search_delta_time}")
     logger.debug(f"Detail Delta Time: {detail_delta_time}")
     spider_config = SpiderConfigModel()
-    spider_config.s1_url = s1_url
-    spider_config.s2_url = s2_url
-    spider_config.visit_url = visit_url
-    spider_config.target_url = target_url
-    spider_config.r18_mode = r18_mode
-    spider_config.all_show = all_show
-    spider_config.proxy_flag = proxy_flag
+    spider_config.s1_url = s1_url_txt
+    spider_config.s2_url = s2_url_txt
+    spider_config.visit_url = visit_url_txt
+    spider_config.target_url = target_url_txt
+    spider_config.r18_mode = r18_mode_txt
+    spider_config.all_show = all_show_txt
+    spider_config.proxy_flag = proxy_flag_txt
     spider_config.search_delta_time = search_delta_time
     spider_config.detail_delta_time = detail_delta_time
     write_minio_config_to_file(minio_config=spider_config)
     # dialog = Dialog()
-    QMessageBox.critical(self, u"保存", u"配置写入成功！")
+    QMessageBox.critical(self, u"保存", u"配置写入成功,程序即将退出,请重新启动应用配置！")
     self.hide()
+    sys.exit()
     pass

@@ -3,8 +3,8 @@ import sys
 
 from loguru import logger
 
-from src.log.log_base import LOG_DIR
-from src.log.log_config import InterceptHandler, format_record
+from log.log_base import LOG_DIR
+from log.log_config import InterceptHandler, format_record
 
 
 @logger.catch

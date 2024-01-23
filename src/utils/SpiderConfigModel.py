@@ -1,4 +1,12 @@
+"""
+mode class define
+"""
+
+
 class SpiderConfigModel:
+    """
+    entity
+    """
     visit_url = ''
     s1_url = ''
     s2_url = ''

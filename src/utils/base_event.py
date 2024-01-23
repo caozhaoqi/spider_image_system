@@ -3,8 +3,8 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from loguru import logger
 
-from src.gui.about_dialog_ui import InformationDialog
-from src.gui.dialog_ui import Dialog
+from gui.about_dialog_ui import InformationDialog
+from gui.dialog_ui import Dialog
 
 
 @logger.catch

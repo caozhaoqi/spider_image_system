@@ -3,11 +3,18 @@ import requests
 
 from loguru import logger
 
-from src.get_url import remove_duplicates_from_txt
+from gui.constants import data_path
+from utils.get_url import remove_duplicates_from_txt
 
 
 @logger.catch
 def download_image(url, filename):
+    """
+    download image from point url
+    :param url: url location
+    :param filename: file name
+    :return:
+    """
     if not os.path.exists(filename):
         response = requests.get(url, stream=True)
         if response.status_code == 200:
@@ -20,6 +27,11 @@ def download_image(url, filename):
 
 @logger.catch
 def download_images_from_file(file_path):
+    """
+    save image to point url from website download image
+    :param file_path: save path
+    :return:
+    """
     (name, suffix) = os.path.splitext(file_path)
     save_img_url = name + "/images"
     with open(file_path, 'r') as f:
@@ -32,12 +44,16 @@ def download_images_from_file(file_path):
                 download_image(url, filename)
 
 
+@logger.catch
 def download_img_txt(self):
-    # log_record()
-    cdds = [os.path.join(root, _) for root, dirs, files in os.walk("data/") for _ in files if
+    """
+    download img before process txt file
+    :param self:
+    :return:
+    """
+    cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith("_img.txt")]
     for cdds_path in cdds:
-        # file_path = "urls.txt"  # 你的txt文件路径
         logger.debug("download img before , remove duplicate.")
         file_path, file_name = os.path.split(cdds_path)
         base_name, ext = os.path.splitext(file_name)
@@ -45,9 +61,9 @@ def download_img_txt(self):
         remove_duplicates_from_txt(cdds_path,
                                    new_file_name)
         logger.success("remove duplicat success, start new file name :" + new_file_name)
-        download_images_from_file(new_file_name)
+        try:
+            download_images_from_file(new_file_name)
+        except Exception as e:
+            logger.warning("unknown error! detail: " + str(e))
     logger.success("downloaded all image !")
-    # w = UIMainWindows()
-    # w.complete()
-    # self.complete()
     return True

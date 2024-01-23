@@ -1,5 +1,4 @@
 #!coding:utf-8
-import os
 import threading
 
 import sys
@@ -8,11 +7,12 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, QMessageBox
 from loguru import logger
 
-from src.get_url import spider_artworks_url
-from src.gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint
-from src.spider_img_save import download_img_txt
-from src.utils.img_switch import find_images, show_image, folder_path, show_next_image
-from src.utils.log_record import log_record
+from utils.get_url import spider_artworks_url
+from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint
+from utils.ini_file_spider import check_ini_config
+from utils.spider_img_save import download_img_txt
+from utils.img_switch import find_images, show_image, folder_path, show_next_image
+from utils.log_record import log_record
 
 image_files = find_images(folder_path)
 current_image_index = 0
@@ -56,6 +56,7 @@ class UIMainWindows(QMainWindow):
             global current_image_index, image_files
             current_image_index = (current_image_index + 1) % len(image_files)
             show_image(self, image_files[current_image_index])
+            logger.info("next image show.")
         except Exception as e:
             logger.warning("dir not image, or other err! detail: " + str(e))
 
@@ -69,6 +70,7 @@ class UIMainWindows(QMainWindow):
             global current_image_index, image_files
             current_image_index = (current_image_index - 1 + len(image_files)) % len(image_files)
             show_image(self, image_files[current_image_index])
+            logger.info("after image show.")
         except Exception as e:
             logger.warning("dir not image , or other err! detail: " + str(e))
 

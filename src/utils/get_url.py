@@ -5,9 +5,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 
-from src.gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
-    visit_url, target_url, s2_url
-from src.utils.log_record import log_record
+from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
+    visit_url, target_url, s2_url, data_path
+from utils.log_record import log_record
 
 
 @logger.catch
@@ -19,7 +19,7 @@ def save_img_url(driver, key_word):
     :return:
     """
 
-    cdds = [os.path.join(root, _) for root, dirs, files in os.walk("data/") for _ in files if
+    cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith("_result_url.txt")]
     for cdds_path in cdds:
         logger.debug("start save img url,artwork href from file name: " + str(cdds_path))
@@ -39,7 +39,7 @@ def save_img_url(driver, key_word):
                             image_filename = os.path.basename(image_url)  # 获取图片文件名
                             image_url = image_url.replace(s1_url, target_url)
                             image_url = image_url.replace(s2_url, target_url)
-                            write_url_txt("data/img_url/", key_word + "_img", image_url)
+                            write_url_txt(data_path + "/img_url/", key_word + "_img", image_url)
                             logger.debug(f"save img url success: {image_filename}")
     return True
 
@@ -47,7 +47,7 @@ def save_img_url(driver, key_word):
 @logger.catch
 def spider_artworks_url(self, key_word):
     """
-
+     spider image from point url .
     :param self:
     :parameter key_word 关键字
     :return:
@@ -82,7 +82,7 @@ def spider_artworks_url(self, key_word):
     driver.get(url)
     # 等待图片加载完成
     time.sleep(search_delta_time)
-    logger.debug("start load href save url to txt .")
+    logger.debug("start load href save url to txt.")
     load_save_flag = load_href_save(driver, key_word)
     if load_save_flag:
         # 使用函数
@@ -103,12 +103,19 @@ def write_url_txt(path, file_name, url):
     :param url:
     :return:
     """
-    if not os.path.exists(path):
-        os.makedirs(path)
-    # for url in img_list:
-    with open(path + file_name + ".txt", "a") as f:
-        f.write(str(url) + "\n")
-    f.close()
+    try:
+        with open(path + file_name + ".txt", "a") as f:
+            f.write(str(url) + "\n")
+        f.close()
+    except FileNotFoundError as ffe:
+        logger.warning("dir not exists , will create dir. detail: " + str(ffe))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        with open(path + file_name + ".txt", "a") as f:
+            f.write(str(url) + "\n")
+        f.close()
+    except Exception as ue:
+        logger.error("unknown error, detail: " + str(ue))
 
 
 @logger.catch
@@ -131,9 +138,9 @@ def load_href_save(driver, key_word):
             logger.debug("load href and start save img url: " + image_url)
         if len(image_urls_list) > 0:
             for image_url_content in image_urls_list:
-                write_url_txt("data/href_url/", key_word + "_url", image_url_content)
-            remove_duplicates_from_txt("./data/href_url/" + key_word + "_url.txt",
-                                       "./data/href_url/" + key_word + "_result_url.txt")
+                write_url_txt(data_path + "/href_url/", key_word + "_url", image_url_content)
+            remove_duplicates_from_txt(data_path + "/href_url/" + key_word + "_url.txt",
+                                       data_path + "/href_url/" + key_word + "_result_url.txt")
             logger.success("remove duplicates content success!")
             return True
         else:
@@ -152,15 +159,33 @@ def remove_duplicates_from_txt(input_file, output_file):
     :param output_file: result
     :return:
     """
-    with open(input_file, 'r', encoding='utf-8') as file:
-        lines = file.readlines()
+    try:
+        with open(input_file, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
 
-    # 使用集合去重
-    unique_lines = set(lines)
+        # 使用集合去重
+        unique_lines = set(lines)
 
-    with open(output_file, 'w', encoding='utf-8') as file:
-        for line in unique_lines:
-            file.write(line)
+        with open(output_file, 'w', encoding='utf-8') as file:
+            for line in unique_lines:
+                file.write(line)
+    except FileNotFoundError as ffe:
+        logger.warning("dir not exists , will create dir. detail: " + str(ffe))
+        if not os.path.exists(input_file):
+            os.makedirs(input_file)
+        if not os.path.exists(output_file):
+            os.makedirs(output_file)
+        with open(input_file, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+
+        # 使用集合去重
+        unique_lines = set(lines)
+
+        with open(output_file, 'w', encoding='utf-8') as file:
+            for line in unique_lines:
+                file.write(line)
+    except Exception as ue:
+        logger.error("unknown error, detail: " + str(ue))
 
 
 @logger.catch

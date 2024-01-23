@@ -3,7 +3,9 @@ import os
 from PyQt5.QtGui import QPixmap
 from loguru import logger
 
-folder_path = os.path.realpath(os.path.join(os.getcwd(), f'../data'))
+from gui.constants import data_path
+
+folder_path = os.path.realpath(os.path.join(os.getcwd(), data_path))
 
 
 # 获取所有图片文件
@@ -15,15 +17,15 @@ def find_images(directory):
     :return:
     """
     logger.info("current use image dir:" + str(directory))
-    image_files = []
+    image_files_lists = []
     if not os.path.exists(directory):
         os.makedirs(directory)
         logger.info("dir not exists , create dir: " + str(directory))
     for root, dirs, files in os.walk(directory):
         for file in files:
             if file.endswith('.jpg') or file.endswith('.png'):
-                image_files.append(os.path.join(root, file))
-    return image_files
+                image_files_lists.append(os.path.join(root, file))
+    return image_files_lists
 
 
 current_image_index = 0
@@ -57,3 +59,4 @@ def show_image(self, image_file):
     pixmap2 = QPixmap(os.path.join(folder_path, image_file))  # 创建新的QPixmap实例
     self.label.setPixmap(pixmap2)  # 更新QLabel的显示内容
     self.label.resize(pixmap2.width(), pixmap2.height())
+    logger.info("current show image name and path: " + str(os.path.join(folder_path, image_file)))

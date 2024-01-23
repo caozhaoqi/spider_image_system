@@ -1,10 +1,12 @@
 # position url
-from src.utils.ini_file_spider import read_ini_config, ini_file_path, check_ini_config
+import os
 
-# 加载默认配置
-# 检查默认配置文件
-check_ini_config()
+from utils.ini_file_spider import read_ini_config, ini_file_path, check_ini_config
+
 # 检查默认配置项
+check_ini_config()
+# 数据存储路径
+data_path = os.path.realpath('.\\data')
 # 访问网址
 visit_url = read_ini_config(ini_file_path, "spider_config", "visit_url")
 # 图片服务器地址
