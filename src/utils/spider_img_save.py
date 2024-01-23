@@ -41,7 +41,10 @@ def download_images_from_file(file_path):
                 if not os.path.exists(save_img_url):
                     os.makedirs(save_img_url)
                 filename = os.path.join(name + "/images", f"{os.path.basename(url)}")
-                download_image(url, filename)
+                try:
+                    download_image(url, filename)
+                except Exception as e:
+                    logger.warning("unknown error! detail: " + str(e))
 
 
 @logger.catch
