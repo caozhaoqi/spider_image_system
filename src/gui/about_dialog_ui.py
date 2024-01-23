@@ -6,11 +6,11 @@ from PyQt5.QtCore import QDateTime
 class InformationDialog(QDialog):
     def __init__(self):
         super().__init__()
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
         self.setWindowTitle('软件信息')
-        self.setGeometry(300, 300, 300, 200)
+        self.setFixedSize(600, 600)
 
         layout = QVBoxLayout()
 
@@ -45,7 +45,7 @@ class InformationDialog(QDialog):
         modified_label = QLabel('修改时间:')
         layout.addWidget(modified_label)
 
-        modified_time = '最近修改时间'  # 替换为实际的修改时间，根据实际需要更新
+        modified_time = '2024/1/23 12:00:00'  # 替换为实际的修改时间，根据实际需要更新
         modified_label_2 = QLabel(modified_time)
         layout.addWidget(modified_label_2)
 

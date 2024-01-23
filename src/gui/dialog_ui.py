@@ -1,7 +1,9 @@
 import sys
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QLabel, QFileDialog, QComboBox, QMessageBox
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QLabel, QFileDialog, QComboBox, QMessageBox, \
+    QCheckBox, QHBoxLayout, QWidget
 from loguru import logger
 
+from src.gui.constants import visit_url, s1_url, s2_url, target_url, r18_mode, all_show, proxy_flag
 from src.utils.SpiderConfigModel import SpiderConfigModel
 from src.utils.ini_file_spider import write_minio_config_to_file
 
@@ -23,12 +25,12 @@ class Dialog(QDialog):
         self.s2_url_label = None
         self.target_url_label = None
         self.all_show_label = None
-        self.comboBox_r18 = None
+        self.checkBox_r18 = None
         self.detail_delta_time_line = None
         self.search_delta_time_line = None
-        self.comboBox_proxy = None
-        self.comboBox_all_show = None
-        self.r18_mode_check = None
+        self.checkBox_proxy = None
+        self.checkBox_all_show = None
+        # self.r18_mode_check = None
         self.target_url_line = None
         self.s2_url_line = None
         self.init_ui()
@@ -42,30 +44,43 @@ class Dialog(QDialog):
         self.setWindowTitle('编辑工具配置')
         self.setFixedSize(600, 800)
         # 创建输入框和标签
-        self.visit_url_label = QLabel('访问网站 URL:')
-        self.visit_url_line = QLineEdit('pixiv.net')
-        self.s1_url_label = QLabel('源1 图片服务器 URL:')
-        self.s1_url_line = QLineEdit('i.pximg.net')
-        self.s2_url_label = QLabel('源2 图片服务器 URL:')
-        self.s2_url_line = QLineEdit('s.pximg.net')
-        self.target_url_label = QLabel('目标 图片服务器 URL:')
-        self.target_url_line = QLineEdit('pixiv.322333.xyz')
-        self.r18_mode_label = QLabel('R18 模式:')
-        self.comboBox_r18 = QComboBox(self)
-        self.comboBox_r18.addItem("False")
-        self.comboBox_r18.addItem("True")
-        self.all_show_label = QLabel('全部显示:')
-        self.comboBox_all_show = QComboBox(self)
-        self.comboBox_all_show.addItem("False")
-        self.comboBox_all_show.addItem("True")
-        self.proxy_flag_label = QLabel('代理开关:')
-        self.comboBox_proxy = QComboBox(self)
-        self.comboBox_proxy.addItem("False")
-        self.comboBox_proxy.addItem("True")
-        # self.proxy_flag_check = QPushButton('True')
-        self.search_delta_time_label = QLabel('搜索延迟时间:')
+        self.visit_url_label = QLabel('访问网站 URL(visit_url):')
+        self.visit_url_line = QLineEdit(visit_url)
+
+        self.s1_url_label = QLabel('源1 图片服务器 URL(s1_url):')
+        self.s1_url_line = QLineEdit(s1_url)
+
+        self.s2_url_label = QLabel('源2 图片服务器 URL(s2_url):')
+        self.s2_url_line = QLineEdit(s2_url)
+
+        self.target_url_label = QLabel('目标 图片服务器 URL(target_url):')
+        self.target_url_line = QLineEdit(target_url)
+
+        self.r18_mode_label = QLabel('R18(r18_mode):')
+        self.checkBox_r18 = QCheckBox(self)  # Converted to QCheckBox
+        if r18_mode == 'True':
+            self.checkBox_r18.setChecked(True)  # Set default state to False
+        else:
+            self.checkBox_r18.setChecked(False)
+
+        self.all_show_label = QLabel('全显示(all_show):')
+        self.checkBox_all_show = QCheckBox(self)  # Converted to QCheckBox
+        if all_show == 'True':
+            self.checkBox_all_show.setChecked(True)
+        else:
+            self.checkBox_all_show.setChecked(False)  # Set default state to False
+
+        self.proxy_flag_label = QLabel('代理(proxy_flag):')
+        self.checkBox_proxy = QCheckBox(self)  # Converted to QCheckBox
+        if proxy_flag == 'True':
+            self.checkBox_proxy.setChecked(True)
+        else:
+            self.checkBox_proxy.setChecked(False)  # Set default state to False
+
+        self.search_delta_time_label = QLabel('搜索延迟时间(s):')
         self.search_delta_time_line = QLineEdit('7')
-        self.detail_delta_time_label = QLabel('详情延迟时间:')
+
+        self.detail_delta_time_label = QLabel('详情延迟时间(s):')
         self.detail_delta_time_line = QLineEdit('3')
 
         # 创建保存和取消按钮
@@ -75,26 +90,35 @@ class Dialog(QDialog):
         # 布局设置
         layout = QVBoxLayout()
 
+        layout.addWidget(self.visit_url_label)
+        layout.addWidget(self.visit_url_line)
+
         layout.addWidget(self.s1_url_label)
         layout.addWidget(self.s1_url_line)
 
         layout.addWidget(self.s2_url_label)
         layout.addWidget(self.s2_url_line)
 
-        layout.addWidget(self.visit_url_label)
-        layout.addWidget(self.visit_url_line)
-
         layout.addWidget(self.target_url_label)
         layout.addWidget(self.target_url_line)
 
-        layout.addWidget(self.r18_mode_label)
-        layout.addWidget(self.comboBox_r18)
+        window = QWidget()
+        h_layout = QHBoxLayout(window)
 
-        layout.addWidget(self.all_show_label)
-        layout.addWidget(self.comboBox_all_show)
+        h_layout.addWidget(self.r18_mode_label)
+        h_layout.addWidget(self.checkBox_r18)
 
-        layout.addWidget(self.proxy_flag_label)
-        layout.addWidget(self.comboBox_proxy)
+        # 添加第二组控件
+        h_layout.addWidget(self.all_show_label)
+        h_layout.addWidget(self.checkBox_all_show)
+
+        # 添加第三组控件
+        h_layout.addWidget(self.proxy_flag_label)
+        h_layout.addWidget(self.checkBox_proxy)
+
+        window.setLayout(h_layout)
+        # window.s(600,10)
+        layout.addWidget(window)
 
         layout.addWidget(self.search_delta_time_label)
         layout.addWidget(self.search_delta_time_line)
@@ -123,9 +147,9 @@ def save_data(self):
     s2_url = self.s2_url_line.text()
     visit_url = self.visit_url_line.text()
     target_url = self.target_url_line.text()
-    r18_mode = self.comboBox_r18.currentText()
-    all_show = self.comboBox_all_show.currentText()
-    proxy_flag = self.comboBox_proxy.currentText()
+    r18_mode = self.checkBox_r18.currentText()
+    all_show = self.checkBox_all_show.currentText()
+    proxy_flag = self.checkBox_proxy.currentText()
     search_delta_time = int(self.search_delta_time_line.text()) if self.search_delta_time_line else None
     detail_delta_time = int(self.detail_delta_time_line.text()) if self.detail_delta_time_line else None
     # 在这里你可以根据需要保存这些数据，例如保存到文件或发送到服务器

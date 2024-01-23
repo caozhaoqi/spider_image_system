@@ -67,7 +67,7 @@ def write_minio_config_to_file(minio_config):
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
     logger.info("config write finished , read test , current use minio server ip : " + conf.get("spider_config",
-                                                                                                "source_url"))
+                                                                                                "visit_url"))
     # logger.info("minio use "+" port:" + conf.get(
     #     "spider_config", "minio_server_port"))
 

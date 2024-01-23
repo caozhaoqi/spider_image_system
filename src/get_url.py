@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 import time
 
 from src.gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
-    visit_url
+    visit_url, target_url, s2_url
 from src.utils.log_record import log_record
 
 
@@ -37,8 +37,8 @@ def save_img_url(driver, key_word):
                         else:
                             driver.execute_script("return arguments[0].src;", image_element)
                             image_filename = os.path.basename(image_url)  # 获取图片文件名
-                            image_url = image_url.replace("i.pximg.net", "pixiv.322333.xyz")
-                            image_url = image_url.replace("s.pximg.net", "pixiv.322333.xyz")
+                            image_url = image_url.replace(s1_url, target_url)
+                            image_url = image_url.replace(s2_url, target_url)
                             write_url_txt("data/img_url/", key_word + "_img", image_url)
                             logger.debug(f"save img url success: {image_filename}")
     return True
@@ -64,7 +64,7 @@ def spider_artworks_url(self, key_word):
 
     # 创建浏览器驱动程序并设置代理参数
     options = webdriver.ChromeOptions()
-    if proxy_flag:
+    if proxy_flag == 'True':
         options.set_capability("proxy", proxy)
         logger.info("current use internal proxy.")
 
@@ -72,10 +72,10 @@ def spider_artworks_url(self, key_word):
     # key_word = self.filetext.text()
     # tags/娜维娅/artworks?mode=r18&s_mode=s_tag
     mode = ''
-    if r18_mode:
+    if r18_mode == 'True':
         mode = 'mode=r18&'
         logger.info("current r18 mode!")
-    if all_show:
+    if all_show == 'True':
         other = 'illustrations'
     url = "https://"+visit_url+"/tags/" + key_word + "/artworks?" + mode + "s_mode=s_tag"
     logger.info("current use url : " + str(url))
@@ -87,7 +87,8 @@ def spider_artworks_url(self, key_word):
     if load_save_flag:
         # 使用函数
         save_img_url(driver, key_word)
-    logger.success("save img all finish, google chrome will exit! start download img.")
+        logger.success("save img all finish, could start download images! ")
+    logger.warning("google chrome will exit! ")
     driver.quit()
     # w = UIMainWindows()
     self.complete()
@@ -118,17 +119,21 @@ def load_href_save(driver, key_word):
     :param key_word:
     :return:
     """
-    image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
-    for image_element in image_elements:
-        image_url = image_element.get_attribute("href")
-        if "artworks" not in image_url:
-            continue
-        driver.execute_script("return arguments[0].href;", image_element)
-        logger.debug("load href and start save img url: " + image_url)
-        write_url_txt("data/href_url/", key_word + "_url", image_url)
-    remove_duplicates_from_txt("./data/href_url/" + key_word + "_url.txt",
-                               "./data/href_url/" + key_word + "_result_url.txt")
-    logger.success("remove duplicates content success!")
+    try:
+        image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
+        for image_element in image_elements:
+            image_url = image_element.get_attribute("href")
+            if "artworks" not in image_url:
+                continue
+            driver.execute_script("return arguments[0].href;", image_element)
+            logger.debug("load href and start save img url: " + image_url)
+            write_url_txt("data/href_url/", key_word + "_url", image_url)
+        remove_duplicates_from_txt("./data/href_url/" + key_word + "_url.txt",
+                                   "./data/href_url/" + key_word + "_result_url.txt")
+        logger.success("remove duplicates content success!")
+    except Exception as un_e:
+        logger.error("Error, unknown error, detail:" + str(un_e))
+        return False
     return True
 
 

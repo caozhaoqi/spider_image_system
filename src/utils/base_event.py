@@ -14,7 +14,7 @@ def edit_config_msg():
     :return:
     """
     dialog = Dialog()
-    logger.info("dialog show visible！")
+    logger.info("config msg dialog show visible.")
     dialog.exec_()
     # pass
 
@@ -26,6 +26,7 @@ def visit_web():
     :return:
     """
     QDesktopServices.openUrl(QUrl("https://caozhaoqi.github.io/"))
+    logger.info("jump target help web url.")
     pass
 
 
@@ -36,6 +37,7 @@ def about_message_lookup():
     :return:
     """
     information_dialog = InformationDialog()
-    information_dialog.show()
+    information_dialog.exec_()
+    logger.info("show sis tools basic info.")
     pass
 

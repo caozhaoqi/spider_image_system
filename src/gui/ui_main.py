@@ -94,7 +94,7 @@ class UIMainWindows(QMainWindow):
 
         :return:
         """
-        QMessageBox.critical(self, u"完成", u"下载完成")
+        QMessageBox.information(self, u"完成", u"下载完成")
 
     # @logger.catch
     def error_path(self):
