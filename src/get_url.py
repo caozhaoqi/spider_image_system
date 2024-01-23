@@ -77,7 +77,7 @@ def spider_artworks_url(self, key_word):
         logger.info("current r18 mode!")
     if all_show == 'True':
         other = 'illustrations'
-    url = "https://"+visit_url+"/tags/" + key_word + "/artworks?" + mode + "s_mode=s_tag"
+    url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode + "s_mode=s_tag"
     logger.info("current use url : " + str(url))
     driver.get(url)
     # 等待图片加载完成
@@ -91,7 +91,7 @@ def spider_artworks_url(self, key_word):
     logger.warning("google chrome will exit! ")
     driver.quit()
     # w = UIMainWindows()
-    self.complete()
+    # self.complete()
 
 
 @logger.catch
@@ -119,22 +119,29 @@ def load_href_save(driver, key_word):
     :param key_word:
     :return:
     """
+    image_urls_list = []
     try:
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
         for image_element in image_elements:
             image_url = image_element.get_attribute("href")
-            if "artworks" not in image_url:
+            if "artworks" not in image_url or "s_mode=s_tag" in image_url:
                 continue
             driver.execute_script("return arguments[0].href;", image_element)
+            image_urls_list.append(image_url)
             logger.debug("load href and start save img url: " + image_url)
-            write_url_txt("data/href_url/", key_word + "_url", image_url)
-        remove_duplicates_from_txt("./data/href_url/" + key_word + "_url.txt",
-                                   "./data/href_url/" + key_word + "_result_url.txt")
-        logger.success("remove duplicates content success!")
+        if len(image_urls_list) > 0:
+            for image_url_content in image_urls_list:
+                write_url_txt("data/href_url/", key_word + "_url", image_url_content)
+            remove_duplicates_from_txt("./data/href_url/" + key_word + "_url.txt",
+                                       "./data/href_url/" + key_word + "_result_url.txt")
+            logger.success("remove duplicates content success!")
+            return True
+        else:
+            logger.warning("you input key word error or other err, please check log file!")
+            return False
     except Exception as un_e:
         logger.error("Error, unknown error, detail:" + str(un_e))
         return False
-    return True
 
 
 @logger.catch

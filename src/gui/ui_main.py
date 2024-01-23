@@ -86,7 +86,7 @@ class UIMainWindows(QMainWindow):
             args=(self, key_word,))
         spider_thread_obj.start()
         logger.info("spider img thread starting ... ")
-        self.error_path()
+        # self.error_path()
 
     # @logger.catch
     def complete(self):

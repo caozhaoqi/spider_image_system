@@ -49,5 +49,5 @@ def download_img_txt(self):
     logger.success("downloaded all image !")
     # w = UIMainWindows()
     # w.complete()
-    self.complete()
+    # self.complete()
     return True
