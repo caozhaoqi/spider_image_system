@@ -12,11 +12,11 @@ spider_image_flag = False
 download_image_flag = False
 # process -image
 process_image_flag = False
-#
-output_video_fps = 5
-#
+# 输出 video 帧率
+output_video_fps = read_ini_config(ini_file_path, "spider_config", "output_video_fps")
+# 输出 video 宽度
 output_video_width = 1920
-#
+# 输出 video 高度
 output_video_height = 1080
 # 抓取图片最大值
 spider_images_max_count = read_ini_config(ini_file_path, "spider_config", "spider_images_max_count")
@@ -41,6 +41,9 @@ r18_mode = read_ini_config(ini_file_path, "spider_config", "r18_mode")
 all_show = read_ini_config(ini_file_path, "spider_config", "all_show")
 # proxy config
 proxy_flag = read_ini_config(ini_file_path, "spider_config", "proxy_flag")
+# 搜索延迟时间
 search_delta_time = int(read_ini_config(ini_file_path, "spider_config", "search_delta_time"))
+# 详情页等待时间
 detail_delta_time = int(read_ini_config(ini_file_path, "spider_config", "detail_delta_time"))
+# 花费时间 don't use
 need_time = (7 + 3) * 61 / 60  # second control spider speed 20 + 5 -> 7 + 3 (min)

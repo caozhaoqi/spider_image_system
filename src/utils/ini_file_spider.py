@@ -30,6 +30,7 @@ def spider_config():
     entity.detail_delta_time = read_ini_config(ini_file_path, "spider_config", 'detail_delta_time')
     entity.sis_log_level = read_ini_config(ini_file_path, "spider_config", 'sis_log_level')
     entity.spider_images_max_count = read_ini_config(ini_file_path, "spider_config", "spider_images_max_count")
+    entity.output_video_fps = read_ini_config(ini_file_path, "spider_config", "output_video_fps")
     return entity
 
 
@@ -71,6 +72,7 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "detail_delta_time", str(minio_config.detail_delta_time))
     conf.set("spider_config", "sis_log_level", minio_config.sis_log_level)
     conf.set("spider_config", "spider_images_max_count", str(minio_config.spider_images_max_count))
+    conf.set("spider_config", "output_video_fps", str(minio_config.output_video_fps))
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
     logger.info("config write finished , read test , current use visit url : " + conf.get("spider_config",
@@ -146,6 +148,7 @@ def check_ini_config():
         conf.set("spider_config", "detail_delta_time", '3')
         conf.set("spider_config", "sis_log_level", 'INFO')
         conf.set("spider_config", "spider_images_max_count", '1000')
+        conf.set("spider_config", "output_video_fps", "5")
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
         logger.info("config write finished , read test : " + conf.get("spider_config", "visit_url"))

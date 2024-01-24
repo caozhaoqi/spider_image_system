@@ -15,7 +15,7 @@ from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_p
 from utils.spider_img_save import download_img_txt
 from utils.img_switch import find_images, show_image, folder_path, show_next_image
 from utils.log_record import log_record
-from utils.video_process import generate_video_from_images, convert_image, process_images_thread
+from utils.video_process import process_images_thread
 
 image_files = find_images(folder_path)
 current_image_index = 0
@@ -147,7 +147,7 @@ class UIMainWindows(QMainWindow):
         content = QMediaContent(QUrl.fromLocalFile(file_path))  # 创建媒体内容对象，传入视频文件路径
         self.media_player.setMedia(content)  # 设置媒体内容到QMediaPlayer中
         self.media_player.play()  # 开始播放视频
-        logger.info("start load video... ")
+        logger.info("start load video, file path: " + file_path)
 
     def image_video_click(self):
         """

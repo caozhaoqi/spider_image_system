@@ -21,3 +21,4 @@ class SpiderConfigModel:
     detail_delta_time = 3
     sis_log_level = ''
     spider_images_max_count = 0
+    output_video_fps = 5
