@@ -5,6 +5,14 @@ from utils.ini_file_spider import read_ini_config, ini_file_path, check_ini_conf
 
 # 检查默认配置项
 check_ini_config()
+# spider image flag
+spider_image_flag = False
+# download_image_flag
+download_image_flag = False
+# 抓取图片最大值
+spider_images_max_count = read_ini_config(ini_file_path, "spider_config", "spider_images_max_count")
+# log level
+sis_log_level = read_ini_config(ini_file_path, "spider_config", "sis_log_level")
 # 数据存储路径
 data_path = os.path.realpath('.\\data')
 # 访问网址

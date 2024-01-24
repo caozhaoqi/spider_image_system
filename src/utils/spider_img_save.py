@@ -1,8 +1,11 @@
 import os
 import requests
+from PyQt5.QtWidgets import QMessageBox
 
 from loguru import logger
+from urllib3.exceptions import ProtocolError
 
+from gui import constants
 from gui.constants import data_path
 from utils.get_url import remove_duplicates_from_txt
 
@@ -16,13 +19,20 @@ def download_image(url, filename):
     :return:
     """
     if not os.path.exists(filename):
-        response = requests.get(url, stream=True)
-        if response.status_code == 200:
-            with open(filename, 'wb') as f:
-                f.write(response.content)
-            logger.debug(f"Image downloaded and saved as {filename}")
-        else:
-            logger.error(f"Error! Failed to download image from {url}" + "detail reason: " + str(response.content))
+        try:
+            response = requests.get(url, stream=True)
+            if response.status_code == 200:
+                with open(filename, 'wb') as f:
+                    f.write(response.content)
+                logger.debug(f"Image downloaded and saved as {filename}")
+            else:
+                logger.error(f"Error! Failed to download image from {url}" + "detail reason: " + str(response.content))
+        except ConnectionError as ce:
+            logger.error("error, connect point url error, detail: " + str(ce))
+        except ProtocolError as pe:
+            logger.error("error, Remote end closed connection without response, detail: " + str(pe))
+        except Exception as e:
+            logger.error("error, unknown error, detail: " + str(e))
 
 
 @logger.catch
@@ -41,10 +51,7 @@ def download_images_from_file(file_path):
                 if not os.path.exists(save_img_url):
                     os.makedirs(save_img_url)
                 filename = os.path.join(name + "/images", f"{os.path.basename(url)}")
-                try:
-                    download_image(url, filename)
-                except Exception as e:
-                    logger.warning("unknown error! detail: " + str(e))
+                download_image(url, filename)
 
 
 @logger.catch
@@ -63,10 +70,12 @@ def download_img_txt(self):
         new_file_name = file_path + "/" + base_name + "_result.txt"
         remove_duplicates_from_txt(cdds_path,
                                    new_file_name)
-        logger.success("remove duplicat success, start new file name :" + new_file_name)
+        logger.success("download_img_txt: remove duplicate success, start new file name :" + new_file_name)
         try:
             download_images_from_file(new_file_name)
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
+    constants.download_image_flag = False
+    QMessageBox.information(self, u"完成", u"操作完成")
     logger.success("downloaded all image !")
     return True

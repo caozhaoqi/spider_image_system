@@ -7,9 +7,9 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, QMessageBox
 from loguru import logger
 
+from gui import constants
 from utils.get_url import spider_artworks_url
-from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint
-from utils.ini_file_spider import check_ini_config
+from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint
 from utils.spider_img_save import download_img_txt
 from utils.img_switch import find_images, show_image, folder_path, show_next_image
 from utils.log_record import log_record
@@ -18,7 +18,6 @@ image_files = find_images(folder_path)
 current_image_index = 0
 
 
-# @logger.catch
 class UIMainWindows(QMainWindow):
 
     # @logger.catch
@@ -37,6 +36,7 @@ class UIMainWindows(QMainWindow):
         self.tab1, self.tab2, self.tab3, self.tab_widget = tab_ui_tab(self)
         # tab1 页面绘制
         tab_1_ui_paint(self)
+        tab_2_ui_paint(self)
 
         # 获取屏幕大小 窗口大小
         screen = QDesktopWidget().screenGeometry()
@@ -56,7 +56,8 @@ class UIMainWindows(QMainWindow):
             global current_image_index, image_files
             current_image_index = (current_image_index + 1) % len(image_files)
             show_image(self, image_files[current_image_index])
-            logger.info("next image show.")
+            logger.info("next image show, current page: " + str(current_image_index) + ", count page: " + str(
+                len(image_files)))
         except Exception as e:
             logger.warning("dir not image, or other err! detail: " + str(e))
 
@@ -70,7 +71,8 @@ class UIMainWindows(QMainWindow):
             global current_image_index, image_files
             current_image_index = (current_image_index - 1 + len(image_files)) % len(image_files)
             show_image(self, image_files[current_image_index])
-            logger.info("after image show.")
+            logger.info("after image show, current page: " + str(current_image_index) + ", count page: " + str(
+                len(image_files)))
         except Exception as e:
             logger.warning("dir not image , or other err! detail: " + str(e))
 
@@ -80,14 +82,18 @@ class UIMainWindows(QMainWindow):
         选择数据路径
         :return:
         """
-        key_word = self.file_text.text()
-        logger.debug("you input key word is :" + str(key_word))
-        # 读取用户输入路径
-        spider_thread_obj = threading.Thread(
-            target=spider_artworks_url,
-            args=(self, key_word,))
-        spider_thread_obj.start()
-        logger.info("spider img thread starting ... ")
+        if constants.spider_image_flag:
+            self.error_path()
+        else:
+            key_word = self.file_text.text()
+            logger.debug("you input key word is :" + str(key_word))
+            # 读取用户输入路径
+            spider_thread_obj = threading.Thread(
+                target=spider_artworks_url,
+                args=(self, key_word,))
+            spider_thread_obj.start()
+            constants.spider_image_flag = True
+            logger.info("spider img thread starting ... ")
         # self.error_path()
 
     # @logger.catch
@@ -96,7 +102,7 @@ class UIMainWindows(QMainWindow):
 
         :return:
         """
-        QMessageBox.information(self, u"完成", u"下载完成")
+        QMessageBox.information(self, u"完成", u"操作完成")
 
     # @logger.catch
     def error_path(self):
@@ -104,7 +110,7 @@ class UIMainWindows(QMainWindow):
 
         :return:
         """
-        QMessageBox.critical(self, u"警告", u"请等待下载完成!")
+        QMessageBox.critical(self, u"警告", u"请等待当前操作完成!")
 
     # @logger.catch
     def download_file_thread(self):
@@ -113,12 +119,16 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         # ret = True
-        spider_thread_obj = threading.Thread(
-            target=download_img_txt,
-            args=(self,))
-        spider_thread_obj.start()
-        logger.info("download img thread starting ... ")
-        self.error_path()
+        if constants.download_image_flag:
+            self.error_path()
+        else:
+            spider_thread_obj = threading.Thread(
+                target=download_img_txt,
+                args=(self,))
+            spider_thread_obj.start()
+            constants.download_image_flag = True
+            logger.info("download img thread starting ... ")
+        # self.error_path()
 
 
 @logger.catch

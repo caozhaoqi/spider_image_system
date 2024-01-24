@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QLabel
     QCheckBox, QHBoxLayout, QWidget
 from loguru import logger
 
-from gui.constants import visit_url, s1_url, s2_url, target_url, r18_mode, all_show, proxy_flag
+from gui.constants import visit_url, s1_url, s2_url, target_url, r18_mode, all_show, proxy_flag, spider_images_max_count
 from utils.SpiderConfigModel import SpiderConfigModel
 from utils.ini_file_spider import write_minio_config_to_file
 
@@ -14,6 +14,10 @@ class Dialog(QDialog):
 
         """
         super().__init__()
+        self.sis_log_level_label = None
+        self.comboBox_sis_log_level = None
+        self.spider_image_max_count_line = None
+        self.spider_image_max_count_label = None
         self.s1_url_line = None
         self.s1_url_label = None
         self.visit_url_line = None
@@ -55,6 +59,16 @@ class Dialog(QDialog):
 
         self.target_url_label = QLabel('目标 图片服务器 URL(target_url):')
         self.target_url_line = QLineEdit(target_url)
+
+        self.spider_image_max_count_label = QLabel('抓取图片最大值:')
+        self.spider_image_max_count_line = QLineEdit(spider_images_max_count)
+
+        self.sis_log_level_label = QLabel("日志级别")
+        self.comboBox_sis_log_level = QComboBox()
+        self.comboBox_sis_log_level.addItem("INFO")
+        self.comboBox_sis_log_level.addItem("DEBUG")
+        self.comboBox_sis_log_level.addItem("ERROR")
+        self.comboBox_sis_log_level.addItem("WARNING")
 
         self.r18_mode_label = QLabel('R18(r18_mode):')
         self.checkBox_r18 = QCheckBox(self)  # Converted to QCheckBox
@@ -102,6 +116,12 @@ class Dialog(QDialog):
         layout.addWidget(self.target_url_label)
         layout.addWidget(self.target_url_line)
 
+        layout.addWidget(self.spider_image_max_count_label)
+        layout.addWidget(self.spider_image_max_count_line)
+
+        layout.addWidget(self.sis_log_level_label)
+        layout.addWidget(self.comboBox_sis_log_level)
+
         window = QWidget()
         h_layout = QHBoxLayout(window)
 
@@ -147,6 +167,8 @@ def save_data(self):
     s2_url_txt = self.s2_url_line.text()
     visit_url_txt = self.visit_url_line.text()
     target_url_txt = self.target_url_line.text()
+    spider_images_max_count_txt = self.spider_image_max_count_line.text()
+    sis_log_level_text = self.comboBox_sis_log_level.currentText()
     if self.checkBox_r18.isChecked():
         r18_mode_txt = True
     else:
@@ -172,6 +194,9 @@ def save_data(self):
     logger.debug(f"Proxy Flag: {proxy_flag_txt}")
     logger.debug(f"Search Delta Time: {search_delta_time}")
     logger.debug(f"Detail Delta Time: {detail_delta_time}")
+    logger.debug(f"spider_images_max_count: {spider_images_max_count_txt}")
+    logger.debug(f"sis_log_level: {sis_log_level_text}")
+
     spider_config = SpiderConfigModel()
     spider_config.s1_url = s1_url_txt
     spider_config.s2_url = s2_url_txt
@@ -182,6 +207,8 @@ def save_data(self):
     spider_config.proxy_flag = proxy_flag_txt
     spider_config.search_delta_time = search_delta_time
     spider_config.detail_delta_time = detail_delta_time
+    spider_config.spider_images_max_count = spider_images_max_count_txt
+    spider_config.sis_log_level = sis_log_level_text
     write_minio_config_to_file(minio_config=spider_config)
     # dialog = Dialog()
     QMessageBox.critical(self, u"保存", u"配置写入成功,程序即将退出,请重新启动应用配置！")

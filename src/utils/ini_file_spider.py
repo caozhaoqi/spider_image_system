@@ -28,6 +28,8 @@ def spider_config():
     entity.proxy_flag = read_ini_config(ini_file_path, "spider_config", 'proxy_flag')
     entity.search_delta_time = read_ini_config(ini_file_path, "spider_config", 'search_delta_time')
     entity.detail_delta_time = read_ini_config(ini_file_path, "spider_config", 'detail_delta_time')
+    entity.sis_log_level = read_ini_config(ini_file_path, "spider_config", 'sis_log_level')
+    entity.spider_images_max_count = read_ini_config(ini_file_path, "spider_config", "spider_images_max_count")
     return entity
 
 
@@ -42,7 +44,12 @@ def write_minio_config_to_file(minio_config):
     logger.info("generate file path：" + iniPath)
     conf = configparser.ConfigParser()
     if os.path.exists(iniPath):
-        os.remove(iniPath)
+        try:
+            os.remove(iniPath)
+        except PermissionError as pe:
+            logger.error("permission error, ini file only read mode, please update ini file chmod! detail: " + str(pe))
+        except Exception as e:
+            logger.error("unknown error, detail :" + str(e))
     logger.warning("Not Found config ini file , creating ini file ....")
     if not os.path.exists(ini_path):
         os.makedirs(ini_path)
@@ -62,8 +69,8 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "proxy_flag", str(minio_config.proxy_flag))
     conf.set("spider_config", "search_delta_time", str(minio_config.search_delta_time))
     conf.set("spider_config", "detail_delta_time", str(minio_config.detail_delta_time))
-    # conf.set(minio_config.minio_config_id, "minio_server_ip", minio_config.minio_server_ip)
-    # tes.write(conf.values())
+    conf.set("spider_config", "sis_log_level", minio_config.sis_log_level)
+    conf.set("spider_config", "spider_images_max_count", str(minio_config.spider_images_max_count))
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
     logger.info("config write finished , read test , current use visit url : " + conf.get("spider_config",
@@ -137,6 +144,8 @@ def check_ini_config():
         conf.set("spider_config", "proxy_flag", 'True')
         conf.set("spider_config", "search_delta_time", '7')
         conf.set("spider_config", "detail_delta_time", '3')
+        conf.set("spider_config", "sis_log_level", 'INFO')
+        conf.set("spider_config", "spider_images_max_count", '1000')
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
         logger.info("config write finished , read test : " + conf.get("spider_config", "visit_url"))

@@ -1,10 +1,14 @@
 import os
+import sys
 from functools import partial
 
+import cv2
 from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLineEdit, QPushButton, QHBoxLayout, \
     QLabel, QVBoxLayout, QScrollArea
+from PyQt5.uic.properties import QtGui
 from loguru import logger
 
+from gui.video_ui import VideoPlayer
 from utils.base_event import about_message_lookup, visit_web, \
     edit_config_msg
 
@@ -87,12 +91,12 @@ def tab_1_ui_paint(self):
     self.scroll_area.setParent(self.tab1)
     self.h_box_2.addWidget(self.scroll_area)
 
-    self.download_img_button = QPushButton(u"开始下载")
+    self.download_video_button = QPushButton(u"开始下载")
     self.next_button = QPushButton(u"下一张")
     self.before_button = QPushButton(u"上一张")
     self.h_box_3 = QHBoxLayout()
     self.h_box_3.addWidget(self.before_button)
-    self.h_box_3.addWidget(self.download_img_button)
+    self.h_box_3.addWidget(self.download_video_button)
     self.h_box_3.addWidget(self.next_button)
 
     self.vbox = QVBoxLayout()
@@ -106,7 +110,56 @@ def tab_1_ui_paint(self):
 
     # 基础事件 按钮单击事件
     self.input_file.clicked.connect(self.input_keyword_process)
-    self.download_img_button.clicked.connect(self.download_file_thread)
+    self.download_video_button.clicked.connect(self.download_file_thread)
     self.next_button.clicked.connect(self.next_img)
     self.before_button.clicked.connect(self.before_img)
     return True
+
+
+@logger.catch
+def tab_2_ui_paint(self):
+    # self.layout = QVBoxLayout()
+    # self.setLayout(self.layout)
+
+    # self.tabWidget = QTabWidget(self)
+    # self.tabWidget.setTabPosition(QTabWidget.West)
+    # self.tab = QWidget()
+    # self.tabWidget.addTab(self.tab2, 'Video')
+    # self.layout.addWidget(self.tabWidget)
+
+    # self.video_player = cv2.VideoCapture('./data/video/1703471146086.mp4')  # 替换为您的视频文件路径
+    # if not self.video_player.isOpened():
+    #     print("无法打开视频文件")
+    #     sys.exit()
+    #
+    # self.display_frame = cv2.cvtColor(cv2.flip(cv2.VideoCapture(self.video_player).read()[1], 0), cv2.COLOR_BGR2RGB)
+    # self.display_image = QLabel(self.tab2)
+    # self.display_image.setPixmap(QtGui.QPixmap.fromImage(QtGui.QImage(self.display_frame, 'RGB')))
+    # self.layout.addWidget(self.display_image)
+    # self.tab_video = TabWithVideo()
+    # 创建布局并将表格添加到布局中
+    # self.tab2.setLayout(self.tab_video.layout)
+    # self.setCentralWidget(self.tab_widget)
+    pass
+
+
+class TabWithVideo(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.download_video_button = None
+        self.layout = None
+        self.videoPlayer = None
+        self.initUI()
+
+    def initUI(self):
+        self.layout = QVBoxLayout()
+        self.videoPlayer = VideoPlayer()  # 创建 VideoPlayer 实例
+        self.download_video_button = QPushButton(u"开始下载")
+        self.layout.addWidget(self.videoPlayer)  # 将 VideoPlayer 添加到布局中
+        self.layout.addWidget(self.download_video_button)
+        self.download_video_button.clicked.connect(self.player_video)
+
+        # self.tab2.setLayout(layout)
+    def player_video(self):
+        self.videoPlayer.playVideo("")
+        logger.debug("video playing.")

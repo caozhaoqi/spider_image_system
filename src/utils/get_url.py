@@ -1,12 +1,15 @@
 import os
 
+from PyQt5.QtWidgets import QMessageBox
 from loguru import logger
 from selenium import webdriver
+from selenium.common import NoSuchWindowException
 from selenium.webdriver.common.by import By
 import time
 
+from gui import constants
 from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
-    visit_url, target_url, s2_url, data_path
+    visit_url, target_url, s2_url, data_path, spider_images_max_count
 from utils.log_record import log_record
 
 
@@ -22,7 +25,7 @@ def save_img_url(driver, key_word):
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith("_result_url.txt")]
     for cdds_path in cdds:
-        logger.debug("start save img url,artwork href from file name: " + str(cdds_path))
+        logger.debug("start save img url, artwork href from file name: " + str(cdds_path))
         with open(cdds_path, 'r') as f:
             for line in f:
                 url = line.strip()
@@ -40,7 +43,7 @@ def save_img_url(driver, key_word):
                             image_url = image_url.replace(s1_url, target_url)
                             image_url = image_url.replace(s2_url, target_url)
                             write_url_txt(data_path + "/img_url/", key_word + "_img", image_url)
-                            logger.debug(f"save img url success: {image_filename}")
+                            logger.debug(f"replace point source url, save img url success: {image_filename}")
     return True
 
 
@@ -86,8 +89,13 @@ def spider_artworks_url(self, key_word):
     load_save_flag = load_href_save(driver, key_word)
     if load_save_flag:
         # 使用函数
-        save_img_url(driver, key_word)
-        logger.success("save img all finish, could start download images! ")
+        try:
+            save_img_url(driver, key_word)
+            logger.success("save img all finish, could start download images! ")
+        except NoSuchWindowException as nswe:
+            logger.warning("chrome force exit! detail:" + str(nswe))
+    constants.spider_image_flag = False
+    QMessageBox.information(self, u"完成", u"操作完成")
     logger.warning("google chrome will exit! ")
     driver.quit()
     # w = UIMainWindows()
@@ -131,17 +139,21 @@ def load_href_save(driver, key_word):
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
         for image_element in image_elements:
             image_url = image_element.get_attribute("href")
-            if "artworks" not in image_url or "s_mode=s_tag" in image_url:
+            if filter_not_use_url(image_url):
                 continue
             driver.execute_script("return arguments[0].href;", image_element)
             image_urls_list.append(image_url)
+            if len(image_urls_list) > spider_images_max_count:
+                # 超过最大值 跳出循环 不在保存url地址
+                logger.warning("spider image max value, value: " + str(len(image_urls_list)))
+                break
             logger.debug("load href and start save img url: " + image_url)
         if len(image_urls_list) > 0:
             for image_url_content in image_urls_list:
                 write_url_txt(data_path + "/href_url/", key_word + "_url", image_url_content)
             remove_duplicates_from_txt(data_path + "/href_url/" + key_word + "_url.txt",
                                        data_path + "/href_url/" + key_word + "_result_url.txt")
-            logger.success("remove duplicates content success!")
+            logger.success("load_href_save: href remove duplicates content success, result: href_url: _result_url.txt.")
             return True
         else:
             logger.warning("you input key word error or other err, please check log file!")
@@ -195,8 +207,21 @@ def filter_not_use(url):
     :param url:
     :return:
     """
+    # /emoji/501.png https://pximg.lolicon.ac.cn/user-profile/img/2023/12/11/14/38/09
+    # /25260574_6aed493b358851d4d2fbfb53290b5991_50.jpg
+    if "js" in url or "emoji" in url or "svq" in url or "_50.png" in url:
+        return True
+
+
+@logger.catch
+def filter_not_use_url(image_url):
+    """
+    filter not need http url
+    :param image_url: filter url
+    :return:
+    """
     # /emoji/501.png
-    if "js" in url or "emoji" in url or "svq" in url:
+    if "artworks" not in image_url or "s_mode=s_tag" in image_url or "block.2021.host" in image_url:
         return True
 
 

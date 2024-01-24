@@ -19,3 +19,5 @@ class SpiderConfigModel:
     proxy_flag = True
     search_delta_time = 7
     detail_delta_time = 3
+    sis_log_level = ''
+    spider_images_max_count = 0
