@@ -5,6 +5,7 @@ from utils.ini_file_spider import read_ini_config, ini_file_path, check_ini_conf
 
 # 检查默认配置项
 check_ini_config()
+# 当前图片名
 # spider image flag
 spider_image_flag = False
 # download_image_flag

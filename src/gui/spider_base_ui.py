@@ -4,13 +4,13 @@ from functools import partial
 
 import cv2
 from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLineEdit, QPushButton, QHBoxLayout, \
-    QLabel, QVBoxLayout, QScrollArea
-from PyQt5.uic.properties import QtGui
+    QLabel, QVBoxLayout, QScrollArea, QGridLayout
 from loguru import logger
 
 from gui.video_ui import VideoPlayer
 from utils.base_event import about_message_lookup, visit_web, \
     edit_config_msg
+from utils.img_switch import current_image_index, image_files
 
 
 @logger.catch
@@ -74,15 +74,27 @@ def tab_1_ui_paint(self):
     :param self:
     :return:
     """
-    self.file_text = QLineEdit(
-        os.path.join(os.path.dirname(__file__), ""))
-    self.input_file = QPushButton(u"开始抓取")
-    self.h_box = QHBoxLayout()
-    self.h_box.addWidget(QLabel(u"关键字:"))
-    self.h_box.addWidget(self.file_text)
-    self.h_box.addWidget(self.input_file)
+    # self.file_text = QLineEdit(
+    #     os.path.join(os.path.dirname(__file__), ""))
+    # # self.v_box = QVBoxLayout()
+    # self.h_box = QHBoxLayout()
+    #
+    # self.input_file = QPushButton(u"开始抓取")
+    #
+    # self.h_box.addWidget(QLabel(u"关键字:"))
+    # self.h_box.addWidget(self.file_text)
+    # self.h_box.addWidget(self.input_file)
+    #
+    # # self.h_box_1_2 = QHBoxLayout()
+    #
+    # self.file_name_label = QLabel(constants.file_name_txt)
+    search_item_paint(self)
+    # self.v_box.addLayout(self.h_box)
+    # self.h_box_1_2.addWidget(self.file_name_label)
+    # self.v_box.addLayout(self.h_box_1_2)
 
     self.h_box_2 = QHBoxLayout()
+
     self.label = QLabel(self)
     # 创建一个QScrollArea实例
     self.scroll_area = QScrollArea()
@@ -100,7 +112,7 @@ def tab_1_ui_paint(self):
     self.h_box_3.addWidget(self.next_button)
 
     self.vbox = QVBoxLayout()
-    self.vbox.addLayout(self.h_box)
+    self.vbox.addLayout(self.grid_layout)
     self.vbox.addLayout(self.h_box_2)
     self.vbox.addLayout(self.h_box_3)
 
@@ -160,6 +172,42 @@ class TabWithVideo(QWidget):
         self.download_video_button.clicked.connect(self.player_video)
 
         # self.tab2.setLayout(layout)
+
     def player_video(self):
         self.videoPlayer.playVideo("")
         logger.debug("video playing.")
+
+
+@logger.catch
+def search_item_paint(self):
+    # 创建网格布局
+    self.grid_layout = QGridLayout()
+    self.setLayout(self.grid_layout)
+
+    # 创建行和列的索引
+    row = 0
+    col = 0
+
+    # 创建控件并添加到网格布局中
+    self.file_text = QLineEdit(os.path.join(os.path.dirname(__file__), ""))  # 修改为你的路径
+    self.grid_layout.addWidget(QLabel("关键字:"), row, col)
+    self.grid_layout.addWidget(self.file_text, row, col + 1)  # 0 1
+    row += 1
+    col = 0
+
+    self.input_file = QPushButton("开始抓取")
+    self.grid_layout.addWidget(self.input_file, row - 1, col + 2)  # 0 3
+    row += 1
+    col += 1
+    #     self.grid_layout.addWidget(self.file_name_label, 1, 1)
+    self.file_name_show_label = QLabel("文件名：")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
+    self.grid_layout.addWidget(self.file_name_show_label, row - 1, col - 1)
+    row = 0
+    col = 0
+
+    self.file_name_label = QLabel("file_name")
+    self.grid_layout.addWidget(self.file_name_label, 1, 1)
+
+    # 你可以继续添加其他控件到下一行，例如:
+    self.show_page_label = QLabel("0/0")
+    self.grid_layout.addWidget(self.show_page_label, 1, 2)

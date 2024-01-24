@@ -4,7 +4,7 @@ import threading
 import sys
 
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, QMessageBox, QLabel
 from loguru import logger
 
 from gui import constants
@@ -24,8 +24,10 @@ class UIMainWindows(QMainWindow):
     def __init__(self):
         QWidget.__init__(self)
         # 窗体标题 icon
+        self.show_page_label = None
         self.setWindowTitle(u"spider pixiv img tools")
-        self.filename = ''
+        # self.filename = ''
+        # self.file_name_txt = ''
         icon = QIcon()
         icon.addPixmap(
             QPixmap("favicon.ico"), QIcon.Normal, QIcon.Off)
@@ -56,6 +58,7 @@ class UIMainWindows(QMainWindow):
             global current_image_index, image_files
             current_image_index = (current_image_index + 1) % len(image_files)
             show_image(self, image_files[current_image_index])
+            self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
             logger.info("next image show, current page: " + str(current_image_index) + ", count page: " + str(
                 len(image_files)))
         except Exception as e:
@@ -71,6 +74,7 @@ class UIMainWindows(QMainWindow):
             global current_image_index, image_files
             current_image_index = (current_image_index - 1 + len(image_files)) % len(image_files)
             show_image(self, image_files[current_image_index])
+            self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
             logger.info("after image show, current page: " + str(current_image_index) + ", count page: " + str(
                 len(image_files)))
         except Exception as e:
