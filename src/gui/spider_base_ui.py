@@ -123,23 +123,22 @@ def tab_2_ui_paint(self):
     # 水平布局  video play布局
     self.h_box_2_video = QHBoxLayout()
 
-    self.label_video = QLabel(self)
-    # 创建一个QScrollArea实例
-    self.scroll_area_video = QScrollArea()
-    # 将label添加到scroll_area中
-    self.scroll_area_video.setWidget(self.label_video)
-    self.scroll_area_video.setParent(self.tab2)
-    self.h_box_2_video.addWidget(self.scroll_area_video)
+    # self.label_video = QLabel(self)
 
     # 创建QVideoWidget实例，用于显示视频
     self.video_widget = QVideoWidget()
     # 将QVideoWidget添加到QScrollArea中
-    self.scroll_area_video.setWidget(self.video_widget)
     # 创建QMediaPlayer实例，用于播放视频
     self.media_player = QMediaPlayer()
     # 将QMediaPlayer与QVideoWidget连接，以便在QVideoWidget中显示视频
     self.media_player.setVideoOutput(self.video_widget)
 
+    # 创建一个QScrollArea实例
+    self.scroll_area_video = QScrollArea()
+    # 将label添加到scroll_area中
+    self.scroll_area_video.setWidget(self.video_widget)
+    self.scroll_area_video.setParent(self.tab2)
+    self.h_box_2_video.addWidget(self.scroll_area_video)
     # 创建用于控制播放的按钮
     self.play_video_button = QPushButton(u"播放")
     self.pause_button_video = QPushButton(u"暂停")
@@ -175,8 +174,8 @@ def tab_2_ui_paint(self):
     self.setCentralWidget(self.tab_widget)
 
     # 基础事件 按钮单击事件
-    self.play_video_button.clicked.connect(self.media_player.play)
-    self.pause_button_video.clicked.connect(self.media_player.pause)
+    self.play_video_button.clicked.connect(self.play_video)
+    self.pause_button_video.clicked.connect(self.pause_video)
     self.generate_button_video.clicked.connect(self.image_video_click)
     self.slider.valueChanged[int].connect(self.set_video_position_click)  # 连接滑块值变化信号和视频位置设置槽函数
 

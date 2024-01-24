@@ -8,7 +8,7 @@ from loguru import logger
 
 from gui import constants
 from gui.constants import output_video_fps, output_video_width, output_video_height
-from gui.time_utils import id_generate_time
+from utils.time_utils import id_generate_time
 from utils.VideoPlayerThread import VideoPlayerThread
 
 
@@ -49,7 +49,7 @@ def generate_video_from_images(images_input_path, video_out_path):
     fourcc = cv2.VideoWriter.fourcc(*'MJPG')
     # 创建VideoWriter对象
     video_name = video_out_path + id_generate_time() + "test.mp4"
-    video = cv2.VideoWriter(video_name, fourcc, output_video_fps, (width, height))  # 设置视频帧率、输出视频大小
+    video = cv2.VideoWriter(video_name, fourcc, int(output_video_fps), (width, height))  # 设置视频帧率、输出视频大小
     if not video.isOpened():
         print("无法打开视频文件写入器")
         return False

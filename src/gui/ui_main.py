@@ -1,4 +1,6 @@
 #!coding:utf-8
+import glob
+import os.path
 import threading
 
 import sys
@@ -10,6 +12,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, 
 from loguru import logger
 
 from gui import constants
+from utils.file_process import scan_directory
 from utils.get_url import spider_artworks_url
 from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint
 from utils.spider_img_save import download_img_txt
@@ -140,14 +143,46 @@ class UIMainWindows(QMainWindow):
 
     def set_video_position_click(self, position):
         """设置视频播放位置"""
-        self.media_player.setPosition(position * 1000)  # 设置视频位置，单位为毫秒
+        self.media_player.setPosition(position * 1000)
+        logger.info("current position: " + str(position * 1000))  # 设置视频位置，单位为毫秒
 
     def load_video(self, file_path):
         """加载视频文件"""
+        file_path_1, file_name = os.path.split(file_path)
+        self.file_name_label_video.setText(file_name)
         content = QMediaContent(QUrl.fromLocalFile(file_path))  # 创建媒体内容对象，传入视频文件路径
         self.media_player.setMedia(content)  # 设置媒体内容到QMediaPlayer中
         self.media_player.play()  # 开始播放视频
         logger.info("start load video, file path: " + file_path)
+
+    def play_video(self):
+        """
+
+        :return:
+        """
+
+        video_path = r"C:\Users\Administrator\PycharmProjects\spider_image_system\src\gui\data\video" \
+                     r"\WeChat_20240124173613.mp4"  # 替换为你的视频路径
+        video_files = scan_directory(constants.data_path)
+        if len(video_files) > 0:
+            for video_path in video_files:
+                file_path_1, file_name = os.path.split(video_path)
+                self.file_name_label_video.setText(file_name)
+                content = QMediaContent(QUrl.fromLocalFile(video_path))
+                self.media_player.setMedia(content)
+                self.media_player.play()
+                logger.info("video start play. name: " + str(file_name))
+        else:
+            logger.warning("current dir data dir not mp4 video!")
+
+
+    def pause_video(self):
+        """
+
+        :return:
+        """
+        self.media_player.pause()
+        logger.info("video pause play.")
 
     def image_video_click(self):
         """
