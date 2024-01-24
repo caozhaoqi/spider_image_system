@@ -1,10 +1,6 @@
-import sys
-
 from PyQt5.QtMultimedia import QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QLineEdit, QListWidget
-
-from utils.video_process import search_videos, load_and_play_video
 
 
 class VideoPlayer(QMainWindow):
