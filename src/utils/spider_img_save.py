@@ -33,6 +33,8 @@ def download_image(url, filename):
             logger.error("error, Remote end closed connection without response, detail: " + str(pe))
         except Exception as e:
             logger.error("error, unknown error, detail: " + str(e))
+    else:
+        logger.error("file exists will skip file, file name: " + str(filename))
 
 
 @logger.catch

@@ -10,6 +10,14 @@ check_ini_config()
 spider_image_flag = False
 # download_image_flag
 download_image_flag = False
+# process -image
+process_image_flag = False
+#
+output_video_fps = 5
+#
+output_video_width = 1920
+#
+output_video_height = 1080
 # 抓取图片最大值
 spider_images_max_count = read_ini_config(ini_file_path, "spider_config", "spider_images_max_count")
 # log level

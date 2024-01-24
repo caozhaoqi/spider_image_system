@@ -3,8 +3,11 @@ import sys
 from functools import partial
 
 import cv2
+from PyQt5.QtCore import Qt
+from PyQt5.QtMultimedia import QMediaPlayer
+from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLineEdit, QPushButton, QHBoxLayout, \
-    QLabel, QVBoxLayout, QScrollArea, QGridLayout
+    QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider
 from loguru import logger
 
 from gui.video_ui import VideoPlayer
@@ -60,8 +63,8 @@ def tab_ui_tab(self):
     self.tab1 = QWidget()
     self.tab2 = QWidget()
     self.tab3 = QWidget()
-    self.tab_widget.addTab(self.tab1, 'pixiv')
-    self.tab_widget.addTab(self.tab2, 'net')
+    self.tab_widget.addTab(self.tab1, '图像')
+    self.tab_widget.addTab(self.tab2, '视频')
     self.tab_widget.addTab(self.tab3, '其他')
     # 创建表格和设置列名
     return self.tab1, self.tab2, self.tab3, self.tab_widget
@@ -74,24 +77,8 @@ def tab_1_ui_paint(self):
     :param self:
     :return:
     """
-    # self.file_text = QLineEdit(
-    #     os.path.join(os.path.dirname(__file__), ""))
-    # # self.v_box = QVBoxLayout()
-    # self.h_box = QHBoxLayout()
-    #
-    # self.input_file = QPushButton(u"开始抓取")
-    #
-    # self.h_box.addWidget(QLabel(u"关键字:"))
-    # self.h_box.addWidget(self.file_text)
-    # self.h_box.addWidget(self.input_file)
-    #
-    # # self.h_box_1_2 = QHBoxLayout()
-    #
-    # self.file_name_label = QLabel(constants.file_name_txt)
+    # 搜索栏内容绘制
     search_item_paint(self)
-    # self.v_box.addLayout(self.h_box)
-    # self.h_box_1_2.addWidget(self.file_name_label)
-    # self.v_box.addLayout(self.h_box_1_2)
 
     self.h_box_2 = QHBoxLayout()
 
@@ -130,28 +117,69 @@ def tab_1_ui_paint(self):
 
 @logger.catch
 def tab_2_ui_paint(self):
-    # self.layout = QVBoxLayout()
-    # self.setLayout(self.layout)
+    # 搜索栏内容绘制 标题头部显示信息主要包括：文件名 文件名乘 图片数量信息
+    search_item_paint_tab2(self)
 
-    # self.tabWidget = QTabWidget(self)
-    # self.tabWidget.setTabPosition(QTabWidget.West)
-    # self.tab = QWidget()
-    # self.tabWidget.addTab(self.tab2, 'Video')
-    # self.layout.addWidget(self.tabWidget)
+    # 水平布局  video play布局
+    self.h_box_2_video = QHBoxLayout()
 
-    # self.video_player = cv2.VideoCapture('./data/video/1703471146086.mp4')  # 替换为您的视频文件路径
-    # if not self.video_player.isOpened():
-    #     print("无法打开视频文件")
-    #     sys.exit()
-    #
-    # self.display_frame = cv2.cvtColor(cv2.flip(cv2.VideoCapture(self.video_player).read()[1], 0), cv2.COLOR_BGR2RGB)
-    # self.display_image = QLabel(self.tab2)
-    # self.display_image.setPixmap(QtGui.QPixmap.fromImage(QtGui.QImage(self.display_frame, 'RGB')))
-    # self.layout.addWidget(self.display_image)
-    # self.tab_video = TabWithVideo()
+    self.label_video = QLabel(self)
+    # 创建一个QScrollArea实例
+    self.scroll_area_video = QScrollArea()
+    # 将label添加到scroll_area中
+    self.scroll_area_video.setWidget(self.label_video)
+    self.scroll_area_video.setParent(self.tab2)
+    self.h_box_2_video.addWidget(self.scroll_area_video)
+
+    # 创建QVideoWidget实例，用于显示视频
+    self.video_widget = QVideoWidget()
+    # 将QVideoWidget添加到QScrollArea中
+    self.scroll_area_video.setWidget(self.video_widget)
+    # 创建QMediaPlayer实例，用于播放视频
+    self.media_player = QMediaPlayer()
+    # 将QMediaPlayer与QVideoWidget连接，以便在QVideoWidget中显示视频
+    self.media_player.setVideoOutput(self.video_widget)
+
+    # 创建用于控制播放的按钮
+    self.play_video_button = QPushButton(u"播放")
+    self.pause_button_video = QPushButton(u"暂停")
+    self.generate_button_video = QPushButton(u"生成")
+
+    # 创建用于控制播放进度的滑块
+    self.slider = QSlider(Qt.Horizontal)
+    self.slider.setRange(0, 100)  # 设置滑块范围为0-100
+    self.slider.setValue(0)  # 设置初始值为0
+    self.slider.setTickPosition(QSlider.TicksBelow)  # 在滑块下方显示刻度
+    self.slider.setTickInterval(10)  # 设置刻度间隔为10
+
+    # slider 和 video 布局集合  垂直布局 -
+    #                                -
+    self.v_box_video_slider_layout = QVBoxLayout()
+    self.v_box_video_slider_layout.addLayout(self.h_box_2_video)
+    self.v_box_video_slider_layout.addWidget(self.slider)
+
+    # 按钮布局 水平布局 - - -
+    self.h_box_3_video = QHBoxLayout()
+    self.h_box_3_video.addWidget(self.generate_button_video)
+    self.h_box_3_video.addWidget(self.play_video_button)
+    self.h_box_3_video.addWidget(self.pause_button_video)
+
+    # 整体布局 垂直布局
+    self.vbox_video = QVBoxLayout()
+    self.vbox_video.addLayout(self.grid_layout_video)
+    self.vbox_video.addLayout(self.v_box_video_slider_layout)
+    self.vbox_video.addLayout(self.h_box_3_video)
+
     # 创建布局并将表格添加到布局中
-    # self.tab2.setLayout(self.tab_video.layout)
-    # self.setCentralWidget(self.tab_widget)
+    self.tab2.setLayout(self.vbox_video)
+    self.setCentralWidget(self.tab_widget)
+
+    # 基础事件 按钮单击事件
+    self.play_video_button.clicked.connect(self.media_player.play)
+    self.pause_button_video.clicked.connect(self.media_player.pause)
+    self.generate_button_video.clicked.connect(self.image_video_click)
+    self.slider.valueChanged[int].connect(self.set_video_position_click)  # 连接滑块值变化信号和视频位置设置槽函数
+
     pass
 
 
@@ -211,3 +239,20 @@ def search_item_paint(self):
     # 你可以继续添加其他控件到下一行，例如:
     self.show_page_label = QLabel("0/0")
     self.grid_layout.addWidget(self.show_page_label, 1, 2)
+
+
+@logger.catch
+def search_item_paint_tab2(self):
+    # 创建网格布局
+    self.grid_layout_video = QGridLayout()
+    self.setLayout(self.grid_layout_video)
+
+    self.file_name_show_label_video = QLabel("文件名：")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
+    self.grid_layout_video.addWidget(self.file_name_show_label_video, 0, 1)
+
+    self.file_name_label_video = QLabel("file_name")
+    self.grid_layout_video.addWidget(self.file_name_label_video, 0, 2)
+
+    # 你可以继续添加其他控件到下一行，例如:
+    self.show_page_label_video = QLabel("0/0")
+    self.grid_layout_video.addWidget(self.show_page_label_video, 0, 3)

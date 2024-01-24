@@ -3,7 +3,9 @@ import threading
 
 import sys
 
+from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtMultimedia import QMediaContent
 from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, QMessageBox, QLabel
 from loguru import logger
 
@@ -13,6 +15,7 @@ from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_p
 from utils.spider_img_save import download_img_txt
 from utils.img_switch import find_images, show_image, folder_path, show_next_image
 from utils.log_record import log_record
+from utils.video_process import generate_video_from_images, convert_image, process_images_thread
 
 image_files = find_images(folder_path)
 current_image_index = 0
@@ -24,6 +27,7 @@ class UIMainWindows(QMainWindow):
     def __init__(self):
         QWidget.__init__(self)
         # 窗体标题 icon
+        self.images_convert_thread = None
         self.show_page_label = None
         self.setWindowTitle(u"spider pixiv img tools")
         # self.filename = ''
@@ -87,7 +91,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if constants.spider_image_flag:
-            self.error_path()
+            self.error_tips()
         else:
             key_word = self.file_text.text()
             logger.debug("you input key word is :" + str(key_word))
@@ -101,17 +105,17 @@ class UIMainWindows(QMainWindow):
         # self.error_path()
 
     # @logger.catch
-    def complete(self):
+    def success_tips(self):
         """
-
+        success tips
         :return:
         """
         QMessageBox.information(self, u"完成", u"操作完成")
 
     # @logger.catch
-    def error_path(self):
+    def error_tips(self):
         """
-
+        error tips
         :return:
         """
         QMessageBox.critical(self, u"警告", u"请等待当前操作完成!")
@@ -124,7 +128,7 @@ class UIMainWindows(QMainWindow):
         """
         # ret = True
         if constants.download_image_flag:
-            self.error_path()
+            self.error_tips()
         else:
             spider_thread_obj = threading.Thread(
                 target=download_img_txt,
@@ -133,6 +137,33 @@ class UIMainWindows(QMainWindow):
             constants.download_image_flag = True
             logger.info("download img thread starting ... ")
         # self.error_path()
+
+    def set_video_position_click(self, position):
+        """设置视频播放位置"""
+        self.media_player.setPosition(position * 1000)  # 设置视频位置，单位为毫秒
+
+    def load_video(self, file_path):
+        """加载视频文件"""
+        content = QMediaContent(QUrl.fromLocalFile(file_path))  # 创建媒体内容对象，传入视频文件路径
+        self.media_player.setMedia(content)  # 设置媒体内容到QMediaPlayer中
+        self.media_player.play()  # 开始播放视频
+        logger.info("start load video... ")
+
+    def image_video_click(self):
+        """
+        image 生成视频
+        :return:
+        """
+        if constants.process_image_flag:
+            self.error_tips()
+        else:
+            self.images_convert_thread = threading.Thread(
+                target=process_images_thread,
+                args=(self,))
+            self.images_convert_thread.start()
+            logger.success("image start process. ")
+            constants.process_image_flag = True
+        pass
 
 
 @logger.catch
