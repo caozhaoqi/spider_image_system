@@ -1,6 +1,5 @@
 import os
 
-from PyQt5.QtWidgets import QMessageBox
 from loguru import logger
 from selenium import webdriver
 from selenium.common import NoSuchWindowException

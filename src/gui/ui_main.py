@@ -33,7 +33,7 @@ class UIMainWindows(QMainWindow):
         # 窗体标题 icon
         self.images_convert_thread = None
         self.show_page_label = None
-        self.setWindowTitle(u"spider pixiv img tools")
+        self.setWindowTitle(u"Spider Image System (Version: 1.0.2)")
         # self.filename = ''
         # self.file_name_txt = ''
         icon = QIcon()
