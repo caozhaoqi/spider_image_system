@@ -147,16 +147,17 @@ def filter_exists_images(key_word, image_url, txt_name):
     if txt_name == '_url':
         #     处于存artwork url阶段 读取相应keyword txt artwork url save txt
         file_name = constants.data_path + "/href_url/" + key_word + "_url.txt"
-        txt_url = []
+        # file_name = r"C:\Users\Administrator\PycharmProjects\spider_image_system\src\gui\data\href_url\xianyun_url
+        # .txt" txt_url = []
         with open(file_name, 'r') as f:
-            txt_url.append(f.readlines())
-        return find_value(image_url, txt_url)
+            txt_url = f.readlines()
+        return find_value(image_url+"\n", txt_url)
     elif txt_name == '_img':
         file_name = constants.data_path + "/img_url/" + key_word + "_img.txt"
-        txt_url = []
+        # txt_url = []
         with open(file_name, 'r') as f:
-            txt_url.append(f.readlines())
-        return find_value(image_url, txt_url)
+            txt_url = f.readlines()
+        return find_value(image_url + "\n", txt_url)
     # elif txt_name == '_result':
     #     pass
     # pass
@@ -297,7 +298,10 @@ def url_process_page(url, current_page):
     return page_url
     # pass
 
-# if __name__ == '__main__':
+
+if __name__ == '__main__':
+    ret = filter_exists_images("xianyun", "https://sd.2021.host/artworks/115463073", "_url")
+    logger.info(ret)
 # url_process_page("")
 #     try:
 #         log_record()
