@@ -112,7 +112,8 @@ def image_fill_black(target_dir, image_path):
 
         # 检查图片尺寸
         width, height = img.shape[:2]
-        logger.debug(f"Original size: {width}x{height}")
+
+        logger.debug(f"image converting name or path: {image_path}, Original size: {width}x{height}")
 
         # 调整图片大小960x959 480 61
         # 如果图像尺寸大于目标尺寸，进行缩放

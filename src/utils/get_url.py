@@ -37,6 +37,9 @@ def save_img_url(driver, key_word):
                         if filter_not_use(image_url):
                             continue
                         else:
+                            result = filter_exists_images(key_word, image_url, "_img")
+                            if result:
+                                continue
                             driver.execute_script("return arguments[0].src;", image_element)
                             image_filename = os.path.basename(image_url)  # 获取图片文件名
                             image_url = image_url.replace(s1_url, target_url)
@@ -132,6 +135,50 @@ def write_url_txt(path, file_name, url):
 
 
 @logger.catch
+def filter_exists_images(key_word, image_url, txt_name):
+    """
+    filter already exists images
+    :param key_word:
+    :param image_url:
+    :param txt_name: 执行过程：存artwork url 存images url
+    过滤当前已存在的images或url
+    :return:
+    """
+    if txt_name == '_url':
+        #     处于存artwork url阶段 读取相应keyword txt artwork url save txt
+        file_name = constants.data_path + "/href_url/" + key_word + "_url.txt"
+        txt_url = []
+        with open(file_name, 'r') as f:
+            txt_url.append(f.readlines())
+        return find_value(image_url, txt_url)
+    elif txt_name == '_img':
+        file_name = constants.data_path + "/img_url/" + key_word + "_img.txt"
+        txt_url = []
+        with open(file_name, 'r') as f:
+            txt_url.append(f.readlines())
+        return find_value(image_url, txt_url)
+    # elif txt_name == '_result':
+    #     pass
+    # pass
+    return False
+
+
+@logger.catch
+def find_value(target_value, data_list):
+    """
+    查找列表中是否存在目标值
+    :param target_value:
+    :param data_list:
+    :return:
+    """
+    for item in data_list:
+        if item == target_value:
+            logger.warning("image url or artwork url exists, will skip, file name: " + target_value)
+            return True
+    return False
+
+
+@logger.catch
 def load_href_save(driver, key_word):
     """
     load pixiv list href url and save this
@@ -147,6 +194,10 @@ def load_href_save(driver, key_word):
             if filter_not_use_url(image_url):
                 continue
             driver.execute_script("return arguments[0].href;", image_element)
+            # filter already exists image
+            result = filter_exists_images(key_word, image_url, "_url")
+            if result:
+                continue
             image_urls_list.append(image_url)
             constants.spider_images_current_count += 1
             if constants.spider_images_current_count > int(spider_images_max_count):
