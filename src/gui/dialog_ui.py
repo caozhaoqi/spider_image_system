@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QLabel
 from loguru import logger
 
 from gui.constants import visit_url, s1_url, s2_url, target_url, r18_mode, all_show, proxy_flag, \
-    spider_images_max_count, search_delta_time, detail_delta_time, output_video_fps, sis_log_level
+    spider_images_max_count, search_delta_time, detail_delta_time, output_video_fps, sis_log_level, proxy_server_ip, \
+    proxy_server_port
 from utils.SpiderConfigModel import SpiderConfigModel
 from utils.ini_file_spider import write_minio_config_to_file
 
@@ -15,6 +16,10 @@ class Dialog(QDialog):
 
         """
         super().__init__()
+        self.s1_proxy_server_port_line = None
+        self.s1_proxy_server_port_label = None
+        self.s1_proxy_server_ip_line = None
+        self.s1_proxy_server_ip_label = None
         self.detail_delta_time_label = None
         self.output_video_fps_line = None
         self.sis_log_level_label = None
@@ -64,7 +69,7 @@ class Dialog(QDialog):
         self.target_url_line = QLineEdit(target_url)
 
         self.spider_image_max_count_label = QLabel('抓取图片最大值:')
-        self.spider_image_max_count_line = QLineEdit(spider_images_max_count)
+        self.spider_image_max_count_line = QLineEdit(str(spider_images_max_count))
 
         self.sis_log_level_label = QLabel("日志级别")
         self.comboBox_sis_log_level = QComboBox()
@@ -96,6 +101,12 @@ class Dialog(QDialog):
             self.checkBox_proxy.setChecked(True)
         else:
             self.checkBox_proxy.setChecked(False)  # Set default state to False
+
+        self.s1_proxy_server_ip_label = QLabel('代理服务器地址(proxy server ip):')
+        self.s1_proxy_server_ip_line = QLineEdit(proxy_server_ip)
+
+        self.s1_proxy_server_port_label = QLabel('代理服务器端口(proxy server port):')
+        self.s1_proxy_server_port_line = QLineEdit(str(proxy_server_port))
 
         self.search_delta_time_label = QLabel('搜索延迟时间(s):')
         self.search_delta_time_line = QLineEdit(str(search_delta_time))
@@ -152,6 +163,12 @@ class Dialog(QDialog):
         # window.s(600,10)
         layout.addWidget(window)
 
+        layout.addWidget(self.s1_proxy_server_ip_label)
+        layout.addWidget(self.s1_proxy_server_ip_line)
+
+        layout.addWidget(self.s1_proxy_server_port_label)
+        layout.addWidget(self.s1_proxy_server_port_line)
+
         layout.addWidget(self.search_delta_time_label)
         layout.addWidget(self.search_delta_time_line)
 
@@ -182,6 +199,8 @@ def save_data(self):
     spider_images_max_count_txt = self.spider_image_max_count_line.text()
     sis_log_level_txt = self.comboBox_sis_log_level.currentText()
     output_video_fps_txt = self.output_video_fps_line.text()
+    proxy_server_ip_txt = self.s1_proxy_server_ip_line.text()
+    proxy_server_port_txt = self.s1_proxy_server_port_line.text()
     if self.checkBox_r18.isChecked():
         r18_mode_txt = True
     else:
@@ -205,6 +224,8 @@ def save_data(self):
     logger.debug(f"R18 Mode: {r18_mode_txt}")
     logger.debug(f"All Show: {all_show_txt}")
     logger.debug(f"Proxy Flag: {proxy_flag_txt}")
+    logger.debug(f"proxy server ip: {proxy_server_ip_txt}")
+    logger.debug(f"proxy server port: {proxy_server_port_txt}")
     logger.debug(f"Search Delta Time: {search_delta_time_txt}")
     logger.debug(f"Detail Delta Time: {detail_delta_time_txt}")
     logger.debug(f"spider_images_max_count: {spider_images_max_count_txt}")
@@ -219,6 +240,8 @@ def save_data(self):
     spider_config.r18_mode = r18_mode_txt
     spider_config.all_show = all_show_txt
     spider_config.proxy_flag = proxy_flag_txt
+    spider_config.proxy_server_ip = proxy_server_ip_txt
+    spider_config.proxy_server_port = proxy_server_port_txt
     spider_config.search_delta_time = search_delta_time_txt
     spider_config.detail_delta_time = detail_delta_time_txt
     spider_config.spider_images_max_count = spider_images_max_count_txt

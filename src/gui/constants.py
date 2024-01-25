@@ -13,13 +13,15 @@ download_image_flag = False
 # process -image
 process_image_flag = False
 # 输出 video 帧率
-output_video_fps = read_ini_config(ini_file_path, "spider_config", "output_video_fps")
+output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
 # 输出 video 宽度
 output_video_width = 1920
 # 输出 video 高度
 output_video_height = 1080
 # 抓取图片最大值
-spider_images_max_count = read_ini_config(ini_file_path, "spider_config", "spider_images_max_count")
+spider_images_max_count = int(read_ini_config(ini_file_path, "spider_config", "spider_images_max_count"))
+# 抓取总图片数目 实时统计
+spider_images_current_count = 0
 # log level
 sis_log_level = read_ini_config(ini_file_path, "spider_config", "sis_log_level")
 # 数据存储路径
@@ -38,9 +40,14 @@ target_url = read_ini_config(ini_file_path, "spider_config", "target_url")
 # search keyword and mode
 # keyword_search = ''
 r18_mode = read_ini_config(ini_file_path, "spider_config", "r18_mode")
+# all show
 all_show = read_ini_config(ini_file_path, "spider_config", "all_show")
 # proxy config
 proxy_flag = read_ini_config(ini_file_path, "spider_config", "proxy_flag")
+# 代理服务器地址
+proxy_server_ip = read_ini_config(ini_file_path, "spider_config", "proxy_server_ip")
+# 代理服务器端口
+proxy_server_port = int(read_ini_config(ini_file_path, "spider_config", "proxy_server_port"))
 # 搜索延迟时间
 search_delta_time = int(read_ini_config(ini_file_path, "spider_config", "search_delta_time"))
 # 详情页等待时间

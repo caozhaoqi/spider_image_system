@@ -1,13 +1,12 @@
 import os
 
 import cv2
-from PIL import Image, UnidentifiedImageError
-from PyQt5.QtWidgets import QMessageBox
+import numpy as np
+from PIL import UnidentifiedImageError
 from loguru import logger
 
 from gui import constants
-from gui.constants import output_video_fps, output_video_width, output_video_height
-from utils.async_message_box import show_msg_alert
+from gui.constants import output_video_fps, output_video_height, output_video_width
 from utils.time_utils import id_generate_time
 
 
@@ -88,26 +87,70 @@ def convert_image(images_input_path, target_dir):
                 # 检查文件是否为图片
     logger.debug("convert_image: scan result, images count: " + str(len(image_paths)))
     for filename in image_paths:
-        try:
-            # 打开图片
-            img = Image.open(filename)
-            # 调整图片尺寸（例如，调整为800x600像素）
-            new_size = (output_video_width, output_video_height)
-            resized_img = img.resize(new_size, Image.LANCZOS)
-            file_path, file_name = os.path.split(filename)
-            # 保存处理后的图片到目标目录
-            if os.path.exists(os.path.join(target_dir, "result_" + file_name)) or "result" in file_name:
-                logger.info("file exists, skip file: " + str("result_" + file_name))
-                continue
-            resized_img.save(os.path.join(target_dir, "result_" + file_name))
-        except UnidentifiedImageError as uie:
-            logger.error("error, image don't support! detail: " + str(uie) + ", file_name or path: " + str(filename))
-            continue
-        except Exception as e:
-            logger.error("error, unknown error! detail: " + str(e) + ", file_name or path: " + str(filename))
+        result = image_fill_black(target_dir, filename)
+        if not result:
             continue
     return True
     pass
+
+
+@logger.catch
+def image_fill_black(target_dir, image_path):
+    """
+    处理输入图像：如果输入尺寸大于输出尺寸则：缩小；如果输入尺寸小于输出尺寸，则用黑边填充。
+    :param target_dir:输出图像路径
+    :param image_path:输入图像路径
+    :return:是否转换成功
+    """
+    # Step 1： import opencv lib
+    import cv2
+    try:
+        # Step 2: Define the target size
+        target_size = (output_video_width, output_video_height)
+        # 读取图片
+        img = cv2.imread(image_path)
+
+        # 检查图片尺寸
+        width, height = img.shape[:2]
+        logger.debug(f"Original size: {width}x{height}")
+
+        # 调整图片大小960x959 480 61
+        # 如果图像尺寸大于目标尺寸，进行缩放
+        if width < target_size[0] or height < target_size[1]:
+            # 计算黑边宽度 除2
+            border_width = abs(target_size[0] - width) // 2
+            border_height = abs(target_size[1] - height) // 2
+            # 计算少于目标宽度 目标高度值 ，
+            grap_width = output_video_width - (border_width * 2) - width
+            grap_height = output_video_height - (border_height * 2) - height
+            border = border_width, border_height
+            # logger.debug("width: " + str(border_width * 2 + width) + ", height: " + str(border_height * 2 + height))
+            # 填充时自动补充至图像底边和右边 以确保输出图像等于目标尺寸 1920 1080
+            img = cv2.copyMakeBorder(img, border[1], border[1] + grap_width, border[0], border[0] + grap_height, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+            # out_width, out_height = img.shape[:2]
+            # logger.debug("width: " + str(out_width) + ", height: " + str(out_height))
+            # 如果图像尺寸大于目标尺寸，进行缩放
+        elif width > target_size[0] or height > target_size[1]:
+            img = cv2.resize(img, target_size, interpolation=cv2.INTER_LINEAR)
+        # else:
+        #     print("Image size matches the target size.")
+        #     return img
+        # Step 8: Display or save the resized image (optional)
+        file_path, file_name = os.path.split(image_path)
+        # 保存或显示结果
+        cv2.imwrite(os.path.join(target_dir, "result_" + file_name), img)
+        # cv2.imshow('Result', new_img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    except AttributeError as uie:
+        logger.error("error, AttributeError: 'NoneType' object has no attribute 'shape'! detail: " + str(uie) +
+                     ", ""file_name or path: " + str(image_path))
+        return False
+    except Exception as e:
+        logger.error("error, unknown error! detail: " + str(e) + ", file_name or path: " + str(image_path))
+        return False
+    return True
+    # pass
 
 
 @logger.catch
@@ -127,3 +170,8 @@ def process_images_thread(self):
             logger.success("out video success!")
     constants.process_image_flag = False
     self.success_tips()
+
+
+if __name__ == '__main__':
+    ret = image_fill_black(os.getcwd(), r"C:\Users\Administrator\Pictures\a.jpg")
+    logger.debug(ret)

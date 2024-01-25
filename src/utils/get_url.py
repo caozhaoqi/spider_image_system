@@ -10,8 +10,6 @@ import time
 from gui import constants
 from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
     visit_url, target_url, s2_url, data_path, spider_images_max_count
-from utils.async_message_box import show_msg_alert
-from utils.log_record import log_record
 
 
 @logger.catch
@@ -59,9 +57,9 @@ def spider_artworks_url(self, key_word):
     # 设置代理服务器
     proxy = {
         "proxyType": "manual",
-        "httpProxy": "http://192.168.199.26:8080",  # 代理服务器地址和端口
-        "ftpProxy": "http://192.168.199.26:8080",
-        "sslProxy": "http://192.168.199.26:8080",
+        "httpProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口
+        "ftpProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
+        "sslProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
         "noProxy": "",
         "proxyAutoconfigUrl": ""
     }
@@ -70,10 +68,9 @@ def spider_artworks_url(self, key_word):
     options = webdriver.ChromeOptions()
     if proxy_flag == 'True':
         options.set_capability("proxy", proxy)
-        logger.info("current use internal proxy.")
+        logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
 
     driver = webdriver.Chrome(options=options)
-    # key_word = self.filetext.text()
     # tags/娜维娅/artworks?mode=r18&s_mode=s_tag
     mode = ''
     if r18_mode == 'True':
@@ -81,22 +78,30 @@ def spider_artworks_url(self, key_word):
         logger.info("current r18 mode!")
     if all_show == 'True':
         other = 'illustrations'
-    url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode + "s_mode=s_tag"
-    # url_list = process_visit_url(url)
-    logger.info("current use url : " + str(url))
-    driver.get(url)
-    # 等待图片加载完成
-    time.sleep(search_delta_time)
-    logger.debug("start load href save url to txt.")
-    load_save_flag = load_href_save(driver, key_word)
-    if load_save_flag:
-        # 使用函数
-        try:
-            save_img_url(driver, key_word)
-            logger.success("save img all finish, could start download images! ")
-            self.success_tips()
-        except NoSuchWindowException as nswe:
-            logger.warning("chrome force exit! detail:" + str(nswe))
+    cur_page = 1
+    url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode
+    while True:
+        url_detail = url_process_page(url, current_page=cur_page)
+        logger.info("current use url : " + str(url_detail))
+        driver.get(url_detail)
+        # 等待图片加载完成
+        time.sleep(search_delta_time)
+        logger.debug("start load href save url to txt.")
+        load_save_flag = load_href_save(driver, key_word)
+        if load_save_flag:
+            # 使用函数
+            try:
+                save_img_url(driver, key_word)
+                cur_page += 1
+                logger.success("save img all finish，current page:  " + str(cur_page))
+
+            except NoSuchWindowException as nswe:
+                logger.warning("chrome force exit! detail:" + str(nswe))
+
+        else:
+            break
+    # 循环抓取结束 断掉浏览器 重置标志位、
+    self.success_tips()
     constants.spider_image_flag = False
     logger.warning("google chrome will exit! ")
     driver.quit()
@@ -143,10 +148,12 @@ def load_href_save(driver, key_word):
                 continue
             driver.execute_script("return arguments[0].href;", image_element)
             image_urls_list.append(image_url)
-            if len(image_urls_list) > int(spider_images_max_count):
+            constants.spider_images_current_count += 1
+            if constants.spider_images_current_count > int(spider_images_max_count):
                 # 超过最大值 跳出循环 不在保存url地址
-                logger.warning("spider image max value, current value: " + str(len(image_urls_list)))
-                break
+                logger.warning("spider image max value, current value: " + str(constants.spider_images_current_count))
+                constants.spider_images_current_count = 0
+                return False
             logger.debug("load href and start save img url: " + image_url)
         if len(image_urls_list) > 0:
             for image_url_content in image_urls_list:
@@ -209,7 +216,8 @@ def filter_not_use(url):
     """
     # /emoji/501.png https://pximg.lolicon.ac.cn/user-profile/img/2023/12/11/14/38/09
     # /25260574_6aed493b358851d4d2fbfb53290b5991_50.jpg
-    if "js" in url or "emoji" in url or "svq" in url or "_50.png" in url:
+    if "js" in url or "emoji" in url or "svq" in url or "_50.png" in url or "_50.jpg" in url or "no_profile_s.png" in \
+            url or "block.2021.host" in url:
         return True
 
 
@@ -221,13 +229,27 @@ def filter_not_use_url(image_url):
     :return:
     """
     # /emoji/501.png
-    if "artworks" not in image_url or "s_mode=s_tag" in image_url or "block.2021.host" in image_url:
+    if "artworks" not in image_url or "s_mode=s_tag" in image_url or "block.2021.host" in image_url or "tags" in \
+            image_url:
         return True
 
 
-if __name__ == '__main__':
-    try:
-        log_record()
-        spider_artworks_url()
-    except Exception as e:
-        logger.error("Error！ detail msg: " + str(e))
+@logger.catch
+def url_process_page(url, current_page):
+    """
+    split page from point url
+    :param current_page:
+    :param url:
+    :return:
+    """
+    page_url = url + "p=" + str(current_page) + "&s_mode=s_tag"
+    return page_url
+    # pass
+
+# if __name__ == '__main__':
+# url_process_page("")
+#     try:
+#         log_record()
+#         spider_artworks_url()
+#     except Exception as e:
+#         logger.error("Error！ detail msg: " + str(e))

@@ -31,6 +31,8 @@ def spider_config():
     entity.sis_log_level = read_ini_config(ini_file_path, "spider_config", 'sis_log_level')
     entity.spider_images_max_count = read_ini_config(ini_file_path, "spider_config", "spider_images_max_count")
     entity.output_video_fps = read_ini_config(ini_file_path, "spider_config", "output_video_fps")
+    entity.proxy_server_ip = read_ini_config(ini_file_path, "spider_config", "proxy_server_ip")
+    entity.proxy_server_port = read_ini_config(ini_file_path, "spider_config", "proxy_server_port")
     return entity
 
 
@@ -75,6 +77,8 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "sis_log_level", minio_config.sis_log_level)
     conf.set("spider_config", "spider_images_max_count", str(minio_config.spider_images_max_count))
     conf.set("spider_config", "output_video_fps", str(minio_config.output_video_fps))
+    conf.set("spider_config", "proxy_server_ip", minio_config.proxy_server_ip)
+    conf.set("spider_config", "proxy_server_port", str(minio_config.proxy_server_port))
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
     logger.info("config write finished , read test , current use visit url : " + conf.get("spider_config",
@@ -140,18 +144,24 @@ def check_ini_config():
         conf.read(iniPath, 'utf-8')
         logger.info("start generate config ini file :")
         conf.add_section("spider_config")
-        conf.set("spider_config", "visit_url", "pixiv.net")
-        conf.set("spider_config", "s2_url", "s.pximg.net")
-        conf.set("spider_config", "s1_url", "i.pximg.net")
-        conf.set("spider_config", "target_url", " pixiv.322333.xyz")  # 写入配置参数
+        conf.set("spider_config", "visit_url", "sd.2021.host")
+        conf.set("spider_config", "s1_url", "i.pixivcat.com")
+        conf.set("spider_config", "s2_url", "i.hcyacg.com")
+        conf.set("spider_config", "target_url", "pximg.lolicon.run")  # 写入配置参数
         conf.set("spider_config", "r18_mode", 'False')
         conf.set("spider_config", "all_show", 'True')
         conf.set("spider_config", "proxy_flag", 'True')
         conf.set("spider_config", "search_delta_time", '7')
         conf.set("spider_config", "detail_delta_time", '3')
         conf.set("spider_config", "sis_log_level", 'INFO')
-        conf.set("spider_config", "spider_images_max_count", '1000')
+        conf.set("spider_config", "spider_images_max_count", '500')
         conf.set("spider_config", "output_video_fps", "5")
+        conf.set("spider_config", "proxy_server_ip", "192.168.199.26")
+        conf.set("spider_config", "proxy_server_port", "8080")
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
         logger.info("config write finished , read test : " + conf.get("spider_config", "visit_url"))
+
+
+if __name__ == '__main__':
+    read_ini_config(ini_file_path, "spider_config", "proxy_server_port")
