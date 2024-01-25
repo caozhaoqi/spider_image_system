@@ -54,7 +54,7 @@ class Dialog(QDialog):
         :return:
         """
         self.setWindowTitle('编辑工具配置')
-        self.setFixedSize(600, 800)
+        self.setFixedSize(950, 950)
         # 创建输入框和标签
         self.visit_url_label = QLabel('访问网站 URL(visit_url):')
         self.visit_url_line = QLineEdit(visit_url)
