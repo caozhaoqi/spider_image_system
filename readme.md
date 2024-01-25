@@ -46,7 +46,7 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyinstaller #清华源
 ```
 
 - 打包
-
+- 打包前清理日志, 减小包体积
 ```shell
 Pyinstaller -F ui_main.py #打包exe
  

@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, 
 from loguru import logger
 
 from gui import constants
+from utils.async_message_box import show_msg_alert
 from utils.file_process import scan_directory
 from utils.get_url import spider_artworks_url
 from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint
@@ -113,7 +114,7 @@ class UIMainWindows(QMainWindow):
         success tips
         :return:
         """
-        QMessageBox.information(self, u"完成", u"操作完成")
+        show_msg_alert("完成", "完成！")
 
     # @logger.catch
     def error_tips(self):
@@ -121,7 +122,7 @@ class UIMainWindows(QMainWindow):
         error tips
         :return:
         """
-        QMessageBox.critical(self, u"警告", u"请等待当前操作完成!")
+        show_msg_alert("警告", "请等待当前操作完成！")
 
     # @logger.catch
     def download_file_thread(self):
@@ -174,7 +175,6 @@ class UIMainWindows(QMainWindow):
                 logger.info("video start play. name: " + str(file_name))
         else:
             logger.warning("current dir data dir not mp4 video!")
-
 
     def pause_video(self):
         """

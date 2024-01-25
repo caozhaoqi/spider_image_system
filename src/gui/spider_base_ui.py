@@ -1,8 +1,4 @@
 import os
-import sys
-from functools import partial
-
-import cv2
 from PyQt5.QtCore import Qt
 from PyQt5.QtMultimedia import QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
@@ -10,10 +6,8 @@ from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLine
     QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider
 from loguru import logger
 
-from gui.video_ui import VideoPlayer
 from utils.base_event import about_message_lookup, visit_web, \
     edit_config_msg
-from utils.img_switch import current_image_index, image_files
 
 
 @logger.catch
@@ -180,29 +174,6 @@ def tab_2_ui_paint(self):
     self.slider.valueChanged[int].connect(self.set_video_position_click)  # 连接滑块值变化信号和视频位置设置槽函数
 
     pass
-
-
-class TabWithVideo(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.download_video_button = None
-        self.layout = None
-        self.videoPlayer = None
-        self.initUI()
-
-    def initUI(self):
-        self.layout = QVBoxLayout()
-        self.videoPlayer = VideoPlayer()  # 创建 VideoPlayer 实例
-        self.download_video_button = QPushButton(u"开始下载")
-        self.layout.addWidget(self.videoPlayer)  # 将 VideoPlayer 添加到布局中
-        self.layout.addWidget(self.download_video_button)
-        self.download_video_button.clicked.connect(self.player_video)
-
-        # self.tab2.setLayout(layout)
-
-    def player_video(self):
-        self.videoPlayer.playVideo("")
-        logger.debug("video playing.")
 
 
 @logger.catch

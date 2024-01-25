@@ -224,9 +224,13 @@ def save_data(self):
     spider_config.spider_images_max_count = spider_images_max_count_txt
     spider_config.sis_log_level = sis_log_level_txt
     spider_config.output_video_fps = output_video_fps_txt
-    write_minio_config_to_file(minio_config=spider_config)
-    # dialog = Dialog()
-    QMessageBox.critical(self, u"保存", u"配置写入成功,程序即将退出,请重新启动应用配置！")
-    self.hide()
-    sys.exit()
+    if write_minio_config_to_file(minio_config=spider_config):
+        # dialog = Dialog()
+        QMessageBox(QMessageBox.Information, "保存", "配置写入成功,程序即将退出,请重新启动应用配置！").exec_()
+        # QMessageBox.critical(self, u"保存", u"配置写入成功,程序即将退出,请重新启动应用配置！")
+        self.hide()
+        sys.exit()
+    else:
+        QMessageBox(QMessageBox.Warning, "错误", "发生未知错误，写入失败，请检查log信息！").exec_()
+        # QMessageBox.critical(self, u"错误", u"发生未知错误，写入失败，请检查log信息！")
     pass

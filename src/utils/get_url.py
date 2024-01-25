@@ -10,6 +10,7 @@ import time
 from gui import constants
 from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
     visit_url, target_url, s2_url, data_path, spider_images_max_count
+from utils.async_message_box import show_msg_alert
 from utils.log_record import log_record
 
 
@@ -81,6 +82,7 @@ def spider_artworks_url(self, key_word):
     if all_show == 'True':
         other = 'illustrations'
     url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode + "s_mode=s_tag"
+    # url_list = process_visit_url(url)
     logger.info("current use url : " + str(url))
     driver.get(url)
     # 等待图片加载完成
@@ -92,14 +94,12 @@ def spider_artworks_url(self, key_word):
         try:
             save_img_url(driver, key_word)
             logger.success("save img all finish, could start download images! ")
+            self.success_tips()
         except NoSuchWindowException as nswe:
             logger.warning("chrome force exit! detail:" + str(nswe))
     constants.spider_image_flag = False
-    QMessageBox.information(self, u"完成", u"操作完成")
     logger.warning("google chrome will exit! ")
     driver.quit()
-    # w = UIMainWindows()
-    # self.complete()
 
 
 @logger.catch
@@ -143,9 +143,9 @@ def load_href_save(driver, key_word):
                 continue
             driver.execute_script("return arguments[0].href;", image_element)
             image_urls_list.append(image_url)
-            if len(image_urls_list) > spider_images_max_count:
+            if len(image_urls_list) > int(spider_images_max_count):
                 # 超过最大值 跳出循环 不在保存url地址
-                logger.warning("spider image max value, value: " + str(len(image_urls_list)))
+                logger.warning("spider image max value, current value: " + str(len(image_urls_list)))
                 break
             logger.debug("load href and start save img url: " + image_url)
         if len(image_urls_list) > 0:

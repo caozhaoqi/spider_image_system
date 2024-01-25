@@ -3,8 +3,6 @@ import os
 import sys
 
 # 把当前文件所在文件夹的父文件夹路径加入到PYTHONPATH
-from gui.constants import sis_log_level
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import time

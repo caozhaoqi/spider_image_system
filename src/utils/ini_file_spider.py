@@ -49,8 +49,10 @@ def write_minio_config_to_file(minio_config):
             os.remove(iniPath)
         except PermissionError as pe:
             logger.error("permission error, ini file only read mode, please update ini file chmod! detail: " + str(pe))
+            return False
         except Exception as e:
             logger.error("unknown error, detail :" + str(e))
+            return False
     logger.warning("Not Found config ini file , creating ini file ....")
     if not os.path.exists(ini_path):
         os.makedirs(ini_path)
@@ -79,6 +81,7 @@ def write_minio_config_to_file(minio_config):
                                                                                           "visit_url"))
     # logger.info("minio use "+" port:" + conf.get(
     #     "spider_config", "minio_server_port"))
+    return True
 
 
 @logger.catch

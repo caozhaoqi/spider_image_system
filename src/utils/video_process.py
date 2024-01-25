@@ -2,10 +2,12 @@ import os
 
 import cv2
 from PIL import Image, UnidentifiedImageError
+from PyQt5.QtWidgets import QMessageBox
 from loguru import logger
 
 from gui import constants
 from gui.constants import output_video_fps, output_video_width, output_video_height
+from utils.async_message_box import show_msg_alert
 from utils.time_utils import id_generate_time
 
 
@@ -124,3 +126,4 @@ def process_images_thread(self):
             self.load_video(ret)
             logger.success("out video success!")
     constants.process_image_flag = False
+    self.success_tips()

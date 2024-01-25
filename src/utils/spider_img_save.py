@@ -7,6 +7,7 @@ from urllib3.exceptions import ProtocolError
 
 from gui import constants
 from gui.constants import data_path
+from utils.async_message_box import show_msg_alert
 from utils.get_url import remove_duplicates_from_txt
 
 
@@ -78,6 +79,8 @@ def download_img_txt(self):
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
     constants.download_image_flag = False
-    QMessageBox.information(self, u"完成", u"操作完成")
+    # QMessageBox.information(self, u"完成", u"操作完成")
     logger.success("downloaded all image !")
+    self.success_tips()
+    # show_msg_alert("完成", "完成！")
     return True
