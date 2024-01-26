@@ -164,7 +164,7 @@ def tab_2_ui_paint(self):
     self.h_box_3_video = QHBoxLayout()
     self.h_box_3_video.addWidget(self.generate_button_video)
     self.h_box_3_video.addWidget(self.play_video_button)
-    self.h_box_3_video.addWidget(self.pause_button_video)
+    # self.h_box_3_video.addWidget(self.pause_button_video)
 
     # 整体布局 垂直布局
     self.vbox_video = QVBoxLayout()
