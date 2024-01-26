@@ -1,13 +1,11 @@
 import os
 import requests
-from PyQt5.QtWidgets import QMessageBox
 
 from loguru import logger
 from urllib3.exceptions import ProtocolError
 
 from gui import constants
 from gui.constants import data_path
-from utils.async_message_box import show_msg_alert
 from utils.get_url import remove_duplicates_from_txt
 
 

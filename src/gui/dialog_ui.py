@@ -2,7 +2,6 @@ import sys
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QLabel, QFileDialog, QComboBox, QMessageBox, \
     QCheckBox, QHBoxLayout, QWidget
 from loguru import logger
-
 from gui.constants import visit_url, s1_url, s2_url, target_url, r18_mode, all_show, proxy_flag, \
     spider_images_max_count, search_delta_time, detail_delta_time, output_video_fps, sis_log_level, proxy_server_ip, \
     proxy_server_port, output_video_width, output_video_height

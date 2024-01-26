@@ -1,5 +1,5 @@
 """
-mode class define
+model class define
 """
 
 

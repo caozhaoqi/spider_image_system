@@ -1,10 +1,8 @@
 import os
 
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QLabel
 from loguru import logger
 
-from gui import constants
 from gui.constants import data_path
 
 folder_path = os.path.realpath(os.path.join(os.getcwd(), data_path))

@@ -44,7 +44,7 @@ def save_img_url(driver, key_word):
                             image_url = image_url.replace(s1_url, target_url)
                             image_url = image_url.replace(s2_url, target_url)
                             write_url_txt(data_path + "/img_url/", key_word + "_img", image_url)
-                            logger.debug(f"replace point source url, save img url success: {image_filename}")
+                            logger.debug(f"from url: {url}, replace point source url, save _img url success: {image_filename}")
     return True
 
 
@@ -77,7 +77,7 @@ def spider_artworks_url(self, key_word):
     mode = ''
     if r18_mode == 'True':
         mode = 'mode=r18&'
-        logger.info("current r18 mode!")
+        logger.info("current start use r18 mode!")
     if all_show == 'True':
         other = 'illustrations'
     cur_page = 1
@@ -94,6 +94,9 @@ def spider_artworks_url(self, key_word):
             # 使用函数
             try:
                 save_img_url(driver, key_word)
+                if not constants.spider_url_flag:
+                    # 达到最大值爬虫停止跳出循环
+                    break
                 cur_page += 1
                 logger.success("save img all finish，current page:  " + str(cur_page))
 
@@ -153,7 +156,7 @@ def filter_exists_images(key_word, image_url, txt_name):
                 txt_url = f.readlines()
             return find_value(image_url + "\n", txt_url)
         except Exception as e:
-            logger.error("unknown error, detail: " + str(e))
+            logger.warning("unknown error, detail: " + str(e))
             return False
     elif txt_name == '_img':
         file_name = constants.data_path + "/img_url/" + key_word + "_img.txt"
@@ -163,7 +166,7 @@ def filter_exists_images(key_word, image_url, txt_name):
                 txt_url = f.readlines()
             return find_value(image_url + "\n", txt_url)
         except Exception as e:
-            logger.error("unknown error, detail: " + str(e))
+            logger.warning("unknown error, detail: " + str(e))
             return False
     # elif txt_name == '_result':
     #     pass
@@ -215,6 +218,7 @@ def load_href_save(driver, key_word):
                 # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
                 logger.warning("spider image max value, current value: " + str(constants.spider_images_current_count))
                 constants.spider_images_current_count = 0
+                constants.spider_url_flag = False
                 break
         if url_list_save(key_word, image_urls_list):
             logger.success("save url and remove duplicates content success!")

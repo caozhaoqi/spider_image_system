@@ -1,11 +1,8 @@
 import os
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtMultimedia import QMediaPlayer
-from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLineEdit, QPushButton, QHBoxLayout, \
     QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider, QListWidget, QSizePolicy, QListView
 from loguru import logger
-
 from utils.base_event import about_message_lookup, visit_web, \
     edit_config_msg
 

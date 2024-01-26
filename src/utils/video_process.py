@@ -1,8 +1,6 @@
 import os
 
 import cv2
-import numpy as np
-from PIL import UnidentifiedImageError
 from loguru import logger
 
 from gui import constants
@@ -91,7 +89,6 @@ def convert_image(images_input_path, target_dir):
         if not result:
             continue
     return True
-    pass
 
 
 @logger.catch
@@ -177,7 +174,6 @@ def image_fill_black(target_dir, image_path):
         logger.error("error, unknown error! detail: " + str(e) + ", file_name or path: " + str(image_path))
         return False
     return True
-    # pass
 
 
 @logger.catch

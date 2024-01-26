@@ -1,7 +1,4 @@
-import sys
-from PyQt5.QtWidgets import  QDialog, QLabel, QVBoxLayout, QPushButton
-from PyQt5.QtCore import QDateTime
-
+from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton
 from gui.constants import build_date, sis_server_version, publish_date
 
 
@@ -47,7 +44,7 @@ class InformationDialog(QDialog):
         modified_label = QLabel('版本修改时间(modified time):')
         layout.addWidget(modified_label)
 
-        modified_time = build_date   # 替换为实际的修改时间，根据实际需要更新
+        modified_time = build_date  # 替换为实际的修改时间，根据实际需要更新
         modified_label_2 = QLabel(modified_time)
         layout.addWidget(modified_label_2)
 

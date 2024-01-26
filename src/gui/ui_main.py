@@ -1,5 +1,4 @@
 #!coding:utf-8
-import glob
 import os.path
 import threading
 
@@ -15,7 +14,6 @@ from loguru import logger
 from gui import constants
 from utils.async_message_box import show_msg_alert
 from utils.base_event import scan_populate_mp4_list
-from utils.file_process import scan_directory
 from utils.get_url import spider_artworks_url
 from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint
 from utils.spider_img_save import download_img_txt
@@ -109,6 +107,7 @@ class UIMainWindows(QMainWindow):
                 args=(self, key_word,))
             spider_thread_obj.start()
             constants.spider_image_flag = True
+            constants.spider_url_flag = True
             logger.info("spider img thread starting ... ")
         # self.error_path()
 
