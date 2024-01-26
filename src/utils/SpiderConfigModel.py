@@ -22,5 +22,7 @@ class SpiderConfigModel:
     sis_log_level = ''
     spider_images_max_count = 0
     output_video_fps = 5
+    output_video_width = 2560
+    output_video_height = 1440
     proxy_server_ip = '192.168.199.26'
     proxy_server_port = 8080

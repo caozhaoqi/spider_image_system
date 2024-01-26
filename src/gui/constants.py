@@ -15,9 +15,9 @@ process_image_flag = False
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
 # 输出 video 宽度
-output_video_width = 1920
+output_video_width = int(read_ini_config(ini_file_path, "spider_config", "output_video_width"))
 # 输出 video 高度
-output_video_height = 1080
+output_video_height = int(read_ini_config(ini_file_path, "spider_config", "output_video_height"))
 # 抓取图片最大值
 spider_images_max_count = int(read_ini_config(ini_file_path, "spider_config", "spider_images_max_count"))
 # 抓取总图片数目 实时统计

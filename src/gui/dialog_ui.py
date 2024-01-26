@@ -5,7 +5,7 @@ from loguru import logger
 
 from gui.constants import visit_url, s1_url, s2_url, target_url, r18_mode, all_show, proxy_flag, \
     spider_images_max_count, search_delta_time, detail_delta_time, output_video_fps, sis_log_level, proxy_server_ip, \
-    proxy_server_port
+    proxy_server_port, output_video_width, output_video_height
 from utils.SpiderConfigModel import SpiderConfigModel
 from utils.ini_file_spider import write_minio_config_to_file
 
@@ -16,6 +16,10 @@ class Dialog(QDialog):
 
         """
         super().__init__()
+        self.output_video_height_label = None
+        self.output_video_height_line = None
+        self.output_video_width_line = None
+        self.output_video_width_label = None
         self.s1_proxy_server_port_line = None
         self.s1_proxy_server_port_label = None
         self.s1_proxy_server_ip_line = None
@@ -54,18 +58,18 @@ class Dialog(QDialog):
         :return:
         """
         self.setWindowTitle('编辑工具配置')
-        self.setFixedSize(950, 950)
+        self.setFixedSize(800, 800)
         # 创建输入框和标签
         self.visit_url_label = QLabel('访问网站 URL(visit_url):')
         self.visit_url_line = QLineEdit(visit_url)
 
-        self.s1_url_label = QLabel('源1 图片服务器 URL(s1_url):')
+        self.s1_url_label = QLabel('源1图片服务器URL(s1_url):')
         self.s1_url_line = QLineEdit(s1_url)
 
-        self.s2_url_label = QLabel('源2 图片服务器 URL(s2_url):')
+        self.s2_url_label = QLabel('源2图片服务器URL(s2_url):')
         self.s2_url_line = QLineEdit(s2_url)
 
-        self.target_url_label = QLabel('目标 图片服务器 URL(target_url):')
+        self.target_url_label = QLabel('目标图片服务器URL(target_url):')
         self.target_url_line = QLineEdit(target_url)
 
         self.spider_image_max_count_label = QLabel('抓取图片最大值:')
@@ -102,10 +106,10 @@ class Dialog(QDialog):
         else:
             self.checkBox_proxy.setChecked(False)  # Set default state to False
 
-        self.s1_proxy_server_ip_label = QLabel('代理服务器地址(proxy server ip):')
+        self.s1_proxy_server_ip_label = QLabel('代理服务器地址(ip):')
         self.s1_proxy_server_ip_line = QLineEdit(proxy_server_ip)
 
-        self.s1_proxy_server_port_label = QLabel('代理服务器端口(proxy server port):')
+        self.s1_proxy_server_port_label = QLabel('代理服务器端口(port):')
         self.s1_proxy_server_port_line = QLineEdit(str(proxy_server_port))
 
         self.search_delta_time_label = QLabel('搜索延迟时间(s):')
@@ -117,6 +121,12 @@ class Dialog(QDialog):
         self.output_video_fps_label = QLabel('输出视频帧率(fps/s):')
         self.output_video_fps_line = QLineEdit(str(output_video_fps))
 
+        self.output_video_width_label = QLabel('输出视频宽度(16:9):')
+        self.output_video_width_line = QLineEdit(str(output_video_width))
+
+        self.output_video_height_label = QLabel('输出视频高度(16:0):')
+        self.output_video_height_line = QLineEdit(str(output_video_height))
+
         # 创建保存和取消按钮
         save_button = QPushButton('保存')
         cancel_button = QPushButton('取消')
@@ -124,56 +134,78 @@ class Dialog(QDialog):
         # 布局设置
         layout = QVBoxLayout()
 
-        layout.addWidget(self.visit_url_label)
-        layout.addWidget(self.visit_url_line)
+        window_visit_url = QWidget()
+        h_layout_visit_url = QHBoxLayout(window_visit_url)
+        h_layout_visit_url.addWidget(self.visit_url_label)
+        h_layout_visit_url.addWidget(self.visit_url_line)
+        layout.addWidget(window_visit_url)
 
-        layout.addWidget(self.s1_url_label)
-        layout.addWidget(self.s1_url_line)
+        window_s1_url_label = QWidget()
+        h_layout_s1_url_label = QHBoxLayout(window_s1_url_label)
+        h_layout_s1_url_label.addWidget(self.s1_url_label)
+        h_layout_s1_url_label.addWidget(self.s1_url_line)
+        layout.addWidget(window_s1_url_label)
 
-        layout.addWidget(self.s2_url_label)
-        layout.addWidget(self.s2_url_line)
+        window_s2_url_label = QWidget()
+        h_layout_s2_url_label = QHBoxLayout(window_s2_url_label)
+        h_layout_s2_url_label.addWidget(self.s2_url_label)
+        h_layout_s2_url_label.addWidget(self.s2_url_line)
+        layout.addWidget(window_s2_url_label)
 
-        layout.addWidget(self.target_url_label)
-        layout.addWidget(self.target_url_line)
+        window_target_url_label = QWidget()
+        h_layout_target_url_label = QHBoxLayout(window_target_url_label)
+        h_layout_target_url_label.addWidget(self.target_url_label)
+        h_layout_target_url_label.addWidget(self.target_url_line)
+        layout.addWidget(window_target_url_label)
 
-        layout.addWidget(self.spider_image_max_count_label)
-        layout.addWidget(self.spider_image_max_count_line)
+        window_log_image = QWidget()
+        h_layout_log_image = QHBoxLayout(window_log_image)
+        h_layout_log_image.addWidget(self.spider_image_max_count_label)
+        h_layout_log_image.addWidget(self.spider_image_max_count_line)
+        h_layout_log_image.addWidget(self.sis_log_level_label)
+        h_layout_log_image.addWidget(self.comboBox_sis_log_level)
+        layout.addWidget(window_log_image)
 
-        layout.addWidget(self.sis_log_level_label)
-        layout.addWidget(self.comboBox_sis_log_level)
-
-        layout.addWidget(self.output_video_fps_label)
-        layout.addWidget(self.output_video_fps_line)
+        window_video = QWidget()
+        h_layout_video = QHBoxLayout(window_video)
+        h_layout_video.addWidget(self.output_video_fps_label)
+        h_layout_video.addWidget(self.output_video_fps_line)
+        h_layout_video.addWidget(self.output_video_width_label)
+        h_layout_video.addWidget(self.output_video_width_line)
+        h_layout_video.addWidget(self.output_video_height_label)
+        h_layout_video.addWidget(self.output_video_height_line)
+        layout.addWidget(window_video)
 
         window = QWidget()
         h_layout = QHBoxLayout(window)
-
         h_layout.addWidget(self.r18_mode_label)
         h_layout.addWidget(self.checkBox_r18)
-
         # 添加第二组控件
         h_layout.addWidget(self.all_show_label)
         h_layout.addWidget(self.checkBox_all_show)
-
         # 添加第三组控件
         h_layout.addWidget(self.proxy_flag_label)
         h_layout.addWidget(self.checkBox_proxy)
-
         window.setLayout(h_layout)
-        # window.s(600,10)
         layout.addWidget(window)
 
-        layout.addWidget(self.s1_proxy_server_ip_label)
-        layout.addWidget(self.s1_proxy_server_ip_line)
+        window_proxy = QWidget()
+        h_layout_proxy = QHBoxLayout(window_proxy)
+        h_layout_proxy.addWidget(self.s1_proxy_server_ip_label)
+        h_layout_proxy.addWidget(self.s1_proxy_server_ip_line)
 
-        layout.addWidget(self.s1_proxy_server_port_label)
-        layout.addWidget(self.s1_proxy_server_port_line)
+        h_layout_proxy.addWidget(self.s1_proxy_server_port_label)
+        h_layout_proxy.addWidget(self.s1_proxy_server_port_line)
+        layout.addWidget(window_proxy)
 
-        layout.addWidget(self.search_delta_time_label)
-        layout.addWidget(self.search_delta_time_line)
+        window_delta_time = QWidget()
+        h_layout_delta_time = QHBoxLayout(window_delta_time)
+        h_layout_delta_time.addWidget(self.search_delta_time_label)
+        h_layout_delta_time.addWidget(self.search_delta_time_line)
 
-        layout.addWidget(self.detail_delta_time_label)
-        layout.addWidget(self.detail_delta_time_line)
+        h_layout_delta_time.addWidget(self.detail_delta_time_label)
+        h_layout_delta_time.addWidget(self.detail_delta_time_line)
+        layout.addWidget(window_delta_time)
 
         layout.addWidget(save_button)
         layout.addWidget(cancel_button)
@@ -199,6 +231,8 @@ def save_data(self):
     spider_images_max_count_txt = self.spider_image_max_count_line.text()
     sis_log_level_txt = self.comboBox_sis_log_level.currentText()
     output_video_fps_txt = self.output_video_fps_line.text()
+    output_video_width_txt = self.output_video_width_line.text()
+    output_video_height_txt = self.output_video_height_line.text()
     proxy_server_ip_txt = self.s1_proxy_server_ip_line.text()
     proxy_server_port_txt = self.s1_proxy_server_port_line.text()
     if self.checkBox_r18.isChecked():
@@ -231,6 +265,8 @@ def save_data(self):
     logger.debug(f"spider_images_max_count: {spider_images_max_count_txt}")
     logger.debug(f"sis_log_level: {sis_log_level_txt}")
     logger.debug(f"output_video_fps_txt: {output_video_fps_txt}")
+    logger.debug(f"output_video_width: {output_video_width_txt}")
+    logger.debug(f"output_video_height: {output_video_height_txt}")
 
     spider_config = SpiderConfigModel()
     spider_config.s1_url = s1_url_txt
@@ -247,6 +283,8 @@ def save_data(self):
     spider_config.spider_images_max_count = spider_images_max_count_txt
     spider_config.sis_log_level = sis_log_level_txt
     spider_config.output_video_fps = output_video_fps_txt
+    spider_config.output_video_width = output_video_width
+    spider_config.output_video_height = output_video_height
     if write_minio_config_to_file(minio_config=spider_config):
         # dialog = Dialog()
         QMessageBox(QMessageBox.Information, "保存", "配置写入成功,程序即将退出,请重新启动应用配置！").exec_()
