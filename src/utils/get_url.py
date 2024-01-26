@@ -148,15 +148,23 @@ def filter_exists_images(key_word, image_url, txt_name):
         file_name = constants.data_path + "/href_url/" + key_word + "_url.txt"
         # file_name = r"C:\Users\Administrator\PycharmProjects\spider_image_system\src\gui\data\href_url\xianyun_url
         # .txt" txt_url = []
-        with open(file_name, 'r') as f:
-            txt_url = f.readlines()
-        return find_value(image_url+"\n", txt_url)
+        try:
+            with open(file_name, 'r') as f:
+                txt_url = f.readlines()
+            return find_value(image_url+"\n", txt_url)
+        except Exception as e:
+            logger.error("unknown error, detail: " + str(e))
+            return False
     elif txt_name == '_img':
         file_name = constants.data_path + "/img_url/" + key_word + "_img.txt"
         # txt_url = []
-        with open(file_name, 'r') as f:
-            txt_url = f.readlines()
-        return find_value(image_url + "\n", txt_url)
+        try:
+            with open(file_name, 'r') as f:
+                txt_url = f.readlines()
+            return find_value(image_url + "\n", txt_url)
+        except Exception as e:
+            logger.error("unknown error, detail: " + str(e))
+            return False
     # elif txt_name == '_result':
     #     pass
     # pass
@@ -191,6 +199,9 @@ def load_href_save(driver, key_word):
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
         for image_element in image_elements:
             image_url = image_element.get_attribute("href")
+            if image_url is None:
+                # 该地址中无图片地址 跳出循环
+                break
             if filter_not_use_url(image_url):
                 continue
             driver.execute_script("return arguments[0].href;", image_element)
@@ -267,8 +278,13 @@ def filter_not_use(url):
     """
     # /emoji/501.png https://pximg.lolicon.ac.cn/user-profile/img/2023/12/11/14/38/09
     # /25260574_6aed493b358851d4d2fbfb53290b5991_50.jpg
-    if "js" in url or "emoji" in url or "svq" in url or "_50.png" in url or "_50.jpg" in url or "no_profile_s.png" in \
-            url or "block.2021.host" in url:
+    try:
+        if "js" in url or "emoji" in url or "svq" in url or "_50.png" in url or "_50.jpg" in url or "no_profile_s.png" in \
+                url or "block.2021.host" in url:
+            return True
+    except Exception as e:
+        # 遇到异常跳过该url
+        logger.error("unknown error! detail: " + str(e))
         return True
 
 
@@ -279,9 +295,14 @@ def filter_not_use_url(image_url):
     :param image_url: filter url
     :return:
     """
-    # /emoji/501.png
-    if "artworks" not in image_url or "s_mode=s_tag" in image_url or "block.2021.host" in image_url or "tags" in \
-            image_url:
+    try:
+        # /emoji/501.png
+        if "artworks" not in image_url or "s_mode=s_tag" in image_url or "block.2021.host" in image_url or "tags" in \
+                image_url:
+            return True
+    except Exception as e:
+        # 遇到异常跳过该url
+        logger.error("unknown error, detail: " + str(e))
         return True
 
 
