@@ -191,10 +191,10 @@ def process_images_thread(self):
     result = convert_image(constants.data_path, constants.data_path + "/img_result")
     #  step 2> 根据处理后的图像，尝试生成视频
     if result:
-        ret = generate_video_from_images(constants.data_path + "/img_result", constants.data_path + "/video/")
-        if ret:
-            self.load_video(ret)
-            logger.success("out video success!")
+        process_ret = generate_video_from_images(constants.data_path + "/img_result", constants.data_path + "/video/")
+        if process_ret:
+            self.load_video(process_ret)
+            logger.success("out video success! file_name: " + process_ret)
     constants.process_image_flag = False
     self.success_tips()
 

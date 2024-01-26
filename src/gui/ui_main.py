@@ -18,7 +18,7 @@ from utils.get_url import spider_artworks_url
 from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint
 from utils.spider_img_save import download_img_txt
 from utils.img_switch import find_images, show_image, folder_path, show_next_image
-from utils.log_record import log_record
+from utils.log_record import log_record, check_version
 from utils.video_process import process_images_thread
 
 image_files = find_images(folder_path)
@@ -215,4 +215,5 @@ def ui_paint():
 
 if __name__ == '__main__':
     log_record()
+    check_version()
     ui_paint()

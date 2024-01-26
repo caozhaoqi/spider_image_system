@@ -2,6 +2,8 @@ import sys
 from PyQt5.QtWidgets import  QDialog, QLabel, QVBoxLayout, QPushButton
 from PyQt5.QtCore import QDateTime
 
+from gui.constants import build_date, sis_server_version, publish_date
+
 
 class InformationDialog(QDialog):
     def __init__(self):
@@ -17,22 +19,22 @@ class InformationDialog(QDialog):
         version_label = QLabel('软件版本(software version):')
         layout.addWidget(version_label)
 
-        version = '1.0.2'  # 替换为实际的软件版本
+        version = sis_server_version  # 替换为实际的软件版本
         version_label_2 = QLabel(version)
         layout.addWidget(version_label_2)
 
         author_label = QLabel('作者(author):')
         layout.addWidget(author_label)
 
-        author = 'czq'  # 替换为实际的作者姓名
+        author = 'Copyright © 2023 - Now Zhaoqi.Cao | Powered by PyQt5'  # 替换为实际的作者姓名
         author_label_2 = QLabel(author)
         layout.addWidget(author_label_2)
 
-        time_label = QLabel('时间(time zone: UTC(+8) shanghai):')
+        time_label = QLabel('版本发布时间(time zone: UTC(+8) shanghai):')
         layout.addWidget(time_label)
 
-        current_time = QDateTime.currentDateTime().toString('yyyy-MM-dd HH:mm:ss')
-        time_label_2 = QLabel(current_time)
+        # current_time = QDateTime.currentDateTime().toString('yyyy-MM-dd HH:mm:ss')
+        time_label_2 = QLabel(publish_date)
         layout.addWidget(time_label_2)
 
         website_label = QLabel('访问网站(visit website):')
@@ -42,10 +44,10 @@ class InformationDialog(QDialog):
         website_label_2 = QLabel(website)
         layout.addWidget(website_label_2)
 
-        modified_label = QLabel('修改时间(modified time):')
+        modified_label = QLabel('版本修改时间(modified time):')
         layout.addWidget(modified_label)
 
-        modified_time = '2024/1/25 12:00:00'  # 替换为实际的修改时间，根据实际需要更新
+        modified_time = build_date   # 替换为实际的修改时间，根据实际需要更新
         modified_label_2 = QLabel(modified_time)
         layout.addWidget(modified_label_2)
 
