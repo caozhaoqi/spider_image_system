@@ -20,7 +20,7 @@ def log_record():
     logger.configure(
         handlers=[{"sink": sys.stdout, "level": sis_log_level, "format": format_record}])
     logger.add(LOG_DIR, encoding='utf-8', rotation="12:00")
-    logger.debug('python log system loaded , current log directory：' + LOG_DIR)
+    logger.debug('python log system loaded, current log folder: ' + LOG_DIR)
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
 
 

@@ -5,6 +5,7 @@ import threading
 
 import sys
 
+import cv2
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaContent
@@ -13,6 +14,7 @@ from loguru import logger
 
 from gui import constants
 from utils.async_message_box import show_msg_alert
+from utils.base_event import scan_populate_mp4_list
 from utils.file_process import scan_directory
 from utils.get_url import spider_artworks_url
 from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint
@@ -48,6 +50,8 @@ class UIMainWindows(QMainWindow):
         tab_1_ui_paint(self)
         tab_2_ui_paint(self)
 
+        # load cur dir MP4 video
+        scan_populate_mp4_list(self)
         # 获取屏幕大小 窗口大小
         screen = QDesktopWidget().screenGeometry()
         # 设置窗口大小为屏幕大小
@@ -144,8 +148,13 @@ class UIMainWindows(QMainWindow):
 
     def set_video_position_click(self, position):
         """设置视频播放位置"""
-        self.media_player.setPosition(position * 1000)
-        logger.info("current position: " + str(position * 1000))  # 设置视频位置，单位为毫秒
+        # self.media_player.setPosition(position * 1000)
+        try:
+            cv2.setTrackbarPos('Position', 'Video', position)
+            logger.info("current position: " + str(position * 1000))  # 设置视频位置，单位为毫秒
+        except Exception as e:
+            logger.error("error, detail: " + str(e))
+            self.error_tips()
 
     def load_video(self, file_path):
         """加载视频文件"""
@@ -161,28 +170,36 @@ class UIMainWindows(QMainWindow):
 
         :return:
         """
-
-        video_path = r"C:\Users\Administrator\PycharmProjects\spider_image_system\src\gui\data\video" \
-                     r"\WeChat_20240124173613.mp4"  # 替换为你的视频路径
-        video_files = scan_directory(constants.data_path)
-        if len(video_files) > 0:
-            for video_path in video_files:
-                file_path_1, file_name = os.path.split(video_path)
-                self.file_name_label_video.setText(file_name)
-                content = QMediaContent(QUrl.fromLocalFile(video_path))
-                self.media_player.setMedia(content)
-                self.media_player.play()
-                logger.info("video start play. name: " + str(file_name))
-        else:
-            logger.warning("current dir data dir not mp4 video!")
+        try:
+            if self.listWidget_4.selectedItems():
+                selectedItem = self.listWidget_4.selectedItems()[0]
+                selectedFilename = selectedItem.text()
+                cap = cv2.VideoCapture(selectedFilename)
+                if cap.isOpened():
+                    while True:
+                        ret, frame = cap.read()
+                        if not ret:  # 视频结束或出错
+                            break
+                        cv2.imshow('Video', frame)
+                        if cv2.waitKey(1) & 0xFF == ord('q'):  # 按q退出播放
+                            break
+                    cap.release()
+                    cv2.destroyAllWindows()
+                else:
+                    logger.error("Error opening video file:", selectedFilename)
+            else:
+                logger.warning("Please select a video file.")
+        except Exception as e:
+            logger.error("error, detail: " + str(e))
 
     def pause_video(self):
-        """
-
-        :return:
-        """
-        self.media_player.pause()
-        logger.info("video pause play.")
+        if cv2.getTrackbarPos('Position', 'Video') > 0:  # 确保视频正在播放中
+            cv2.setTrackbarPos('Position', 'Video', 0)  # 暂停在开始位置
+        else:  # 如果已经暂停，则恢复播放到当前位置
+            cv2.setTrackbarPos('Position', 'Video', cv2.getTrackbarPos('Position', 'Video'))
+            cv2.waitKey(1)  # 等待用户操作，避免立即继续播放导致界面闪烁
+            cv2.setTrackbarPos('Position', 'Video', 0)  # 暂停在开始位置，确保视频从当前位置继续播放
+            cv2.waitKey(1000)  # 等待一段时间（如1秒），让用户看到暂停效果后再恢复播放
 
     def image_video_click(self):
         """

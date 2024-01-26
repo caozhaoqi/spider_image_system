@@ -1,9 +1,9 @@
 import os
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtMultimedia import QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLineEdit, QPushButton, QHBoxLayout, \
-    QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider
+    QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider, QListWidget, QSizePolicy, QListView
 from loguru import logger
 
 from utils.base_event import about_message_lookup, visit_web, \
@@ -116,22 +116,31 @@ def tab_2_ui_paint(self):
 
     # 水平布局  video play布局
     self.h_box_2_video = QHBoxLayout()
+    self.h_box_1_list = QHBoxLayout()
+    self.listWidget_1 = QListWidget(self)
+    self.listWidget_2 = QListWidget(self)
+    self.listWidget_3 = QListWidget(self)
+    self.listWidget_4 = QListWidget(self)
+    self.listWidget_5 = QListWidget(self)
+    self.listWidget_6 = QListWidget(self)
+    self.h_box_1_list.addWidget(self.listWidget_1, 15)
+    self.h_box_1_list.addWidget(self.listWidget_2, 2)
+    self.h_box_1_list.addWidget(self.listWidget_3, 12)
+    self.h_box_1_list.addWidget(self.listWidget_4, 56)
+    self.h_box_1_list.addWidget(self.listWidget_5, 8)
+    self.h_box_1_list.addWidget(self.listWidget_6, 8)
 
-    # self.label_video = QLabel(self)
-
-    # 创建QVideoWidget实例，用于显示视频
-    self.video_widget = QVideoWidget()
-    # 将QVideoWidget添加到QScrollArea中
-    # 创建QMediaPlayer实例，用于播放视频
-    self.media_player = QMediaPlayer()
-    # 将QMediaPlayer与QVideoWidget连接，以便在QVideoWidget中显示视频
-    self.media_player.setVideoOutput(self.video_widget)
-
-    # 创建一个QScrollArea实例
     self.scroll_area_video = QScrollArea()
     # 将label添加到scroll_area中
-    self.scroll_area_video.setWidget(self.video_widget)
+    self.scroll_area_video.setLayout(self.h_box_1_list)
+
+    # self.scroll_area_video.setWidget(self.listWidget_1)
+
+    # self.scroll_area_video.setFixedSize()
     self.scroll_area_video.setParent(self.tab2)
+    # 设置滚动区域的大小策略，使其根据内容自动调整大小
+    self.scroll_area_video.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+    # self.scroll_area_video.resize(self.listWidget.maximumSize())
     self.h_box_2_video.addWidget(self.scroll_area_video)
     # 创建用于控制播放的按钮
     self.play_video_button = QPushButton(u"播放")
@@ -140,10 +149,10 @@ def tab_2_ui_paint(self):
 
     # 创建用于控制播放进度的滑块
     self.slider = QSlider(Qt.Horizontal)
-    self.slider.setRange(0, 100)  # 设置滑块范围为0-100
+    self.slider.setRange(0, 200)  # 设置滑块范围为0-200
     self.slider.setValue(0)  # 设置初始值为0
     self.slider.setTickPosition(QSlider.TicksBelow)  # 在滑块下方显示刻度
-    self.slider.setTickInterval(10)  # 设置刻度间隔为10
+    self.slider.setTickInterval(20)  # 设置刻度间隔为20
 
     # slider 和 video 布局集合  垂直布局 -
     #                                -
@@ -217,12 +226,30 @@ def search_item_paint_tab2(self):
     self.grid_layout_video = QGridLayout()
     self.setLayout(self.grid_layout_video)
 
-    self.file_name_show_label_video = QLabel("文件名：")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
-    self.grid_layout_video.addWidget(self.file_name_show_label_video, 0, 1)
-
-    self.file_name_label_video = QLabel("file_name")
-    self.grid_layout_video.addWidget(self.file_name_label_video, 0, 2)
-
-    # 你可以继续添加其他控件到下一行，例如:
-    self.show_page_label_video = QLabel("0/0")
-    self.grid_layout_video.addWidget(self.show_page_label_video, 0, 3)
+    # self.file_name_show_label_video = QLabel("文件名")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
+    # self.file_name_show_label_video.setFixedSize(150, 20)  # 设置宽度为200像素，高度自适应c
+    # self.grid_layout_video.addWidget(self.file_name_show_label_video, 0, 1)
+    #
+    # self.file_name_label_video = QLabel("文件大小")
+    # self.file_name_label_video.setFixedSize(20, 20)
+    # self.grid_layout_video.addWidget(self.file_name_label_video, 0, 2)
+    #
+    # # 你可以继续添加其他控件到下一行，例如:
+    # self.modify_video = QLabel("修改时间")
+    # self.modify_video.setFixedSize(120, 20)
+    # self.grid_layout_video.addWidget(self.modify_video, 0, 3)
+    #
+    # # 你可以继续添加其他控件到下一行，例如:
+    # self.path_video = QLabel("路径")
+    # self.path_video.setFixedSize(560, 20)
+    # self.grid_layout_video.addWidget(self.path_video, 0, 4)
+    #
+    # # 你可以继续添加其他控件到下一行，例如:
+    # self.format_video = QLabel("格式")
+    # self.format_video.setFixedSize(80, 20)
+    # self.grid_layout_video.addWidget(self.format_video, 0, 5)
+    #
+    # # 你可以继续添加其他控件到下一行，例如:
+    # self.author_video = QLabel("作者")
+    # self.author_video.setFixedSize(80, 20)
+    # self.grid_layout_video.addWidget(self.author_video, 0, 6)
