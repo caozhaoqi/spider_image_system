@@ -157,12 +157,12 @@ class UIMainWindows(QMainWindow):
 
     def load_video(self, file_path):
         """加载视频文件"""
-        file_path_1, file_name = os.path.split(file_path)
-        self.file_name_label_video.setText(file_name)
-        content = QMediaContent(QUrl.fromLocalFile(file_path))  # 创建媒体内容对象，传入视频文件路径
-        self.media_player.setMedia(content)  # 设置媒体内容到QMediaPlayer中
-        self.media_player.play()  # 开始播放视频
-        logger.info("start load video, file path: " + file_path)
+        # file_path_1, file_name = os.path.split(file_path)
+        # self.file_name_label_video.setText(file_name)
+        # content = QMediaContent(QUrl.fromLocalFile(file_path))  # 创建媒体内容对象，传入视频文件路径
+        # self.media_player.setMedia(content)  # 设置媒体内容到QMediaPlayer中
+        # self.media_player.play()  # 开始播放视频
+        # logger.info("start load video, file path: " + file_path)
 
     def play_video(self):
         """

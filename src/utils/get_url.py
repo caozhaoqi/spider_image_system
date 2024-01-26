@@ -21,7 +21,7 @@ def save_img_url(driver, key_word):
     """
 
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
-            _.endswith("_result_url.txt")]
+            _.endswith(key_word+"_result_url.txt")]
     for cdds_path in cdds:
         logger.debug("start save img url, artwork href from file name: " + str(cdds_path))
         with open(cdds_path, 'r') as f:

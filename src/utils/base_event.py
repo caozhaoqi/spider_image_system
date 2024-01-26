@@ -50,6 +50,14 @@ def about_message_lookup():
 def scan_populate_mp4_list(self):
     i = 0
     video_files = ['文件名', '文件大小', '修改时间', '文件路径', '文件格式', '作者']
+    if i == 0:
+        # 添加信息表头
+        self.listWidget_1.addItem(QListWidgetItem(video_files[0]))
+        self.listWidget_2.addItem(QListWidgetItem(video_files[1]))
+        self.listWidget_3.addItem(QListWidgetItem(video_files[2]))
+        self.listWidget_4.addItem(QListWidgetItem(video_files[3]))
+        self.listWidget_5.addItem(QListWidgetItem(video_files[4]))
+        self.listWidget_6.addItem(QListWidgetItem(video_files[5]))
     # 遍历目录下的所有文件和子目录
     for root, dirs, files in os.walk(constants.data_path):
         for file in files:
@@ -60,14 +68,6 @@ def scan_populate_mp4_list(self):
                 file_path = os.path.join(root, file)
                 file_format = 'MP4 格式视频'  # You can modify this to get the video format if needed
                 author = 'unknown 作者'  # You can modify this to get the author if needed
-                if i == 0:
-                    # 添加信息表头
-                    self.listWidget_1.addItem(QListWidgetItem(video_files[0]))
-                    self.listWidget_2.addItem(QListWidgetItem(video_files[1]))
-                    self.listWidget_3.addItem(QListWidgetItem(video_files[2]))
-                    self.listWidget_4.addItem(QListWidgetItem(video_files[3]))
-                    self.listWidget_5.addItem(QListWidgetItem(video_files[4]))
-                    self.listWidget_6.addItem(QListWidgetItem(video_files[5]))
 
                 # 创建文件信息项
                 file_info_item = QListWidgetItem(str(file))
