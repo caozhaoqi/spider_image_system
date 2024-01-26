@@ -151,7 +151,7 @@ def filter_exists_images(key_word, image_url, txt_name):
         try:
             with open(file_name, 'r') as f:
                 txt_url = f.readlines()
-            return find_value(image_url+"\n", txt_url)
+            return find_value(image_url + "\n", txt_url)
         except Exception as e:
             logger.error("unknown error, detail: " + str(e))
             return False
@@ -211,24 +211,37 @@ def load_href_save(driver, key_word):
                 continue
             image_urls_list.append(image_url)
             constants.spider_images_current_count += 1
-            if constants.spider_images_current_count > int(spider_images_max_count):
-                # 超过最大值 跳出循环 不在保存url地址
+            if constants.spider_images_current_count >= int(spider_images_max_count) - 1:
+                # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
                 logger.warning("spider image max value, current value: " + str(constants.spider_images_current_count))
                 constants.spider_images_current_count = 0
-                return False
-            logger.debug("load href and start save img url: " + image_url)
-        if len(image_urls_list) > 0:
-            for image_url_content in image_urls_list:
-                write_url_txt(data_path + "/href_url/", key_word + "_url", image_url_content)
-            remove_duplicates_from_txt(data_path + "/href_url/" + key_word + "_url.txt",
-                                       data_path + "/href_url/" + key_word + "_result_url.txt")
-            logger.success("load_href_save: href remove duplicates content success, result: href_url: _result_url.txt.")
+                break
+        if url_list_save(key_word, image_urls_list):
+            logger.success("save url and remove duplicates content success!")
             return True
-        else:
-            logger.warning("you input key word error or other err, please check log file!")
-            return False
     except Exception as un_e:
         logger.error("Error, unknown error, detail:" + str(un_e))
+        return False
+    return False
+
+
+@logger.catch
+def url_list_save(key_word, image_urls_list):
+    """
+    save url to txt
+    :param key_word: 关键字
+    :param image_urls_list: images lists
+    :return:
+    """
+    if len(image_urls_list) > 0:
+        for image_url_content in image_urls_list:
+            write_url_txt(data_path + "/href_url/", key_word + "_url", image_url_content)
+        remove_duplicates_from_txt(data_path + "/href_url/" + key_word + "_url.txt",
+                                   data_path + "/href_url/" + key_word + "_result_url.txt")
+        logger.success("load_href_save: href remove duplicates content success, result: href_url: _result_url.txt.")
+        return True
+    else:
+        logger.warning("you input key word error or other err, please check log file!")
         return False
 
 
@@ -284,7 +297,7 @@ def filter_not_use(url):
             return True
     except Exception as e:
         # 遇到异常跳过该url
-        logger.error("unknown error! detail: " + str(e))
+        logger.warning("unknown error! detail: " + str(e))
         return True
 
 
@@ -302,7 +315,7 @@ def filter_not_use_url(image_url):
             return True
     except Exception as e:
         # 遇到异常跳过该url
-        logger.error("unknown error, detail: " + str(e))
+        logger.warning("unknown error, detail: " + str(e))
         return True
 
 

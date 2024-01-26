@@ -148,9 +148,9 @@ def check_ini_config():
         conf.set("spider_config", "s1_url", "i.pixivcat.com")
         conf.set("spider_config", "s2_url", "i.hcyacg.com")
         conf.set("spider_config", "target_url", "pximg.lolicon.run")  # 写入配置参数
-        conf.set("spider_config", "r18_mode", 'False')
-        conf.set("spider_config", "all_show", 'True')
-        conf.set("spider_config", "proxy_flag", 'True')
+        conf.set("spider_config", "r18_mode", 'True')
+        conf.set("spider_config", "all_show", 'False')
+        conf.set("spider_config", "proxy_flag", 'False')
         conf.set("spider_config", "search_delta_time", '7')
         conf.set("spider_config", "detail_delta_time", '3')
         conf.set("spider_config", "sis_log_level", 'INFO')
