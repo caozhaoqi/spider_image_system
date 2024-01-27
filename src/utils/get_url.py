@@ -44,7 +44,9 @@ def save_img_url(driver, key_word):
                             image_url = image_url.replace(s1_url, target_url)
                             image_url = image_url.replace(s2_url, target_url)
                             write_url_txt(data_path + "/img_url/", key_word + "_img", image_url)
-                            logger.debug(f"from url: {url}, replace point source url, save _img url success: {image_filename}")
+                            logger.debug(f"from url: {url}, replace point source url, save _img url success: "
+                                         f"{image_filename}, current save images url count:"
+                                         f" {constants.spider_images_current_count}")
     return True
 
 

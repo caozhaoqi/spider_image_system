@@ -33,7 +33,7 @@ def download_image(url, filename):
         except Exception as e:
             logger.error("error, unknown error, detail: " + str(e))
     else:
-        logger.error("file exists will skip file, file name: " + str(filename))
+        logger.warning("file exists will skip file, file name: " + str(filename))
 
 
 @logger.catch
