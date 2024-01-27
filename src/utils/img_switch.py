@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from PyQt5.QtGui import QPixmap
 from loguru import logger
@@ -30,6 +31,8 @@ def find_images(directory):
 
 current_image_index = 0
 image_files = find_images(folder_path)
+
+
 # file_name = ''
 
 
@@ -73,3 +76,70 @@ def show_current_file_name(image_file):
     # global file_name
     _, file_name = os.path.split(image_file)
     return file_name
+
+
+from PIL import Image
+import os
+
+
+@logger.catch
+def check_images(self, image_path):
+    """
+    检查现有图片是否正常
+    :param self:
+    :param image_path: 数据路径
+    :return:
+    """
+    image_lists = find_images(image_path)
+    small_image_lists = []
+    error_image_lists = []
+    # 遍历目录中的所有图片文件
+    for filename in image_lists:
+        if filename.endswith(".jpg") or filename.endswith(".png"):  # 只处理jpg和png格式的图片
+            filepath = os.path.join(image_path, filename)
+            if "error_images" in filepath or "small_images" in filepath:
+                continue
+            else:
+                try:
+                    # 打开图片并检查尺寸
+                    image = Image.open(filepath)
+                    width, height = image.size
+                    if width <= 250 and height <= 250:  # 图片尺寸小于250*250
+                        logger.warning(f"图片 {filename} 尺寸过小，已删除。")
+                        # os.remove(filepath)  # 删除过小的图片
+                        small_image_lists.append(filepath)
+                    else:
+                        logger.info(f"图片 {filename} 尺寸正常。")
+                except Exception as e:
+                    logger.error(f"无法打开图片 {filename}，错误信息：{e}, 已删除。")
+                    # os.remove(filepath)  # 删除过小的图片
+                    error_image_lists.append(filepath)
+                # continue
+    # record list to txt
+    for error_images in error_image_lists:
+        with open(image_path + '/error_image_txt.txt', 'a') as f:
+            if not os.path.exists(image_path + "/error_images/"):
+                os.makedirs(image_path + "/error_images/")
+            file_path, file_name = os.path.split(error_images)
+            if 'error_images' in file_path:
+                continue
+            else:
+                f.write(error_images + "\n")
+                shutil.move(error_images, image_path + "/error_images/" + file_name)
+    for small_image in small_image_lists:
+        with open(image_path + '/small_image_txt.txt', 'a') as f:
+            if not os.path.exists(image_path + "/small_images/"):
+                os.makedirs(image_path + "/small_images/")
+            file_path, file_name = os.path.split(small_image)
+            if 'small_images' in file_path:
+                continue
+            else:
+                f.write(small_image + "\n")
+                shutil.move(small_image, image_path + "/small_images/" + file_name)
+    logger.info("scan end, error and small image write file, images move error_images and small_images folder, "
+                "please read txt or folder lookup.")
+
+
+if __name__ == '__main__':
+    check_images(r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\gui\data\img_url\ruanmei_img_result'
+                 r'\images')

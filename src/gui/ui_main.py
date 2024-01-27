@@ -1,25 +1,23 @@
 #!coding:utf-8
-import os.path
 import threading
 
 import sys
 
 import cv2
-from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtMultimedia import QMediaContent
-from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, QMessageBox, QLabel
+from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, QMessageBox, QLabel, QFileDialog
 from loguru import logger
 
 from gui import constants
 from utils.async_message_box import show_msg_alert
 from utils.base_event import scan_populate_mp4_list
 from utils.get_url import spider_artworks_url
-from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint
+from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint
 from utils.spider_img_save import download_img_txt
-from utils.img_switch import find_images, show_image, folder_path, show_next_image
+from utils.img_switch import find_images, show_image, folder_path, show_next_image, check_images
 from utils.log_record import log_record, check_version
 from utils.video_process import process_images_thread
+from utils.Scikit_learn_util import simular_images_compare
 
 image_files = find_images(folder_path)
 current_image_index = 0
@@ -31,6 +29,7 @@ class UIMainWindows(QMainWindow):
     def __init__(self):
         QWidget.__init__(self)
         # 窗体标题 icon
+        self.file_text_3 = None
         self.images_convert_thread = None
         self.show_page_label = None
         self.setWindowTitle(u"Spider Image System (Version: 1.0.2)")
@@ -47,7 +46,7 @@ class UIMainWindows(QMainWindow):
         # tab1 页面绘制
         tab_1_ui_paint(self)
         tab_2_ui_paint(self)
-
+        tab_3_ui_paint(self)
         # load cur dir MP4 video
         scan_populate_mp4_list(self)
         # 获取屏幕大小 窗口大小
@@ -110,6 +109,23 @@ class UIMainWindows(QMainWindow):
             constants.spider_url_flag = True
             logger.info("spider img thread starting ... ")
         # self.error_path()
+
+    def input_keyword_process_3(self):
+        self.file_text_3 = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
+        if self.file_text_3:
+            logger.debug('Selected folder:' + self.file_text_3)
+        else:
+            self.errorpath()
+
+        self.filetext.setText(self.file_text_3)
+
+    def download_file_thread_3(self):
+        logger.info("start scan images... ")
+        scan_image_thread_obj = threading.Thread(
+            target=check_images,
+            args=(self, constants.data_path))
+        scan_image_thread_obj.start()
+        pass
 
     # @logger.catch
     def success_tips(self):

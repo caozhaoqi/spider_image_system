@@ -250,3 +250,50 @@ def search_item_paint_tab2(self):
     # self.author_video = QLabel("作者")
     # self.author_video.setFixedSize(80, 20)
     # self.grid_layout_video.addWidget(self.author_video, 0, 6)
+
+
+@logger.catch
+def tab_3_ui_paint(self):
+    """
+
+    :param self:
+    :return:
+    """
+    self.file_text_3 = QLineEdit(
+        os.path.join(os.path.dirname(__file__), ""))
+    self.input_file_3 = QPushButton(u"选择文件夹")
+    self.h_box_3 = QHBoxLayout()
+    self.h_box_3.addWidget(QLabel(u"数据路径:"))
+    self.h_box_3.addWidget(self.file_text_3)
+    self.h_box_3.addWidget(self.input_file_3)
+
+    self.h_box_2_3 = QHBoxLayout()
+    self.label_3 = QLabel(self)
+    # 创建一个QScrollArea实例
+    self.scroll_area_3 = QScrollArea()
+    # 将label添加到scroll_area中
+    self.scroll_area_3.setWidget(self.label_3)
+    self.scroll_area_3.setParent(self.tab3)
+    self.h_box_2_3.addWidget(self.scroll_area_3)
+
+    self.download_img_button_3 = QPushButton(u"剔除异常图片")
+    self.h_box_3_3 = QHBoxLayout()
+    self.h_box_3_3.addStretch()
+    self.h_box_3_3.addWidget(self.download_img_button_3)
+    self.h_box_3_3.addStretch()
+
+    self.vbox_3 = QVBoxLayout()
+    self.vbox_3.addLayout(self.h_box_3)
+    self.vbox_3.addLayout(self.h_box_2_3)
+    self.vbox_3.addLayout(self.h_box_3_3)
+
+    # 创建布局并将表格添加到布局中
+    # layout = QVBoxLayout()
+    # layout.addWidget(vbox)
+    self.tab3.setLayout(self.vbox_3)
+    self.setCentralWidget(self.tab_widget)
+
+    # 基础事件 按钮单击事件
+    self.input_file_3.clicked.connect(self.input_keyword_process_3)
+    self.download_img_button_3.clicked.connect(self.download_file_thread_3)
+    return True

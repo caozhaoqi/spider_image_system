@@ -21,3 +21,4 @@ pygame
 pillow~=10.2.0
 urllib3~=2.1.0
 scikit-learn~=1.4.0
+scikit-image~=0.22.0
