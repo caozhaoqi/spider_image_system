@@ -103,6 +103,7 @@ def compare_picture(image_1_path, image_2_path):
     ncc = cv2.NCC(image1_gray, image2_gray)
     print("归一化交叉相关（NCC）:", ncc)
 
+
 @logger.catch
 def compare_image_similarity(source_path, compare_path):
     """

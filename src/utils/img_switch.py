@@ -136,6 +136,7 @@ def check_images(self, image_path):
             else:
                 f.write(small_image + "\n")
                 shutil.move(small_image, image_path + "/small_images/" + file_name)
+    self.success_tips()
     logger.info("scan end, error and small image write file, images move error_images and small_images folder, "
                 "please read txt or folder lookup.")
 
