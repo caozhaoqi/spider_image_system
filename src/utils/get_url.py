@@ -21,7 +21,8 @@ def save_img_url(driver, key_word):
     """
 
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
-            _.endswith(key_word+"_result_url.txt")]
+            _.endswith(key_word + "_result_url.txt")]
+    images_cur_count = 0
     for cdds_path in cdds:
         logger.debug("start save img url, artwork href from file name: " + str(cdds_path))
         with open(cdds_path, 'r') as f:
@@ -39,14 +40,15 @@ def save_img_url(driver, key_word):
                             result = filter_exists_images(key_word, image_url, "_img")
                             if result:
                                 continue
+                            images_cur_count += 1
                             driver.execute_script("return arguments[0].src;", image_element)
                             image_filename = os.path.basename(image_url)  # 获取图片文件名
                             image_url = image_url.replace(s1_url, target_url)
                             image_url = image_url.replace(s2_url, target_url)
                             write_url_txt(data_path + "/img_url/", key_word + "_img", image_url)
                             logger.debug(f"from url: {url}, replace point source url, save _img url success: "
-                                         f"{image_filename}, current save images url count:"
-                                         f" {constants.spider_images_current_count}")
+                                         f"{image_filename}, _img txt all save images count(cur spider count and _img "
+                                         f"txt count): {constants.spider_images_current_count + images_cur_count}")
     return True
 
 

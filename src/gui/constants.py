@@ -54,6 +54,6 @@ search_delta_time = int(read_ini_config(ini_file_path, "spider_config", "search_
 detail_delta_time = int(read_ini_config(ini_file_path, "spider_config", "detail_delta_time"))
 # 花费时间 don't use
 need_time = (7 + 3) * 61 / 60  # second control spider speed 20 + 5 -> 7 + 3 (min)
-sis_server_version = "v1.0.2_alpha"
-build_date = "2024-01-26 12:00"
-publish_date = "2024-01-26 12:00"
+sis_server_version = "v1.0.2_beta"
+build_date = "2024-01-27 12:00"
+publish_date = "2024-01-27 12:00"
