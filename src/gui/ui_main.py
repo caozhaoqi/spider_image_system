@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, 
 from loguru import logger
 
 from gui import constants
+from gui.constants import sis_server_version
 from utils.async_message_box import show_msg_alert
 from utils.base_event import scan_populate_mp4_list
 from utils.get_url import spider_artworks_url
@@ -32,7 +33,7 @@ class UIMainWindows(QMainWindow):
         self.file_text_3 = None
         self.images_convert_thread = None
         self.show_page_label = None
-        self.setWindowTitle(u"Spider Image System (Version: 1.0.2)")
+        self.setWindowTitle(u"Spider Image System (Version: " + sis_server_version + ")")
         # self.filename = ''
         # self.file_name_txt = ''
         icon = QIcon()
