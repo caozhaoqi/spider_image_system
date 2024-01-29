@@ -29,11 +29,27 @@ def find_images(directory):
     return image_files_lists
 
 
-current_image_index = 0
-image_files = find_images(folder_path)
-
-
 # file_name = ''
+@logger.catch
+def show_filter_image(images_list):
+    """
+    过滤过小图片不显示到首页
+    :param images_list:
+    :return:
+    """
+    filter_result_images = []
+    for filter_image in images_list:
+        filter_path, filter_name = os.path.split(filter_image)
+        if "square" in filter_name or "custom" in filter_name or "square" in filter_path or "custom" in filter_path \
+                or "error_images" in filter_path or "small_images" in filter_path:
+            continue
+        else:
+            filter_result_images.append(filter_image)
+    return filter_result_images
+
+
+current_image_index = 0
+image_files = show_filter_image(find_images(folder_path))
 
 
 @logger.catch
@@ -62,7 +78,7 @@ def show_image(self, image_file):
     :return:
     """
     # 打开图片文件
-    self.file_name_label.setText(show_current_file_name(image_file))
+    self.file_name_label.setText(os.path.join(folder_path, image_file))
     # _, file_name = os.path.split(image_file)
     pixmap2 = QPixmap(os.path.join(folder_path, image_file))  # 创建新的QPixmap实例
     # logger.debug(file_name+","+constants.file_name_txt)
@@ -105,13 +121,13 @@ def check_images(self, image_path):
                     image = Image.open(filepath)
                     width, height = image.size
                     if width <= 250 and height <= 250:  # 图片尺寸小于250*250
-                        logger.warning(f"图片 {filename} 尺寸过小，已删除。")
+                        logger.warning(f"图片 {filename} 尺寸过小，已移动至small_images文件夹。")
                         # os.remove(filepath)  # 删除过小的图片
                         small_image_lists.append(filepath)
                     else:
                         logger.info(f"图片 {filename} 尺寸正常。")
                 except Exception as e:
-                    logger.error(f"无法打开图片 {filename}，错误信息：{e}, 已删除。")
+                    logger.error(f"无法打开图片 {filename}，错误信息：{e}, 已移动至error_images文件夹。")
                     # os.remove(filepath)  # 删除过小的图片
                     error_image_lists.append(filepath)
                 # continue
@@ -126,6 +142,7 @@ def check_images(self, image_path):
             else:
                 f.write(error_images + "\n")
                 shutil.move(error_images, image_path + "/error_images/" + file_name)
+        f.close()
     for small_image in small_image_lists:
         with open(image_path + '/small_image_txt.txt', 'a') as f:
             if not os.path.exists(image_path + "/small_images/"):
@@ -136,11 +153,70 @@ def check_images(self, image_path):
             else:
                 f.write(small_image + "\n")
                 shutil.move(small_image, image_path + "/small_images/" + file_name)
+        f.close()
     self.success_tips()
     logger.info("scan end, error and small image write file, images move error_images and small_images folder, "
                 "please read txt or folder lookup.")
 
 
-if __name__ == '__main__':
-    check_images(r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\gui\data\img_url\ruanmei_img_result'
-                 r'\images')
+@logger.catch
+def img_category_images(self, image_path):
+    """
+    分类现有图片
+    :param self:
+    :param image_path:
+    :return:
+    """
+    image_lists = find_images(image_path)
+    custom_image_lists = []
+    square_image_lists = []
+    master_image_lists = []
+    # 遍历目录中的所有图片文件 分类存储至集合
+    for filename in image_lists:
+        if filename.endswith(".jpg") or filename.endswith(".png"):  # 只处理jpg和png格式的图片
+            filepath = os.path.join(image_path, filename)
+            img_path, _ = os.path.split(filepath)
+            if "square" in img_path or "custom" in img_path or "master" in img_path:
+                logger.warning(f"already category img! name: {filepath}")
+                continue
+            elif "square" in filename:
+                square_image_lists.append(filename)
+            elif "master" in filename:
+                master_image_lists.append(filename)
+            elif "custom" in filename:
+                custom_image_lists.append(filename)
+            else:
+                logger.warning("未知种类图片，待定：" + str(filename))
+    #     移动至相应文件夹
+    for square_image in square_image_lists:
+        dir_path, file_name = os.path.split(square_image)
+        if not os.path.exists(dir_path + "/square/"):
+            os.makedirs(dir_path + "/square/")
+        with open(dir_path + '/square_image_txt.txt', 'a') as f:
+            f.write(square_image + "\n")
+        shutil.move(square_image, dir_path + "/square/" + file_name)
+        f.close()
+    for custom_image in custom_image_lists:
+        dir_path, file_name = os.path.split(custom_image)
+        if not os.path.exists(dir_path + "/custom/"):
+            os.makedirs(dir_path + "/custom/")
+        with open(dir_path + '/custom_image_txt.txt', 'a') as f:
+            f.write(custom_image + "\n")
+        shutil.move(custom_image, dir_path + "/custom/" + file_name)
+        f.close()
+    for master_image in master_image_lists:
+        dir_path, file_name = os.path.split(master_image)
+        if not os.path.exists(dir_path + "/master/"):
+            os.makedirs(dir_path + "/master/")
+        with open(dir_path + '/master_image_txt.txt', 'a') as f:
+            f.write(master_image + "\n")
+        shutil.move(master_image, dir_path + "/master/" + file_name)
+        f.close()
+    logger.success("img category success!")
+    self.success_tips()
+
+# if __name__ == '__main__':
+# check_images(r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\gui\data\img_url\ruanmei_img_result'
+#              r'\images')
+
+# img_category_images('',r'C:\Users\Administrator\Desktop\t\test\data\0127_backup\img_result')

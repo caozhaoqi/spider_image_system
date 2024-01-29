@@ -9,19 +9,20 @@ from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, 
 from loguru import logger
 
 from gui import constants
+from gui.button_control import spider_btn_control
 from gui.constants import sis_server_version
 from utils.async_message_box import show_msg_alert
 from utils.base_event import scan_populate_mp4_list
 from utils.get_url import spider_artworks_url
 from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint
 from utils.spider_img_save import download_img_txt
-from utils.img_switch import find_images, show_image, folder_path, show_next_image, check_images
+from utils.img_switch import find_images, show_image, folder_path, show_next_image, check_images, img_category_images, \
+    show_filter_image
 from utils.log_record import log_record, check_version
 from utils.video_process import process_images_thread
-from utils.Scikit_learn_util import simular_images_compare
 
-image_files = find_images(folder_path)
 current_image_index = 0
+image_files = show_filter_image(find_images(folder_path))
 
 
 class UIMainWindows(QMainWindow):
@@ -96,7 +97,8 @@ class UIMainWindows(QMainWindow):
         选择数据路径
         :return:
         """
-        if constants.spider_image_flag:
+        if not constants.stop_spider_url_flag:
+            # 正在抓取
             self.error_tips()
         else:
             key_word = self.file_text.text()
@@ -106,8 +108,7 @@ class UIMainWindows(QMainWindow):
                 target=spider_artworks_url,
                 args=(self, key_word,))
             spider_thread_obj.start()
-            constants.spider_image_flag = True
-            constants.spider_url_flag = True
+            constants.stop_spider_url_flag = False
             logger.info("spider img thread starting ... ")
         # self.error_path()
 
@@ -127,6 +128,13 @@ class UIMainWindows(QMainWindow):
             args=(self, constants.data_path))
         scan_image_thread_obj.start()
         pass
+
+    def img_category_button_click(self):
+        logger.info('start img category...')
+        img_category_thread_obj = threading.Thread(
+            target=img_category_images,
+            args=(self, constants.data_path))
+        img_category_thread_obj.start()
 
     # @logger.catch
     def success_tips(self):
@@ -151,14 +159,14 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         # ret = True
-        if constants.download_image_flag:
+        if not constants.stop_download_image_flag:
             self.error_tips()
         else:
             spider_thread_obj = threading.Thread(
                 target=download_img_txt,
                 args=(self,))
             spider_thread_obj.start()
-            constants.download_image_flag = True
+            constants.stop_download_image_flag = False
             logger.info("download img thread starting ... ")
         # self.error_path()
 

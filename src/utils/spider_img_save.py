@@ -64,19 +64,24 @@ def download_img_txt(self):
     """
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith("_img.txt")]
+    cdds_index = 0
     for cdds_path in cdds:
+        if constants.stop_download_image_flag:
+            break
+        cdds_index += 1
         logger.debug("download img before , remove duplicate.")
         file_path, file_name = os.path.split(cdds_path)
         base_name, ext = os.path.splitext(file_name)
         new_file_name = file_path + "/" + base_name + "_result.txt"
+        logger.success("download_img_txt: remove duplicate success, start new file name :" + new_file_name)
         remove_duplicates_from_txt(cdds_path,
                                    new_file_name)
-        logger.success("download_img_txt: remove duplicate success, start new file name :" + new_file_name)
         try:
+            logger.info(f"start download image, txt file name {cdds_path}, index: {cdds_index}")
             download_images_from_file(new_file_name)
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
-    constants.download_image_flag = False
+    constants.stop_download_image_flag = False
     # QMessageBox.information(self, u"完成", u"操作完成")
     logger.success("downloaded all image !")
     self.success_tips()

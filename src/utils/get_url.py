@@ -28,7 +28,8 @@ def save_img_url(driver, key_word):
         with open(cdds_path, 'r') as f:
             for line in f:
                 url = line.strip()
-                if url:
+                if url and not constants.stop_spider_url_flag:
+                    # 允许继续抓取url
                     driver.get(url)
                     time.sleep(detail_delta_time)
                     image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
@@ -49,6 +50,9 @@ def save_img_url(driver, key_word):
                             logger.debug(f"from url: {url}, replace point source url, save _img url success: "
                                          f"{image_filename}, _img txt all save images count(cur spider count and _img "
                                          f"txt count): {constants.spider_images_current_count + images_cur_count}")
+                else:
+                    logger.warning("stop spider url! save_img url.")
+                    return False
     return True
 
 
@@ -87,6 +91,9 @@ def spider_artworks_url(self, key_word):
     cur_page = 1
     url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode
     while True:
+        if constants.stop_spider_url_flag:
+            logger.warning("stop spider url. get url spider artwork url.")
+            break
         url_detail = url_process_page(url, current_page=cur_page)
         logger.info("current use url : " + str(url_detail))
         driver.get(url_detail)
@@ -97,10 +104,10 @@ def spider_artworks_url(self, key_word):
         if load_save_flag:
             # 使用函数
             try:
-                save_img_url(driver, key_word)
-                if not constants.spider_url_flag:
+                if not save_img_url(driver, key_word):
                     # 达到最大值爬虫停止跳出循环
                     break
+                # 否则继续爬取下一页包括 当前页图片已存在 继续爬取下一页
                 cur_page += 1
                 logger.success("save img all finish，current page:  " + str(cur_page))
 
@@ -111,7 +118,7 @@ def spider_artworks_url(self, key_word):
             break
     # 循环抓取结束 断掉浏览器 重置标志位、
     self.success_tips()
-    constants.spider_image_flag = False
+    constants.stop_spider_url_flag = True
     logger.warning("google chrome will exit! ")
     driver.quit()
 
@@ -205,24 +212,28 @@ def load_href_save(driver, key_word):
     try:
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
         for image_element in image_elements:
-            image_url = image_element.get_attribute("href")
-            if image_url is None:
-                # 该地址中无图片地址 跳出循环
-                break
-            if filter_not_use_url(image_url):
-                continue
-            driver.execute_script("return arguments[0].href;", image_element)
-            # filter already exists image
-            result = filter_exists_images(key_word, image_url, "_url")
-            if result:
-                continue
-            image_urls_list.append(image_url)
-            constants.spider_images_current_count += 1
-            if constants.spider_images_current_count >= int(spider_images_max_count) - 1:
-                # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
-                logger.warning("spider image max value, current value: " + str(constants.spider_images_current_count))
-                constants.spider_images_current_count = 0
-                constants.spider_url_flag = False
+            if not constants.stop_spider_url_flag:
+                # 是否不停止抓取
+                image_url = image_element.get_attribute("href")
+                if image_url is None:
+                    # 该地址中无图片地址 跳出循环
+                    break
+                if filter_not_use_url(image_url):
+                    continue
+                driver.execute_script("return arguments[0].href;", image_element)
+                # filter already exists image
+                if filter_exists_images(key_word, image_url, "_url"):
+                    continue
+                image_urls_list.append(image_url)
+                constants.spider_images_current_count += 1
+                if constants.spider_images_current_count >= int(spider_images_max_count) - 1:
+                    # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
+                    logger.warning("spider image max value, current value: " + str(constants.spider_images_current_count))
+                    constants.spider_images_current_count = 0
+                    constants.stop_spider_url_flag = False
+                    break
+            else:
+                logger.warning(f"spider url stop！cur spider image_element {image_element}")
                 break
         if url_list_save(key_word, image_urls_list):
             logger.success("save url and remove duplicates content success!")
@@ -241,15 +252,22 @@ def url_list_save(key_word, image_urls_list):
     :param image_urls_list: images lists
     :return:
     """
-    if len(image_urls_list) > 0:
-        for image_url_content in image_urls_list:
-            write_url_txt(data_path + "/href_url/", key_word + "_url", image_url_content)
-        remove_duplicates_from_txt(data_path + "/href_url/" + key_word + "_url.txt",
-                                   data_path + "/href_url/" + key_word + "_result_url.txt")
-        logger.success("load_href_save: href remove duplicates content success, result: href_url: _result_url.txt.")
-        return True
+    if not constants.stop_spider_url_flag:
+        if len(image_urls_list) > 0:
+            for image_url_content in image_urls_list:
+                write_url_txt(data_path + "/href_url/", key_word + "_url", image_url_content)
+            remove_duplicates_from_txt(data_path + "/href_url/" + key_word + "_url.txt",
+                                       data_path + "/href_url/" + key_word + "_result_url.txt")
+            logger.success("load_href_save: href remove duplicates content success, result: href_url: _result_url.txt.")
+            return True
+        elif len(image_urls_list) == 0:
+            logger.warning("no image! don't save to url txt, image url all exists set true jump next!")
+            return True
+        else:
+            logger.warning("you input key word error or other err, please check log file!")
+            return False
     else:
-        logger.warning("you input key word error or other err, please check log file!")
+        logger.warning("stop spider url! url list save")
         return False
 
 
@@ -301,7 +319,7 @@ def filter_not_use(url):
     # /25260574_6aed493b358851d4d2fbfb53290b5991_50.jpg
     try:
         if "js" in url or "emoji" in url or "svq" in url or "_50.png" in url or "_50.jpg" in url or "no_profile_s.png" in \
-                url or "block.2021.host" in url:
+                url or "block.2021.host" in url or "square" in url or "custom" in url:
             return True
     except Exception as e:
         # 遇到异常跳过该url
@@ -319,7 +337,7 @@ def filter_not_use_url(image_url):
     try:
         # /emoji/501.png
         if "artworks" not in image_url or "s_mode=s_tag" in image_url or "block.2021.host" in image_url or "tags" in \
-                image_url:
+                image_url or "square" in image_url or "custom" in image_url:
             return True
     except Exception as e:
         # 遇到异常跳过该url

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLine
     QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider, QListWidget, QSizePolicy, QListView
 from loguru import logger
 from utils.base_event import about_message_lookup, visit_web, \
-    edit_config_msg
+    edit_config_msg, stop_spider_image
 
 
 @logger.catch
@@ -15,13 +15,22 @@ def base_menu(self):
     """
     # 创建菜单栏
     self.menu_bar = QMenuBar()
-    self.file_menu = QMenu('文件', self.menu_bar)
-    self.new_action = QAction('新建', self.file_menu)
-    self.edit_action = QAction('编辑', self.file_menu)
-    self.save_action = QAction('保存', self.file_menu)
-    self.file_menu.addAction(self.new_action)
-    self.file_menu.addAction(self.edit_action)
-    self.file_menu.addAction(self.save_action)
+    self.image_menu = QMenu('图像', self.menu_bar)
+    self.start_spider_action = QAction('开始爬取', self.image_menu)
+    self.stop_spider_action = QAction('停止爬取', self.image_menu)
+    self.stop_spider_action.triggered.connect(lambda: stop_spider_image())
+    self.other_spider_action = QAction('其他', self.image_menu)
+    self.image_menu.addAction(self.start_spider_action)
+    self.image_menu.addAction(self.stop_spider_action)
+    self.image_menu.addAction(self.other_spider_action)
+
+    self.video_menu = QMenu('视频', self.menu_bar)
+    self.start_generate_action = QAction('开始生成', self.video_menu)
+    self.stop_generate_action = QAction('停止生成', self.video_menu)
+    self.video_other_action = QAction('其他', self.video_menu)
+    self.video_menu.addAction(self.start_generate_action)
+    self.video_menu.addAction(self.stop_generate_action)
+    self.video_menu.addAction(self.video_other_action)
 
     self.settings_menu = QMenu('设置', self.menu_bar)
     self.edit_settings_action = QAction('编辑配置', self.settings_menu)
@@ -36,7 +45,8 @@ def base_menu(self):
     self.about_msg.triggered.connect(lambda: about_message_lookup())
     self.about_menu.addAction(self.about_msg)
 
-    self.menu_bar.addMenu(self.file_menu)
+    self.menu_bar.addMenu(self.image_menu)
+    self.menu_bar.addMenu(self.video_menu)
     self.menu_bar.addMenu(self.settings_menu)
     self.menu_bar.addMenu(self.help_menu)
     self.menu_bar.addMenu(self.about_menu)
@@ -203,6 +213,7 @@ def search_item_paint(self):
     self.grid_layout.addWidget(self.input_file, row - 1, col + 2)  # 0 3
     row += 1
     col += 1
+
     #     self.grid_layout.addWidget(self.file_name_label, 1, 1)
     self.file_name_show_label = QLabel("文件名：")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
     self.grid_layout.addWidget(self.file_name_show_label, row - 1, col - 1)
@@ -276,11 +287,12 @@ def tab_3_ui_paint(self):
     self.scroll_area_3.setParent(self.tab3)
     self.h_box_2_3.addWidget(self.scroll_area_3)
 
-    self.download_img_button_3 = QPushButton(u"剔除异常图片")
+    self.un_normal_img_button = QPushButton(u"剔除异常图片")
+    self.img_category_button = QPushButton(u"分类图片")
     self.h_box_3_3 = QHBoxLayout()
+    self.h_box_3_3.addWidget(self.un_normal_img_button)
     self.h_box_3_3.addStretch()
-    self.h_box_3_3.addWidget(self.download_img_button_3)
-    self.h_box_3_3.addStretch()
+    self.h_box_3_3.addWidget(self.img_category_button)
 
     self.vbox_3 = QVBoxLayout()
     self.vbox_3.addLayout(self.h_box_3)
@@ -295,5 +307,6 @@ def tab_3_ui_paint(self):
 
     # 基础事件 按钮单击事件
     self.input_file_3.clicked.connect(self.input_keyword_process_3)
-    self.download_img_button_3.clicked.connect(self.download_file_thread_3)
+    self.un_normal_img_button.clicked.connect(self.download_file_thread_3)
+    self.img_category_button.clicked.connect(self.img_category_button_click)
     return True

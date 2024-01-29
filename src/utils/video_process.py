@@ -19,10 +19,13 @@ def generate_video_from_images(images_input_path, video_out_path):
     image_paths = []
     for root, dirs, files in os.walk(images_input_path):
         for file in files:
-            if file.endswith('.jpg') or file.endswith('.png'):  # 仅处理jpg和png图片文件
+            if "square" in file or "custom" in file or "error_images" in root or "small_images" in root:
+                logger.warning(f"skip file, because images error or small, name:{file}")
+                continue
+            elif file.endswith('.jpg') or file.endswith('.png'):  # 仅处理jpg和png图片文件
                 image_paths.append(os.path.join(root, file))
-
-    logger.debug("scan image length: " + str(len(image_paths)) + ", scan dir: " + str(constants.data_path))
+    logger.debug(
+        "scan image coule use image length: " + str(len(image_paths)) + ", scan dir: " + str(constants.data_path))
     if len(image_paths) <= 0:
         return False
     width = 0
@@ -51,7 +54,12 @@ def generate_video_from_images(images_input_path, video_out_path):
         return False
 
     try:
+        export_index = 0
+        # image_size = ()
+        image_size_len = len(image_paths)
         for image_path in os.listdir(images_input_path):
+            export_index += 1
+            percent_cur = int((export_index / image_size_len) * 100)
             image = cv2.imread(os.path.join(images_input_path, image_path))
             if image is None:  # 增加对图像是否正确读取的检查
                 logger.error("Image not loaded:" + image_path)
@@ -59,6 +67,9 @@ def generate_video_from_images(images_input_path, video_out_path):
             resized_image = cv2.resize(image, (width, height))  # 将图像的宽度和高度设置为适合MPEG-4的尺寸
             if image is not None:
                 video.write(resized_image)
+            if percent_cur / 10:
+                logger.info(f"export process to export_index / image_size_len：{export_index} / {image_size_len} * "
+                            f"100 /10 {percent_cur}%")
     finally:  # 确保视频资源被释放，无论是否有异常发生
         video.release()
     return video_name
@@ -80,10 +91,12 @@ def convert_image(images_input_path, target_dir):
     image_paths = []
     for root, dirs, files in os.walk(images_input_path):
         for file in files:
-            if file.endswith('.jpg') or file.endswith('.png'):  # 仅处理jpg和png图片文件
+            if "result" in file:
+                continue
+            elif file.endswith('.jpg') or file.endswith('.png'):  # 仅处理jpg和png图片文件
                 image_paths.append(os.path.join(root, file))
                 # 检查文件是否为图片
-    logger.debug("convert_image: scan result, images count: " + str(len(image_paths)))
+    logger.debug("convert_image: scan result, need convert images count: " + str(len(image_paths)))
     for filename in image_paths:
         result = image_fill_black(target_dir, filename)
         if not result:
@@ -110,7 +123,7 @@ def image_fill_black(target_dir, image_path):
         # 检查图片尺寸
         height, width = img.shape[:2]
 
-        logger.debug(f"image converting name or path: {image_path}, Original size: {width}x{height}")
+        # logger.debug(f"image converting name or path: {image_path}, Original size: {width}x{height}")
 
         border_width = 0
         border_height = 0
@@ -135,7 +148,7 @@ def image_fill_black(target_dir, image_path):
                     border_height = 0
                     grap_height = 0
                 border = border_width, border_height
-                logger.debug("grap msg: grap_width: " + str(grap_width) + ", grap_height: " + str(grap_height))
+                # logger.debug("grap msg: grap_width: " + str(grap_width) + ", grap_height: " + str(grap_height))
                 # 填充时自动补充至图像底边和右边 以确保输出图像等于目标尺寸 1920 1080
                 img = cv2.copyMakeBorder(img, border[1], border[1] + grap_height, border[0], border[0] + grap_width,
                                          cv2.BORDER_CONSTANT, value=[0, 0, 0])
@@ -155,13 +168,13 @@ def image_fill_black(target_dir, image_path):
                 else:
                     continue
             else:
-                logger.info("Image size matches the target size.")
+                logger.info(f"Image size matches the target size: {image_path}")
                 break
         # Step 8: Display or save the resized image (optional)
         file_path, file_name = os.path.split(image_path)
         # 保存或显示结果
-        out_height, out_width = img.shape[:2]
-        logger.debug("end out put msg: width: " + str(out_width) + ", height: " + str(out_height))
+        # out_height, out_width = img.shape[:2]
+        # logger.debug("end out put msg: width: " + str(out_width) + ", height: " + str(out_height))
         cv2.imwrite(os.path.join(target_dir, "result_" + file_name), img)
         # cv2.imshow('Result', new_img)
         cv2.waitKey(0)

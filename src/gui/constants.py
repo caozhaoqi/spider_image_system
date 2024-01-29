@@ -4,12 +4,12 @@ from utils.ini_file_spider import read_ini_config, ini_file_path, check_ini_conf
 # 检查默认配置项
 check_ini_config()
 # 当前图片名
-# spider image flag
-spider_image_flag = False
-# spider image url
-spider_url_flag = False
+filter_url_list = []
+filter_image_list = []
+# spider image url 图片抓取进程是否停止工作
+stop_spider_url_flag = True
 # download_image_flag
-download_image_flag = False
+stop_download_mage_flag = False
 # process -image
 process_image_flag = False
 # 输出 video 帧率

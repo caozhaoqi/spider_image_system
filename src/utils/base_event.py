@@ -87,3 +87,10 @@ def scan_populate_mp4_list(self):
                 self.listWidget_6.addItem(author_item)
                 i += 1
     logger.info("scan video result, length: " + str(i))
+
+
+@logger.catch
+def stop_spider_image():
+    constants.stop_spider_url_flag = True
+    logger.warning("flag stop_spider_url_flag set true!")
+    pass
