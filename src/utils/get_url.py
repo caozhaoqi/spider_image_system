@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.common import NoSuchWindowException
 from selenium.webdriver.common.by import By
 import time
+from pypinyin import lazy_pinyin, Style
 
 from gui import constants
 from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
@@ -19,9 +20,9 @@ def save_img_url(driver, key_word):
     :param key_word:
     :return:
     """
-
+    key_word_pinyin = ''.join(lazy_pinyin(key_word, style=Style.TONE3))
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
-            _.endswith(key_word + "_result_url.txt")]
+            _.endswith(key_word_pinyin + "_result_url.txt")]
     images_cur_count = 0
     for cdds_path in cdds:
         logger.debug("start save img url, artwork href from file name: " + str(cdds_path))
@@ -38,7 +39,7 @@ def save_img_url(driver, key_word):
                         if filter_not_use(image_url):
                             continue
                         else:
-                            result = filter_exists_images(key_word, image_url, "_img")
+                            result = filter_exists_images(key_word_pinyin, image_url, "_img")
                             if result:
                                 continue
                             images_cur_count += 1
@@ -46,7 +47,8 @@ def save_img_url(driver, key_word):
                             image_filename = os.path.basename(image_url)  # 获取图片文件名
                             image_url = image_url.replace(s1_url, target_url)
                             image_url = image_url.replace(s2_url, target_url)
-                            write_url_txt(data_path + "/img_url/", key_word + "_img", image_url)
+
+                            write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
                             logger.debug(f"from url: {url}, replace point source url, save _img url success: "
                                          f"{image_filename}, _img txt all save images count(cur spider count and _img "
                                          f"txt count): {constants.spider_images_current_count + images_cur_count}")
@@ -208,6 +210,7 @@ def load_href_save(driver, key_word):
     :param key_word:
     :return:
     """
+    key_word_pinyin = ''.join(lazy_pinyin(key_word, style=Style.TONE3))
     image_urls_list = []
     try:
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
@@ -222,7 +225,7 @@ def load_href_save(driver, key_word):
                     continue
                 driver.execute_script("return arguments[0].href;", image_element)
                 # filter already exists image
-                if filter_exists_images(key_word, image_url, "_url"):
+                if filter_exists_images(key_word_pinyin, image_url, "_url"):
                     continue
                 image_urls_list.append(image_url)
                 constants.spider_images_current_count += 1
@@ -235,7 +238,7 @@ def load_href_save(driver, key_word):
             else:
                 logger.warning(f"spider url stop！cur spider image_element {image_element}")
                 break
-        if url_list_save(key_word, image_urls_list):
+        if url_list_save(key_word_pinyin, image_urls_list):
             logger.success("save url and remove duplicates content success!")
             return True
     except Exception as un_e:

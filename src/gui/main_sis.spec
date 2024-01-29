@@ -12,7 +12,7 @@ a = Analysis(
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\utils','utils'),
      ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\log','log')
     ],
-    hiddenimports=["PyQt5","numpy","opencv-python","loguru","configparser","selenium","requests"],
+    hiddenimports=["PyQt5","numpy","opencv-python","loguru","configparser","selenium","requests","pypinyin"],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

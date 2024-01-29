@@ -61,6 +61,11 @@ class UIMainWindows(QMainWindow):
         self.showMaximized()  # 最大化窗口
 
     def jump_point_image_click(self):
+        """
+
+        :return:
+        """
+
         logger.info("跳转指定页码，或显示指定结果。")
         image_keyword = self.image_page.text()
         numbers = re.findall(r'\d+', image_keyword)
