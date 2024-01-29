@@ -1,4 +1,5 @@
 #!coding:utf-8
+import re
 import threading
 
 import sys
@@ -59,6 +60,26 @@ class UIMainWindows(QMainWindow):
         show_next_image(self)
         self.showMaximized()  # 最大化窗口
 
+    def jump_point_image_click(self):
+        logger.info("跳转指定页码，或显示指定结果。")
+        image_keyword = self.image_page.text()
+        numbers = re.findall(r'\d+', image_keyword)
+        letters = re.findall('[a-zA-Z]+', image_keyword)
+        logger.info(f"you input search keyword: {numbers}, {letters}")
+        if numbers[0] and len(letters) == 0:
+            # 存在数字 并且不存在字母
+            logger.info(f"start jump image page {image_keyword}")
+            self.jump_point_image_page(int(image_keyword))
+        else:
+            logger.info(f"start jump image page, image name keyword {image_keyword}")
+            images_list = find_images(constants.data_path)
+            for index, image_content in enumerate(images_list):
+                if image_keyword in image_content:
+                    self.jump_point_image(index)
+                    break
+    #                 z只返回找到相似的第一个
+        logger.info("jump success!")
+
     # @logger.catch
     def next_img(self):
         """
@@ -84,6 +105,25 @@ class UIMainWindows(QMainWindow):
         try:
             global current_image_index, image_files
             current_image_index = (current_image_index - 1 + len(image_files)) % len(image_files)
+            show_image(self, image_files[current_image_index])
+            self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
+            logger.info("after image show, current page: " + str(current_image_index) + ", count page: " + str(
+                len(image_files)))
+        except Exception as e:
+            logger.warning("dir not image , or other err! detail: " + str(e))
+
+        # @logger.catch
+
+    def jump_point_image_page(self, index):
+        """
+        
+        :param index:
+        :param self:
+        :return:
+        """
+        try:
+            global image_files, current_image_index
+            current_image_index = index
             show_image(self, image_files[current_image_index])
             self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
             logger.info("after image show, current page: " + str(current_image_index) + ", count page: " + str(
@@ -167,7 +207,7 @@ class UIMainWindows(QMainWindow):
                 args=(self,))
             spider_thread_obj.start()
             constants.stop_download_image_flag = False
-            logger.info("download img thread starting ... ")
+            logger.info("download img thread starting... ")
         # self.error_path()
 
     def set_video_position_click(self, position):

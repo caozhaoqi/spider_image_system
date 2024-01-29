@@ -116,6 +116,7 @@ def tab_1_ui_paint(self):
     self.download_video_button.clicked.connect(self.download_file_thread)
     self.next_button.clicked.connect(self.next_img)
     self.before_button.clicked.connect(self.before_img)
+    self.jump_point_image.clicked.connect(self.jump_point_image_click)
     return True
 
 
@@ -218,7 +219,7 @@ def search_item_paint(self):
     col += 1
 
     #     self.grid_layout.addWidget(self.file_name_label, 1, 1)
-    self.file_name_show_label = QLabel("文件名：")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
+    self.file_name_show_label = QLabel("文件名:")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
     self.grid_layout.addWidget(self.file_name_show_label, row - 1, col - 1)
     row = 0
     col = 0
@@ -229,6 +230,19 @@ def search_item_paint(self):
     # 你可以继续添加其他控件到下一行，例如:
     self.show_page_label = QLabel("0/0")
     self.grid_layout.addWidget(self.show_page_label, 1, 2)
+
+    #     self.grid_layout.addWidget(self.file_name_label, 1, 1)
+    self.image_search_label = QLabel("图片搜索:")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
+    self.grid_layout.addWidget(self.image_search_label, 2, 0)
+    row = 0
+    col = 0
+
+    self.image_page = QLineEdit("请输入图片页码或关键词搜索")
+    self.grid_layout.addWidget(self.image_page, 2, 1)
+
+    # 你可以继续添加其他控件到下一行，例如:
+    self.jump_point_image = QPushButton("点击跳转或搜索")
+    self.grid_layout.addWidget(self.jump_point_image, 2, 2)
 
 
 @logger.catch
