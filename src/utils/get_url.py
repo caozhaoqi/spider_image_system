@@ -317,10 +317,13 @@ def filter_not_use(url):
     """
     # /emoji/501.png https://pximg.lolicon.ac.cn/user-profile/img/2023/12/11/14/38/09
     # /25260574_6aed493b358851d4d2fbfb53290b5991_50.jpg
+    # filter_url_http = []
+    filter_url_http = constants.filter_http_url.split(',')
+    # logger.info(f"http url regex content: {constants.filter_http_url}")
     try:
-        if "js" in url or "emoji" in url or "svq" in url or "_50.png" in url or "_50.jpg" in url or "no_profile_s.png" in \
-                url or "block.2021.host" in url or "square" in url or "custom" in url:
-            return True
+        for filter_url_http_content in filter_url_http:
+            if filter_url_http_content in url:
+                return True
     except Exception as e:
         # 遇到异常跳过该url
         logger.warning("unknown error! detail: " + str(e))
@@ -334,11 +337,13 @@ def filter_not_use_url(image_url):
     :param image_url: filter url
     :return:
     """
+    filter_url_image = constants.filter_image_url.split(',')
+    # logger.info(f"image url regex content: {constants.filter_image_url}")
     try:
         # /emoji/501.png
-        if "artworks" not in image_url or "s_mode=s_tag" in image_url or "block.2021.host" in image_url or "tags" in \
-                image_url or "square" in image_url or "custom" in image_url:
-            return True
+        for filter_url_image_content in filter_url_image:
+            if filter_url_image_content in image_url or "artworks" not in image_url:
+                return True
     except Exception as e:
         # 遇到异常跳过该url
         logger.warning("unknown error, detail: " + str(e))
@@ -359,8 +364,10 @@ def url_process_page(url, current_page):
 
 
 if __name__ == '__main__':
-    ret = filter_exists_images("xianyun", "https://sd.2021.host/artworks/115463073", "_url")
-    logger.info(ret)
+    # ret = filter_exists_images("xianyun", "https://sd.2021.host/artworks/115463073", "_url")
+    # logger.info(ret)
+    ret = filter_not_use("https://sd.2021.host/artworks/115463073")
+    logger.success(ret)
 # url_process_page("")
 #     try:
 #         log_record()

@@ -4,8 +4,8 @@ from utils.ini_file_spider import read_ini_config, ini_file_path, check_ini_conf
 # 检查默认配置项
 check_ini_config()
 # 当前图片名
-filter_url_list = []
-filter_image_list = []
+filter_http_url = read_ini_config(ini_file_path, "spider_config", "filter_http_url")
+filter_image_url = read_ini_config(ini_file_path, "spider_config", "filter_image_url")
 # spider image url 图片抓取进程是否停止工作
 stop_spider_url_flag = True
 # download_image_flag

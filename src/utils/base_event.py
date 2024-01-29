@@ -94,3 +94,9 @@ def stop_spider_image():
     constants.stop_spider_url_flag = True
     logger.warning("flag stop_spider_url_flag set true!")
     pass
+
+
+@logger.catch
+def stop_download_image():
+    constants.stop_download_mage_flag = True
+    logger.warning("flag stop_download_mage_flag set true!")
