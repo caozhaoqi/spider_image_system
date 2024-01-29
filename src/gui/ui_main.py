@@ -75,10 +75,10 @@ class UIMainWindows(QMainWindow):
             images_list = find_images(constants.data_path)
             for index, image_content in enumerate(images_list):
                 if image_keyword in image_content:
-                    self.jump_point_image(index)
+                    self.jump_point_image_page(index)
                     break
     #                 z只返回找到相似的第一个
-        logger.info("jump success!")
+        logger.info(f"jump success! current page {numbers[0]}")
 
     # @logger.catch
     def next_img(self):
