@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, 
 from loguru import logger
 
 from gui import constants
-from gui.button_control import spider_btn_control
 from gui.constants import sis_server_version
 from utils.async_message_box import show_msg_alert
 from utils.base_event import scan_populate_mp4_list
@@ -53,9 +52,9 @@ class UIMainWindows(QMainWindow):
         # load cur dir MP4 video
         scan_populate_mp4_list(self)
         # 获取屏幕大小 窗口大小
-        screen = QDesktopWidget().screenGeometry()
-        # 设置窗口大小为屏幕大小
-        self.setGeometry(0, 0, screen.width(), screen.height() - 400)
+        # screen = QDesktopWidget().screenGeometry()
+        # # 设置窗口大小为屏幕大小
+        # self.setGeometry(0, 0, screen.width(), screen.height() - 400)
         # 显示第一张图片
         show_next_image(self)
         self.showMaximized()  # 最大化窗口
@@ -82,7 +81,7 @@ class UIMainWindows(QMainWindow):
                 if image_keyword in image_content:
                     self.jump_point_image_page(index)
                     break
-    #                 z只返回找到相似的第一个
+        #                 z只返回找到相似的第一个
         logger.info(f"jump success! current page {numbers[0]}")
 
     # @logger.catch
