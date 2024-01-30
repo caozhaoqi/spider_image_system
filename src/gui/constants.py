@@ -22,6 +22,10 @@ output_video_height = int(read_ini_config(ini_file_path, "spider_config", "outpu
 spider_images_max_count = int(read_ini_config(ini_file_path, "spider_config", "spider_images_max_count"))
 # 抓取总图片数目 实时统计
 spider_images_current_count = 0
+# image zoom in
+zoom_in_scale = float(read_ini_config(ini_file_path, "spider_config", "zoom_in_scale"))
+# zoom_out_scale
+zoom_out_scale = float(read_ini_config(ini_file_path, "spider_config", "zoom_out_scale"))
 # log level
 sis_log_level = read_ini_config(ini_file_path, "spider_config", "sis_log_level")
 # 数据存储路径

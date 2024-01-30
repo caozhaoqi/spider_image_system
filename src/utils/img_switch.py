@@ -80,11 +80,11 @@ def show_image(self, image_file):
     # 打开图片文件
     self.file_name_label.setText(os.path.join(folder_path, image_file))
     # _, file_name = os.path.split(image_file)
-    pixmap2 = QPixmap(os.path.join(folder_path, image_file))  # 创建新的QPixmap实例
+    self.pixmap_image_tab1 = QPixmap(os.path.join(folder_path, image_file))  # 创建新的QPixmap实例
     # logger.debug(file_name+","+constants.file_name_txt)
-    self.label.setPixmap(pixmap2)  # 更新QLabel的显示内容
-    self.label.setScaledContents(True)  # 这会使QLabel根据内容自动调整大小
-    self.label.resize(pixmap2.width(), pixmap2.height())
+    self.label.setPixmap(self.pixmap_image_tab1)  # 更新QLabel的显示内容
+    # self.label.setScaledContents(True)  # 这会使QLabel根据内容自动调整大小
+    self.label.resize(self.pixmap_image_tab1.width(), self.pixmap_image_tab1.height())
     # self.label.move(50, 50)  # 设置标签的位置
 
     # 绑定键盘事件来检测Ctrl键是否被按下

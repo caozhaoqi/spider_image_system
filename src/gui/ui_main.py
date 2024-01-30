@@ -5,12 +5,13 @@ import threading
 import sys
 
 import cv2
+from PyQt5.QtCore import Qt, QEvent, QPoint
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMainWindow, QMessageBox, QLabel, QFileDialog
 from loguru import logger
 
 from gui import constants
-from gui.constants import sis_server_version
+from gui.constants import sis_server_version, zoom_out_scale, zoom_in_scale
 from utils.async_message_box import show_msg_alert
 from utils.base_event import scan_populate_mp4_list
 from utils.get_url import spider_artworks_url
@@ -31,6 +32,7 @@ class UIMainWindows(QMainWindow):
     def __init__(self):
         QWidget.__init__(self)
         # 窗体标题 icon
+        self.pixmap_image_tab1 = None
         self.file_text_3 = None
         self.images_convert_thread = None
         self.show_page_label = None
@@ -53,6 +55,12 @@ class UIMainWindows(QMainWindow):
         scan_populate_mp4_list(self)
         # 获取屏幕大小 窗口大小
         # screen = QDesktopWidget().screenGeometry()
+        # 控制量 拖动 缩放
+        self.isDragging = False
+        self.dragStartPos = None
+        self.lastMousePos = None
+        self.scaleFactor = 1.0
+        self.label.installEventFilter(self)
         # # 设置窗口大小为屏幕大小
         # self.setGeometry(0, 0, screen.width(), screen.height() - 400)
         # 显示第一张图片
@@ -336,6 +344,48 @@ class UIMainWindows(QMainWindow):
             logger.success("spider image process starting. ")
             constants.process_image_flag = True
         pass
+
+    def zoom_in_method(self):
+        """
+        放大
+        :return:
+        """
+        new_size = self.pixmap_image_tab1.size() * float(zoom_in_scale)  # 放大10%
+        self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.label.setPixmap(self.pixmap_image_tab1)
+        logger.info(f"scale zoom in new_size {new_size}")
+
+    def zoom_out_method(self):
+        """
+        缩小
+        :return:
+        """
+        new_size = self.pixmap_image_tab1.size() * float(zoom_out_scale)  # 缩小90%
+        self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.label.setPixmap(self.pixmap_image_tab1)
+        logger.info(f"scale zoom out new_size {new_size}")
+
+    def eventFilter(self, obj, event):
+        """
+        拖动控制
+        :param obj:
+        :param event:
+        :return:
+        """
+        if event.type() == QEvent.MouseButtonPress:
+            if event.button() == Qt.LeftButton:
+                self.isDragging = True
+                self.dragStartPos = event.pos() - self.label.pos()  # 记录鼠标和标签的相对位置
+                self.lastMousePos = event.pos()  # 记录上一次鼠标的位置
+        elif event.type() == QEvent.MouseMove and self.isDragging:
+            dx = event.pos().x() - self.lastMousePos.x()  # 计算鼠标的移动距离
+            dy = event.pos().y() - self.lastMousePos.y()  # 计算鼠标的移动距离
+            newPos = self.label.pos() + QPoint(dx, dy)  # 更新标签的位置
+            self.label.move(newPos)  # 移动标签到新位置
+            self.lastMousePos = event.pos()  # 更新上一次鼠标的位置
+        elif event.type() == QEvent.MouseButtonRelease and event.button() == Qt.LeftButton:
+            self.isDragging = False
+        return super().eventFilter(obj, event)
 
 
 @logger.catch

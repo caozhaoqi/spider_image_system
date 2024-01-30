@@ -117,6 +117,8 @@ def tab_1_ui_paint(self):
     self.next_button.clicked.connect(self.next_img)
     self.before_button.clicked.connect(self.before_img)
     self.jump_point_image.clicked.connect(self.jump_point_image_click)
+    self.btn_zoom_in.clicked.connect(self.zoom_in_method)
+    self.btn_zoom_out.clicked.connect(self.zoom_out_method)
     return True
 
 
@@ -243,6 +245,23 @@ def search_item_paint(self):
     # 你可以继续添加其他控件到下一行，例如:
     self.jump_point_image = QPushButton("点击跳转或搜索")
     self.grid_layout.addWidget(self.jump_point_image, 2, 2)
+
+    h_layout = QHBoxLayout()
+    # self.image_operate_label = QLabel("图片操作:拖动进行图片移动,点击放大、缩小按钮控制图片缩放！")
+    # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
+    # h_layout.addWidget(self.image_operate_label)
+
+    h_layout.addStretch()
+    # h_layout.addStretch()
+    self.btn_zoom_in = QPushButton('放大', self)
+    h_layout.addWidget(self.btn_zoom_in)
+
+    # self.file_operate_label = QLabel("图片操作：")
+    # self.grid_layout.addWidget(self.file_operate_label, 4, 0)
+
+    self.btn_zoom_out = QPushButton('缩小', self)
+    h_layout.addWidget(self.btn_zoom_out)
+    self.grid_layout.addLayout(h_layout, 3, 1, 1, 3)
 
 
 @logger.catch

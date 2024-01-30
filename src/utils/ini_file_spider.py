@@ -168,6 +168,9 @@ def check_ini_config():
                                                      "no_profile_s.png,url,block.2021.host,url,square,url,custom,url")
         conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.2021.host,tags,square,custom,image_url,"
                                                       "square,custom")
+        conf.set("spider_config", "zoom_out_scale", "0.9")
+        conf.set("spider_config", "zoom_in_scale", "1.1")
+
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
         logger.info("config write finished , read test : " + conf.get("spider_config", "visit_url"))

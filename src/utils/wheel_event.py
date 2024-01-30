@@ -9,6 +9,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # v_layout_main = QVBoxLayout(self)
         v_layout = QVBoxLayout(self)
         h_layout = QHBoxLayout(self)
 
@@ -30,8 +31,11 @@ class MainWindow(QMainWindow):
         h_layout.addWidget(self.btn_zoom_out)
         h_layout.addWidget(self.btn_zoom_in)
         v_layout.addLayout(h_layout)
+        v_layout.addStretch()
+        # v_layout.addStretch()
         v_layout.addWidget(self.label)
-        self.setLayout(v_layout)
+        # v_layout_main.addLayout(v_layout)
+        # self.setLayout(v_layout_main)
 
         # self.isCtrlDown = False
         self.isDragging = False
