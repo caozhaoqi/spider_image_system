@@ -20,8 +20,9 @@ def log_record():
     logger.configure(
         handlers=[{"sink": sys.stdout, "level": sis_log_level, "format": format_record}])
     logger.add(LOG_DIR, encoding='utf-8', rotation="12:00")
-    logger.debug('python log system loaded, current log folder: ' + LOG_DIR)
+    logger.debug('Spider Image System log system loaded, current log folder: ' + LOG_DIR)
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
+    return True
 
 
 @logger.catch
@@ -30,7 +31,7 @@ def sys_info_select():
     sys info print
     :return:
     """
-    logger.info("start out current system info :")
+    logger.info("start out current system info: ")
     logger.info("python_version: " + sys.version)
     logger.info("os and version info: " + platform.platform())
     logger.info('get os version: ' + platform.version())
@@ -40,7 +41,7 @@ def sys_info_select():
     logger.info('compute name: ' + platform.node())
     logger.info('CPU type: ' + platform.processor())
     logger.info('compute other info: ' + str(platform.uname()))
-    logger.info("end out current system info .")
+    logger.info("end out current system info.")
 
 
 @logger.catch
@@ -50,11 +51,12 @@ def check_version():
     :return:
     """
     logger.info("-------------start print version info---------------------------")
-    logger.info("system starting , current server version : " + sis_server_version)
+    logger.info("system starting , current server version: " + sis_server_version)
     logger.info("---------------------------------------------------------------")
-    logger.info("current version build date : "
+    logger.info("current version build date: "
                 + build_date)
     logger.info("---------------------------------------------------------------")
     logger.info(" current version publish date: " + publish_date)
     logger.info("---------------end print version info---------------------------")
     sys_info_select()
+    return True

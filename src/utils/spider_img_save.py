@@ -67,7 +67,7 @@ def download_img_txt(self):
     cdds_index = 0
     if len(cdds) == 0:
         logger.warning("no image !")
-        return True
+        return False
     for cdds_path in cdds:
         if constants.stop_download_image_flag:
             break

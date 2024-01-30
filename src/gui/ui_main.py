@@ -10,7 +10,7 @@ from utils.log_record import log_record, check_version
 @logger.catch
 def ui_paint():
     """
-
+    ui paint from pyqt5
     :return:
     """
     app = QApplication(sys.argv)
@@ -20,6 +20,5 @@ def ui_paint():
 
 
 if __name__ == '__main__':
-    log_record()
-    check_version()
-    ui_paint()
+    if log_record() and check_version():
+        ui_paint()
