@@ -122,12 +122,8 @@ def image_fill_black(target_dir, image_path):
         target_size = (output_video_width, output_video_height)
         # 读取图片
         img = cv2.imread(image_path)
-
         # 检查图片尺寸
         height, width = img.shape[:2]
-
-        # logger.debug(f"image converting name or path: {image_path}, Original size: {width}x{height}")
-
         border_width = 0
         border_height = 0
         grap_width = 0
@@ -205,10 +201,91 @@ def process_images_thread(self):
     if result:
         process_ret = generate_video_from_images(constants.data_path + "/img_result", constants.data_path + "/video/")
         if process_ret:
-            self.load_video(process_ret)
             logger.success("out video success! file_name: " + process_ret)
         constants.process_image_flag = False
         self.success_tips()
+
+
+@logger.catch
+def play_video_process(self):
+    """
+    播放视频进程
+    :param self:
+    :return:
+    """
+    try:
+        if self.listWidget_4.selectedItems():
+            selectedItem = self.listWidget_4.selectedItems()[0]
+            selectedFilename = selectedItem.text()
+            cap = cv2.VideoCapture(selectedFilename)
+            # 创建窗口
+            cv2.namedWindow('Video', cv2.WINDOW_NORMAL)
+
+            # 初始化时间戳和播放速度
+            last_time = 0
+            play_speed = 1.0
+
+            # 创建跟踪条
+            # 第一个参数是跟踪条的名称，第二个参数是窗口的名称，第三个参数是跟踪条的默认位置（0-100），第四个参数是跟踪条的长度
+            # cv2.createTrackbar('Position', 'Video', 0, 100, lambda x: None)
+            if cap.isOpened():
+                while True:
+                    ret, frame = cap.read()
+                    if not ret:  # 视频结束或出错
+                        break
+                    cv2.imshow('Video: ' + selectedFilename, frame)
+                    # position = cv2.getTrackbarPos('Position', 'Video')
+                    # 获取当前时间戳
+                    current_time = int(cap.get(cv2.CAP_PROP_POS_MSEC)) // 1000
+
+                    # 处理暂停/继续播放
+                    if cv2.waitKey(1) & 0xFF == ord('p'):  # 按p键暂停/继续播放
+                        if current_time > last_time:  # 如果当前时间大于上次时间，说明视频在播放，暂停播放
+                            cap.set(cv2.CAP_PROP_POS_FRAMES, last_time)
+                            logger.info("p pause or play video up!")
+                        else:  # 否则，恢复播放
+                            cap.set(cv2.CAP_PROP_POS_FRAMES, current_time)
+                            logger.info("p replay video up!")
+                        last_time = current_time  # 更新上次时间
+
+                    # 处理前进/后退
+                    if cv2.waitKey(1) & 0xFF == ord('f'):  # 按f键快进
+                        if current_time > last_time:  # 如果当前时间大于上次时间，说明视频在播放，快进到指定位置
+                            cap.set(cv2.CAP_PROP_POS_MSEC, (last_time + 1000) * 1000)  # 快进10秒
+                            logger.info("f video speed up!")
+                        else:  # 否则，快退到指定位置
+                            cap.set(cv2.CAP_PROP_POS_MSEC, last_time * 1000)  # 退后1秒
+                            logger.info("f video speed down!")
+
+                        last_time = current_time  # 更新上次时间
+
+                    # 处理倍速播放
+                    if cv2.waitKey(1) & 0xFF == ord('+'):  # 按+键增加播放速度
+                        play_speed += 0.1
+                        cap.set(cv2.CAP_PROP_SPEED, play_speed)  # 设置新的播放速度
+                        logger.info("+ play video speed up!")
+                    if cv2.waitKey(1) & 0xFF == ord('-'):  # 按-键减少播放速度
+                        play_speed -= 0.1
+                        logger.info("- play video speed down!")
+                        if play_speed < 0:  # 防止速度过小导致播放出现问题
+                            play_speed = 0.1
+                            logger.info("- play video speed < min reset play_speed = 0.1!")
+                        cap.set(cv2.CAP_PROP_SPEED, play_speed)  # 设置新的播放速度
+
+                    # 在视频帧上显示当前播放位置和播放速度（可选）
+                    cv2.putText(frame, f"Pos: {current_time}ms, Speed: {play_speed}", (10, 30),
+                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    # cv2.putText(frame, str(position), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    if cv2.waitKey(1) & 0xFF == ord('q'):  # 按q退出播放
+                        break
+                cap.release()
+                cv2.destroyAllWindows()
+            else:
+                logger.error("Error opening video file:", selectedFilename)
+        else:
+            logger.warning("Please select a video file.")
+    except Exception as e:
+        logger.error("error, detail: " + str(e))
 
 
 if __name__ == '__main__':

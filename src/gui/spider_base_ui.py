@@ -209,7 +209,7 @@ def search_item_paint(self):
     col = 0
 
     # 创建控件并添加到网格布局中
-    self.file_text = QLineEdit(os.path.join(os.path.dirname(__file__), ""))  # 修改为你的路径
+    self.file_text = QLineEdit()  # 修改为你的路径
     self.grid_layout.addWidget(QLabel("关键字:"), row, col)
     self.grid_layout.addWidget(self.file_text, row, col + 1)  # 0 1
     row += 1
@@ -239,7 +239,7 @@ def search_item_paint(self):
     row = 0
     col = 0
 
-    self.image_page = QLineEdit("请输入图片页码或关键词搜索")
+    self.image_page = QLineEdit()
     self.grid_layout.addWidget(self.image_page, 2, 1)
 
     # 你可以继续添加其他控件到下一行，例如:
