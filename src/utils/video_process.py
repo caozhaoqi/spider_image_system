@@ -96,6 +96,9 @@ def convert_image(images_input_path, target_dir):
             elif file.endswith('.jpg') or file.endswith('.png'):  # 仅处理jpg和png图片文件
                 image_paths.append(os.path.join(root, file))
                 # 检查文件是否为图片
+    if len(image_paths) == 0:
+        logger.warning("convert image no image!")
+        return False
     logger.debug("convert_image: scan result, need convert images count: " + str(len(image_paths)))
     for filename in image_paths:
         result = image_fill_black(target_dir, filename)
@@ -204,8 +207,8 @@ def process_images_thread(self):
         if process_ret:
             self.load_video(process_ret)
             logger.success("out video success! file_name: " + process_ret)
-    constants.process_image_flag = False
-    self.success_tips()
+        constants.process_image_flag = False
+        self.success_tips()
 
 
 if __name__ == '__main__':

@@ -362,20 +362,26 @@ class UIMainWindows(QMainWindow):
         放大
         :return:
         """
-        new_size = self.pixmap_image_tab1.size() * float(zoom_in_scale)  # 放大10%
-        self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.label.setPixmap(self.pixmap_image_tab1)
-        logger.info(f"scale zoom in new_size {new_size}")
+        try:
+            new_size = self.pixmap_image_tab1.size() * float(zoom_in_scale)  # 放大10%
+            self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.label.setPixmap(self.pixmap_image_tab1)
+            logger.info(f"scale zoom in new_size {new_size}")
+        except Exception as e:
+            logger.warning(f"unknown error! detail {e}")
 
     def zoom_out_method(self):
         """
         缩小
         :return:
         """
-        new_size = self.pixmap_image_tab1.size() * float(zoom_out_scale)  # 缩小90%
-        self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.label.setPixmap(self.pixmap_image_tab1)
-        logger.info(f"scale zoom out new_size {new_size}")
+        try:
+            new_size = self.pixmap_image_tab1.size() * float(zoom_out_scale)  # 缩小90%
+            self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.label.setPixmap(self.pixmap_image_tab1)
+            logger.info(f"scale zoom out new_size {new_size}")
+        except Exception as e:
+            logger.warning(f"unknown error! detail {e}")
 
     def eventFilter(self, obj, event):
         """

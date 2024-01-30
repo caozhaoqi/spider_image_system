@@ -65,6 +65,9 @@ def download_img_txt(self):
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith("_img.txt")]
     cdds_index = 0
+    if len(cdds) == 0:
+        logger.warning("no image !")
+        return True
     for cdds_path in cdds:
         if constants.stop_download_image_flag:
             break
