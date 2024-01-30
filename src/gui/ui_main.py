@@ -165,6 +165,10 @@ class UIMainWindows(QMainWindow):
         # self.error_path()
 
     def input_keyword_process_3(self):
+        """
+
+        :return:
+        """
         self.file_text_3 = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
         if self.file_text_3:
             logger.debug('Selected folder:' + self.file_text_3)
@@ -174,6 +178,10 @@ class UIMainWindows(QMainWindow):
         self.filetext.setText(self.file_text_3)
 
     def download_file_thread_3(self):
+        """
+
+        :return:
+        """
         logger.info("start scan images... ")
         scan_image_thread_obj = threading.Thread(
             target=check_images,
@@ -182,6 +190,10 @@ class UIMainWindows(QMainWindow):
         pass
 
     def img_category_button_click(self):
+        """
+
+        :return:
+        """
         logger.info('start img category...')
         img_category_thread_obj = threading.Thread(
             target=img_category_images,
