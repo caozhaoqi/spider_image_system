@@ -176,7 +176,7 @@ def filter_exists_images(key_word, image_url, txt_name):
                 txt_url = f.readlines()
             return find_value(image_url + "\n", txt_url)
         except Exception as e:
-            logger.warning("unknown error, detail: " + str(e))
+            # logger.warning("unknown error, detail: " + str(e))
             return False
     elif txt_name == '_img':
         file_name = constants.data_path + "/img_url/" + key_word + "_img.txt"
@@ -186,7 +186,7 @@ def filter_exists_images(key_word, image_url, txt_name):
                 txt_url = f.readlines()
             return find_value(image_url + "\n", txt_url)
         except Exception as e:
-            logger.warning("unknown error, detail: " + str(e))
+            # logger.warning("unknown error, detail: " + str(e))
             return False
     # elif txt_name == '_result':
     #     pass

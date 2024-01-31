@@ -260,7 +260,7 @@ def url_zip_all_process(zip_url_txt_list):
     return True
 
 
-# step 2.eztract all zip file an gererate video
+# step 2.extract all zip file and generate video
 @logger.catch
 def unzip_generate_gif():
     """
