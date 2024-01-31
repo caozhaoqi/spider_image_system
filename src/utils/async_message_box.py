@@ -27,20 +27,24 @@ class AsyncMessageBox(QThread):
 
 
 @logger.catch
-def show_msg_alert(title, content):
+def show_msg_alert(self, title, content):
     """
     show msg from alert
+    :param self:
     :param title:
     :param content:
     :return:
     """
+    async_msg_alert = AsyncMessageBox(title, content)
+    async_msg_alert.run()
     # app = QApplication(sys.argv)
-    if title == '完成':
-        QMessageBox.information(None, title, content)
-    else:
-        QMessageBox.warning(None, title, content)
+    # if title == '完成':
+    #     QMessageBox.information(None, title, content)
+    # else:
+    #     QMessageBox.warning(None, title, content)
 
     # sys.exit(app.exec_())
     # async_msg_box.finished.wait()
+    #
     # 连接信号和槽，处理对话框关闭事件
     # async_msg_box.finished.c(lambda: logger.info("对话框已关!"))

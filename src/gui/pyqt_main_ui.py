@@ -203,7 +203,12 @@ class UIMainWindows(QMainWindow):
         success tips
         :return:
         """
-        show_msg_alert("完成", "完成！")
+        logger.info('show success tips.')
+        # success_tips_thread = threading.Thread(
+        #     target=show_msg_alert,
+        #     args=(self, "完成", "完成！",))
+        # success_tips_thread.start()
+        # show_msg_alert("完成", "完成！")
 
     # @logger.catch
     def error_tips(self):
@@ -211,7 +216,12 @@ class UIMainWindows(QMainWindow):
         error tips
         :return:
         """
-        show_msg_alert("警告", "请等待当前操作完成！")
+        logger.info('show error tips.')
+        # error_tips_thread = threading.Thread(
+        #     target=show_msg_alert,
+        #     args=(self, "错误", "请等待当前操作完成！",))
+        # error_tips_thread.start()
+        # show_msg_alert("完成", "完成！")
 
     # @logger.catch
     def download_file_thread(self):
