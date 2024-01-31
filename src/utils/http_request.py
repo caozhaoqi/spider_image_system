@@ -13,6 +13,7 @@ from requests import HTTPError, Timeout, TooManyRedirects
 from gui import constants
 from gui.constants import output_video_fps, download_finish_flag
 from utils.file_process import scan_directory_zip_txt, scan_directory_zip
+from utils.get_url import remove_duplicates_from_txt
 from utils.time_utils import id_generate_time
 
 
@@ -233,8 +234,6 @@ def url_zip_all_process(zip_url_txt_list):
     """
     zip url process : download zip to local file dir
     :param zip_url_txt_list:
-    :param data_path:
-    :param keyword:
     :return:
     """
     logger.info("get zip url txt in zip url.")
@@ -244,7 +243,12 @@ def url_zip_all_process(zip_url_txt_list):
     for zip_url_detail in zip_url_txt_list:
         txt_path, txt_name = os.path.split(zip_url_detail)
         txt_file_name, ext = os.path.splitext(zip_url_detail)
-        with open(os.path.join(txt_path, zip_url_detail), 'r') as f:
+        # 去重
+        old_file_name = os.path.join(txt_path, zip_url_detail)
+        new_file_name = os.path.join(txt_path, txt_file_name + "_result" + ext)
+        remove_duplicates_from_txt(old_file_name,  new_file_name)
+        logger.success(f"remove duplicate file success: {zip_url_detail}")
+        with open(new_file_name, 'r') as f:
             zip_url_list = f.readlines()
         if len(zip_url_list) == 0:
             logger.warning(f"txt file null, name：{zip_url_detail}")
@@ -267,19 +271,21 @@ def unzip_generate_gif():
     zip_file_list = scan_directory_zip(constants.data_path)
     # zip_path = os.path.join(constants.data_path, "gif_zip")
     # unzip_path = os.path.join(constants.data_path, "gif_unzip")
+    if len(zip_file_list) == 0:
+        logger.warning("zip file not exists.")
+        return False
     return generate_gif_vide(zip_file_list)
-
 
 # unzip_images_url("https://pximg.lolicon.ac.cn/img-zip-ugoira/img/2024/01/29/02/15/41/115574488_ugoira600x600.zip")
 
 # download_file_fun("https://pximg.lolicon.ac.cn/img-zip-ugoira/img/2024/01/29/02/15/41/115574488_ugoira600x600.zip",
 #                   "./zip.zip")
 
-if __name__ == '__main__':
-    # test
-    # 1 download zip from url txt
-    # url_zip_all_process(scan_directory_zip_txt(constants.data_path))
-    # time.sleep(20)
-    #  2 unzip generate video
-    unzip_generate_gif()
-    pass
+# if __name__ == '__main__':
+#     # test
+#     # 1 download zip from url txt
+#     # url_zip_all_process(scan_directory_zip_txt(constants.data_path))
+#     # time.sleep(20)
+#     #  2 unzip generate video
+#     unzip_generate_gif()
+#     pass

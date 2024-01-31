@@ -12,8 +12,10 @@ from gui import constants
 from gui.constants import sis_server_version, zoom_out_scale, zoom_in_scale
 from utils.async_message_box import show_msg_alert
 from utils.base_event import scan_populate_mp4_list
+from utils.file_process import scan_directory_zip_txt
 from utils.get_url import spider_artworks_url
 from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint
+from utils.http_request import url_zip_all_process, unzip_generate_gif
 from utils.spider_img_save import download_img_txt
 from utils.img_switch import find_images, show_image, folder_path, show_next_image, check_images, img_category_images, \
     show_filter_image
@@ -337,3 +339,16 @@ class UIMainWindows(QMainWindow):
             self.isDragging = False
         return super().eventFilter(obj, event)
 
+    def download_gif_zip_click(self):
+        if url_zip_all_process(scan_directory_zip_txt(constants.data_path)):
+            logger.success("success download file")
+            self.success_tips()
+        else:
+            self.error_tips()
+
+    def unzip_generate_video_click(self):
+        if unzip_generate_gif():
+            logger.success("success unzip generate file")
+            self.success_tips()
+        else:
+            self.error_tips()

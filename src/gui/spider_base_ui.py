@@ -327,8 +327,15 @@ def tab_3_ui_paint(self):
     self.img_category_button = QPushButton(u"分类图片")
     self.h_box_3_3 = QHBoxLayout()
     self.h_box_3_3.addWidget(self.un_normal_img_button)
-    self.h_box_3_3.addStretch()
+    # self.h_box_3_3.addStretch()
     self.h_box_3_3.addWidget(self.img_category_button)
+
+    self.download_gif_zip = QPushButton(u"下载压缩包")
+    self.unzip_generate_video = QPushButton(u"解压生成视频")
+    # self.h_box_3_3 = QHBoxLayout()
+    self.h_box_3_3.addWidget(self.download_gif_zip)
+    # self.h_box_3_3.addStretch()
+    self.h_box_3_3.addWidget(self.unzip_generate_video)
 
     self.vbox_3 = QVBoxLayout()
     self.vbox_3.addLayout(self.h_box_3)
@@ -345,4 +352,6 @@ def tab_3_ui_paint(self):
     self.input_file_3.clicked.connect(self.input_keyword_process_3)
     self.un_normal_img_button.clicked.connect(self.download_file_thread_3)
     self.img_category_button.clicked.connect(self.img_category_button_click)
+    self.download_gif_zip.clicked.connect(self.download_gif_zip_click)
+    self.unzip_generate_video.clicked.connect(self.unzip_generate_video_click)
     return True

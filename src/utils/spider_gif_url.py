@@ -1,4 +1,5 @@
 # 设置代理服务器
+import os
 import time
 
 from loguru import logger
@@ -7,6 +8,7 @@ from selenium.webdriver.common.by import By
 
 from gui import constants
 from gui.constants import proxy_flag, r18_mode, all_show, visit_url, search_delta_time
+from utils.gif_img_process import read_gif_url
 
 
 @logger.catch
@@ -74,7 +76,7 @@ def spider_gif_url():
 
 
 @logger.catch
-def load_href_save(driver, key_word):
+def load_href_save_test(driver, key_word):
     """
     load pixiv list href url and save this
     :param driver:
@@ -263,10 +265,10 @@ def fun_2(url):
 
 
 @logger.catch
-def spider_gif_images(url, driver):
+def spider_gif_images(keyword, driver):
     """
     抓取动态资源
-    :param url: 抓取url
+    :param keyword:
     :param driver:  chrome驱动
     :return:
     """
@@ -275,27 +277,33 @@ def spider_gif_images(url, driver):
     # 切换到开发者工具窗口并获取网络请求的API地址
     requests = driver.execute_script("return window.performance.getEntriesByType('resource')")
     for request in requests:
-        if request['initiatorType'] == 'img':
-            logger.info(f"img: {request}")
-        elif request['initiatorType'] == 'link':
-            logger.info(f"link: {request}")
-        elif request['initiatorType'] == 'fetch':
-            logger.info(f"zip url {request}")
+        if request['initiatorType'] == 'fetch':
+            # logger.info(f"zip url {request}")
             if "img-zip-ugoira" in request['name']:
                 api_urls.append(request['name'])
                 logger.success(f"zip url {request['name']}")
-        else:
-            logger.warning(request)
-        # print(f"URL: {request['url']}, Status: {request['status']}, Time: {request['time']}")
-
-    with open('../test/api_urls.txt', 'a') as file:
-        for url in api_urls:
-            file.write(url + '\n')  # 将每个API地址写入txt文件中，每个地址占一行
-            logger.info(url)
-    return api_urls
+    logger.info("write url to txt!")
+    txt_path_name = os.path.join(constants.data_path, "href_url")
+    # 'https://sd.2021.host/artworks/115574488'
+    if not os.path.exists(txt_path_name):
+        os.makedirs(txt_path_name)
+    if len(api_urls) == 0:
+        logger.warning("no zip gif images data!")
+        return False
+    if read_gif_url(txt_path_name + "/" + keyword + "_zip.txt", api_urls):
+        return True
+    return False
 
 
 if __name__ == '__main__':
     # spider_gif_url()
+    url = 'https://sd.2021.host/artworks/115574488'
     # api_spider_link('https://sd.2021.host/artworks/115574488')
-    fun_2('https://sd.2021.host/artworks/115574488')
+    options = webdriver.ChromeOptions()
+    options.add_argument("--auto-open-devtools-for-tabs")
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)  # 替换为实际的网页URL
+
+    # 等待网页加载完成
+    time.sleep(7)  # 等待5秒钟，确保网页上的资源完全加载完成
+    spider_gif_images("lisa", driver)

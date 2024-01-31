@@ -10,6 +10,7 @@ from pypinyin import lazy_pinyin, Style
 from gui import constants
 from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
     visit_url, target_url, s2_url, data_path, spider_images_max_count
+from utils.spider_gif_url import spider_gif_images
 
 
 @logger.catch
@@ -33,6 +34,11 @@ def save_img_url(driver, key_word):
                     # 允许继续抓取url
                     driver.get(url)
                     time.sleep(detail_delta_time)
+                    if open_look_all(driver):
+                        logger.success("click look all success!")
+                    # 抓取动图link
+                    if spider_gif_images(key_word_pinyin, driver):
+                        logger.success("gif url txt save success!")
                     image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
                     for image_element in image_elements:
                         image_url = image_element.get_attribute("src")
@@ -78,6 +84,7 @@ def spider_artworks_url(self, key_word):
 
     # 创建浏览器驱动程序并设置代理参数
     options = webdriver.ChromeOptions()
+    options.add_argument("--auto-open-devtools-for-tabs")
     if proxy_flag == 'True':
         options.set_capability("proxy", proxy)
         logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
@@ -231,7 +238,8 @@ def load_href_save(driver, key_word):
                 constants.spider_images_current_count += 1
                 if constants.spider_images_current_count >= int(spider_images_max_count) - 1:
                     # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
-                    logger.warning("spider image max value, current value: " + str(constants.spider_images_current_count))
+                    logger.warning(
+                        "spider image max value, current value: " + str(constants.spider_images_current_count))
                     constants.spider_images_current_count = 0
                     constants.stop_spider_url_flag = False
                     break
@@ -364,6 +372,23 @@ def url_process_page(url, current_page):
     page_url = url + "p=" + str(current_page) + "&s_mode=s_tag"
     return page_url
     # pass
+
+
+@logger.catch
+def open_look_all(driver):
+    """
+    点击查看全部 按钮模拟点击
+    :param driver:
+    :return:
+    """
+    button_locator = driver.find_elements(By.XPATH, "//button[contains(.,'查看全部')]")
+    button = driver.find_element(button_locator)  # 查找按钮（如果按钮不存在则返回None）
+    if button:  # 检查按钮是否存在（这里可以添加更多的判断逻辑）
+        button.click()  # 模拟点击按钮（如果按钮存在）
+        logger.success("page exists button look all, clicked")
+        return True
+    logger.warning("page not exists button look all")
+    return False
 
 
 if __name__ == '__main__':
