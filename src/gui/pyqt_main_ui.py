@@ -348,7 +348,7 @@ class UIMainWindows(QMainWindow):
         """
         self.download_gif_zip_thread = threading.Thread(
             target=url_zip_all_process,
-            args=(self, scan_directory_zip_txt(constants.data_path), ))
+            args=(scan_directory_zip_txt(constants.data_path), ))
         self.download_gif_zip_thread.start()
         # if url_zip_all_process():
         logger.success("success download zip  file thread start")
@@ -369,7 +369,7 @@ class UIMainWindows(QMainWindow):
 
         self.unzip_generate_video_thread = threading.Thread(
             target=unzip_generate_gif,
-            args=(self, ))
+            args=())
         self.unzip_generate_video_thread.start()
         # if url_zip_all_process():
         logger.success("success unzip generate file thread start")
