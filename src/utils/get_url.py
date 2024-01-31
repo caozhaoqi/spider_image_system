@@ -6,6 +6,7 @@ from selenium.common import NoSuchWindowException
 from selenium.webdriver.common.by import By
 import time
 from pypinyin import lazy_pinyin, Style
+from selenium.webdriver.support.wait import WebDriverWait
 
 from gui import constants
 from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
@@ -371,7 +372,11 @@ def url_process_page(url, current_page):
     """
     page_url = url + "p=" + str(current_page) + "&s_mode=s_tag"
     return page_url
-    # pass
+
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 @logger.catch
@@ -381,14 +386,20 @@ def open_look_all(driver):
     :param driver:
     :return:
     """
-    button_locator = driver.find_elements(By.XPATH, "//button[contains(.,'查看全部')]")
-    button = driver.find_element(button_locator)  # 查找按钮（如果按钮不存在则返回None）
-    if button:  # 检查按钮是否存在（这里可以添加更多的判断逻辑）
-        button.click()  # 模拟点击按钮（如果按钮存在）
-        logger.success("page exists button look all, clicked")
-        return True
-    logger.warning("page not exists button look all")
-    return False
+    # 查找"查看全部"按钮
+    try:
+        # wait = WebDriverWait(driver, 10)
+        button = EC.presence_of_element_located((By.XPATH, "//button[div='查看全部']"))
+
+        # 检查按钮是否可见和可交互
+        if button.is_displayed() and button.is_enabled():
+            button.click()
+            print("Button clicked successfully!")
+            return True
+        else:
+            print("Button is not visible or not clickable.")
+    except Exception as e:
+        print(f"Error occurred: {e}")
 
 
 if __name__ == '__main__':

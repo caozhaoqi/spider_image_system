@@ -1,6 +1,5 @@
 import cv2
 from loguru import logger
-from sklearn.metrics import pairwise_distances
 
 from utils.img_switch import find_images
 
@@ -36,12 +35,12 @@ def analysis_two_picture(source_path, target_path):
     # 计算相似度矩阵
     X = np.array([kp1[m[0].queryIdx].pt for m in good]).reshape(-1, 1)
     Y = np.array([kp2[m[0].trainIdx].pt for m in good]).reshape(-1, 1)
-    dist = pairwise_distances(X, Y)
-    sim = 1 - dist / dist.max()
+    # dist = pairwise_distances(X, Y)
+    # sim = 1 - dist / dist.max()
 
     # 返回相似概率
-    sim_prob = sim.flatten() / sim.sum()
-    logger.info('Similarity probability:' + str(sim_prob))
+    # sim_prob = sim.flatten() / sim.sum()
+    # logger.info('Similarity probability:' + str(sim_prob))
 
 
 import numpy as np

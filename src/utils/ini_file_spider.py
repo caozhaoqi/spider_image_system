@@ -164,7 +164,7 @@ def check_ini_config():
         conf.set("spider_config", "proxy_flag", 'False')
         conf.set("spider_config", "search_delta_time", '7')
         conf.set("spider_config", "detail_delta_time", '3')
-        conf.set("spider_config", "sis_log_level", 'INFO')
+        conf.set("spider_config", "sis_log_level", 'DEBUG')
         conf.set("spider_config", "spider_images_max_count", '500')
         conf.set("spider_config", "output_video_fps", "5")
         conf.set("spider_config", "output_video_width", "2560")

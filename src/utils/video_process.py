@@ -19,7 +19,8 @@ def generate_video_from_images(images_input_path, video_out_path):
     image_paths = []
     for root, dirs, files in os.walk(images_input_path):
         for file in files:
-            if "square" in file or "custom" in file or "error_images" in root or "small_images" in root:
+            if "square" in file or "custom" in file or "error_images" in root or "small_images" in root \
+                    or "gif_unzip" in root:
                 logger.warning(f"skip file, because images error or small, name:{file}")
                 continue
             elif file.endswith('.jpg') or file.endswith('.png'):  # 仅处理jpg和png图片文件

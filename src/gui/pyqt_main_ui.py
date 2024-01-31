@@ -31,6 +31,8 @@ class UIMainWindows(QMainWindow):
     def __init__(self):
         QWidget.__init__(self)
         # 窗体标题 icon
+        self.unzip_generate_video_thread = None
+        self.download_gif_zip_thread = None
         self.pixmap_image_tab1 = None
         self.file_text_3 = None
         self.images_convert_thread = None
@@ -340,15 +342,34 @@ class UIMainWindows(QMainWindow):
         return super().eventFilter(obj, event)
 
     def download_gif_zip_click(self):
-        if url_zip_all_process(scan_directory_zip_txt(constants.data_path)):
-            logger.success("success download file")
-            self.success_tips()
-        else:
-            self.error_tips()
+        """
+
+        :return:
+        """
+        self.download_gif_zip_thread = threading.Thread(
+            target=url_zip_all_process,
+            args=(self, scan_directory_zip_txt(constants.data_path), ))
+        self.download_gif_zip_thread.start()
+        # if url_zip_all_process():
+        logger.success("success download zip  file thread start")
+        #     self.success_tips()
+        # else:
+        #     self.error_tips()
 
     def unzip_generate_video_click(self):
-        if unzip_generate_gif():
-            logger.success("success unzip generate file")
-            self.success_tips()
-        else:
-            self.error_tips()
+        """
+
+        :return:
+        """
+        # if unzip_generate_gif():
+        #     logger.success("success unzip generate file")
+        #     self.success_tips()
+        # else:
+        #     self.error_tips()
+
+        self.unzip_generate_video_thread = threading.Thread(
+            target=unzip_generate_gif,
+            args=(self, ))
+        self.unzip_generate_video_thread.start()
+        # if url_zip_all_process():
+        logger.success("success unzip generate file thread start")

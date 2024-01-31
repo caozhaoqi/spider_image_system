@@ -270,34 +270,6 @@ def search_item_paint_tab2(self):
     self.grid_layout_video = QGridLayout()
     self.setLayout(self.grid_layout_video)
 
-    # self.file_name_show_label_video = QLabel("文件名")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
-    # self.file_name_show_label_video.setFixedSize(150, 20)  # 设置宽度为200像素，高度自适应c
-    # self.grid_layout_video.addWidget(self.file_name_show_label_video, 0, 1)
-    #
-    # self.file_name_label_video = QLabel("文件大小")
-    # self.file_name_label_video.setFixedSize(20, 20)
-    # self.grid_layout_video.addWidget(self.file_name_label_video, 0, 2)
-    #
-    # # 你可以继续添加其他控件到下一行，例如:
-    # self.modify_video = QLabel("修改时间")
-    # self.modify_video.setFixedSize(120, 20)
-    # self.grid_layout_video.addWidget(self.modify_video, 0, 3)
-    #
-    # # 你可以继续添加其他控件到下一行，例如:
-    # self.path_video = QLabel("路径")
-    # self.path_video.setFixedSize(560, 20)
-    # self.grid_layout_video.addWidget(self.path_video, 0, 4)
-    #
-    # # 你可以继续添加其他控件到下一行，例如:
-    # self.format_video = QLabel("格式")
-    # self.format_video.setFixedSize(80, 20)
-    # self.grid_layout_video.addWidget(self.format_video, 0, 5)
-    #
-    # # 你可以继续添加其他控件到下一行，例如:
-    # self.author_video = QLabel("作者")
-    # self.author_video.setFixedSize(80, 20)
-    # self.grid_layout_video.addWidget(self.author_video, 0, 6)
-
 
 @logger.catch
 def tab_3_ui_paint(self):
