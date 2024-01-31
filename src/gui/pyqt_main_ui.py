@@ -203,7 +203,7 @@ class UIMainWindows(QMainWindow):
         success tips
         :return:
         """
-        logger.info('show success tips.')
+        logger.success('show success tips.')
         # success_tips_thread = threading.Thread(
         #     target=show_msg_alert,
         #     args=(self, "完成", "完成！",))
@@ -216,7 +216,7 @@ class UIMainWindows(QMainWindow):
         error tips
         :return:
         """
-        logger.info('show error tips.')
+        logger.error('show error tips.')
         # error_tips_thread = threading.Thread(
         #     target=show_msg_alert,
         #     args=(self, "错误", "请等待当前操作完成！",))
