@@ -3,10 +3,8 @@ import os
 from loguru import logger
 from selenium import webdriver
 from selenium.common import NoSuchWindowException
-from selenium.webdriver.common.by import By
 import time
 from pypinyin import lazy_pinyin, Style
-from selenium.webdriver.support.wait import WebDriverWait
 
 from gui import constants
 from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
@@ -34,10 +32,10 @@ def save_img_url(driver, key_word):
                 if url and not constants.stop_spider_url_flag:
                     # 允许继续抓取url
                     driver.get(url)
-                    time.sleep(detail_delta_time)
-                    if open_look_all(driver):
-                        logger.success("click look all success!")
+                    if open_look_all(driver, url):
+                        logger.success(f"click look all success! url: {url}")
                     # 抓取动图link
+                    time.sleep(detail_delta_time)
                     if spider_gif_images(key_word_pinyin, driver):
                         logger.success("gif url txt save success!")
                     image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
@@ -105,10 +103,13 @@ def spider_artworks_url(self, key_word):
             logger.warning("stop spider url. get url spider artwork url.")
             break
         url_detail = url_process_page(url, current_page=cur_page)
-        logger.info("current use url : " + str(url_detail))
+        logger.info("current use url: " + str(url_detail))
         driver.get(url_detail)
         # 等待图片加载完成
         time.sleep(search_delta_time)
+        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
+            logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+            break
         logger.debug("start load href save url to txt.")
         load_save_flag = load_href_save(driver, key_word)
         if load_save_flag:
@@ -375,31 +376,49 @@ def url_process_page(url, current_page):
 
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 
 @logger.catch
-def open_look_all(driver):
+def open_look_all(driver, url):
     """
     点击查看全部 按钮模拟点击
+    :param url:
     :param driver:
     :return:
     """
     # 查找"查看全部"按钮
-    try:
-        # wait = WebDriverWait(driver, 10)
-        button = EC.presence_of_element_located((By.XPATH, "//button[div='查看全部']"))
+    # 使用CSS选择器查找按钮
+    """
+    // 查找具有特定标签名的按钮元素
+var buttons = document.getElementsByTagName('button');
 
-        # 检查按钮是否可见和可交互
-        if button.is_displayed() and button.is_enabled():
-            button.click()
-            print("Button clicked successfully!")
-            return True
-        else:
-            print("Button is not visible or not clickable.")
-    except Exception as e:
-        print(f"Error occurred: {e}")
+// 循环遍历每个button元素
+for (var i = 0; i < buttons.length; i++) {
+  var button = buttons[i];
+  
+  // 检查button元素中的文本是否包含"查看全部文字"
+  if (button.textContent.includes('查看全部')) {
+    return button
+    
+}
+}
+    """
+    button = driver.execute_script("""
+var buttons = document.getElementsByTagName('button');
+for (var i = 0; i < buttons.length; i++) {
+  var button = buttons[i];
+  if (button.textContent.includes('查看全部')) {
+    return button;
+  }
+}
+""")
+    if button:
+        # logger.success(f"look all button clicked! url: {url}")
+        button.click()
+        return True
+        # logger.success("look all button clicked!")
+    # logger.warning("no button content: look all!")
+    return False
 
 
 if __name__ == '__main__':

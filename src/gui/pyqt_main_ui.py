@@ -154,9 +154,9 @@ class UIMainWindows(QMainWindow):
         else:
             key_word = self.file_text.text()
             if key_word == '' or key_word is None:
-                logger.warning("input keyword error!")
+                logger.warning("input keyword empty or error!")
                 return False
-            logger.debug("you input key word is :" + str(key_word))
+            logger.debug("you input key word is: " + str(key_word))
             # 读取用户输入路径
             spider_thread_obj = threading.Thread(
                 target=spider_artworks_url,
