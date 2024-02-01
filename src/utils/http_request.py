@@ -91,7 +91,7 @@ def extract_file(save_path, file_name):
 
 
 @logger.catch
-def generate_gif_vide(zip_file_list):
+def generate_gif_video(zip_file_list):
     """
     解压压缩包并生成video
     :param zip_file_list:
@@ -124,15 +124,17 @@ def generate_gif_vide(zip_file_list):
             if img_path.endswith(".jpg") or img_path.endswith(".png"):
                 img_list.append(full_path)
         if len(img_list) > 0:
-            logger.info("start generate mp4 video.")
-            video_name = img_video_convert(img_list, output_video_path)
-            logger.success(f"video generate success! name {video_name}")
+            point_path, point_gif_name = os.path.split(result_path_list_detail)
+            point_gif_video_name, ext = os.path.splitext(point_gif_name)
+            logger.info(f"start generate mp4 video. folder name: {point_gif_video_name}")
+            video_name = img_video_convert(img_list, output_video_path, point_gif_video_name)
+            logger.success(f"video generate success! flag {video_name}")
 
     return True
 
 
 @logger.catch
-def img_video_convert(image_path_list, video_out_path):
+def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
     """
     img to video
     :param video_out_path:
@@ -157,7 +159,10 @@ def img_video_convert(image_path_list, video_out_path):
 
     fourcc = cv2.VideoWriter.fourcc(*'MJPG')
     # 创建VideoWriter对象
-    video_name = video_out_path + "/" + id_generate_time() + "test.mp4"
+    video_name = video_out_path + "/" + point_gif_video_name + "_test.mp4"
+    if os.path.exists(video_name):
+        logger.warning(f"video exists! name and path: {video_name}")
+        return False
     video = cv2.VideoWriter(video_name, fourcc, int(output_video_fps), (width, height))  # 设置视频帧率、输出视频大小
     if not video.isOpened():
         logger.debug("无法打开视频文件写入器")
@@ -274,7 +279,7 @@ def unzip_generate_gif():
     if len(zip_file_list) == 0:
         logger.warning("zip file not exists.")
         return False
-    return generate_gif_vide(zip_file_list)
+    return generate_gif_video(zip_file_list)
 
 # unzip_images_url("https://pximg.lolicon.ac.cn/img-zip-ugoira/img/2024/01/29/02/15/41/115574488_ugoira600x600.zip")
 

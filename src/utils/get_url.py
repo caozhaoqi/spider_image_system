@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.common import NoSuchWindowException
 import time
 from pypinyin import lazy_pinyin, Style
+from selenium.webdriver import ActionChains, Keys
 
 from gui import constants
 from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
@@ -32,9 +33,10 @@ def save_img_url(driver, key_word):
                 if url and not constants.stop_spider_url_flag:
                     # 允许继续抓取url
                     driver.get(url)
-                    if open_look_all(driver, url):
+                    if open_look_all(driver):
                         logger.success(f"click look all success! url: {url}")
                     # 抓取动图link
+                    slider_page_down(driver)
                     time.sleep(detail_delta_time)
                     if spider_gif_images(key_word_pinyin, driver):
                         logger.success("gif url txt save success!")
@@ -99,6 +101,9 @@ def spider_artworks_url(self, key_word):
     cur_page = 1
     url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode
     while True:
+        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
+            logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+            break
         if constants.stop_spider_url_flag:
             logger.warning("stop spider url. get url spider artwork url.")
             break
@@ -107,9 +112,6 @@ def spider_artworks_url(self, key_word):
         driver.get(url_detail)
         # 等待图片加载完成
         time.sleep(search_delta_time)
-        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
-            logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
-            break
         logger.debug("start load href save url to txt.")
         load_save_flag = load_href_save(driver, key_word)
         if load_save_flag:
@@ -379,35 +381,21 @@ from selenium.webdriver.common.by import By
 
 
 @logger.catch
-def open_look_all(driver, url):
+def open_look_all(driver):
     """
     点击查看全部 按钮模拟点击
-    :param url:
     :param driver:
     :return:
     """
     # 查找"查看全部"按钮
     # 使用CSS选择器查找按钮
     """
-    // 查找具有特定标签名的按钮元素
-var buttons = document.getElementsByTagName('button');
-
-// 循环遍历每个button元素
-for (var i = 0; i < buttons.length; i++) {
-  var button = buttons[i];
-  
-  // 检查button元素中的文本是否包含"查看全部文字"
-  if (button.textContent.includes('查看全部')) {
-    return button
-    
-}
-}
     """
     button = driver.execute_script("""
 var buttons = document.getElementsByTagName('button');
 for (var i = 0; i < buttons.length; i++) {
   var button = buttons[i];
-  if (button.textContent.includes('查看全部')) {
+  if (button.textContent.includes('查看全部') || button.textContent.includes('阅读作品')) {
     return button;
   }
 }
@@ -419,6 +407,35 @@ for (var i = 0; i < buttons.length; i++) {
         # logger.success("look all button clicked!")
     # logger.warning("no button content: look all!")
     return False
+
+
+@logger.catch
+def slider_page_down(driver):
+    """
+
+    :param driver:
+    :return:
+    """
+    logger.info("start slider page!")
+    # 获取页面高度
+    page_height = driver.execute_script("return document.body.scrollHeight")
+
+    # 模拟滑动操作
+    actions = ActionChains(driver)
+    actions.send_keys(Keys.END).perform()  # 发送 End 键，将光标移动到页面底部
+    actions.send_keys(Keys.PAGE_DOWN).perform()  # 发送 Page Down 键，模拟向下滚动一页
+    time.sleep(3)  # 等待3秒，以便有时间到达页面底部
+    actions.send_keys(Keys.HOME).perform()  # 发送 Home 键，将光标移动到页面顶部
+    actions.send_keys(Keys.PAGE_DOWN).perform()  # 再次发送 Page Down 键，再次模拟向下滚动一页
+    time.sleep(3)  # 等待3秒，以便有时间到达页面底部
+    # 获取当前滚动的高度
+    # current_scrollTop = driver.execute_script("return document.querySelector('.scroll-page').scrollTop")
+    # if current_scrollTop == page_height - page_height:
+    #     print("页面已经滚动到底部")
+    #     # 在这里实现当页面滚动到底部时需要执行的代码逻辑
+    # else:
+    #     print("页面还没有滚动到底部")
+    logger.info(f"slider page down！ page height {page_height} px")
 
 
 if __name__ == '__main__':

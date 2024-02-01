@@ -18,11 +18,9 @@ def spider_gif_images(keyword, chrome_driver):
     # 切换到开发者工具窗口并获取网络请求的API地址
     requests = chrome_driver.execute_script("return window.performance.getEntriesByType('resource')")
     for request in requests:
-        if request['initiatorType'] == 'fetch':
-            # logger.info(f"zip url {request}")
-            if "img-zip-ugoira" in request['name']:
-                api_urls.append(request['name'])
-                logger.success(f"zip url {request['name']}")
+        if request['initiatorType'] == 'fetch' and "img-zip-ugoira" in request['name']:
+            api_urls.append(request['name'])
+            logger.success(f"spider gif zip url: {request['name']}")
     # logger.info("write url to txt!")
     txt_path_name = os.path.join(constants.data_path, "href_url")
     # 'https://sd.2021.host/artworks/115574488'
