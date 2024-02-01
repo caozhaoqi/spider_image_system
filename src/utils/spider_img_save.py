@@ -6,6 +6,7 @@ from urllib3.exceptions import ProtocolError
 
 from gui import constants
 from gui.constants import data_path
+from utils.file_process import count_lines
 from utils.get_url import remove_duplicates_from_txt
 
 
@@ -48,17 +49,17 @@ def download_images_from_file(file_path):
     """
     (name, suffix) = os.path.splitext(file_path)
     save_img_url = name + "/images"
+    cur_download_images_index = 0
+    cur_txt_image_count = count_lines(file_path)
     with open(file_path, 'r') as f:
-        cur_txt_image_count = len(f.readlines())
-        cur_download_images_index = 0
         for line in f:
-            cur_download_images_index += 1
             url = line.strip()
             if url:  # 跳过空行
                 if not os.path.exists(save_img_url):
                     os.makedirs(save_img_url)
                 filename = os.path.join(name + "/images", f"{os.path.basename(url)}")
-                download_image(url, filename, cur_txt_image_count, cur_download_images_index)
+                cur_download_images_index += 1
+                download_image(url, filename, cur_txt_image_count, cur_download_images_index + 1)
 
 
 @logger.catch

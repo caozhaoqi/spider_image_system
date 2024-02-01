@@ -51,3 +51,19 @@ def scan_directory_zip(path):
             if file.endswith('.zip'):  # 仅处理jpg和png图片文件
                 video_files.append(os.path.join(root, file))
     return video_files
+
+
+@logger.catch
+def count_lines(filename):
+    """
+
+    :param filename:
+    :return:
+    """
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+    return len(lines)
+
+
+# filename = 'your_file.txt'  # 替换为你的文件名
+# print(f"The file '{filename}' has {count_lines(filename)} lines.")

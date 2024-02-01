@@ -19,6 +19,11 @@ def ui_paint():
     app.exec_()
 
 
-if __name__ == '__main__':
+@logger.catch
+def run_main_py():
     if log_record() and check_version():
         ui_paint()
+
+
+if __name__ == '__main__':
+    run_main_py()
