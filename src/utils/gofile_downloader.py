@@ -13,6 +13,8 @@ from hashlib import sha256
 from shutil import move, rmtree
 from time import perf_counter
 
+from utils.http_tools import is_valid_url
+
 NEW_LINE: str = "\n" if system() != "Windows" else "\r\n"
 
 
@@ -305,8 +307,11 @@ def start_download_file_link(link):
     #     password = argv[2]
 
     # Run
-    _print('Starting, please wait...' + NEW_LINE)
-    Main(url=url, password=password, max_workers=3)
+    if url == '' or url is None or not is_valid_url(url):
+        logger.warning(f"you input msg error! url: {url}")
+    else:
+        _print('Starting, please wait...' + NEW_LINE)
+        Main(url=url, password=password, max_workers=3)
 #     else:
 #         die("Usage:"
 #             + NEW_LINE
