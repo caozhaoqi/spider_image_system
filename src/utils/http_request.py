@@ -14,7 +14,6 @@ from gui import constants
 from gui.constants import output_video_fps, download_finish_flag
 from utils.file_process import scan_directory_zip_txt, scan_directory_zip
 from utils.get_url import remove_duplicates_from_txt
-from utils.time_utils import id_generate_time
 
 
 @logger.catch
@@ -129,7 +128,8 @@ def generate_gif_video(zip_file_list):
             logger.info(f"start generate mp4 video. folder name: {point_gif_video_name}")
             video_name = img_video_convert(img_list, output_video_path, point_gif_video_name)
             logger.success(f"video generate success! flag {video_name}")
-
+    constants.unzip_generate_video_flag = False
+    logger.success(f"generate gif video success! file length: {len(result_path_list)}")
     return True
 
 
@@ -137,6 +137,7 @@ def generate_gif_video(zip_file_list):
 def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
     """
     img to video
+    :param point_gif_video_name:
     :param video_out_path:
     :param image_path_list:
     :return:
@@ -262,6 +263,8 @@ def url_zip_all_process(zip_url_txt_list):
         for zip_url in zip_url_list:
             if not download_all_zip(zip_url, txt_path):
                 continue
+    constants.download_gif_zip_flag = False
+    logger.success(f"zip download file success! zip file length: {len(zip_url_txt_list)}")
     return True
 
 

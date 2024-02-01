@@ -14,6 +14,12 @@ stop_download_image_flag = True
 process_image_flag = False
 # zip download flag
 download_finish_flag = True
+# download link
+download_video_link_flag = False
+# download_gif_zip_flag
+download_gif_zip_flag = False
+# unzip_generate_video_flag
+unzip_generate_video_flag = False
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
 # 输出 video 宽度
@@ -60,6 +66,6 @@ search_delta_time = int(read_ini_config(ini_file_path, "spider_config", "search_
 detail_delta_time = int(read_ini_config(ini_file_path, "spider_config", "detail_delta_time"))
 # 花费时间 don't use
 need_time = (7 + 3) * 61 / 60  # second control spider speed 20 + 5 -> 7 + 3 (min)
-sis_server_version = "v1.0.4"
-build_date = "2024-01-31 12:00"
-publish_date = "2024-01-31 12:00"
+sis_server_version = "v1.0.4_beta"
+build_date = "2024-02-01 12:00"
+publish_date = "2024-02-01 12:00"

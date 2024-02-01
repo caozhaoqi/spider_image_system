@@ -278,13 +278,13 @@ def tab_3_ui_paint(self):
     :param self:
     :return:
     """
-    self.file_text_3 = QLineEdit(
+    self.edt_input_file_text_3 = QLineEdit(
         os.path.join(os.path.dirname(__file__), ""))
-    self.input_file_3 = QPushButton(u"选择文件夹")
+    self.btn_input_file_3 = QPushButton(u"选择文件夹")
     self.h_box_3 = QHBoxLayout()
     self.h_box_3.addWidget(QLabel(u"数据路径:"))
-    self.h_box_3.addWidget(self.file_text_3)
-    self.h_box_3.addWidget(self.input_file_3)
+    self.h_box_3.addWidget(self.edt_input_file_text_3)
+    self.h_box_3.addWidget(self.btn_input_file_3)
 
     self.h_box_2_3 = QHBoxLayout()
     self.label_3 = QLabel(self)
@@ -309,6 +309,13 @@ def tab_3_ui_paint(self):
     # self.h_box_3_3.addStretch()
     self.h_box_3_3.addWidget(self.unzip_generate_video)
 
+    self.download_video_zip = QPushButton(u"下载内容")
+    # self.unzip_generate_video = QPushButton(u"解压生成视频")
+    # self.h_box_3_3 = QHBoxLayout()
+    self.h_box_3_3.addWidget(self.download_video_zip)
+    # self.h_box_3_3.addStretch()
+    # self.h_box_3_3.addWidget(self.unzip_generate_video)
+
     self.vbox_3 = QVBoxLayout()
     self.vbox_3.addLayout(self.h_box_3)
     self.vbox_3.addLayout(self.h_box_2_3)
@@ -321,9 +328,10 @@ def tab_3_ui_paint(self):
     self.setCentralWidget(self.tab_widget)
 
     # 基础事件 按钮单击事件
-    self.input_file_3.clicked.connect(self.input_keyword_process_3)
+    self.btn_input_file_3.clicked.connect(self.input_keyword_process_3)
     self.un_normal_img_button.clicked.connect(self.download_file_thread_3)
     self.img_category_button.clicked.connect(self.img_category_button_click)
     self.download_gif_zip.clicked.connect(self.download_gif_zip_click)
     self.unzip_generate_video.clicked.connect(self.unzip_generate_video_click)
+    self.download_video_zip.clicked.connect(self.download_video_zip_click)
     return True

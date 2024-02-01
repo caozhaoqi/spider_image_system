@@ -15,6 +15,7 @@ from utils.base_event import scan_populate_mp4_list
 from utils.file_process import scan_directory_zip_txt
 from utils.get_url import spider_artworks_url
 from gui.spider_base_ui import base_menu, tab_ui_tab, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint
+from utils.gofile_downloader import start_download_file_link
 from utils.http_request import url_zip_all_process, unzip_generate_gif
 from utils.spider_img_save import download_img_txt
 from utils.img_switch import find_images, show_image, folder_path, show_next_image, check_images, img_category_images, \
@@ -31,10 +32,11 @@ class UIMainWindows(QMainWindow):
     def __init__(self):
         QWidget.__init__(self)
         # 窗体标题 icon
+        self.edt_input_file_text_3 = None
+        self.start_download_file_link_thread = None
         self.unzip_generate_video_thread = None
         self.download_gif_zip_thread = None
         self.pixmap_image_tab1 = None
-        self.file_text_3 = None
         self.images_convert_thread = None
         self.show_page_label = None
         self.setWindowTitle(u"Spider Image System (Version: " + sis_server_version + ")")
@@ -171,12 +173,12 @@ class UIMainWindows(QMainWindow):
         选中指定文件夹tab 3
         :return:
         """
-        self.file_text_3 = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
-        if self.file_text_3:
-            logger.debug('Selected folder:' + self.file_text_3)
+        self.edt_input_file_text_3 = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
+        if self.edt_input_file_text_3:
+            logger.debug('Selected folder:' + self.edt_input_file_text_3)
         # else:
         #     self.errorpath()
-        self.filetext.setText(self.file_text_3)
+        self.filetext.setText(self.edt_input_file_text_3)
 
     def download_file_thread_3(self):
         """
@@ -346,12 +348,17 @@ class UIMainWindows(QMainWindow):
 
         :return:
         """
-        self.download_gif_zip_thread = threading.Thread(
-            target=url_zip_all_process,
-            args=(scan_directory_zip_txt(constants.data_path), ))
-        self.download_gif_zip_thread.start()
-        # if url_zip_all_process():
-        logger.success("success download zip  file thread start")
+        if constants.download_gif_zip_flag:
+            logger.warning("download_gif_zip ing.")
+            self.error_tips()
+        else:
+            self.download_gif_zip_thread = threading.Thread(
+                target=url_zip_all_process,
+                args=(scan_directory_zip_txt(constants.data_path),))
+            self.download_gif_zip_thread.start()
+            constants.download_gif_zip_flag = True
+            # if url_zip_all_process():
+            logger.success("success download zip  file thread start")
         #     self.success_tips()
         # else:
         #     self.error_tips()
@@ -361,15 +368,34 @@ class UIMainWindows(QMainWindow):
 
         :return:
         """
-        # if unzip_generate_gif():
-        #     logger.success("success unzip generate file")
-        #     self.success_tips()
-        # else:
-        #     self.error_tips()
+        if constants.unzip_generate_video_flag:
+            logger.warning(" len(zip_url_txt ing.")
+            self.error_tips()
+        else:
+            self.unzip_generate_video_thread = threading.Thread(
+                target=unzip_generate_gif,
+                args=())
+            self.unzip_generate_video_thread.start()
+            constants.unzip_generate_video_flag = True
+            # if url_zip_all_process():
+            logger.success("success unzip generate file thread start")
 
-        self.unzip_generate_video_thread = threading.Thread(
-            target=unzip_generate_gif,
-            args=())
-        self.unzip_generate_video_thread.start()
-        # if url_zip_all_process():
-        logger.success("success unzip generate file thread start")
+    def download_video_zip_click(self):
+        """
+
+        :return:
+        """
+        if constants.download_video_link_flag:
+            logger.warning("already downloading file！please wait！")
+            self.error_tips()
+        else:
+            logger.info("start download file!")
+            link = self.edt_input_file_text_3.text()
+            logger.info(f"you input link: {link}")
+            self.start_download_file_link_thread = threading.Thread(
+                target=start_download_file_link,
+                args=(link,))
+            constants.download_video_link_flag = True
+            self.start_download_file_link_thread.start()
+            # if url_zip_all_process():
+            logger.success("success download file thread start")
