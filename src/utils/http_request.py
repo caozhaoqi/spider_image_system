@@ -79,10 +79,14 @@ def extract_file(save_path, file_name):
     if zip_size == expected_size:
         logger.debug(f"Zip file size is {zip_size} bytes, which matches the expected size of {expected_size} bytes.")
         # 解压文件到指定目录
-        with zipfile.ZipFile(file_name, 'r') as zip_ref:
-            zip_ref.extractall(result_path)  # 解压到指定目录
-            logger.debug(f"Files extracted to {result_path}")
-            return result_path
+        try:
+            with zipfile.ZipFile(file_name, 'r') as zip_ref:
+                zip_ref.extractall(result_path)  # 解压到指定目录
+                logger.debug(f"Files extracted to {result_path}")
+                return result_path
+        except Exception as e:
+            logger.warning(f"unknown error! detail: {e}")
+            return None
     else:
         logger.debug(
             f"Zip file size is {zip_size} bytes, which does not match the expected size of {expected_size} bytes.")

@@ -229,9 +229,6 @@ def load_href_save(driver, key_word):
     try:
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
         for image_element in image_elements:
-            if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
-                logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
-                break
             if not constants.stop_spider_url_flag:
                 # 是否不停止抓取
                 image_url = image_element.get_attribute("href")
@@ -246,7 +243,7 @@ def load_href_save(driver, key_word):
                     continue
                 image_urls_list.append(image_url)
                 constants.spider_images_current_count += 1
-                if constants.spider_images_current_count >= int(spider_images_max_count) - 1:
+                if constants.spider_images_current_count >= int(spider_images_max_count):
                     # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
                     logger.warning(
                         "spider image max value, current value: " + str(constants.spider_images_current_count))
@@ -259,10 +256,12 @@ def load_href_save(driver, key_word):
         if url_list_save(key_word_pinyin, image_urls_list):
             logger.success("save url and remove duplicates content success!")
             return True
+        else:
+            return False
     except Exception as un_e:
         logger.error("Error, unknown error, detail:" + str(un_e))
         return False
-    return False
+    # return False
 
 
 @logger.catch
@@ -282,8 +281,8 @@ def url_list_save(key_word, image_urls_list):
             logger.success("load_href_save: href remove duplicates content success, result: href_url: _result_url.txt.")
             return True
         elif len(image_urls_list) == 0:
-            logger.warning("no image! don't save to url txt, image url all exists set true jump next!")
-            return True
+            logger.warning("no image! don't save to url txt, chrome will exit!")
+            return False
         else:
             logger.warning("you input key word error or other err, please check log file!")
             return False
@@ -422,7 +421,7 @@ def slider_page_down(driver):
     :param driver:
     :return:
     """
-    logger.info("start slider page!")
+    # logger.info("start slider page!")
     # 获取页面高度
     page_height = driver.execute_script("return document.body.scrollHeight")
 
@@ -434,24 +433,4 @@ def slider_page_down(driver):
     actions.send_keys(Keys.HOME).perform()  # 发送 Home 键，将光标移动到页面顶部
     actions.send_keys(Keys.PAGE_DOWN).perform()  # 再次发送 Page Down 键，再次模拟向下滚动一页
     time.sleep(detail_delta_time)  # 等待3秒，以便有时间到达页面底部
-    # 获取当前滚动的高度
-    # current_scrollTop = driver.execute_script("return document.querySelector('.scroll-page').scrollTop")
-    # if current_scrollTop == page_height - page_height:
-    #     print("页面已经滚动到底部")
-    #     # 在这里实现当页面滚动到底部时需要执行的代码逻辑
-    # else:
-    #     print("页面还没有滚动到底部")
     logger.info(f"slider page down！ page height {page_height} px")
-
-
-if __name__ == '__main__':
-    # ret = filter_exists_images("xianyun", "https://sd.2021.host/artworks/115463073", "_url")
-    # logger.info(ret)
-    ret = filter_not_use("https://sd.2021.host/artworks/115463073")
-    logger.success(ret)
-# url_process_page("")
-#     try:
-#         log_record()
-#         spider_artworks_url()
-#     except Exception as e:
-#         logger.error("Error！ detail msg: " + str(e))
