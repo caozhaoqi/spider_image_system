@@ -10,7 +10,7 @@ from loguru import logger
 
 from gui import constants
 from gui.constants import sis_server_version, zoom_out_scale, zoom_in_scale
-from utils.async_message_box import show_msg_alert, show_async_message_box
+from utils.async_message_box import  show_async_message_box
 from utils.base_event import scan_populate_mp4_list
 from utils.file_process import scan_directory_zip_txt
 from utils.get_url import spider_artworks_url
@@ -209,7 +209,7 @@ class UIMainWindows(QMainWindow):
         success tips
         :return:
         """
-        show_async_message_box("success", "操作完成！")
+        # show_async_message_box("success", "操作完成！")
         logger.success('show success tips.')
         # success_tips_thread = threading.Thread(
         #     target=show_msg_alert,
@@ -223,7 +223,7 @@ class UIMainWindows(QMainWindow):
         error tips
         :return:
         """
-        show_async_message_box("warning", "当前操作尚未完成！")
+        # show_async_message_box("warning", "当前操作尚未完成！")
         logger.error('show error tips.')
         # error_tips_thread = threading.Thread(
         #     target=show_msg_alert,

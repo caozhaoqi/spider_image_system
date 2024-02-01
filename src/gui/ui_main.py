@@ -1,3 +1,4 @@
+import cProfile
 import sys
 
 from PyQt5.QtWidgets import QApplication

@@ -1,3 +1,4 @@
+import cProfile
 import sys
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QThread, pyqtSignal, QEventLoop
@@ -12,6 +13,7 @@ def show_async_message_box(content, title):
     :param title:
     :return:
     """
+
     class AsyncMessageBoxThread(QThread):
         show_message = pyqtSignal(str)
 
@@ -36,7 +38,11 @@ def show_message_box(title, text):
     msg_box.exec_()
 
 
-if __name__ == '__main__':
+def test():
     # 调用函数显示异步消息提示框
     show_async_message_box("warning", "操作尚未完成！")
 
+
+if __name__ == '__main__':
+    # cProfile.run("test()")
+    cProfile.run('test()')

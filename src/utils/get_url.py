@@ -33,6 +33,9 @@ def save_img_url(driver, key_word):
                 if url and not constants.stop_spider_url_flag:
                     # 允许继续抓取url
                     driver.get(url)
+                    if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
+                        logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+                        break
                     if open_look_all(driver):
                         logger.success(f"click look all success! url: {url}")
                     # 抓取动图link
@@ -226,6 +229,9 @@ def load_href_save(driver, key_word):
     try:
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
         for image_element in image_elements:
+            if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
+                logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+                break
             if not constants.stop_spider_url_flag:
                 # 是否不停止抓取
                 image_url = image_element.get_attribute("href")
@@ -424,10 +430,10 @@ def slider_page_down(driver):
     actions = ActionChains(driver)
     actions.send_keys(Keys.END).perform()  # 发送 End 键，将光标移动到页面底部
     actions.send_keys(Keys.PAGE_DOWN).perform()  # 发送 Page Down 键，模拟向下滚动一页
-    time.sleep(3)  # 等待3秒，以便有时间到达页面底部
+    time.sleep(detail_delta_time)  # 等待3秒，以便有时间到达页面底部
     actions.send_keys(Keys.HOME).perform()  # 发送 Home 键，将光标移动到页面顶部
     actions.send_keys(Keys.PAGE_DOWN).perform()  # 再次发送 Page Down 键，再次模拟向下滚动一页
-    time.sleep(3)  # 等待3秒，以便有时间到达页面底部
+    time.sleep(detail_delta_time)  # 等待3秒，以便有时间到达页面底部
     # 获取当前滚动的高度
     # current_scrollTop = driver.execute_script("return document.querySelector('.scroll-page').scrollTop")
     # if current_scrollTop == page_height - page_height:
