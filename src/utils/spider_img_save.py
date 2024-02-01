@@ -10,9 +10,11 @@ from utils.get_url import remove_duplicates_from_txt
 
 
 @logger.catch
-def download_image(url, filename):
+def download_image(url, filename, cur_txt_image_count, cur_download_images_index):
     """
     download image from point url
+    :param cur_download_images_index:
+    :param cur_txt_image_count:
     :param url: url location
     :param filename: file name
     :return:
@@ -23,7 +25,8 @@ def download_image(url, filename):
             if response.status_code == 200:
                 with open(filename, 'wb') as f:
                     f.write(response.content)
-                logger.debug(f"Image downloaded and saved as {filename}")
+                logger.debug(f"Image saved as {filename}, cur images index: {cur_download_images_index}"
+                             f", cur txt images download count: {cur_txt_image_count}")
             else:
                 logger.error(f"Error! Failed to download image from {url}" + "detail reason: " + str(response.content))
         except ConnectionError as ce:
@@ -46,13 +49,16 @@ def download_images_from_file(file_path):
     (name, suffix) = os.path.splitext(file_path)
     save_img_url = name + "/images"
     with open(file_path, 'r') as f:
+        cur_txt_image_count = len(f.readlines())
+        cur_download_images_index = 0
         for line in f:
+            cur_download_images_index += 1
             url = line.strip()
             if url:  # 跳过空行
                 if not os.path.exists(save_img_url):
                     os.makedirs(save_img_url)
                 filename = os.path.join(name + "/images", f"{os.path.basename(url)}")
-                download_image(url, filename)
+                download_image(url, filename, cur_txt_image_count, cur_download_images_index)
 
 
 @logger.catch

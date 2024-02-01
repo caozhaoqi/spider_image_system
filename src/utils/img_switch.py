@@ -131,8 +131,8 @@ def check_images(self, image_path):
                         logger.warning(f"图片 {filename} 尺寸过小，已移动至small_images文件夹。")
                         # os.remove(filepath)  # 删除过小的图片
                         small_image_lists.append(filepath)
-                    else:
-                        logger.info(f"图片 {filename} 尺寸正常。")
+                    # else:
+                        # logger.info(f"图片 {filename} 尺寸正常。")
                 except Exception as e:
                     logger.error(f"无法打开图片 {filename}，错误信息：{e}, 已移动至error_images文件夹。")
                     # os.remove(filepath)  # 删除过小的图片
@@ -184,7 +184,7 @@ def img_category_images(self, image_path):
             filepath = os.path.join(image_path, filename)
             img_path, _ = os.path.split(filepath)
             if "square" in img_path or "custom" in img_path or "master" in img_path:
-                logger.warning(f"already category img! name: {filepath}")
+                # logger.warning(f"already category img! name: {filepath}")
                 continue
             elif "square" in filename:
                 square_image_lists.append(filename)
