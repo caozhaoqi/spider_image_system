@@ -2,7 +2,6 @@
 
 
 block_cipher = None
-datas=[('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\run\\config\\config.ini','.')]
 
 a = Analysis(
     ['ui_main.py'],
@@ -17,7 +16,7 @@ a = Analysis(
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\utils','utils'),
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\log','log')
     ],
-    hiddenimports=["PyQt5","numpy","opencv-python","loguru","configparser","selenium","requests","pypinyin"],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
