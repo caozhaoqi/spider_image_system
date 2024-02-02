@@ -1,4 +1,9 @@
 import os
+import sys
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import threading
 import time
 
@@ -6,12 +11,13 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QListWidgetItem, QHBoxLayout
 from loguru import logger
+from run.constants import fire_wall_delay_time
+from ui_event.about_dialog_ui import InformationDialog
+from ui_event.dialog_ui import Dialog
+from ui_event.get_url import spider_artworks_url
 
-from gui import constants
-from gui.about_dialog_ui import InformationDialog
-from gui.constants import fire_wall_delay_time
-from gui.dialog_ui import Dialog
-from utils.get_url import spider_artworks_url
+
+from run import constants
 from utils.time_utils import time_to_utc
 
 

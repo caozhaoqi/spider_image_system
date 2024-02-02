@@ -1,32 +1,36 @@
 # pixiv img spider online save 
 ## struct design
-1. spider pixiv.net img -> search img -> get url
-2. replace domain -> save url to txt
-3. according to url download image from txt content
+1. spider pixiv.net img -> search img -> get url.
+2. replace domain -> save url to txt.
+3. according to url download image from txt content.
+4. spider gif generate video.
+5. download gofile file.
 ## execute method
-1. python test.py
-2. python spider_img_save.py
-3. set data dir: include txt dir: data and image dir : images
+1. run sis_v1.0x.exe.
 ## position
-- if not visit pixiv.net , could visit sd.2021.host replace
-- other 
+- if not visit pixiv.net , could visit sd.2021.host replace.
+- other.
 ## GUI
-- pyqt5 paint main ui
+- pyqt5 paint main ui.
 ## technology lib
-1. selenium
-2. loguru
-3. request
-4. os
+1. selenium.
+2. loguru.
+3. request.
+4. os.
+5. other(readme requirements.txt).
 ## folder
-1. ./data/href_url/ artwork url folder
-2. ./data/img_url/ img url txt folder
-3. ./data/*/images save img folder
-4. ./all_finish already save img txt folder
-5. ./images/* already download image folder 
-6. ../test/*.py test script folder
-7. ./log_dir script run log folder
+1. ./data/href_url/ artwork url folder.
+2. ./data/img_url/ img url txt folder.
+3. ./data/*/images save img folder.
+4. ./all_finish already save img txt folder(deleted).
+5. ./images/* already download image folder(deleted). 
+6. ../test/*.py test script folder(deleted).
+7. ./log_dir script run log folder.
+8. other see ./data.
 ## other
-1. self config url (to do)
+1. self config url (finished).
+2. play all video(finished).
+3. other...(to be continued...)
 - 第三方库安装
 - bugs 1 : 在类方法中不能使用@logger.catch注解方法，会出现以下错误：
 ```shell

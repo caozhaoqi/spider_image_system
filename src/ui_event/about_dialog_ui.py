@@ -1,5 +1,11 @@
+import os
+import sys
+
+from run.constants import sis_server_version, publish_date, build_date
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton
-from gui.constants import build_date, sis_server_version, publish_date
 
 
 class InformationDialog(QDialog):

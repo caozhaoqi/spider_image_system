@@ -1,5 +1,10 @@
 import os
+import sys
 
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from image.spider_gif_url import spider_gif_images
 from loguru import logger
 from selenium import webdriver
 from selenium.common import NoSuchWindowException
@@ -7,10 +12,9 @@ import time
 from pypinyin import lazy_pinyin, Style
 from selenium.webdriver import ActionChains, Keys
 
-from gui import constants
-from gui.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
+from run import constants
+from run.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
     visit_url, target_url, s2_url, data_path, spider_images_max_count
-from utils.spider_gif_url import spider_gif_images
 
 
 @logger.catch
@@ -80,9 +84,9 @@ def spider_artworks_url(self, key_word):
     # 设置代理服务器
     proxy = {
         "proxyType": "manual",
-        "httpProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口
-        "ftpProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
-        "sslProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
+        "httpProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口
+        "ftpProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
+        "sslProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
         "noProxy": "",
         "proxyAutoconfigUrl": ""
     }
@@ -351,7 +355,7 @@ def filter_not_use(url):
     # /25260574_6aed493b358851d4d2fbfb53290b5991_50.jpg
     # filter_url_http = []
     filter_url_http = constants.filter_http_url.split(',')
-    # logger.info(f"http url regex content: {constants.filter_http_url}")
+    # logger.info(f"http_tools url regex content: {constants.filter_http_url}")
     try:
         for filter_url_http_content in filter_url_http:
             if filter_url_http_content in url:
@@ -365,7 +369,7 @@ def filter_not_use(url):
 @logger.catch
 def filter_not_use_url(image_url):
     """
-    filter not need http url
+    filter not need http_tools url
     :param image_url: filter url
     :return:
     """

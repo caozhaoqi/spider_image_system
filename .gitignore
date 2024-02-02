@@ -1,11 +1,7 @@
-fastapi_log/
-/src/data/
 venv/
 .idea/
-src/gui/log_dir/
 **/__pycache__
-src/gui/build/
-src/gui/dist/
-src/all_finish/
-src/img
-src/gui/data/
+src/run/build/
+src/run/dist/
+src/run/data/
+src/run/log_dir/

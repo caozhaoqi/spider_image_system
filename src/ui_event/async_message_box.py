@@ -1,10 +1,16 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import cProfile
 import sys
 
 import time
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QThread, pyqtSignal
-from gui import constants
+from run import constants
+
 
 class Worker(QThread):
     finished = pyqtSignal(str)

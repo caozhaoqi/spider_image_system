@@ -1,8 +1,12 @@
 import os
+import sys
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from loguru import logger
-from gui import constants
-from utils.gif_img_process import read_gif_url
+from run import constants
+from image.gif_img_process import read_gif_url
 
 
 @logger.catch
@@ -21,9 +25,7 @@ def spider_gif_images(keyword, chrome_driver):
         if request['initiatorType'] == 'fetch' and "img-zip-ugoira" in request['name']:
             api_urls.append(request['name'])
             logger.success(f"spider gif zip url: {request['name']}")
-    # logger.info("write url to txt!")
     txt_path_name = os.path.join(constants.data_path, "href_url")
-    # 'https://sd.2021.host/artworks/115574488'
     if not os.path.exists(txt_path_name):
         os.makedirs(txt_path_name)
     if len(api_urls) == 0:
@@ -33,15 +35,3 @@ def spider_gif_images(keyword, chrome_driver):
         return True
     return False
 
-# if __name__ == '__main__':
-#     # spider_gif_url()
-#     url = 'https://sd.2021.host/artworks/115574488'
-#     # api_spider_link('https://sd.2021.host/artworks/115574488')
-#     options = webdriver.ChromeOptions()
-#     options.add_argument("--auto-open-devtools-for-tabs")
-#     driver = webdriver.Chrome(options=options)
-#     driver.get(url)  # 替换为实际的网页URL
-#
-#     # 等待网页加载完成
-#     time.sleep(7)  # 等待5秒钟，确保网页上的资源完全加载完成
-#     spider_gif_images("lisa", driver)

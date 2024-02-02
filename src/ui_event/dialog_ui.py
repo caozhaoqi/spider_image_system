@@ -1,12 +1,19 @@
+import os
+import sys
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import sys
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QLabel, QFileDialog, QComboBox, QMessageBox, \
     QCheckBox, QHBoxLayout, QWidget
 from loguru import logger
-from gui.constants import visit_url, s1_url, s2_url, target_url, r18_mode, all_show, proxy_flag, \
-    spider_images_max_count, search_delta_time, detail_delta_time, output_video_fps, sis_log_level, proxy_server_ip, \
-    proxy_server_port, output_video_width, output_video_height
-from utils.SpiderConfigModel import SpiderConfigModel
-from utils.ini_file_spider import write_minio_config_to_file
+
+from file.ini_file_spider import write_minio_config_to_file
+from run.constants import visit_url, s2_url, s1_url, target_url, spider_images_max_count, sis_log_level, r18_mode, \
+    all_show, proxy_flag, proxy_server_ip, proxy_server_port, search_delta_time, detail_delta_time, output_video_fps, \
+    output_video_width, output_video_height
+from model.SpiderConfigModel import SpiderConfigModel
 
 
 class Dialog(QDialog):

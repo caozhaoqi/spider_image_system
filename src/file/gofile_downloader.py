@@ -1,16 +1,23 @@
 #! /usr/bin/env python3
 from __future__ import annotations
 
+import os
+import sys
+
+from requests import get
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
 from os import path, mkdir, getcwd, chdir, getenv
 from sys import exit, stdout, stderr
 from typing import Dict, List
 
 from loguru import logger
-from requests import get
 from concurrent.futures import ThreadPoolExecutor
 from platform import system
 from hashlib import sha256
-from shutil import move, rmtree
+from shutil import move
 from time import perf_counter
 
 from utils.http_tools import is_valid_url
@@ -295,29 +302,10 @@ def start_download_file_link(link):
     """
     url = link
 
-    # url: str | None = None
     password: str | None = None
 
-    # argc: int = len(argv)
-
-    # if argc > 1:
-    #     url = argv[1]
-
-    # if argc > 2:
-    #     password = argv[2]
-
-    # Run
     if url == '' or url is None or not is_valid_url(url):
         logger.warning(f"you input msg error! url: {url}")
     else:
         _print('Starting, please wait...' + NEW_LINE)
         Main(url=url, password=password, max_workers=3)
-#     else:
-#         die("Usage:"
-#             + NEW_LINE
-#             + "python gofile_downloader.py https://gofile.io/d/contentid"
-#             + NEW_LINE
-#             + "python gofile_downloader.py https://gofile.io/d/contentid password"
-#         )
-# except KeyboardInterrupt:
-#     exit(1)

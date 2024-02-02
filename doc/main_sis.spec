@@ -2,15 +2,20 @@
 
 
 block_cipher = None
-datas=[('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\gui\\config\\config.ini','.')]
+datas=[('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\run\\config\\config.ini','.')]
 
 a = Analysis(
     ['ui_main.py'],
     pathex=[],
     binaries=[],
     datas=[
+    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\file','file'),
+    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\http','http'),
+    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\image','image'),
+    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\model','model'),
+    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\ui_event','ui_event'),
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\utils','utils'),
-     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\log','log')
+    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\log','log')
     ],
     hiddenimports=["PyQt5","numpy","opencv-python","loguru","configparser","selenium","requests","pypinyin"],
     hookspath=[],
@@ -31,7 +36,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='sis_v1.0.5_beta',
+    name='sis_v1.0.5_alpha',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

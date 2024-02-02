@@ -1,10 +1,15 @@
 import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLineEdit, QPushButton, QHBoxLayout, \
     QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider, QListWidget, QSizePolicy, QListView
 from loguru import logger
-from utils.base_event import about_message_lookup, visit_web, \
-    edit_config_msg, stop_spider_image, stop_download_image, auto_start_spider_image
+
+from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
+    visit_web, about_message_lookup
 
 
 @logger.catch

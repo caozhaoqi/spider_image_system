@@ -1,13 +1,19 @@
 import os
+import sys
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import requests
 
 from loguru import logger
 from urllib3.exceptions import ProtocolError
 
-from gui import constants
-from gui.constants import data_path
-from utils.file_process import count_lines
-from utils.get_url import remove_duplicates_from_txt
+from run import constants
+from run.constants import data_path
+from file.file_process import count_lines
+from ui_event.get_url import remove_duplicates_from_txt
+
 
 
 @logger.catch

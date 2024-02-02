@@ -1,3 +1,11 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from file.file_process import scan_directory_zip
+from ui_event.get_url import remove_duplicates_from_txt
+
 import threading
 import urllib.request
 
@@ -10,10 +18,8 @@ import time
 from loguru import logger
 from requests import HTTPError, Timeout, TooManyRedirects
 
-from gui import constants
-from gui.constants import output_video_fps, download_finish_flag
-from utils.file_process import scan_directory_zip_txt, scan_directory_zip
-from utils.get_url import remove_duplicates_from_txt
+from run import constants
+from run.constants import output_video_fps
 
 
 @logger.catch
@@ -256,7 +262,7 @@ def url_zip_all_process(zip_url_txt_list):
         # 去重
         old_file_name = os.path.join(txt_path, zip_url_detail)
         new_file_name = os.path.join(txt_path, txt_file_name + "_result" + ext)
-        remove_duplicates_from_txt(old_file_name,  new_file_name)
+        remove_duplicates_from_txt(old_file_name, new_file_name)
         logger.success(f"remove duplicate file success: {zip_url_detail}")
         with open(new_file_name, 'r') as f:
             zip_url_list = f.readlines()

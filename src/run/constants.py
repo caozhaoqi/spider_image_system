@@ -1,5 +1,9 @@
 import os
-from utils.ini_file_spider import read_ini_config, ini_file_path, check_ini_config
+import sys
+
+from file.ini_file_spider import check_ini_config, read_ini_config, ini_file_path
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 检查默认配置项
 check_ini_config()

@@ -1,10 +1,16 @@
 import os
+import sys
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import os
 
 import cv2
 from loguru import logger
 
-from gui import constants
-from gui.constants import output_video_fps, output_video_height, output_video_width
+from run import constants
+from run.constants import output_video_fps, output_video_height, output_video_width
 from utils.time_utils import id_generate_time
 
 

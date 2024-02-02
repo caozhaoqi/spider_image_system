@@ -2,10 +2,10 @@ import configparser
 import os
 import sys
 
-from utils.SpiderConfigModel import SpiderConfigModel
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from model.SpiderConfigModel import SpiderConfigModel
 from loguru import logger
 
 ini_path = os.path.join(os.getcwd(), f'./config/')

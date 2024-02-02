@@ -1,10 +1,15 @@
 import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import os
 import shutil
 
 from PyQt5.QtGui import QPixmap
 from loguru import logger
 
-from gui.constants import data_path
+from run.constants import data_path
 
 folder_path = os.path.realpath(os.path.join(os.getcwd(), data_path))
 
