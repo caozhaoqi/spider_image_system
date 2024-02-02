@@ -1,48 +1,49 @@
 import cProfile
 import sys
+
+import time
 from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtCore import QThread, pyqtSignal, QEventLoop
-from loguru import logger
+from PyQt5.QtCore import QThread, pyqtSignal
+from gui import constants
+
+class Worker(QThread):
+    finished = pyqtSignal(str)
+
+    def run(self):
+        # 在这里执行耗时操作
+        time.sleep(5)  # 模拟耗时操作
+        if not constants.stop_download_image_flag:
+            self.finished.emit("操作完成")  # 发送信号表示工作完成
 
 
-@logger.catch
-def show_async_message_box(content, title):
-    """
+class MyApp(QApplication):
+    def __init__(self, sys_argv):
+        super(MyApp, self).__init__(sys_argv)
+        self.messageBox = None
+        self.thread = None
+        self.initUI()
 
-    :param content:
-    :param title:
-    :return:
-    """
+    def initUI(self):
+        self.messageBox = QMessageBox()
+        self.messageBox.setWindowTitle('提示')
+        self.messageBox.setText('开始执行任务...')
+        self.messageBox.setModal(True)
+        # self.show()
+        self.thread = Worker()
+        self.thread.start()  # 开始线程
+        self.thread.finished.connect(self.onFinished)  # 连接信号到槽函数
+        # self.thread.exit()
 
-    class AsyncMessageBoxThread(QThread):
-        show_message = pyqtSignal(str)
-
-        def run(self):
-            loop = QEventLoop(self)
-            self.show_message.connect(loop.quit)
-            self.show_message.emit(content)
-            loop.exec_()
-
-    app = QApplication([])
-    window = AsyncMessageBoxThread()
-    window.start()
-    window.show_message.connect(lambda: show_message_box(content, title))
-    sys.exit(app.exec_())
-
-
-@logger.catch
-def show_message_box(title, text):
-    msg_box = QMessageBox()
-    msg_box.setWindowTitle(title)
-    msg_box.setText(text)
-    msg_box.exec_()
+    def onFinished(self, result):
+        # 在这里处理线程结束后的操作，例如关闭对话框等
+        self.messageBox.setText('操作完成')  # 更新对话框文本
+        self.messageBox.exec_()  # 显示对话框，等待用户关闭
 
 
 def test():
-    # 调用函数显示异步消息提示框
-    show_async_message_box("warning", "操作尚未完成！")
+    app = MyApp(sys.argv)
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
-    # cProfile.run("test()")
     cProfile.run('test()')

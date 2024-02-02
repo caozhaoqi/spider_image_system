@@ -24,7 +24,6 @@ def save_img_url(driver, key_word):
     key_word_pinyin = ''.join(lazy_pinyin(key_word, style=Style.TONE3))
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith(key_word_pinyin + "_result_url.txt")]
-    images_cur_count = 0
     for cdds_path in cdds:
         logger.debug("start save img url, artwork href from file name: " + str(cdds_path))
         with open(cdds_path, 'r') as f:
@@ -40,7 +39,9 @@ def save_img_url(driver, key_word):
                     if open_look_all(driver):
                         logger.success(f"click look all success! url: {url}")
                     # 抓取动图link
-                    slider_page_down(driver)
+                    if constants.spider_mode == 'manual':
+                        # 手动模式滑动页面 自动模式不滑动
+                        slider_page_down(driver)
                     time.sleep(detail_delta_time)
                     if spider_gif_images(key_word_pinyin, driver):
                         logger.success("gif url txt save success!")
@@ -53,7 +54,6 @@ def save_img_url(driver, key_word):
                             result = filter_exists_images(key_word_pinyin, image_url, "_img")
                             if result:
                                 continue
-                            images_cur_count += 1
                             driver.execute_script("return arguments[0].src;", image_element)
                             image_filename = os.path.basename(image_url)  # 获取图片文件名
                             image_url = image_url.replace(s1_url, target_url)
@@ -62,7 +62,7 @@ def save_img_url(driver, key_word):
                             write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
                             logger.debug(f"from url: {url}, replace point source url, save _img url success: "
                                          f"{image_filename}, _img txt all save images count(cur spider count and _img "
-                                         f"txt count): {constants.spider_images_current_count + images_cur_count}")
+                                         f"txt count): {constants.spider_images_current_count}")
                 else:
                     logger.warning("stop spider url! save_img url.")
                     return False
@@ -254,7 +254,8 @@ def load_href_save(driver, key_word):
                     continue
                 image_urls_list.append(image_url)
                 constants.spider_images_current_count += 1
-                if constants.spider_images_current_count >= int(spider_images_max_count):
+                if constants.spider_images_current_count >= int(spider_images_max_count) and constants.spider_mode \
+                        == 'manual':
                     # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
                     logger.warning(
                         "spider image max value, current value: " + str(constants.spider_images_current_count))

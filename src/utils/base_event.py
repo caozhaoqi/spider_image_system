@@ -158,8 +158,8 @@ def auto_spider_img_thread(self):
         constants.stop_spider_url_flag = False
         spider_artworks_url(self, spider_img_keyword_detail.strip())
         if constants.stop_spider_url_flag:
-            logger.warning(f"manual stop! will exit, end spider keyword: {spider_img_keyword_detail}!")
-            continue
+            logger.warning(f"auto spider img stop! will exit, end spider keyword: {spider_img_keyword_detail}!")
+            break
         if constants.firewall_flag:
             logger.warning(f"block {constants.visit_url} domain, will retry!")
             # 设置重试时间
