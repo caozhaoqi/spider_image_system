@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLine
     QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider, QListWidget, QSizePolicy, QListView
 from loguru import logger
 from utils.base_event import about_message_lookup, visit_web, \
-    edit_config_msg, stop_spider_image, stop_download_image
+    edit_config_msg, stop_spider_image, stop_download_image, auto_start_spider_image
 
 
 @logger.catch
@@ -16,7 +16,8 @@ def base_menu(self):
     # 创建菜单栏
     self.menu_bar = QMenuBar()
     self.image_menu = QMenu('图像', self.menu_bar)
-    self.start_spider_action = QAction('开始爬取', self.image_menu)
+    self.start_spider_action = QAction('开始自动爬取', self.image_menu)
+    self.start_spider_action.triggered.connect(lambda: auto_start_spider_image(self))
     self.stop_spider_action = QAction('停止爬取', self.image_menu)
     self.stop_spider_action.triggered.connect(lambda: stop_spider_image())
     self.stop_download_action = QAction('停止下载', self.image_menu)

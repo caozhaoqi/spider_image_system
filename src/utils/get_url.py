@@ -35,6 +35,7 @@ def save_img_url(driver, key_word):
                     driver.get(url)
                     if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
                         logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+                        constants.firewall_flag = True
                         break
                     if open_look_all(driver):
                         logger.success(f"click look all success! url: {url}")
@@ -88,6 +89,12 @@ def spider_artworks_url(self, key_word):
 
     # 创建浏览器驱动程序并设置代理参数
     options = webdriver.ChromeOptions()
+    if constants.spider_mode == 'auto':
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        logger.warning("current spider mode: auto mode!")
+
     options.add_argument("--auto-open-devtools-for-tabs")
     if proxy_flag == 'True':
         options.set_capability("proxy", proxy)
@@ -104,9 +111,6 @@ def spider_artworks_url(self, key_word):
     cur_page = 1
     url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode
     while True:
-        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
-            logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
-            break
         if constants.stop_spider_url_flag:
             logger.warning("stop spider url. get url spider artwork url.")
             break
@@ -115,6 +119,10 @@ def spider_artworks_url(self, key_word):
         driver.get(url_detail)
         # 等待图片加载完成
         time.sleep(search_delta_time)
+        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
+            logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+            constants.firewall_flag = True
+            break
         logger.debug("start load href save url to txt.")
         load_save_flag = load_href_save(driver, key_word)
         if load_save_flag:
@@ -132,9 +140,12 @@ def spider_artworks_url(self, key_word):
 
         else:
             break
-    # 循环抓取结束 断掉浏览器 重置标志位、
+    # 循环抓取结束 断掉浏览器 重置标志位
     self.success_tips()
-    constants.stop_spider_url_flag = True
+    if constants.spider_mode == 'manual':
+        # 手动模式抓取完成后自动停止
+        constants.stop_spider_url_flag = True
+    # elif constants.spider_mode == 'auto'
     logger.warning("google chrome will exit! ")
     driver.quit()
 

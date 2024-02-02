@@ -10,7 +10,6 @@ from loguru import logger
 
 from gui import constants
 from gui.constants import sis_server_version, zoom_out_scale, zoom_in_scale
-from utils.async_message_box import  show_async_message_box
 from utils.base_event import scan_populate_mp4_list
 from utils.file_process import scan_directory_zip_txt
 from utils.get_url import spider_artworks_url
@@ -154,6 +153,7 @@ class UIMainWindows(QMainWindow):
             # 正在抓取
             self.error_tips()
         else:
+            constants.spider_mode = 'manual'
             key_word = self.file_text.text()
             if key_word == '' or key_word is None:
                 logger.warning("input keyword empty or error!")

@@ -85,10 +85,12 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "proxy_server_port", str(minio_config.proxy_server_port))
     # save default value
     conf.set("spider_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.2021.host,"
-                                                 "square,custom")
-    conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.2021.host,tags,square,custom,square,custom")
+                                                 "square,custom,_50.gif")
+    conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.2021.host,tags,square,custom,square,custom,"
+                                                  "_50.gif")
     conf.set("spider_config", "zoom_out_scale", "0.9")
     conf.set("spider_config", "zoom_in_scale", "1.1")
+    conf.set("spider_config", "fire_wall_delay_time", "300")
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
     logger.info("config write finished , read test , current use visit url : " + conf.get("spider_config",
@@ -171,10 +173,12 @@ def check_ini_config():
         conf.set("spider_config", "proxy_server_ip", "192.168.199.26")
         conf.set("spider_config", "proxy_server_port", "8080")
         conf.set("spider_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.2021.host,"
-                                                     "square,custom")
-        conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.2021.host,tags,square,custom,square,custom")
+                                                     "square,custom,_50.gif")
+        conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.2021.host,tags,square,custom,square,custom,"
+                                                      "_50.gif")
         conf.set("spider_config", "zoom_out_scale", "0.9")
         conf.set("spider_config", "zoom_in_scale", "1.1")
+        conf.set("spider_config", "fire_wall_delay_time", "300")
 
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')

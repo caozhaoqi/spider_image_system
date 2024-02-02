@@ -1,4 +1,6 @@
 import os
+import threading
+import time
 
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
@@ -7,7 +9,9 @@ from loguru import logger
 
 from gui import constants
 from gui.about_dialog_ui import InformationDialog
+from gui.constants import fire_wall_delay_time
 from gui.dialog_ui import Dialog
+from utils.get_url import spider_artworks_url
 from utils.time_utils import time_to_utc
 
 
@@ -91,12 +95,83 @@ def scan_populate_mp4_list(self):
 
 @logger.catch
 def stop_spider_image():
+    """
+    stop spider images action
+    :return:
+    """
     constants.stop_spider_url_flag = True
     logger.warning("flag stop_spider_url_flag set true!")
     pass
 
 
 @logger.catch
+def auto_start_spider_image(self):
+    """
+    auto spider image thread
+    @:param self .
+    :return:
+    """
+    spider_thread_obj = threading.Thread(
+        target=auto_spider_img_thread,
+        args=(self,))
+    spider_thread_obj.start()
+    logger.info("auto spider img thread.")
+
+
+@logger.catch
+def auto_spider_img_thread(self):
+    """
+
+    @:param self .
+    :return:
+    """
+    # read txt file spider keyword
+    if not constants.stop_spider_url_flag:
+        logger.error("already spider img, please stop here before operate!")
+    auto_spider_file_path = os.path.join(constants.data_path, "auto_spider_img")
+
+    if not os.path.exists(auto_spider_file_path):
+        os.makedirs(auto_spider_file_path)
+
+    file_name = 'spider_img_keyword.txt'
+    full_file_path = os.path.join(auto_spider_file_path, file_name)
+    if not os.path.exists(full_file_path):
+        # 如果文件不存在，创建它
+        with open(full_file_path, 'w') as f:
+            logger.warning(f"{full_file_path} not exists, will create!")
+            pass  # 创建一个空文件
+    try:
+        with open(full_file_path, 'r', encoding='utf-8') as f:
+            spider_image_keyword = f.readlines()
+    except Exception as e:
+        logger.error(f"unknown error, detail {e}")
+        return False
+
+    if len(spider_image_keyword) == 0:
+        logger.warning("auto spider image null, will exit!")
+        return False
+        # while True:
+    constants.spider_mode = 'auto'
+    for spider_img_keyword_detail in spider_image_keyword:
+        logger.debug("you input key word is: " + str(spider_img_keyword_detail))
+        # 读取用户输入路径
+        constants.stop_spider_url_flag = False
+        spider_artworks_url(self, spider_img_keyword_detail.strip())
+        if constants.stop_spider_url_flag:
+            logger.warning(f"manual stop! will exit, end spider keyword: {spider_img_keyword_detail}!")
+            continue
+        if constants.firewall_flag:
+            logger.warning(f"block {constants.visit_url} domain, will retry!")
+            # 设置重试时间
+            time.sleep(fire_wall_delay_time)
+            continue
+
+
+@logger.catch
 def stop_download_image():
+    """
+    stop download image
+    :return:
+    """
     constants.stop_download_image_flag = True
     logger.warning("flag stop_download_mage_flag set true!")
