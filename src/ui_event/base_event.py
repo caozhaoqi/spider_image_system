@@ -141,14 +141,14 @@ def auto_spider_img_thread(self):
     for root, dirs, files in os.walk(auto_spider_file_path):
         for file in files:
             if file.endswith('spider_img_keyword.txt'):
-                txt_file_list.append(file)
+                txt_file_list.append(os.path.join(root, file))
 
     file_name = 'spider_img_keyword.txt'
     full_file_path = os.path.join(auto_spider_file_path, file_name)
     if not os.path.exists(full_file_path):
         # 如果文件不存在，创建它
         with open(full_file_path, 'w') as f:
-            logger.warning(f"{full_file_path} not exists, will create!")
+            logger.warning(f"{full_file_path} not exists, will create demo txt!")
             pass  # 创建一个空文件
     try:
         if len(txt_file_list) == 0:
@@ -178,7 +178,7 @@ def auto_spider_img_thread(self):
                 logger.warning(f"auto spider img stop! will exit, end spider keyword: {spider_image_keyword_item}!")
                 break
             if constants.firewall_flag:
-                logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time: {fire_wall_delay_time}.")
+                logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time: {fire_wall_delay_time / 60}min.")
                 # 设置重试时间
                 time.sleep(fire_wall_delay_time)
                 continue

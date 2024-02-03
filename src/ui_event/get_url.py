@@ -62,11 +62,12 @@ def save_img_url(driver, key_word):
                             image_filename = os.path.basename(image_url)  # 获取图片文件名
                             image_url = image_url.replace(s1_url, target_url)
                             image_url = image_url.replace(s2_url, target_url)
-
+                            constants.spider_images_current_count += 1
+                            # 已获取img 数量自增 仅在此统计
                             write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
                             logger.debug(f"from url: {url}, replace point source url, save _img url success: "
                                          f"{image_filename}, _img txt all save images count(cur spider count and _img "
-                                         f"txt count): {constants.spider_images_current_count}")
+                                         f"count): {constants.spider_images_current_count}")
                 else:
                     logger.warning("stop spider url! save_img url.")
                     return False
@@ -257,7 +258,7 @@ def load_href_save(driver, key_word):
                 if filter_exists_images(key_word_pinyin, image_url, "_url"):
                     continue
                 image_urls_list.append(image_url)
-                constants.spider_images_current_count += 1
+                # constants.spider_images_current_count += 1
                 if constants.spider_images_current_count >= int(spider_images_max_count) and constants.spider_mode \
                         == 'manual':
                     # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
