@@ -172,10 +172,12 @@ def auto_spider_img_thread(self):
         logger.warning("auto spider image null, will exit!")
         return False
     constants.spider_mode = 'auto'
+    txt_index = 0
     for spider_img_keyword_detail in spider_image_keyword:
         logger.debug("cur spider kew word txt: " + str(spider_img_keyword_detail))
         # 读取用户输入路径
         constants.stop_spider_url_flag = False
+        txt_index +=  1
         for spider_image_keyword_item in spider_img_keyword_detail:
             logger.debug("cur spider kew word: " + str(spider_image_keyword_item))
             try:
@@ -193,6 +195,10 @@ def auto_spider_img_thread(self):
                 # 设置重试时间
                 time.sleep(fire_wall_delay_time)
                 continue
+        if constants.stop_spider_url_flag:
+            # stop auto mode spider
+            logger.warning(f"auto spider img stop! will exit, end spider txt name: {txt_file_list[txt_index]}!")
+            break
 
 
 @logger.catch
