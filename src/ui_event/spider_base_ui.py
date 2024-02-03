@@ -83,7 +83,7 @@ def tab_ui_tab(self):
 @logger.catch
 def tab_1_ui_paint(self):
     """
-
+    tab1 ui paint
     :param self:
     :return:
     """
@@ -130,6 +130,11 @@ def tab_1_ui_paint(self):
 
 @logger.catch
 def tab_2_ui_paint(self):
+    """
+    tab2 ui paint
+    :param self:
+    :return:
+    """
     # 搜索栏内容绘制 标题头部显示信息主要包括：文件名 文件名乘 图片数量信息
     search_item_paint_tab2(self)
 
@@ -153,13 +158,9 @@ def tab_2_ui_paint(self):
     # 将label添加到scroll_area中
     self.scroll_area_video.setLayout(self.h_box_1_list)
 
-    # self.scroll_area_video.setWidget(self.listWidget_1)
-
-    # self.scroll_area_video.setFixedSize()
     self.scroll_area_video.setParent(self.tab2)
     # 设置滚动区域的大小策略，使其根据内容自动调整大小
     self.scroll_area_video.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-    # self.scroll_area_video.resize(self.listWidget.maximumSize())
     self.h_box_2_video.addWidget(self.scroll_area_video)
     # 创建用于控制播放的按钮
     self.play_video_button = QPushButton(u"播放")
@@ -174,7 +175,6 @@ def tab_2_ui_paint(self):
     self.slider.setTickInterval(20)  # 设置刻度间隔为20
 
     # slider 和 video 布局集合  垂直布局 -
-    #                                -
     self.v_box_video_slider_layout = QVBoxLayout()
     self.v_box_video_slider_layout.addLayout(self.h_box_2_video)
     self.v_box_video_slider_layout.addWidget(self.slider)
@@ -183,7 +183,6 @@ def tab_2_ui_paint(self):
     self.h_box_3_video = QHBoxLayout()
     self.h_box_3_video.addWidget(self.generate_button_video)
     self.h_box_3_video.addWidget(self.play_video_button)
-    # self.h_box_3_video.addWidget(self.pause_button_video)
 
     # 整体布局 垂直布局
     self.vbox_video = QVBoxLayout()
@@ -200,12 +199,16 @@ def tab_2_ui_paint(self):
     self.pause_button_video.clicked.connect(self.pause_video)
     self.generate_button_video.clicked.connect(self.image_video_click)
     self.slider.valueChanged[int].connect(self.set_video_position_click)  # 连接滑块值变化信号和视频位置设置槽函数
-
     pass
 
 
 @logger.catch
 def search_item_paint(self):
+    """
+    search item ui add
+    :param self:
+    :return:
+    """
     # 创建网格布局
     self.grid_layout = QGridLayout()
     self.setLayout(self.grid_layout)
@@ -226,24 +229,17 @@ def search_item_paint(self):
     row += 1
     col += 1
 
-    #     self.grid_layout.addWidget(self.file_name_label, 1, 1)
     self.file_name_show_label = QLabel("文件名:")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
     self.grid_layout.addWidget(self.file_name_show_label, row - 1, col - 1)
-    row = 0
-    col = 0
 
     self.file_name_label = QLabel("file_name")
     self.grid_layout.addWidget(self.file_name_label, 1, 1)
 
-    # 你可以继续添加其他控件到下一行，例如:
     self.show_page_label = QLabel("0/0")
     self.grid_layout.addWidget(self.show_page_label, 1, 2)
 
-    #     self.grid_layout.addWidget(self.file_name_label, 1, 1)
     self.image_search_label = QLabel("图片搜索:")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
     self.grid_layout.addWidget(self.image_search_label, 2, 0)
-    row = 0
-    col = 0
 
     self.image_page = QLineEdit()
     self.grid_layout.addWidget(self.image_page, 2, 1)
@@ -253,17 +249,11 @@ def search_item_paint(self):
     self.grid_layout.addWidget(self.jump_point_image, 2, 2)
 
     h_layout = QHBoxLayout()
-    # self.image_operate_label = QLabel("图片操作:拖动进行图片移动,点击放大、缩小按钮控制图片缩放！")
-    # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
-    # h_layout.addWidget(self.image_operate_label)
 
     h_layout.addStretch()
     # h_layout.addStretch()
     self.btn_zoom_in = QPushButton('放大', self)
     h_layout.addWidget(self.btn_zoom_in)
-
-    # self.file_operate_label = QLabel("图片操作：")
-    # self.grid_layout.addWidget(self.file_operate_label, 4, 0)
 
     self.btn_zoom_out = QPushButton('缩小', self)
     h_layout.addWidget(self.btn_zoom_out)
@@ -305,22 +295,15 @@ def tab_3_ui_paint(self):
     self.img_category_button = QPushButton(u"分类图片")
     self.h_box_3_3 = QHBoxLayout()
     self.h_box_3_3.addWidget(self.un_normal_img_button)
-    # self.h_box_3_3.addStretch()
     self.h_box_3_3.addWidget(self.img_category_button)
 
     self.download_gif_zip = QPushButton(u"下载压缩包")
     self.unzip_generate_video = QPushButton(u"解压生成视频")
-    # self.h_box_3_3 = QHBoxLayout()
     self.h_box_3_3.addWidget(self.download_gif_zip)
-    # self.h_box_3_3.addStretch()
     self.h_box_3_3.addWidget(self.unzip_generate_video)
 
     self.download_video_zip = QPushButton(u"下载内容")
-    # self.unzip_generate_video = QPushButton(u"解压生成视频")
-    # self.h_box_3_3 = QHBoxLayout()
     self.h_box_3_3.addWidget(self.download_video_zip)
-    # self.h_box_3_3.addStretch()
-    # self.h_box_3_3.addWidget(self.unzip_generate_video)
 
     self.vbox_3 = QVBoxLayout()
     self.vbox_3.addLayout(self.h_box_3)
@@ -328,8 +311,6 @@ def tab_3_ui_paint(self):
     self.vbox_3.addLayout(self.h_box_3_3)
 
     # 创建布局并将表格添加到布局中
-    # layout = QVBoxLayout()
-    # layout.addWidget(vbox)
     self.tab3.setLayout(self.vbox_3)
     self.setCentralWidget(self.tab_widget)
 

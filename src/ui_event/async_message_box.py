@@ -47,6 +47,10 @@ class MyApp(QApplication):
 
 
 def test():
+    """
+    profile test.
+    :return:
+    """
     app = MyApp(sys.argv)
     sys.exit(app.exec_())
 

@@ -17,7 +17,7 @@ from utils.time_utils import id_generate_time
 @logger.catch
 def generate_video_from_images(images_input_path, video_out_path):
     """
-
+    generate video from images list
     :param images_input_path:
     :param video_out_path:
     :return:
@@ -62,7 +62,6 @@ def generate_video_from_images(images_input_path, video_out_path):
 
     try:
         export_index = 0
-        # image_size = ()
         image_size_len = len(image_paths)
         for image_path in os.listdir(images_input_path):
             export_index += 1
@@ -154,12 +153,10 @@ def image_fill_black(target_dir, image_path):
                     border_height = 0
                     grap_height = 0
                 border = border_width, border_height
-                # logger.debug("grap msg: grap_width: " + str(grap_width) + ", grap_height: " + str(grap_height))
                 # 填充时自动补充至图像底边和右边 以确保输出图像等于目标尺寸 1920 1080
                 img = cv2.copyMakeBorder(img, border[1], border[1] + grap_height, border[0], border[0] + grap_width,
                                          cv2.BORDER_CONSTANT, value=[0, 0, 0])
                 out_height, out_width = img.shape[:2]
-                # logger.debug("size little out put msg: width: " + str(out_width) + ", height: " + str(out_height))
                 if out_height == output_video_height and out_width == output_video_width:
                     break
                 else:
@@ -168,7 +165,6 @@ def image_fill_black(target_dir, image_path):
             elif width > target_size[0] or height > target_size[1]:
                 img = cv2.resize(img, target_size, interpolation=cv2.INTER_LINEAR)
                 out_height, out_width = img.shape[:2]
-                # logger.debug("size larger out put msg: width: " + str(out_width) + ", height: " + str(out_height))
                 if out_height == output_video_height and out_width == output_video_width:
                     break
                 else:
@@ -179,10 +175,7 @@ def image_fill_black(target_dir, image_path):
         # Step 8: Display or save the resized image (optional)
         file_path, file_name = os.path.split(image_path)
         # 保存或显示结果
-        # out_height, out_width = img.shape[:2]
-        # logger.debug("end out put msg: width: " + str(out_width) + ", height: " + str(out_height))
         cv2.imwrite(os.path.join(target_dir, "result_" + file_name), img)
-        # cv2.imshow('Result', new_img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     except AttributeError as uie:
@@ -234,7 +227,6 @@ def play_video_process(self):
 
             # 创建跟踪条
             # 第一个参数是跟踪条的名称，第二个参数是窗口的名称，第三个参数是跟踪条的默认位置（0-100），第四个参数是跟踪条的长度
-            # cv2.createTrackbar('Position', 'Video', 0, 100, lambda x: None)
             if cap.isOpened():
                 while True:
                     ret, frame = cap.read()
@@ -282,7 +274,6 @@ def play_video_process(self):
                     # 在视频帧上显示当前播放位置和播放速度（可选）
                     cv2.putText(frame, f"Pos: {current_time}ms, Speed: {play_speed}", (10, 30),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    # cv2.putText(frame, str(position), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                     if cv2.waitKey(1) & 0xFF == ord('q'):  # 按q退出播放
                         break
                 cap.release()
@@ -293,8 +284,3 @@ def play_video_process(self):
             logger.warning("Please select a video file.")
     except Exception as e:
         logger.error("error, detail: " + str(e))
-
-
-if __name__ == '__main__':
-    ret = image_fill_black(os.getcwd(), r"C:\Users\Administrator\Pictures\a.jpg")
-    logger.debug(ret)

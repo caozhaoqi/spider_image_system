@@ -3,18 +3,16 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import os
 import shutil
-
 from PyQt5.QtGui import QPixmap
 from loguru import logger
-
+from PIL import Image
+import os
 from run.constants import data_path
 
 folder_path = os.path.realpath(os.path.join(os.getcwd(), data_path))
 
 
-# 获取所有图片文件
 @logger.catch
 def find_images(directory):
     """
@@ -35,7 +33,6 @@ def find_images(directory):
     return image_files_lists
 
 
-# file_name = ''
 @logger.catch
 def show_filter_image(images_list):
     """
@@ -61,7 +58,7 @@ image_files = show_filter_image(find_images(folder_path))
 @logger.catch
 def show_next_image(self):
     """
-
+    show next image to ui
     :param self:
     :return:
     """
@@ -78,36 +75,27 @@ def show_next_image(self):
 @logger.catch
 def show_image(self, image_file):
     """
-
+    shou first image to ui
     :param self:
     :param image_file:
     :return:
     """
-    # 打开图片文件
     self.file_name_label.setText(os.path.join(folder_path, image_file))
-    # _, file_name = os.path.split(image_file)
     self.pixmap_image_tab1 = QPixmap(os.path.join(folder_path, image_file))  # 创建新的QPixmap实例
-    # logger.debug(file_name+","+constants.file_name_txt)
     self.label.setPixmap(self.pixmap_image_tab1)  # 更新QLabel的显示内容
-    # self.label.setScaledContents(True)  # 这会使QLabel根据内容自动调整大小
     self.label.resize(self.pixmap_image_tab1.width(), self.pixmap_image_tab1.height())
-    # self.label.move(50, 50)  # 设置标签的位置
-
-    # 绑定键盘事件来检测Ctrl键是否被按下
-    # self.isCtrlDown = False
-    # self.label.installEventFilter(self)
     logger.info("current show image name and path: " + str(os.path.join(folder_path, image_file)))
 
 
 @logger.catch
 def show_current_file_name(image_file):
-    # global file_name
+    """
+    show current file name
+    :param image_file:
+    :return:
+    """
     _, file_name = os.path.split(image_file)
     return file_name
-
-
-from PIL import Image
-import os
 
 
 @logger.catch
@@ -121,7 +109,6 @@ def check_images(self, image_path):
     image_lists = find_images(image_path)
     small_image_lists = []
     error_image_lists = []
-    # 遍历目录中的所有图片文件
     for filename in image_lists:
         if filename.endswith(".jpg") or filename.endswith(".png"):  # 只处理jpg和png格式的图片
             filepath = os.path.join(image_path, filename)
@@ -129,21 +116,14 @@ def check_images(self, image_path):
                 continue
             else:
                 try:
-                    # 打开图片并检查尺寸
                     image = Image.open(filepath)
                     width, height = image.size
                     if width <= 250 and height <= 250:  # 图片尺寸小于250*250
                         logger.warning(f"图片 {filename} 尺寸过小，已移动至small_images文件夹。")
-                        # os.remove(filepath)  # 删除过小的图片
                         small_image_lists.append(filepath)
-                    # else:
-                        # logger.info(f"图片 {filename} 尺寸正常。")
                 except Exception as e:
                     logger.error(f"无法打开图片 {filename}，错误信息：{e}, 已移动至error_images文件夹。")
-                    # os.remove(filepath)  # 删除过小的图片
                     error_image_lists.append(filepath)
-                # continue
-    # record list to txt
     for error_images in error_image_lists:
         with open(image_path + '/error_image_txt.txt', 'a') as f:
             if not os.path.exists(image_path + "/error_images/"):
@@ -189,7 +169,6 @@ def img_category_images(self, image_path):
             filepath = os.path.join(image_path, filename)
             img_path, _ = os.path.split(filepath)
             if "square" in img_path or "custom" in img_path or "master" in img_path:
-                # logger.warning(f"already category img! name: {filepath}")
                 continue
             elif "square" in filename:
                 square_image_lists.append(filename)
@@ -199,7 +178,6 @@ def img_category_images(self, image_path):
                 custom_image_lists.append(filename)
             else:
                 logger.warning("未知种类图片，待定：" + str(filename))
-    #     移动至相应文件夹
     for square_image in square_image_lists:
         dir_path, file_name = os.path.split(square_image)
         if not os.path.exists(dir_path + "/square/"):
@@ -226,9 +204,3 @@ def img_category_images(self, image_path):
         f.close()
     logger.success("img category success!")
     self.success_tips()
-
-# if __name__ == '__main__':
-# check_images(r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\gui\data\img_url\ruanmei_img_result'
-#              r'\images')
-
-# img_category_images('',r'C:\Users\Administrator\Desktop\t\test\data\0127_backup\img_result')

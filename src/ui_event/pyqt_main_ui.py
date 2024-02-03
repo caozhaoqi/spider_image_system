@@ -87,7 +87,6 @@ class UIMainWindows(QMainWindow):
         numbers = re.findall(r'\d+', image_keyword)
         letters = re.findall('[a-zA-Z]+', image_keyword)
         logger.info(f"you input search keyword: {numbers}, {letters}")
-        # logger.info("跳转指定页码，或显示指定结果。")
         if numbers[0] and len(letters) == 0:
             # 存在数字 并且不存在字母
             logger.info(f"start jump image page {image_keyword}")
@@ -165,14 +164,12 @@ class UIMainWindows(QMainWindow):
                 logger.warning("input keyword empty or error!")
                 return False
             logger.debug("you input key word is: " + str(key_word))
-            # 读取用户输入路径
             spider_thread_obj = threading.Thread(
                 target=spider_artworks_url,
                 args=(self, key_word,))
             spider_thread_obj.start()
             constants.stop_spider_url_flag = False
             logger.info("spider img thread starting ... ")
-        # self.error_path()
 
     def input_keyword_process_3(self):
         """
@@ -182,8 +179,6 @@ class UIMainWindows(QMainWindow):
         self.edt_input_file_text_3 = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
         if self.edt_input_file_text_3:
             logger.debug('Selected folder:' + self.edt_input_file_text_3)
-        # else:
-        #     self.errorpath()
         self.filetext.setText(self.edt_input_file_text_3)
 
     def download_file_thread_3(self):
@@ -261,7 +256,6 @@ class UIMainWindows(QMainWindow):
         unuse
         @:parameter position 位置
         """
-        # self.media_player.setPosition(position * 1000)
         try:
             cv2.setTrackbarPos('Position', 'Video', position)
             logger.info("current position: " + str(position * 1000))  # 设置视频位置，单位为毫秒
@@ -353,7 +347,7 @@ class UIMainWindows(QMainWindow):
 
     def download_gif_zip_click(self):
         """
-
+        Download file from point url
         :return:
         """
         if constants.download_gif_zip_flag:
@@ -365,19 +359,15 @@ class UIMainWindows(QMainWindow):
                 args=(scan_directory_zip_txt(constants.data_path),))
             self.download_gif_zip_thread.start()
             constants.download_gif_zip_flag = True
-            # if url_zip_all_process():
             logger.success("success download zip  file thread start")
-        #     self.success_tips()
-        # else:
-        #     self.error_tips()
 
     def unzip_generate_video_click(self):
         """
-
+        unzip file generate video from file.
         :return:
         """
         if constants.unzip_generate_video_flag:
-            logger.warning(" len(zip_url_txt ing.")
+            logger.warning("len(zip_url_txt) is null.")
             self.error_tips()
         else:
             self.unzip_generate_video_thread = threading.Thread(
@@ -385,12 +375,11 @@ class UIMainWindows(QMainWindow):
                 args=())
             self.unzip_generate_video_thread.start()
             constants.unzip_generate_video_flag = True
-            # if url_zip_all_process():
             logger.success("success unzip generate file thread start")
 
     def download_video_zip_click(self):
         """
-
+        download video zip file from link
         :return:
         """
         if constants.download_video_link_flag:
@@ -405,5 +394,4 @@ class UIMainWindows(QMainWindow):
                 args=(link,))
             constants.download_video_link_flag = True
             self.start_download_file_link_thread.start()
-            # if url_zip_all_process():
             logger.success("success download file thread start")

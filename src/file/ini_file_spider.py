@@ -41,11 +41,11 @@ def spider_config():
 @logger.catch
 def write_minio_config_to_file(minio_config):
     """
-    ini 配置文件写入
-    :param minio_config: 元组 notice
+    ini config write
+    :param minio_config: [] notice
     :return:
     """
-    iniPath = os.path.realpath(ini_file_path)  # 读取生成后运行时的临时文件目录
+    iniPath = os.path.realpath(ini_file_path)
     logger.info("generate file path：" + iniPath)
     conf = configparser.ConfigParser()
     if os.path.exists(iniPath):
@@ -61,8 +61,6 @@ def write_minio_config_to_file(minio_config):
     if not os.path.exists(ini_path):
         os.makedirs(ini_path)
         logger.debug("dir not exists ,create dir")
-    # tes = open(iniPath, 'a+')
-    # tes.close()
     conf.read(iniPath, 'utf-8')
     logger.info("start generate config ini file :")
 
@@ -83,7 +81,6 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "output_video_height", str(minio_config.output_video_height))
     conf.set("spider_config", "proxy_server_ip", minio_config.proxy_server_ip)
     conf.set("spider_config", "proxy_server_port", str(minio_config.proxy_server_port))
-    # save default value
     conf.set("spider_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.2021.host,"
                                                  "square,custom,_50.gif")
     conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.2021.host,tags,square,custom,square,custom,"
@@ -95,8 +92,6 @@ def write_minio_config_to_file(minio_config):
     conf.read(iniPath, 'utf-8')
     logger.info("config write finished , read test , current use visit url : " + conf.get("spider_config",
                                                                                           "visit_url"))
-    # logger.info("minio use "+" port:" + conf.get(
-    #     "spider_config", "minio_server_port"))
     return True
 
 
@@ -109,26 +104,14 @@ def read_ini_config(file_name, section, value_key):
     :param value_key: ini file content name
     :return: select value
     """
-    # file_name = "../config/config.ini"
-
-    # Writing Data
     config = configparser.ConfigParser()
 
     config.read(file_name, encoding="utf-8")
-    keys = [
-        "host",
-        "user",
-        "port",
-        "password",
-        "port"
-    ]
-    # for key in keys:
+
     try:
         value = config.get(section, value_key)
-        # logger.info("read ini file :" + file_name + ", ini file config content : " + config.get(section, value_key))
         return value
     except configparser.NoSectionError as e:
-        # logger.info("normal")
         logger.error("Error! section: " + section + ", value_key :" + value_key + ", value error content: " + str(e))
         return "log_dir"
     except configparser.NoOptionError:
@@ -147,7 +130,6 @@ def check_ini_config():
     conf = configparser.ConfigParser()
     if os.path.exists(iniPath):  # 此步判断环境测试未生成临时文件时调用配置文件
         conf.read(iniPath, 'utf-8')
-        # return "complete"
     else:
         logger.warning("Not Found config ini file , creating ini file ....")
         if not os.path.exists(".\\config"):
@@ -183,7 +165,3 @@ def check_ini_config():
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
         logger.info("config write finished , read test : " + conf.get("spider_config", "visit_url"))
-
-
-if __name__ == '__main__':
-    read_ini_config(ini_file_path, "spider_config", "proxy_server_port")

@@ -29,9 +29,6 @@ def time_to_utc(time_str):
     :param time_str:
     :return:
     """
-    # 将文件修改时间戳转换为标准时间格式
     mtime = time.localtime(time_str)
-
-    # 输出标准时间格式的字符串
     formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", mtime)
     return formatted_time

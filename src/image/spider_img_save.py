@@ -15,7 +15,6 @@ from file.file_process import count_lines
 from ui_event.get_url import remove_duplicates_from_txt
 
 
-
 @logger.catch
 def download_image(url, filename, cur_txt_image_count, cur_download_images_index):
     """
@@ -99,8 +98,6 @@ def download_img_txt(self):
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
     constants.stop_download_image_flag = False
-    # QMessageBox.information(self, u"完成", u"操作完成")
     logger.success("downloaded all image !")
     self.success_tips()
-    # show_msg_alert("完成", "完成！")
     return True

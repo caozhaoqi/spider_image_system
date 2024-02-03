@@ -296,7 +296,7 @@ class Main:
 @logger.catch
 def start_download_file_link(link):
     """
-    example link: https://gofile.io/d/ftJCDE
+    download file from gofile
     :param link:
     :return:
     """

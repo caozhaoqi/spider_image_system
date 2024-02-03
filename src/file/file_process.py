@@ -17,10 +17,9 @@ def scan_directory(path):
     """
 
     video_files = []
-    # 遍历目录下的所有文件和子目录
     for root, dirs, files in os.walk(path):
         for file in files:
-            if file.endswith('.mp4') or file.endswith('.avi'):  # 仅处理jpg和png图片文件
+            if file.endswith('.mp4') or file.endswith('.avi'):
                 video_files.append(os.path.join(root, file))
     return video_files
 
@@ -34,10 +33,9 @@ def scan_directory_zip_txt(path):
     """
 
     video_files = []
-    # 遍历目录下的所有文件和子目录
     for root, dirs, files in os.walk(path):
         for file in files:
-            if file.endswith('.txt') and "_zip" in file:  # 仅处理jpg和png图片文件
+            if file.endswith('.txt') and "_zip" in file:
                 video_files.append(os.path.join(root, file))
     return video_files
 
@@ -51,10 +49,9 @@ def scan_directory_zip(path):
     """
 
     video_files = []
-    # 遍历目录下的所有文件和子目录
     for root, dirs, files in os.walk(path):
         for file in files:
-            if file.endswith('.zip'):  # 仅处理jpg和png图片文件
+            if file.endswith('.zip'):
                 video_files.append(os.path.join(root, file))
     return video_files
 
@@ -62,14 +59,10 @@ def scan_directory_zip(path):
 @logger.catch
 def count_lines(filename):
     """
-
+    count txt file line
     :param filename:
     :return:
     """
     with open(filename, 'r') as file:
         lines = file.readlines()
     return len(lines)
-
-
-# filename = 'your_file.txt'  # 替换为你的文件名
-# print(f"The file '{filename}' has {count_lines(filename)} lines.")

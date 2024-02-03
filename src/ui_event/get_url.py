@@ -158,7 +158,7 @@ def spider_artworks_url(self, key_word):
 @logger.catch
 def write_url_txt(path, file_name, url):
     """
-
+    write url to txt file
     :param path:
     :param file_name:
     :param url:
@@ -190,30 +190,21 @@ def filter_exists_images(key_word, image_url, txt_name):
     :return:
     """
     if txt_name == '_url':
-        #     处于存artwork url阶段 读取相应keyword txt artwork url save txt
         file_name = constants.data_path + "/href_url/" + key_word + "_url.txt"
-        # file_name = r"C:\Users\Administrator\PycharmProjects\spider_image_system\src\gui\data\href_url\xianyun_url
-        # .txt" txt_url = []
         try:
             with open(file_name, 'r') as f:
                 txt_url = f.readlines()
             return find_value(image_url + "\n", txt_url)
         except Exception as e:
-            # logger.warning("unknown error, detail: " + str(e))
             return False
     elif txt_name == '_img':
         file_name = constants.data_path + "/img_url/" + key_word + "_img.txt"
-        # txt_url = []
         try:
             with open(file_name, 'r') as f:
                 txt_url = f.readlines()
             return find_value(image_url + "\n", txt_url)
         except Exception as e:
-            # logger.warning("unknown error, detail: " + str(e))
             return False
-    # elif txt_name == '_result':
-    #     pass
-    # pass
     return False
 
 
@@ -246,10 +237,8 @@ def load_href_save(driver, key_word):
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
         for image_element in image_elements:
             if not constants.stop_spider_url_flag:
-                # 是否不停止抓取
                 image_url = image_element.get_attribute("href")
                 if image_url is None:
-                    # 该地址中无图片地址 跳出循环
                     break
                 if filter_not_use_url(image_url):
                     continue
@@ -258,7 +247,6 @@ def load_href_save(driver, key_word):
                 if filter_exists_images(key_word_pinyin, image_url, "_url"):
                     continue
                 image_urls_list.append(image_url)
-                # constants.spider_images_current_count += 1
                 if constants.spider_images_current_count >= int(spider_images_max_count) and constants.spider_mode \
                         == 'manual':
                     # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
@@ -278,7 +266,6 @@ def load_href_save(driver, key_word):
     except Exception as un_e:
         logger.error("Error, unknown error, detail:" + str(un_e))
         return False
-    # return False
 
 
 @logger.catch
@@ -352,11 +339,7 @@ def filter_not_use(url):
     :param url:
     :return:
     """
-    # /emoji/501.png https://pximg.lolicon.ac.cn/user-profile/img/2023/12/11/14/38/09
-    # /25260574_6aed493b358851d4d2fbfb53290b5991_50.jpg
-    # filter_url_http = []
     filter_url_http = constants.filter_http_url.split(',')
-    # logger.info(f"http_tools url regex content: {constants.filter_http_url}")
     try:
         for filter_url_http_content in filter_url_http:
             if filter_url_http_content in url:
@@ -375,14 +358,11 @@ def filter_not_use_url(image_url):
     :return:
     """
     filter_url_image = constants.filter_image_url.split(',')
-    # logger.info(f"image url regex content: {constants.filter_image_url}")
     try:
-        # /emoji/501.png
         for filter_url_image_content in filter_url_image:
             if filter_url_image_content in image_url or "artworks" not in image_url:
                 return True
     except Exception as e:
-        # 遇到异常跳过该url
         logger.warning("unknown error, detail: " + str(e))
         return True
 
@@ -423,11 +403,8 @@ for (var i = 0; i < buttons.length; i++) {
 }
 """)
     if button:
-        # logger.success(f"look all button clicked! url: {url}")
         button.click()
         return True
-        # logger.success("look all button clicked!")
-    # logger.warning("no button content: look all!")
     return False
 
 
@@ -438,11 +415,8 @@ def slider_page_down(driver):
     :param driver:
     :return:
     """
-    # logger.info("start slider page!")
-    # 获取页面高度
     page_height = driver.execute_script("return document.body.scrollHeight")
 
-    # 模拟滑动操作
     actions = ActionChains(driver)
     actions.send_keys(Keys.END).perform()  # 发送 End 键，将光标移动到页面底部
     actions.send_keys(Keys.PAGE_DOWN).perform()  # 发送 Page Down 键，模拟向下滚动一页

@@ -52,7 +52,6 @@ class Dialog(QDialog):
         self.search_delta_time_line = None
         self.checkBox_proxy = None
         self.checkBox_all_show = None
-        # self.r18_mode_check = None
         self.target_url_line = None
         self.s2_url_line = None
         self.init_ui()
@@ -226,7 +225,7 @@ class Dialog(QDialog):
 @logger.catch
 def save_data(self):
     """
-
+    save data ini file
     :param self:
     :return:
     """
@@ -249,14 +248,12 @@ def save_data(self):
         all_show_txt = True
     else:
         all_show_txt = False
-    # all_show_txt = self.checkBox_all_show.currentText()
     if self.checkBox_proxy.isChecked():
         proxy_flag_txt = True
     else:
         proxy_flag_txt = False
     search_delta_time_txt = int(self.search_delta_time_line.text()) if self.search_delta_time_line else None
     detail_delta_time_txt = int(self.detail_delta_time_line.text()) if self.detail_delta_time_line else None
-    # 在这里你可以根据需要保存这些数据，例如保存到文件或发送到服务器
     logger.debug(f"Source1 URL: {s1_url_txt}")
     logger.debug(f"Source2 URL: {s2_url_txt}")
     logger.debug(f"visit URL: {visit_url_txt}")
@@ -292,12 +289,9 @@ def save_data(self):
     spider_config.output_video_width = output_video_width_txt
     spider_config.output_video_height = output_video_height_txt
     if write_minio_config_to_file(minio_config=spider_config):
-        # dialog = Dialog()
         QMessageBox(QMessageBox.Information, "保存", "配置写入成功,程序即将退出,请重新启动应用以使配置生效！").exec_()
-        # QMessageBox.critical(self, u"保存", u"配置写入成功,程序即将退出,请重新启动应用配置！")
         self.hide()
         sys.exit()
     else:
         QMessageBox(QMessageBox.Warning, "错误", "发生未知错误，写入配置失败，请检查log信息！").exec_()
-        # QMessageBox.critical(self, u"错误", u"发生未知错误，写入失败，请检查log信息！")
     pass

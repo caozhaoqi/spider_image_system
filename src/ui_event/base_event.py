@@ -47,7 +47,7 @@ def visit_web():
 @logger.catch
 def about_message_lookup():
     """
-
+    about msg show
     :return:
     """
     information_dialog = InformationDialog()
@@ -58,6 +58,11 @@ def about_message_lookup():
 
 @logger.catch
 def scan_populate_mp4_list(self):
+    """
+    scan all mp4 file
+    :param self:
+    :return:
+    """
     i = 0
     video_files = ['文件名', '文件大小', '修改时间', '文件路径', '文件格式', '作者']
     if i == 0:
@@ -88,7 +93,6 @@ def scan_populate_mp4_list(self):
                 author_item = QListWidgetItem(str(author))
 
                 # 将文件信息项添加到QListWidget中
-                # listWidget = self.listWidget
                 self.listWidget_1.addItem(file_info_item)
                 self.listWidget_2.addItem(file_size_item)
                 self.listWidget_3.addItem(file_mtime_item)
@@ -114,7 +118,7 @@ def stop_spider_image():
 def auto_start_spider_image(self):
     """
     auto spider image thread
-    @:param self .
+    @:param self.
     :return:
     """
     spider_thread_obj = threading.Thread(
@@ -127,7 +131,7 @@ def auto_start_spider_image(self):
 @logger.catch
 def auto_spider_img_thread(self):
     """
-
+    auto spider img thread
     @:param self .
     :return:
     """
@@ -167,7 +171,6 @@ def auto_spider_img_thread(self):
     if len(spider_image_keyword) == 0:
         logger.warning("auto spider image null, will exit!")
         return False
-        # while True:
     constants.spider_mode = 'auto'
     for spider_img_keyword_detail in spider_image_keyword:
         logger.debug("cur spider kew word txt: " + str(spider_img_keyword_detail))

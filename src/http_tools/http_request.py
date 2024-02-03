@@ -43,7 +43,6 @@ def download_all_zip(url, save_dir):
         if constants.download_finish_flag:
             return True
         return False
-        # # return None
     except FileNotFoundError as fnee:  # 处理文件不存在错误
         logger.warning(f"目标文件不存在 {fnee}")
         return False
@@ -61,7 +60,6 @@ def download_all_zip(url, save_dir):
         return False
 
 
-# 使用函数时，你需要提供url、save_dir和extract_dir的值。例如：
 @logger.catch
 def extract_file(save_path, file_name):
     """
@@ -77,11 +75,9 @@ def extract_file(save_path, file_name):
     if not os.path.exists(result_path):  # 如果目录不存在则创建目录
         os.makedirs(result_path)
 
-    # 获取zip文件的大小
     zip_size = os.path.getsize(file_name)
-    expected_size = zip_size  # 将zip文件的大小赋值给expected_size
+    expected_size = zip_size
 
-    # 检查zip文件大小是否符合预期
     if zip_size == expected_size:
         logger.debug(f"Zip file size is {zip_size} bytes, which matches the expected size of {expected_size} bytes.")
         # 解压文件到指定目录
@@ -104,7 +100,6 @@ def generate_gif_video(zip_file_list):
     """
     解压压缩包并生成video
     :param zip_file_list:
-        "https://pximg.lolicon.ac.cn/img-zip-ugoira/img/2024/01/29/02/15/41/115574488_ugoira600x600.zip"
     :return:
     """
     result_path_list = []
@@ -164,12 +159,10 @@ def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
             logger.error("error! detail: " + "file name or path: " + image_path + ", error detail: " + str(e))
             continue
 
-        # 检查输出路径是否存在，如果不存在则创建目录
     if not os.path.exists(video_out_path):
         os.makedirs(video_out_path)
 
     fourcc = cv2.VideoWriter.fourcc(*'MJPG')
-    # 创建VideoWriter对象
     video_name = video_out_path + "/" + point_gif_video_name + "_test.mp4"
     if os.path.exists(video_name):
         logger.warning(f"video exists! name and path: {video_name}")
@@ -181,7 +174,6 @@ def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
 
     try:
         export_index = 0
-        # image_size = ()
         image_size_len = len(image_path_list)
         for image_path in image_path_list:
             export_index += 1
@@ -219,7 +211,6 @@ def download_file_fun(url, filename):
         constants.download_finish_flag = True
         return True
     try:
-        # 建立连接并读取数据块
         with urllib.request.urlopen(url, timeout=10) as response:  # Add timeout parameter for https connections
             with open(filename, 'wb') as out_file:
                 chunk_size = 1024  # Adjust chunk size as needed
@@ -229,18 +220,13 @@ def download_file_fun(url, filename):
                         break
                     out_file.write(chunk)
                     out_file.flush()
-        # 获取文件大小
         file_size = os.path.getsize(filename)
-        # 记录结束时间
         end_time = time.time()
-        # 计算下载时间
         download_time = end_time - start_time
-        # 记录日志信息
         logger.info(f"Download of {filename} completed in {download_time:.2f} seconds, size: {file_size}")
         constants.download_finish_flag = True
         return True
     except Exception as e:
-        # 记录错误日志信息
         logger.error(f"Error downloading {filename}: {e}")
         return False
 
@@ -278,32 +264,15 @@ def url_zip_all_process(zip_url_txt_list):
     return True
 
 
-# step 2.extract all zip file and generate video
 @logger.catch
 def unzip_generate_gif():
     """
-
+    unzip file from zip file
     :param :
     :return:
     """
     zip_file_list = scan_directory_zip(constants.data_path)
-    # zip_path = os.path.join(constants.data_path, "gif_zip")
-    # unzip_path = os.path.join(constants.data_path, "gif_unzip")
     if len(zip_file_list) == 0:
         logger.warning("zip file not exists.")
         return False
     return generate_gif_video(zip_file_list)
-
-# unzip_images_url("https://pximg.lolicon.ac.cn/img-zip-ugoira/img/2024/01/29/02/15/41/115574488_ugoira600x600.zip")
-
-# download_file_fun("https://pximg.lolicon.ac.cn/img-zip-ugoira/img/2024/01/29/02/15/41/115574488_ugoira600x600.zip",
-#                   "./zip.zip")
-
-# if __name__ == '__main__':
-#     # test
-#     # 1 download zip from url txt
-#     # url_zip_all_process(scan_directory_zip_txt(constants.data_path))
-#     # time.sleep(20)
-#     #  2 unzip generate video
-#     unzip_generate_gif()
-#     pass

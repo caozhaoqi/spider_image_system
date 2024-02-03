@@ -19,7 +19,6 @@ def spider_gif_images(keyword, chrome_driver):
     """
     api_urls = []
 
-    # 切换到开发者工具窗口并获取网络请求的API地址
     requests = chrome_driver.execute_script("return window.performance.getEntriesByType('resource')")
     for request in requests:
         if request['initiatorType'] == 'fetch' and "img-zip-ugoira" in request['name']:

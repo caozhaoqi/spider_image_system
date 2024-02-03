@@ -36,7 +36,6 @@ class InformationDialog(QDialog):
         time_label = QLabel('版本发布时间(time zone: UTC(+8) shanghai):')
         layout.addWidget(time_label)
 
-        # current_time = QDateTime.currentDateTime().toString('yyyy-MM-dd HH:mm:ss')
         time_label_2 = QLabel(publish_date)
         layout.addWidget(time_label_2)
 
@@ -60,9 +59,3 @@ class InformationDialog(QDialog):
 
         self.setLayout(layout)  # 设置对话框的布局为刚才创建的布局对象
 
-
-if __name__ == '__main__':
-    # app = QApplication(sys.argv)
-    information_dialog = InformationDialog()
-    information_dialog.show()
-    # sys.exit(app.exec_())
