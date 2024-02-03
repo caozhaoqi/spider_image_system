@@ -32,12 +32,12 @@ def scan_directory_zip_txt(path):
     :return:
     """
 
-    video_files = []
+    zip_txt_files = []
     for root, dirs, files in os.walk(path):
         for file in files:
             if file.endswith('.txt') and "_zip" in file:
-                video_files.append(os.path.join(root, file))
-    return video_files
+                zip_txt_files.append(os.path.join(root, file))
+    return zip_txt_files
 
 
 @logger.catch
@@ -48,12 +48,12 @@ def scan_directory_zip(path):
     :return:
     """
 
-    video_files = []
+    zip_files = []
     for root, dirs, files in os.walk(path):
         for file in files:
             if file.endswith('.zip'):
-                video_files.append(os.path.join(root, file))
-    return video_files
+                zip_files.append(os.path.join(root, file))
+    return zip_files
 
 
 @logger.catch

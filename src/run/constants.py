@@ -57,7 +57,6 @@ s2_url = read_ini_config(ini_file_path, "spider_config", "s2_url")
 # mirror url
 target_url = read_ini_config(ini_file_path, "spider_config", "target_url")
 # search keyword and mode
-# keyword_search = ''
 r18_mode = read_ini_config(ini_file_path, "spider_config", "r18_mode")
 # all show
 all_show = read_ini_config(ini_file_path, "spider_config", "all_show")
