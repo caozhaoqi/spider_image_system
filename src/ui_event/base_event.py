@@ -1,6 +1,8 @@
 import os
 import sys
 
+from selenium.common import StaleElementReferenceException
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import threading
@@ -173,12 +175,18 @@ def auto_spider_img_thread(self):
         constants.stop_spider_url_flag = False
         for spider_image_keyword_item in spider_img_keyword_detail:
             logger.debug("cur spider kew word: " + str(spider_image_keyword_item))
-            spider_artworks_url(self, spider_image_keyword_item.strip())
+            try:
+                spider_artworks_url(self, spider_image_keyword_item.strip())
+            except StaleElementReferenceException as sere:
+                logger.warning(f"unknown error, detail: {sere}")
+            except Exception as e:
+                logger.error(f"unknown error, detail: {e}")
             if constants.stop_spider_url_flag:
                 logger.warning(f"auto spider img stop! will exit, end spider keyword: {spider_image_keyword_item}!")
                 break
             if constants.firewall_flag:
-                logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time: {fire_wall_delay_time / 60}min.")
+                logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time:"
+                               f" {int(fire_wall_delay_time / 60)}min.")
                 # 设置重试时间
                 time.sleep(fire_wall_delay_time)
                 continue

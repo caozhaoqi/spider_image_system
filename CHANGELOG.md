@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.0.5_beta
+### 2024/2/3
+- 部分代码优化 
+- 已知bug修复,详见commit history
+
 ## v1.0.5_alpha
 ### 2024/2/2
 - 自动抓取img线程添加 
