@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import threading
@@ -15,7 +14,6 @@ from run.constants import fire_wall_delay_time
 from ui_event.about_dialog_ui import InformationDialog
 from ui_event.dialog_ui import Dialog
 from ui_event.get_url import spider_artworks_url
-
 
 from run import constants
 from utils.time_utils import time_to_utc
@@ -139,6 +137,12 @@ def auto_spider_img_thread(self):
     if not os.path.exists(auto_spider_file_path):
         os.makedirs(auto_spider_file_path)
 
+    txt_file_list = []
+    for root, dirs, files in os.walk(auto_spider_file_path):
+        for file in files:
+            if file.endswith('spider_img_keyword.txt'):
+                txt_file_list.append(file)
+
     file_name = 'spider_img_keyword.txt'
     full_file_path = os.path.join(auto_spider_file_path, file_name)
     if not os.path.exists(full_file_path):
@@ -147,8 +151,13 @@ def auto_spider_img_thread(self):
             logger.warning(f"{full_file_path} not exists, will create!")
             pass  # 创建一个空文件
     try:
-        with open(full_file_path, 'r', encoding='utf-8') as f:
-            spider_image_keyword = f.readlines()
+        if len(txt_file_list) == 0:
+            logger.warning("spider_img_keyword txt length null!")
+            return False
+        spider_image_keyword = []
+        for txt_name in txt_file_list:
+            with open(txt_name, 'r', encoding='utf-8') as f:
+                spider_image_keyword.append(f.readlines())
     except Exception as e:
         logger.error(f"unknown error, detail {e}")
         return False
@@ -159,18 +168,20 @@ def auto_spider_img_thread(self):
         # while True:
     constants.spider_mode = 'auto'
     for spider_img_keyword_detail in spider_image_keyword:
-        logger.debug("you input key word is: " + str(spider_img_keyword_detail))
+        logger.debug("cur spider kew word txt: " + str(spider_img_keyword_detail))
         # 读取用户输入路径
         constants.stop_spider_url_flag = False
-        spider_artworks_url(self, spider_img_keyword_detail.strip())
-        if constants.stop_spider_url_flag:
-            logger.warning(f"auto spider img stop! will exit, end spider keyword: {spider_img_keyword_detail}!")
-            break
-        if constants.firewall_flag:
-            logger.warning(f"block {constants.visit_url} domain, will retry!")
-            # 设置重试时间
-            time.sleep(fire_wall_delay_time)
-            continue
+        for spider_image_keyword_item in spider_img_keyword_detail:
+            logger.debug("cur spider kew word: " + str(spider_image_keyword_item))
+            spider_artworks_url(self, spider_image_keyword_item.strip())
+            if constants.stop_spider_url_flag:
+                logger.warning(f"auto spider img stop! will exit, end spider keyword: {spider_image_keyword_item}!")
+                break
+            if constants.firewall_flag:
+                logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time: {fire_wall_delay_time}.")
+                # 设置重试时间
+                time.sleep(fire_wall_delay_time)
+                continue
 
 
 @logger.catch

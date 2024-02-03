@@ -94,7 +94,7 @@ def download_img_txt(self):
         remove_duplicates_from_txt(cdds_path,
                                    new_file_name)
         try:
-            logger.info(f"start download image, txt file name {cdds_path}, index: {cdds_index}")
+            logger.info(f"start download image, txt file name {cdds_path}, index: {cdds_index}, txt count: {len(cdds)}.")
             download_images_from_file(new_file_name)
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
