@@ -12,7 +12,7 @@ def get_memory_usage():
     """
     process = psutil.Process(os.getpid())
     memory_info = process.memory_info()
-    return memory_info.rss / (1024 * 1024).__init__()  # 返回以MB为单位的内存占用
+    return memory_info.rss / (1024 * 1024)
 
 
 @logger.catch
@@ -34,9 +34,9 @@ def look_sys_info():
     """
     # 获取当前Python脚本的内存占用
     memory_usage = get_memory_usage()
-    print(f"当前内存占用: {memory_usage:.2f} MB")
+    logger.info(f"当前内存占用: {memory_usage:.2f} MB")
     cpu_usage = get_cpu_usage()
-    print(f"当前CPU占用: {cpu_usage} 秒")
+    logger.info(f"当前CPU占用: {cpu_usage} 秒")
 
 
 def ensure_list_of_floats(data):

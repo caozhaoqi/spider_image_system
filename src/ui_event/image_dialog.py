@@ -112,11 +112,10 @@ def show_image_viewer():
     show image to tool
     :return:
     """
-    app = QApplication(sys.argv)
     dialog = ImageDialog()
     dialog.showMaximized()
     dialog.show()
-    sys.exit(app.exec_())
+    dialog.exec_()
 
 
 if __name__ == '__main__':
