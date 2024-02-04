@@ -31,7 +31,6 @@ def download_all_zip(url, save_dir):
     :return:
     """
     try:
-
         file_name = url.split("/")[-1]  # 获取文件名
         save_path = os.path.join(save_dir, "gif_zip")  # 构建保存路径
         if not os.path.exists(save_path):  # 如果目录不存在则创建目录
@@ -44,16 +43,16 @@ def download_all_zip(url, save_dir):
             return True
         return False
     except FileNotFoundError as fnee:  # 处理文件不存在错误
-        logger.warning(f"目标文件不存在 {fnee}")
+        logger.warning(f"目标文件不存在: {fnee}")
         return False
     except HTTPError as errh:  # 处理HTTP错误
         logger.error(f"HTTP错误: {errh}")
         return False
     except Timeout:  # 处理请求超时错误
-        logger.error("请求超时")
+        logger.error("请求超时.")
         return False
     except TooManyRedirects:  # 处理过多重定向错误
-        logger.error("过多重定向")
+        logger.error("过多重定向.")
         return False
     except Exception as e:  # 处理其他未知错误
         logger.error(f"发生未知错误: {e}")
@@ -80,7 +79,6 @@ def extract_file(save_path, file_name):
 
     if zip_size == expected_size:
         logger.debug(f"Zip file size is {zip_size} bytes, which matches the expected size of {expected_size} bytes.")
-        # 解压文件到指定目录
         try:
             with zipfile.ZipFile(file_name, 'r') as zip_ref:
                 zip_ref.extractall(result_path)  # 解压到指定目录

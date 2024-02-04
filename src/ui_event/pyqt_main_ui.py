@@ -36,7 +36,6 @@ class UIMainWindows(QMainWindow):
     # @logger.catch
     def __init__(self):
         QWidget.__init__(self)
-        # 窗体标题 icon
         self.edt_input_file_text_3 = None
         self.start_download_file_link_thread = None
         self.unzip_generate_video_thread = None
@@ -45,31 +44,28 @@ class UIMainWindows(QMainWindow):
         self.images_convert_thread = None
         self.show_page_label = None
         self.setWindowTitle(u"Spider Image System (Version: " + sis_server_version + ")")
-        # self.filename = ''
-        # self.file_name_txt = ''
         icon = QIcon()
         icon.addPixmap(
             QPixmap("../run/favicon.ico"), QIcon.Normal, QIcon.Off)
         self.setWindowIcon(icon)
-        # 窗体menu
+
         self.setMenuBar(base_menu(self))
-        # 选项卡
         self.tab1, self.tab2, self.tab3, self.tab_widget = tab_ui_tab(self)
-        # tab1 页面绘制
+
         tab_1_ui_paint(self)
         tab_2_ui_paint(self)
         tab_3_ui_paint(self)
-        # load cur dir MP4 video
+
         scan_populate_mp4_list(self)
-        # 获取屏幕大小 窗口大小
+
         self.isDragging = False
         self.dragStartPos = None
         self.lastMousePos = None
         self.scaleFactor = 1.0
         self.label.installEventFilter(self)
-        # # 设置窗口大小为屏幕大小
+
         show_next_image(self)
-        self.showMaximized()  # 最大化窗口
+        self.showMaximized()
 
     def jump_point_image_click(self):
         """
@@ -78,18 +74,18 @@ class UIMainWindows(QMainWindow):
         """
         images_list = find_images(constants.data_path)
         if len(images_list) == 0:
-            logger.warning("jump image, no image!")
+            logger.warning("jump image error, no image!")
             return False
         image_keyword = self.image_page.text()
         if image_keyword == '' or image_keyword is None:
-            logger.warning("input error!")
+            logger.warning("input keyword error!")
             return False
         numbers = re.findall(r'\d+', image_keyword)
         letters = re.findall('[a-zA-Z]+', image_keyword)
         logger.info(f"you input search keyword: {numbers}, {letters}")
         if numbers[0] and len(letters) == 0:
             # 存在数字 并且不存在字母
-            logger.info(f"start jump image page {image_keyword}")
+            logger.info(f"start jump image page: {image_keyword}")
             self.jump_point_image_page(int(image_keyword))
         else:
             logger.info(f"start jump image page, image name keyword {image_keyword}")
@@ -129,7 +125,7 @@ class UIMainWindows(QMainWindow):
             logger.info("after image show, current page: " + str(current_image_index) + ", count page: " + str(
                 len(image_files)))
         except Exception as e:
-            logger.warning("dir not image , or other err! detail: " + str(e))
+            logger.warning("dir not image, or other err! detail: " + str(e))
 
     def jump_point_image_page(self, index):
         """
@@ -146,7 +142,7 @@ class UIMainWindows(QMainWindow):
             logger.info("after image show, current page: " + str(current_image_index) + ", count page: " + str(
                 len(image_files)))
         except Exception as e:
-            logger.warning("dir not image , or other err! detail: " + str(e))
+            logger.warning("dir not image, or other err! detail: " + str(e))
 
     # @logger.catch
     def input_keyword_process(self):
@@ -155,7 +151,6 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if not constants.stop_spider_url_flag:
-            # 正在抓取
             self.error_tips()
         else:
             constants.spider_mode = 'manual'
@@ -169,7 +164,7 @@ class UIMainWindows(QMainWindow):
                 args=(self, key_word,))
             spider_thread_obj.start()
             constants.stop_spider_url_flag = False
-            logger.info("spider img thread starting ... ")
+            logger.info("spider img thread starting... ")
 
     def input_keyword_process_3(self):
         """
@@ -210,7 +205,6 @@ class UIMainWindows(QMainWindow):
         success tips
         :return:
         """
-        # show_async_message_box("success", "操作完成！")
         logger.success('show success tips.')
         # success_tips_thread = threading.Thread(
         #     target=show_msg_alert,
@@ -224,7 +218,6 @@ class UIMainWindows(QMainWindow):
         error tips
         :return:
         """
-        # show_async_message_box("warning", "当前操作尚未完成！")
         logger.error('show error tips.')
         # error_tips_thread = threading.Thread(
         #     target=show_msg_alert,
@@ -238,7 +231,6 @@ class UIMainWindows(QMainWindow):
         下载所有图片进程
         :return:
         """
-        # ret = True
         if not constants.stop_download_image_flag:
             self.error_tips()
         else:
@@ -248,7 +240,6 @@ class UIMainWindows(QMainWindow):
             spider_thread_obj.start()
             constants.stop_download_image_flag = False
             logger.info("download img thread starting... ")
-        # self.error_path()
 
     def set_video_position_click(self, position):
         """
@@ -258,7 +249,7 @@ class UIMainWindows(QMainWindow):
         """
         try:
             cv2.setTrackbarPos('Position', 'Video', position)
-            logger.info("current position: " + str(position * 1000))  # 设置视频位置，单位为毫秒
+            logger.info("current position: " + str(position * 1000))
         except Exception as e:
             logger.error("error, detail: " + str(e))
             self.error_tips()
@@ -271,13 +262,13 @@ class UIMainWindows(QMainWindow):
         play_video_process(self)
 
     def pause_video(self):
-        if cv2.getTrackbarPos('Position', 'Video') > 0:  # 确保视频正在播放中
-            cv2.setTrackbarPos('Position', 'Video', 0)  # 暂停在开始位置
-        else:  # 如果已经暂停，则恢复播放到当前位置
+        if cv2.getTrackbarPos('Position', 'Video') > 0:
+            cv2.setTrackbarPos('Position', 'Video', 0)
+        else:
             cv2.setTrackbarPos('Position', 'Video', cv2.getTrackbarPos('Position', 'Video'))
-            cv2.waitKey(1)  # 等待用户操作，避免立即继续播放导致界面闪烁
-            cv2.setTrackbarPos('Position', 'Video', 0)  # 暂停在开始位置，确保视频从当前位置继续播放
-            cv2.waitKey(1000)  # 等待一段时间（如1秒），让用户看到暂停效果后再恢复播放
+            cv2.waitKey(1)
+            cv2.setTrackbarPos('Position', 'Video', 0)
+            cv2.waitKey(1000)
 
     def image_video_click(self):
         """
@@ -301,13 +292,13 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         try:
-            new_size = self.pixmap_image_tab1.size() * float(zoom_in_scale)  # 放大10%
+            new_size = self.pixmap_image_tab1.size() * float(zoom_in_scale)
             self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio,
                                                                    Qt.SmoothTransformation)
             self.label.setPixmap(self.pixmap_image_tab1)
-            logger.info(f"scale zoom in new_size {new_size}")
+            logger.info(f"scale zoom in new_size: {new_size}")
         except Exception as e:
-            logger.warning(f"unknown error! detail {e}")
+            logger.warning(f"unknown error! detail: {e}")
 
     def zoom_out_method(self):
         """
@@ -315,13 +306,13 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         try:
-            new_size = self.pixmap_image_tab1.size() * float(zoom_out_scale)  # 缩小90%
+            new_size = self.pixmap_image_tab1.size() * float(zoom_out_scale)
             self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio,
                                                                    Qt.SmoothTransformation)
             self.label.setPixmap(self.pixmap_image_tab1)
-            logger.info(f"scale zoom out new_size {new_size}")
+            logger.info(f"scale zoom out new_size: {new_size}")
         except Exception as e:
-            logger.warning(f"unknown error! detail {e}")
+            logger.warning(f"unknown error! detail: {e}")
 
     def eventFilter(self, obj, event):
         """
@@ -333,14 +324,14 @@ class UIMainWindows(QMainWindow):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
                 self.isDragging = True
-                self.dragStartPos = event.pos() - self.label.pos()  # 记录鼠标和标签的相对位置
-                self.lastMousePos = event.pos()  # 记录上一次鼠标的位置
+                self.dragStartPos = event.pos() - self.label.pos()
+                self.lastMousePos = event.pos()
         elif event.type() == QEvent.MouseMove and self.isDragging:
-            dx = event.pos().x() - self.lastMousePos.x()  # 计算鼠标的移动距离
-            dy = event.pos().y() - self.lastMousePos.y()  # 计算鼠标的移动距离
-            newPos = self.label.pos() + QPoint(dx, dy)  # 更新标签的位置
-            self.label.move(newPos)  # 移动标签到新位置
-            self.lastMousePos = event.pos()  # 更新上一次鼠标的位置
+            dx = event.pos().x() - self.lastMousePos.x()
+            dy = event.pos().y() - self.lastMousePos.y()
+            newPos = self.label.pos() + QPoint(dx, dy)
+            self.label.move(newPos)
+            self.lastMousePos = event.pos()
         elif event.type() == QEvent.MouseButtonRelease and event.button() == Qt.LeftButton:
             self.isDragging = False
         return super().eventFilter(obj, event)
@@ -359,7 +350,7 @@ class UIMainWindows(QMainWindow):
                 args=(scan_directory_zip_txt(constants.data_path),))
             self.download_gif_zip_thread.start()
             constants.download_gif_zip_flag = True
-            logger.success("success download zip  file thread start")
+            logger.success("success download zip file thread start")
 
     def unzip_generate_video_click(self):
         """
@@ -383,7 +374,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if constants.download_video_link_flag:
-            logger.warning("already downloading file！please wait！")
+            logger.warning("already downloading file, please wait！")
             self.error_tips()
         else:
             logger.info("start download file!")

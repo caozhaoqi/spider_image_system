@@ -82,7 +82,6 @@ def spider_artworks_url(self, key_word):
     :parameter key_word 关键字
     :return:
     """
-    # 设置代理服务器
     proxy = {
         "proxyType": "manual",
         "httpProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口
@@ -92,7 +91,6 @@ def spider_artworks_url(self, key_word):
         "proxyAutoconfigUrl": ""
     }
 
-    # 创建浏览器驱动程序并设置代理参数
     options = webdriver.ChromeOptions()
     if constants.spider_mode == 'auto':
         options.add_argument('--headless')
@@ -106,7 +104,6 @@ def spider_artworks_url(self, key_word):
         logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
 
     driver = webdriver.Chrome(options=options)
-    # tags/娜维娅/artworks?mode=r18&s_mode=s_tag
     mode = ''
     if r18_mode == 'True':
         mode = 'mode=r18&'
@@ -122,7 +119,6 @@ def spider_artworks_url(self, key_word):
         url_detail = url_process_page(url, current_page=cur_page)
         logger.info("current use url: " + str(url_detail))
         driver.get(url_detail)
-        # 等待图片加载完成
         time.sleep(search_delta_time)
         if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
             logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
@@ -131,26 +127,20 @@ def spider_artworks_url(self, key_word):
         logger.debug("start load href save url to txt.")
         load_save_flag = load_href_save(driver, key_word)
         if load_save_flag:
-            # 使用函数
             try:
                 if not save_img_url(driver, key_word):
-                    # 达到最大值爬虫停止跳出循环
                     break
-                # 否则继续爬取下一页包括 当前页图片已存在 继续爬取下一页
                 cur_page += 1
-                logger.success("save img all finish，current page:  " + str(cur_page))
+                logger.success("save img all finish, current page:  " + str(cur_page))
 
             except NoSuchWindowException as nswe:
                 logger.warning("chrome force exit! detail:" + str(nswe))
 
         else:
             break
-    # 循环抓取结束 断掉浏览器 重置标志位
     self.success_tips()
     if constants.spider_mode == 'manual':
-        # 手动模式抓取完成后自动停止
         constants.stop_spider_url_flag = True
-    # elif constants.spider_mode == 'auto'
     logger.warning("google chrome will exit! ")
     driver.quit()
 
@@ -249,7 +239,6 @@ def load_href_save(driver, key_word):
                 image_urls_list.append(image_url)
                 if constants.spider_images_current_count >= int(spider_images_max_count) and constants.spider_mode \
                         == 'manual':
-                    # 超过最大值 跳出循环 不在保存url地址 存储现有url地址
                     logger.warning(
                         "spider image max value, current value: " + str(constants.spider_images_current_count))
                     constants.spider_images_current_count = 0
@@ -282,7 +271,8 @@ def url_list_save(key_word, image_urls_list):
                 write_url_txt(data_path + "/href_url/", key_word + "_url", image_url_content)
             remove_duplicates_from_txt(data_path + "/href_url/" + key_word + "_url.txt",
                                        data_path + "/href_url/" + key_word + "_result_url.txt")
-            logger.success("load_href_save: href remove duplicates content success, result: href_url: _result_url.txt.")
+            logger.success("function load_href_save(): href remove duplicates content success, result: href_url: "
+                           "_result_url.txt.")
             return True
         elif len(image_urls_list) == 0:
             logger.warning("no image! don't save to url txt, chrome will exit!")
@@ -314,7 +304,7 @@ def remove_duplicates_from_txt(input_file, output_file):
             for line in unique_lines:
                 file.write(line)
     except FileNotFoundError as ffe:
-        logger.warning("dir not exists , will create dir. detail: " + str(ffe))
+        logger.warning("dir not exists, will create dir. detail: " + str(ffe))
         if not os.path.exists(input_file):
             os.makedirs(input_file)
         if not os.path.exists(output_file):
@@ -346,7 +336,7 @@ def filter_not_use(url):
                 return True
     except Exception as e:
         # 遇到异常跳过该url
-        logger.warning("unknown error! detail: " + str(e))
+        logger.warning("unknown error, detail: " + str(e))
         return True
 
 
@@ -389,8 +379,6 @@ def open_look_all(driver):
     :param driver:
     :return:
     """
-    # 查找"查看全部"按钮
-    # 使用CSS选择器查找按钮
     """
     """
     button = driver.execute_script("""
@@ -418,10 +406,10 @@ def slider_page_down(driver):
     page_height = driver.execute_script("return document.body.scrollHeight")
 
     actions = ActionChains(driver)
-    actions.send_keys(Keys.END).perform()  # 发送 End 键，将光标移动到页面底部
-    actions.send_keys(Keys.PAGE_DOWN).perform()  # 发送 Page Down 键，模拟向下滚动一页
-    time.sleep(detail_delta_time)  # 等待3秒，以便有时间到达页面底部
-    actions.send_keys(Keys.HOME).perform()  # 发送 Home 键，将光标移动到页面顶部
-    actions.send_keys(Keys.PAGE_DOWN).perform()  # 再次发送 Page Down 键，再次模拟向下滚动一页
-    time.sleep(detail_delta_time)  # 等待3秒，以便有时间到达页面底部
-    logger.info(f"slider page down！ page height {page_height} px")
+    actions.send_keys(Keys.END).perform()
+    actions.send_keys(Keys.PAGE_DOWN).perform()
+    time.sleep(detail_delta_time)
+    actions.send_keys(Keys.HOME).perform()
+    actions.send_keys(Keys.PAGE_DOWN).perform()
+    time.sleep(detail_delta_time)
+    logger.info(f"slider page down! page height {page_height}px")

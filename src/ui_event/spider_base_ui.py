@@ -18,7 +18,6 @@ def base_menu(self):
     基础菜单
     :return:
     """
-    # 创建菜单栏
     self.menu_bar = QMenuBar()
     self.image_menu = QMenu('图像', self.menu_bar)
     self.start_spider_action = QAction('开始自动爬取', self.image_menu)
@@ -68,7 +67,6 @@ def tab_ui_tab(self):
     选项卡生成
     :return:
     """
-    # 创建选项卡
     self.tab_widget = QTabWidget()
     self.tab1 = QWidget()
     self.tab2 = QWidget()
@@ -76,7 +74,6 @@ def tab_ui_tab(self):
     self.tab_widget.addTab(self.tab1, '图像')
     self.tab_widget.addTab(self.tab2, '视频')
     self.tab_widget.addTab(self.tab3, '其他')
-    # 创建表格和设置列名
     return self.tab1, self.tab2, self.tab3, self.tab_widget
 
 
@@ -87,15 +84,12 @@ def tab_1_ui_paint(self):
     :param self:
     :return:
     """
-    # 搜索栏内容绘制
     search_item_paint(self)
 
     self.h_box_2 = QHBoxLayout()
 
     self.label = QLabel(self)
-    # 创建一个QScrollArea实例
     self.scroll_area = QScrollArea()
-    # 将label添加到scroll_area中
     self.scroll_area.setWidget(self.label)
     self.scroll_area.setParent(self.tab1)
     self.h_box_2.addWidget(self.scroll_area)
@@ -113,11 +107,9 @@ def tab_1_ui_paint(self):
     self.vbox.addLayout(self.h_box_2)
     self.vbox.addLayout(self.h_box_3)
 
-    # 创建布局并将表格添加到布局中
     self.tab1.setLayout(self.vbox)
     self.setCentralWidget(self.tab_widget)
 
-    # 基础事件 按钮单击事件
     self.input_file.clicked.connect(self.input_keyword_process)
     self.download_video_button.clicked.connect(self.download_file_thread)
     self.next_button.clicked.connect(self.next_img)
@@ -135,10 +127,8 @@ def tab_2_ui_paint(self):
     :param self:
     :return:
     """
-    # 搜索栏内容绘制 标题头部显示信息主要包括：文件名 文件名乘 图片数量信息
     search_item_paint_tab2(self)
 
-    # 水平布局  video play布局
     self.h_box_2_video = QHBoxLayout()
     self.h_box_1_list = QHBoxLayout()
     self.listWidget_1 = QListWidget(self)
@@ -155,46 +145,37 @@ def tab_2_ui_paint(self):
     self.h_box_1_list.addWidget(self.listWidget_6, 8)
 
     self.scroll_area_video = QScrollArea()
-    # 将label添加到scroll_area中
     self.scroll_area_video.setLayout(self.h_box_1_list)
 
     self.scroll_area_video.setParent(self.tab2)
-    # 设置滚动区域的大小策略，使其根据内容自动调整大小
     self.scroll_area_video.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
     self.h_box_2_video.addWidget(self.scroll_area_video)
-    # 创建用于控制播放的按钮
     self.play_video_button = QPushButton(u"播放")
     self.pause_button_video = QPushButton(u"暂停")
     self.generate_button_video = QPushButton(u"生成")
 
-    # 创建用于控制播放进度的滑块
     self.slider = QSlider(Qt.Horizontal)
-    self.slider.setRange(0, 200)  # 设置滑块范围为0-200
-    self.slider.setValue(0)  # 设置初始值为0
-    self.slider.setTickPosition(QSlider.TicksBelow)  # 在滑块下方显示刻度
-    self.slider.setTickInterval(20)  # 设置刻度间隔为20
+    self.slider.setRange(0, 200)
+    self.slider.setValue(0)
+    self.slider.setTickPosition(QSlider.TicksBelow)
+    self.slider.setTickInterval(20)
 
-    # slider 和 video 布局集合  垂直布局 -
     self.v_box_video_slider_layout = QVBoxLayout()
     self.v_box_video_slider_layout.addLayout(self.h_box_2_video)
     self.v_box_video_slider_layout.addWidget(self.slider)
 
-    # 按钮布局 水平布局 - - -
     self.h_box_3_video = QHBoxLayout()
     self.h_box_3_video.addWidget(self.generate_button_video)
     self.h_box_3_video.addWidget(self.play_video_button)
 
-    # 整体布局 垂直布局
     self.vbox_video = QVBoxLayout()
     self.vbox_video.addLayout(self.grid_layout_video)
     self.vbox_video.addLayout(self.v_box_video_slider_layout)
     self.vbox_video.addLayout(self.h_box_3_video)
 
-    # 创建布局并将表格添加到布局中
     self.tab2.setLayout(self.vbox_video)
     self.setCentralWidget(self.tab_widget)
 
-    # 基础事件 按钮单击事件
     self.play_video_button.clicked.connect(self.play_video)
     self.pause_button_video.clicked.connect(self.pause_video)
     self.generate_button_video.clicked.connect(self.image_video_click)
@@ -209,16 +190,13 @@ def search_item_paint(self):
     :param self:
     :return:
     """
-    # 创建网格布局
     self.grid_layout = QGridLayout()
     self.setLayout(self.grid_layout)
 
-    # 创建行和列的索引
     row = 0
     col = 0
 
-    # 创建控件并添加到网格布局中
-    self.file_text = QLineEdit()  # 修改为你的路径
+    self.file_text = QLineEdit()
     self.grid_layout.addWidget(QLabel("关键字:"), row, col)
     self.grid_layout.addWidget(self.file_text, row, col + 1)  # 0 1
     row += 1
@@ -229,7 +207,7 @@ def search_item_paint(self):
     row += 1
     col += 1
 
-    self.file_name_show_label = QLabel("文件名:")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
+    self.file_name_show_label = QLabel("文件名:")
     self.grid_layout.addWidget(self.file_name_show_label, row - 1, col - 1)
 
     self.file_name_label = QLabel("file_name")
@@ -238,20 +216,18 @@ def search_item_paint(self):
     self.show_page_label = QLabel("0/0")
     self.grid_layout.addWidget(self.show_page_label, 1, 2)
 
-    self.image_search_label = QLabel("图片搜索:")  # 如果constants中定义了文件名文本，你可以使用constants.file_name_txt来替换"文件名:"
+    self.image_search_label = QLabel("图片搜索:")
     self.grid_layout.addWidget(self.image_search_label, 2, 0)
 
     self.image_page = QLineEdit()
     self.grid_layout.addWidget(self.image_page, 2, 1)
 
-    # 你可以继续添加其他控件到下一行，例如:
     self.jump_point_image = QPushButton("点击跳转或搜索")
     self.grid_layout.addWidget(self.jump_point_image, 2, 2)
 
     h_layout = QHBoxLayout()
 
     h_layout.addStretch()
-    # h_layout.addStretch()
     self.btn_zoom_in = QPushButton('放大', self)
     h_layout.addWidget(self.btn_zoom_in)
 
@@ -262,7 +238,6 @@ def search_item_paint(self):
 
 @logger.catch
 def search_item_paint_tab2(self):
-    # 创建网格布局
     self.grid_layout_video = QGridLayout()
     self.setLayout(self.grid_layout_video)
 
@@ -284,9 +259,7 @@ def tab_3_ui_paint(self):
 
     self.h_box_2_3 = QHBoxLayout()
     self.label_3 = QLabel(self)
-    # 创建一个QScrollArea实例
     self.scroll_area_3 = QScrollArea()
-    # 将label添加到scroll_area中
     self.scroll_area_3.setWidget(self.label_3)
     self.scroll_area_3.setParent(self.tab3)
     self.h_box_2_3.addWidget(self.scroll_area_3)
@@ -310,11 +283,9 @@ def tab_3_ui_paint(self):
     self.vbox_3.addLayout(self.h_box_2_3)
     self.vbox_3.addLayout(self.h_box_3_3)
 
-    # 创建布局并将表格添加到布局中
     self.tab3.setLayout(self.vbox_3)
     self.setCentralWidget(self.tab_widget)
 
-    # 基础事件 按钮单击事件
     self.btn_input_file_3.clicked.connect(self.input_keyword_process_3)
     self.un_normal_img_button.clicked.connect(self.download_file_thread_3)
     self.img_category_button.clicked.connect(self.img_category_button_click)

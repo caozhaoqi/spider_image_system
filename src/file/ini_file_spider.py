@@ -46,7 +46,7 @@ def write_minio_config_to_file(minio_config):
     :return:
     """
     iniPath = os.path.realpath(ini_file_path)
-    logger.info("generate file path：" + iniPath)
+    logger.info("generate file path: " + iniPath)
     conf = configparser.ConfigParser()
     if os.path.exists(iniPath):
         try:
@@ -55,14 +55,14 @@ def write_minio_config_to_file(minio_config):
             logger.error("permission error, ini file only read mode, please update ini file chmod! detail: " + str(pe))
             return False
         except Exception as e:
-            logger.error("unknown error, detail :" + str(e))
+            logger.error("unknown error, detail: " + str(e))
             return False
     logger.warning("Not Found config ini file , creating ini file ....")
     if not os.path.exists(ini_path):
         os.makedirs(ini_path)
-        logger.debug("dir not exists ,create dir")
+        logger.debug("dir not exists, create dir")
     conf.read(iniPath, 'utf-8')
-    logger.info("start generate config ini file :")
+    logger.info("start generate config ini file.")
 
     conf.add_section("spider_config")
     conf.set("spider_config", "s2_url", minio_config.s2_url)
@@ -90,8 +90,7 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "fire_wall_delay_time", "300")
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
-    logger.info("config write finished , read test , current use visit url : " + conf.get("spider_config",
-                                                                                          "visit_url"))
+    logger.info("config write finished, read test, current use visit url: " + conf.get("spider_config", "visit_url"))
     return True
 
 
@@ -112,10 +111,10 @@ def read_ini_config(file_name, section, value_key):
         value = config.get(section, value_key)
         return value
     except configparser.NoSectionError as e:
-        logger.error("Error! section: " + section + ", value_key :" + value_key + ", value error content: " + str(e))
+        logger.error("Error! section: " + section + ", value_key: " + value_key + ", value error content: " + str(e))
         return "log_dir"
     except configparser.NoOptionError:
-        logger.error(f"No option '{section}' in section , please re input config key''" + value_key)
+        logger.error(f"No option '{section}' in section, please retry input config key!''" + value_key)
         return ""
 
 
@@ -125,18 +124,18 @@ def check_ini_config():
     系统启动引入默认配置
     :return:
     """
-    iniPath = os.path.realpath('.\\config\\config.ini')  # 读取生成后运行时的临时文件目录
-    logger.info("generate file path：" + iniPath)
+    iniPath = os.path.realpath('.\\config\\config.ini')
+    logger.info("generate file path: " + iniPath)
     conf = configparser.ConfigParser()
-    if os.path.exists(iniPath):  # 此步判断环境测试未生成临时文件时调用配置文件
+    if os.path.exists(iniPath):
         conf.read(iniPath, 'utf-8')
     else:
-        logger.warning("Not Found config ini file , creating ini file ....")
+        logger.warning("Not Found config ini file, creating ini file....")
         if not os.path.exists(".\\config"):
             os.makedirs(".\\config")
-            logger.debug("dir not exists ,create dir")
+            logger.debug("dir not exists, creating dir")
         conf.read(iniPath, 'utf-8')
-        logger.info("start generate config ini file :")
+        logger.info("start generate config ini file: ")
         conf.add_section("spider_config")
         conf.set("spider_config", "visit_url", "sd.2021.host")
         conf.set("spider_config", "s1_url", "i.pixivcat.com")
@@ -164,4 +163,4 @@ def check_ini_config():
 
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
-        logger.info("config write finished , read test : " + conf.get("spider_config", "visit_url"))
+        logger.info("config write finished, read test: " + conf.get("spider_config", "visit_url"))

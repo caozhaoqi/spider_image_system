@@ -34,7 +34,7 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
                 logger.debug(f"Image saved as {filename}, cur images index: {cur_download_images_index}"
                              f", cur txt images download count: {cur_txt_image_count}")
             else:
-                logger.error(f"Error! Failed to download image from {url}" + "detail reason: " + str(response.content))
+                logger.error(f"Error! Failed to download image from {url}, " + "detail reason: " + str(response.content))
         except ConnectionError as ce:
             logger.error("error, connect point url error, detail: " + str(ce))
         except ProtocolError as pe:
@@ -85,7 +85,7 @@ def download_img_txt(self):
         if constants.stop_download_image_flag:
             break
         cdds_index += 1
-        logger.debug("download img before , remove duplicate.")
+        logger.debug("download img before, remove duplicate.")
         file_path, file_name = os.path.split(cdds_path)
         base_name, ext = os.path.splitext(file_name)
         new_file_name = file_path + "/" + base_name + "_result.txt"
@@ -98,6 +98,6 @@ def download_img_txt(self):
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
     constants.stop_download_image_flag = False
-    logger.success("downloaded all image !")
+    logger.success("downloaded all image!")
     self.success_tips()
     return True

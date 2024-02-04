@@ -254,6 +254,7 @@ def save_data(self):
         proxy_flag_txt = False
     search_delta_time_txt = int(self.search_delta_time_line.text()) if self.search_delta_time_line else None
     detail_delta_time_txt = int(self.detail_delta_time_line.text()) if self.detail_delta_time_line else None
+    logger.debug("update config ini file mgs: ")
     logger.debug(f"Source1 URL: {s1_url_txt}")
     logger.debug(f"Source2 URL: {s2_url_txt}")
     logger.debug(f"visit URL: {visit_url_txt}")

@@ -20,11 +20,11 @@ def find_images(directory):
     :param directory:
     :return:
     """
-    logger.info("current use image dir:" + str(directory))
+    logger.info("current use image dir: " + str(directory))
     image_files_lists = []
     if not os.path.exists(directory):
         os.makedirs(directory)
-        logger.info("dir not exists , create dir: " + str(directory))
+        logger.info("dir not exists, create dir: " + str(directory))
     for root, dirs, files in os.walk(directory):
         for file in files:
             if "gif_unzip" not in root:
@@ -119,10 +119,10 @@ def check_images(self, image_path):
                     image = Image.open(filepath)
                     width, height = image.size
                     if width <= 250 and height <= 250:  # 图片尺寸小于250*250
-                        logger.warning(f"图片 {filename} 尺寸过小，已移动至small_images文件夹。")
+                        logger.warning(f"图片 {filename} 尺寸过小, 已移动至small_images文件夹。")
                         small_image_lists.append(filepath)
                 except Exception as e:
-                    logger.error(f"无法打开图片 {filename}，错误信息：{e}, 已移动至error_images文件夹。")
+                    logger.error(f"无法打开图片 {filename}, 错误信息:{e}, 已移动至error_images文件夹。")
                     error_image_lists.append(filepath)
     for error_images in error_image_lists:
         with open(image_path + '/error_image_txt.txt', 'a') as f:
@@ -177,7 +177,7 @@ def img_category_images(self, image_path):
             elif "custom" in filename:
                 custom_image_lists.append(filename)
             else:
-                logger.warning("未知种类图片，待定：" + str(filename))
+                logger.warning("未知种类图片，待定: " + str(filename))
     for square_image in square_image_lists:
         dir_path, file_name = os.path.split(square_image)
         if not os.path.exists(dir_path + "/square/"):

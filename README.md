@@ -6,7 +6,7 @@
 4. spider gif generate video.
 5. download gofile file.
 ## execute method
-1. run sis_v1.0x.exe.
+1. run sis_v1.0.x.exe.
 ## position
 - if not visit pixiv.net , could visit sd.2021.host replace.
 - other.
@@ -15,7 +15,7 @@
 ## technology lib
 1. selenium.
 2. loguru.
-3. request.
+3. requests.
 4. os.
 5. other(readme requirements.txt).
 ## folder
@@ -31,7 +31,6 @@
 1. self config url (finished).
 2. play all video(finished).
 3. other...(to be continued...)
-- 第三方库安装
 - bugs 1 : 在类方法中不能使用@logger.catch注解方法，会出现以下错误：
 ```shell
 > File "C:\Users\Administrator\PycharmProjects\calmcar_sf_server\src\test\gui\ui_main.py", line 130, in ui_paint
@@ -41,7 +40,7 @@
 
 TypeError: next_img() takes 1 positional argument but 3 were given
 ```
-
+- 第三方库安装
 ```shell
 pip install pyinstaller 
 pip install -r requirements.txt #根据requirements文件安装第三方库文件
