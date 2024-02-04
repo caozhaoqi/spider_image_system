@@ -18,8 +18,8 @@ class Worker(QThread):
     def run(self):
         # 在这里执行耗时操作
         time.sleep(5)  # 模拟耗时操作
-        if not constants.stop_download_image_flag:
-            self.finished.emit("操作完成")  # 发送信号表示工作完成
+        # if not constants.stop_download_image_flag:
+        self.finished.emit("操作完成")  # 发送信号表示工作完成
 
 
 class MyApp(QApplication):
@@ -34,14 +34,11 @@ class MyApp(QApplication):
         self.messageBox.setWindowTitle('提示')
         self.messageBox.setText('开始执行任务...')
         self.messageBox.setModal(True)
-        # self.show()
         self.thread = Worker()
         self.thread.start()  # 开始线程
         self.thread.finished.connect(self.onFinished)  # 连接信号到槽函数
-        # self.thread.exit()
 
     def onFinished(self, result):
-        # 在这里处理线程结束后的操作，例如关闭对话框等
         self.messageBox.setText('操作完成')  # 更新对话框文本
         self.messageBox.exec_()  # 显示对话框，等待用户关闭
 

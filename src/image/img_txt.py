@@ -33,13 +33,13 @@ class KeyWordModel:
     other_image = 0
     video_gif = 0
 
-
-if __name__ == '__main__':
-    img_path = r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\img_url\test.png'
-    keyword_model = KeyWordModel()
-    keyword_model.index = 1
-    keyword_model.cur_page = 1
-    keyword_model.name = 'Radien shogun'
-    keyword_model.video_gif = 'text.gif'
-    keyword_str = json.dumps(keyword_model.__json__())
-    logger.debug(keyword_str)
+#
+# if __name__ == '__main__':
+#     img_path = r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\img_url\test.png'
+#     keyword_model = KeyWordModel()
+#     keyword_model.index = 1
+#     keyword_model.cur_page = 1
+#     keyword_model.name = 'Radien shogun'
+#     keyword_model.video_gif = 'text.gif'
+#     keyword_str = json.dumps(keyword_model.__json__())
+#     logger.debug(keyword_str)

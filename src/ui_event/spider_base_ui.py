@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLine
 from loguru import logger
 
 from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
-    visit_web, about_message_lookup
+    visit_web, about_message_lookup, online_look_image, performance_monitor
 
 
 @logger.catch
@@ -26,10 +26,13 @@ def base_menu(self):
     self.stop_spider_action.triggered.connect(lambda: stop_spider_image())
     self.stop_download_action = QAction('停止下载', self.image_menu)
     self.stop_download_action.triggered.connect(lambda: stop_download_image())
+    self.online_look_action = QAction('在线查看', self.image_menu)
+    self.online_look_action.triggered.connect(lambda: online_look_image())
     self.other_spider_action = QAction('其他', self.image_menu)
     self.image_menu.addAction(self.start_spider_action)
     self.image_menu.addAction(self.stop_spider_action)
     self.image_menu.addAction(self.stop_download_action)
+    self.image_menu.addAction(self.online_look_action)
     self.image_menu.addAction(self.other_spider_action)
 
     self.video_menu = QMenu('视频', self.menu_bar)
@@ -39,6 +42,15 @@ def base_menu(self):
     self.video_menu.addAction(self.start_generate_action)
     self.video_menu.addAction(self.stop_generate_action)
     self.video_menu.addAction(self.video_other_action)
+
+    self.performance_menu = QMenu('性能', self.menu_bar)
+    self.look_performance = QAction('性能监视', self.performance_menu)
+    self.look_performance.triggered.connect(lambda: performance_monitor())
+    # self.stop_generate_action = QAction('停止生成', self.video_menu)
+    # self.video_other_action = QAction('其他', self.video_menu)
+    self.performance_menu.addAction(self.look_performance)
+    # self.video_menu.addAction(self.stop_generate_action)
+    # self.video_menu.addAction(self.video_other_action)
 
     self.settings_menu = QMenu('设置', self.menu_bar)
     self.edit_settings_action = QAction('编辑配置', self.settings_menu)
@@ -55,6 +67,7 @@ def base_menu(self):
 
     self.menu_bar.addMenu(self.image_menu)
     self.menu_bar.addMenu(self.video_menu)
+    self.menu_bar.addMenu(self.performance_menu)
     self.menu_bar.addMenu(self.settings_menu)
     self.menu_bar.addMenu(self.help_menu)
     self.menu_bar.addMenu(self.about_menu)

@@ -3,6 +3,9 @@ import sys
 
 from selenium.common import StaleElementReferenceException
 
+from ui_event.image_dialog import show_image_viewer
+from utils.sys_info import look_sys_info
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import threading
@@ -138,6 +141,7 @@ def auto_spider_img_thread(self):
     # read txt file spider keyword
     if not constants.stop_spider_url_flag:
         logger.error("already spider img, please stop here before operate!")
+        return False
     auto_spider_file_path = os.path.join(constants.data_path, "auto_spider_img")
 
     if not os.path.exists(auto_spider_file_path):
@@ -177,7 +181,7 @@ def auto_spider_img_thread(self):
         logger.debug("cur spider kew word txt: " + str(spider_img_keyword_detail))
         # 读取用户输入路径
         constants.stop_spider_url_flag = False
-        txt_index +=  1
+        txt_index += 1
         for spider_image_keyword_item in spider_img_keyword_detail:
             logger.debug("cur spider kew word: " + str(spider_image_keyword_item))
             try:
@@ -191,13 +195,13 @@ def auto_spider_img_thread(self):
                 break
             if constants.firewall_flag:
                 logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time:"
-                               f" {int(fire_wall_delay_time / 60)}min.")
+                               f" {int(fire_wall_delay_time / 60)} minutes.")
                 # 设置重试时间
                 time.sleep(fire_wall_delay_time)
                 continue
         if constants.stop_spider_url_flag:
             # stop auto mode spider
-            logger.warning(f"auto spider img stop! will exit, end spider txt name: {txt_file_list[txt_index]}!")
+            logger.warning(f"auto spider img stop! will exit, end spider txt name: {txt_file_list[txt_index - 1]}!")
             break
 
 
@@ -209,3 +213,24 @@ def stop_download_image():
     """
     constants.stop_download_image_flag = True
     logger.warning("flag stop_download_mage_flag set true!")
+
+
+@logger.catch
+def online_look_image():
+    """
+    online image look event
+    :return:
+    """
+    show_image_viewer()
+    logger.info("online image viewer show!")
+    pass
+
+
+@logger.catch
+def performance_monitor():
+    """
+    performance monitor event
+    :return:
+    """
+    look_sys_info()
+    pass

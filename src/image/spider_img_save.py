@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import requests
@@ -34,7 +33,8 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
                 logger.debug(f"Image saved as {filename}, cur images index: {cur_download_images_index}"
                              f", cur txt images download count: {cur_txt_image_count}")
             else:
-                logger.error(f"Error! Failed to download image from {url}, " + "detail reason: " + str(response.content))
+                logger.error(
+                    f"Error! Failed to download image from {url}, " + "detail reason: " + str(response.content))
         except ConnectionError as ce:
             logger.error("error, connect point url error, detail: " + str(ce))
         except ProtocolError as pe:
@@ -58,13 +58,16 @@ def download_images_from_file(file_path):
     cur_txt_image_count = count_lines(file_path)
     with open(file_path, 'r') as f:
         for line in f:
+            if constants.stop_download_image_flag:
+                logger.warning("set stop image stop_download_image_flag True!")
+                break
             url = line.strip()
             if url:  # 跳过空行
                 if not os.path.exists(save_img_url):
                     os.makedirs(save_img_url)
                 filename = os.path.join(name + "/images", f"{os.path.basename(url)}")
                 cur_download_images_index += 1
-                download_image(url, filename, cur_txt_image_count, cur_download_images_index + 1)
+                download_image(url, filename, cur_txt_image_count, cur_download_images_index)
 
 
 @logger.catch
@@ -78,22 +81,24 @@ def download_img_txt(self):
             _.endswith("_img.txt")]
     cdds_index = 0
     if len(cdds) == 0:
-        logger.warning("no image !")
+        logger.warning("no image!")
         constants.stop_download_image_flag = True
         return False
     for cdds_path in cdds:
         if constants.stop_download_image_flag:
+            logger.warning("set stop txt stop_download_image_flag True!")
             break
         cdds_index += 1
         logger.debug("download img before, remove duplicate.")
         file_path, file_name = os.path.split(cdds_path)
         base_name, ext = os.path.splitext(file_name)
         new_file_name = file_path + "/" + base_name + "_result.txt"
-        logger.success("download_img_txt: remove duplicate success, start new file name :" + new_file_name)
+        logger.success("download_img_txt: remove duplicate success, start new file name: " + new_file_name)
         remove_duplicates_from_txt(cdds_path,
                                    new_file_name)
         try:
-            logger.info(f"start download image, txt file name {cdds_path}, index: {cdds_index}, txt count: {len(cdds)}.")
+            logger.info(
+                f"start download image, txt file name {cdds_path}, index: {cdds_index}, txt count: {len(cdds)}.")
             download_images_from_file(new_file_name)
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))

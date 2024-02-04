@@ -294,5 +294,5 @@ def save_data(self):
         self.hide()
         sys.exit()
     else:
-        QMessageBox(QMessageBox.Warning, "错误", "发生未知错误，写入配置失败，请检查log信息！").exec_()
+        QMessageBox(QMessageBox.Warning, "错误", "发生未知错误,写入配置失败,请检查log信息！").exec_()
     pass
