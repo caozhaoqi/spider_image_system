@@ -49,22 +49,9 @@ def look_sys_info():
     logger.info(f"当前内存占用: {memory_usage:.2f} MB")
     cpu_usage = get_cpu_usage_percentage()
     logger.info(f"当前CPU占用: {cpu_usage} %")
-
-
-@logger.catch
-def ensure_list_of_floats(data):
-    """
-
-    :param data:
-    :return:
-    """
-
-    if isinstance(data, list):
-        return [float(item) for item in data]
-    elif isinstance(data, float):
-        return [data]
-    else:
-        raise ValueError("Input must be a list of floats or a single float.")
+    # logger.debug(f"Bytes sent: {net_io_counters.write_bytes / 1024 / 1024} Mb/s")
+    # logger.debug(f"Bytes received: {net_io_counters.read_bytes / 1024 / 1024} Mb/s")
+    return memory_usage, cpu_usage
 
 
 @logger.catch
@@ -80,8 +67,11 @@ def network_usage():
     net_io_counters = psutil.Process(pid).io_counters()
 
     # 输出网络连接信息
-    print("Bytes sent:", net_io_counters.bytes_sent)
-    print("Bytes received:", net_io_counters.bytes_recv)
+    send_bytes = net_io_counters.write_bytes / 1024 / 1024
+    receive_bytes = net_io_counters.read_bytes / 1024 / 1024
+    logger.debug(f"Bytes sent: {net_io_counters.write_bytes / 1024 / 1024} Mb/s")
+    logger.debug(f"Bytes received: {net_io_counters.read_bytes / 1024 / 1024} Mb/s")
+    return send_bytes, receive_bytes
 
 
 if __name__ == '__main__':

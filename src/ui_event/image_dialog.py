@@ -101,7 +101,7 @@ class ImageDialog(QDialog):
             # 创建QPixmap对象并加载图片数据
             pixmap = QPixmap.fromImage(QImage.fromData(response.content))
             self.label.setPixmap(pixmap)
-            logger.debug("loading image success!")
+            logger.debug(f"loading image: {image_path} success!")
         else:
             logger.warning(f"error, Invalid image format! response content: {response}")
 

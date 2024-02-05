@@ -4,7 +4,8 @@ import sys
 from selenium.common import StaleElementReferenceException
 
 from ui_event.image_dialog import show_image_viewer
-from utils.sys_info import look_sys_info
+from ui_event.sys_info_ui import show_sys_info
+from utils.sys_info import look_sys_info, network_usage
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -233,4 +234,6 @@ def performance_monitor():
     :return:
     """
     look_sys_info()
+    network_usage()
+    # show_sys_info()
     pass
