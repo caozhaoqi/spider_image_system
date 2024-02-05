@@ -1,6 +1,7 @@
 import time
 
 from PyQt5 import QtGui, QtCore
+from PyQt5.QtWidgets import QDialog
 from loguru import logger
 from utils.sys_info import look_sys_info, network_usage
 
@@ -20,7 +21,7 @@ import sys
 from PyQt5 import QtWidgets, QtChart
 
 
-class SystemMonitor(QtWidgets.QWidget):
+class SystemMonitor(QDialog):
     def __init__(self):
         """
 
@@ -146,10 +147,12 @@ def show_sys_info_ui():
     show sys info ui
     :return:
     """
-    app = QtWidgets.QApplication(sys.argv)
+    # app = QtWidgets.QApplication(sys.argv)
     monitor = SystemMonitor()
     monitor.show()
-    sys.exit(app.exec_())
+    monitor.showMaximized()
+    monitor.exec_()
+    # sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
