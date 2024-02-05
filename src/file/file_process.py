@@ -1,7 +1,6 @@
+import json
 import os
 import sys
-
-import numpy as np
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -94,3 +93,43 @@ def scan_img_txt(path):
         for img_detail in img:
             img_list.append(img_detail)
     return list(set(img_list))
+
+
+@logger.catch
+def write_error_image(txt_path, image_path):
+    """
+    写入下载错误图片数据至txt
+    :param txt_path:
+    :param image_path:
+    :return:
+    """
+    with open(txt_path, 'a') as f:
+        f.write(image_path + "\n")
+    return True
+
+
+@logger.catch
+def record_end_download_image(file_name, data):
+    """
+    记录最后一次下载数据
+    :param file_name: file name
+    :param data: data
+    :return: 
+    """
+    # .__dict__
+    json_str = json.dumps(data.__dict__)
+    with open(file_name, 'w') as f:
+        f.write(json_str)
+    return True
+
+
+@logger.catch
+def look_end_download_image(file_name):
+    if not os.path.exists(file_name):
+        logger.warning("not found image record json data file! ")
+        return None
+    else:
+        # 打开JSON文件并读取其内容
+        with open(file_name, 'r') as f:
+            data = json.load(f)
+        return data

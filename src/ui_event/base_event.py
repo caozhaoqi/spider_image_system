@@ -212,7 +212,7 @@ def stop_download_image():
     :return:
     """
     constants.stop_download_image_flag = True
-    logger.warning("flag stop_download_mage_flag set true!")
+    # logger.warning("flag stop_download_mage_flag set true!")
 
 
 @logger.catch

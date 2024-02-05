@@ -1,6 +1,8 @@
 import os
+import re
 import sys
 
+from utils.http_tools import image_url_re
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -189,6 +191,9 @@ def filter_exists_images(key_word, image_url, txt_name):
             return False
     elif txt_name == '_img':
         file_name = constants.data_path + "/img_url/" + key_word + "_img.txt"
+        # https://pixiv.srpr.cc/img-master/img/2024/01/29/15/41/31/115584905_p1_master1200.jpg
+        image_url = image_url_re(image_url)
+        # 115584905_p1_master1200.jpg
         try:
             with open(file_name, 'r') as f:
                 txt_url = f.readlines()

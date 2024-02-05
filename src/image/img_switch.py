@@ -1,6 +1,8 @@
 import os
 import sys
 
+from run import constants
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import shutil
@@ -20,7 +22,7 @@ def find_images(directory):
     :param directory:
     :return:
     """
-    logger.info("current use image dir: " + str(directory))
+    # logger.info("current use image dir: " + str(directory))
     image_files_lists = []
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -31,6 +33,20 @@ def find_images(directory):
                 if file.endswith('.jpg') or file.endswith('.png'):
                     image_files_lists.append(os.path.join(root, file))
     return image_files_lists
+
+
+@logger.catch
+def image_exists(image_path, image_list):
+    """
+    判断图片是否存在
+    :param image_path:
+    :param image_list:
+    :return:
+    """
+    for image_detail in image_list:
+        if image_path in image_detail:
+            return True
+    return False
 
 
 @logger.catch
@@ -204,3 +220,28 @@ def img_category_images(self, image_path):
         f.close()
     logger.success("img category success!")
     self.success_tips()
+
+
+@logger.catch
+def error_img_update(url):
+    """
+    error_img_txt update
+    :param url:
+    :return:
+    """
+    exists_error_url_flag = False
+    error_img_txt_path = constants.data_path + "\\download_fail_image.txt"
+    if os.path.exists(error_img_txt_path):
+        with open(error_img_txt_path, "r") as f:
+            error_img_list = f.readlines()
+        for error_img in error_img_list:
+            if error_img is url:
+                error_img_list.remove(error_img)
+                exists_error_url_flag = True
+        if exists_error_url_flag:
+            for error_img_new in error_img_list:
+                # 打开文件并写入元素
+                with open(error_img_txt_path, 'w') as file:
+                    file.write(str(error_img_new + "\n"))
+            return True
+    return False
