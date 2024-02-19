@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLine
 from loguru import logger
 
 from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
-    visit_web, about_message_lookup, online_look_image, performance_monitor
+    visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image
 
 
 @logger.catch
@@ -28,11 +28,14 @@ def base_menu(self):
     self.stop_download_action.triggered.connect(lambda: stop_download_image())
     self.online_look_action = QAction('在线查看', self.image_menu)
     self.online_look_action.triggered.connect(lambda: online_look_image())
+    self.auto_all_image_action = QAction('自动浏览',self.image_menu)
+    self.auto_all_image_action.triggered.connect(lambda: auto_play_image())
     self.other_spider_action = QAction('其他', self.image_menu)
     self.image_menu.addAction(self.start_spider_action)
     self.image_menu.addAction(self.stop_spider_action)
     self.image_menu.addAction(self.stop_download_action)
     self.image_menu.addAction(self.online_look_action)
+    self.image_menu.addAction(self.auto_all_image_action)
     self.image_menu.addAction(self.other_spider_action)
 
     self.video_menu = QMenu('视频', self.menu_bar)

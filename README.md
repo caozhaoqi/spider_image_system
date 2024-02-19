@@ -3,12 +3,12 @@
 1. spider pixiv.net img -> search img -> get url.
 2. replace domain -> save url to txt.
 3. according to url download image from txt content.
-4. spider gif generate video.
+4. spider gif image generate video.
 5. download gofile file.
 ## execute method
 1. run sis_v1.0.x.exe.
 ## position
-- if not visit pixiv.net , could visit sd.2021.host replace.
+- if not visit pixiv.net website, could visit sd.2021.host or other url replace.
 - other.
 ## GUI
 - pyqt5 paint main ui.
@@ -16,15 +16,11 @@
 1. selenium.
 2. loguru.
 3. requests.
-4. os.
-5. other(readme requirements.txt).
+4. other(readme requirements.txt).
 ## folder
 1. ./data/href_url/ artwork url folder.
 2. ./data/img_url/ img url txt folder.
 3. ./data/*/images save img folder.
-4. ./all_finish already save img txt folder(deleted).
-5. ./images/* already download image folder(deleted). 
-6. ../test/*.py test script folder(deleted).
 7. ./log_dir script run log folder.
 8. other see ./data.
 ## other
@@ -49,7 +45,6 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyinstaller #清华源
 ```
 
 - 打包
-- 打包前清理日志, 减小包体积
 ```shell
 Pyinstaller -F ui_main.py #打包exe
  

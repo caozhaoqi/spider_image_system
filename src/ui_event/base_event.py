@@ -3,6 +3,7 @@ import sys
 
 from selenium.common import StaleElementReferenceException
 
+from ui_event.auto_image_explore import show_image_auto
 from ui_event.image_dialog import show_image_viewer
 # from ui_event.sys_info_ui import show_sys_info
 from ui_event.sys_info_ui import show_sys_info_ui
@@ -225,6 +226,17 @@ def online_look_image():
     """
     show_image_viewer()
     logger.info("online image viewer show!")
+    pass
+
+
+@logger.catch
+def auto_play_image():
+    """
+    auto image play event
+    :return:
+    """
+    show_image_auto()
+    logger.info("auto_play_image show!")
     pass
 
 
