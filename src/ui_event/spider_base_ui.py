@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLine
 from loguru import logger
 
 from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
-    visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image
+    visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, genshin_impact_view, \
+    star_rail_view
 
 
 @logger.catch
@@ -28,7 +29,7 @@ def base_menu(self):
     self.stop_download_action.triggered.connect(lambda: stop_download_image())
     self.online_look_action = QAction('在线查看', self.image_menu)
     self.online_look_action.triggered.connect(lambda: online_look_image())
-    self.auto_all_image_action = QAction('自动浏览',self.image_menu)
+    self.auto_all_image_action = QAction('自动浏览', self.image_menu)
     self.auto_all_image_action.triggered.connect(lambda: auto_play_image())
     self.other_spider_action = QAction('其他', self.image_menu)
     self.image_menu.addAction(self.start_spider_action)
@@ -55,6 +56,14 @@ def base_menu(self):
     # self.video_menu.addAction(self.stop_generate_action)
     # self.video_menu.addAction(self.video_other_action)
 
+    self.tools_menu = QMenu('工具', self.menu_bar)
+    self.genshin_impact = QAction('genshin impact', self.tools_menu)
+    self.star_rail = QAction('star rail', self.tools_menu)
+    self.genshin_impact.triggered.connect(lambda: genshin_impact_view())
+    self.star_rail.triggered.connect(lambda: star_rail_view())
+    self.tools_menu.addAction(self.genshin_impact)
+    self.tools_menu.addAction(self.star_rail)
+
     self.settings_menu = QMenu('设置', self.menu_bar)
     self.edit_settings_action = QAction('编辑配置', self.settings_menu)
     self.edit_settings_action.triggered.connect(lambda: edit_config_msg())
@@ -71,6 +80,7 @@ def base_menu(self):
     self.menu_bar.addMenu(self.image_menu)
     self.menu_bar.addMenu(self.video_menu)
     self.menu_bar.addMenu(self.performance_menu)
+    self.menu_bar.addMenu(self.tools_menu)
     self.menu_bar.addMenu(self.settings_menu)
     self.menu_bar.addMenu(self.help_menu)
     self.menu_bar.addMenu(self.about_menu)

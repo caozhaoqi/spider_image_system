@@ -20,6 +20,7 @@ class ImageDialog(QDialog):
         self.setLayout(layout)
 
         self.label = QLabel()
+        self.show_page_label_online = QLabel()
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.label)
@@ -38,9 +39,12 @@ class ImageDialog(QDialog):
         self.next_button = QPushButton("Next")
         self.next_button.clicked.connect(self.show_next_image)
         h_box_layout.addWidget(self.next_button)
+        h_box_layout.addWidget(self.show_page_label_online)
 
         layout.addLayout(h_box_layout)
 
+        self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
+            constants.online_img_list)))
         if len(constants.online_img_list) <= 0:
             logger.warning("cur data dir no image!")
         else:
@@ -101,6 +105,8 @@ class ImageDialog(QDialog):
             # 创建QPixmap对象并加载图片数据
             pixmap = QPixmap.fromImage(QImage.fromData(response.content))
             self.label.setPixmap(pixmap)
+            self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
+                constants.online_img_list)))
             logger.debug(f"loading image: {image_path} success!")
         else:
             logger.warning(f"error, Invalid image format! response content: {response}")

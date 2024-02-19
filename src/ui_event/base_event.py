@@ -4,6 +4,7 @@ import sys
 from selenium.common import StaleElementReferenceException
 
 from ui_event.auto_image_explore import show_image_auto
+from ui_event.gi_dialog_ui import show_image_auto_viewer
 from ui_event.image_dialog import show_image_viewer
 # from ui_event.sys_info_ui import show_sys_info
 from ui_event.sys_info_ui import show_sys_info_ui
@@ -246,8 +247,26 @@ def performance_monitor():
     performance monitor event
     :return:
     """
-    look_sys_info()
-    network_usage()
-    # show_sys_info()
     show_sys_info_ui()
+    logger.info("sys info show!")
     pass
+
+
+@logger.catch
+def genshin_impact_view():
+    """
+    genshin impact tools view
+    :return:
+    """
+    show_image_auto_viewer()
+    logger.info("show genshin impact show!")
+    pass
+
+
+@logger.catch
+def star_rail_view():
+    """
+    star rail view tools
+    :return:
+    """
+    ...

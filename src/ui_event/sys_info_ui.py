@@ -1,9 +1,14 @@
 import time
 
 from PyQt5 import QtGui, QtCore
+from PyQt5.QtChart import QLineSeries
+from PyQt5.QtCore import QDateTime
 from PyQt5.QtWidgets import QDialog
 from loguru import logger
+
+from run import constants
 from utils.sys_info import look_sys_info, network_usage
+from utils.time_utils import time_to_utc
 
 
 @logger.catch
@@ -84,7 +89,7 @@ class SystemMonitor(QDialog):
         self.chart.setAxisY(self.axisY, self.receive_bytes_series)
 
         # 设置坐标轴的其他属性，例如标签、格式等
-        self.axisX.setLabelFormat("%.2f")  # 设置X轴标签格式为小数点后两位
+        # self.axisX.setLabelFormat("%.2f")  # 设置X轴标签格式为小数点后两位
         self.axisY.setLabelFormat("%d")  # 设置Y轴标签格式为整数
         self.axisX.setTitleText("Time (s)")  # 设置X轴标题
         self.axisY.setTitleText("Value")  # 设置Y轴标题
@@ -98,11 +103,13 @@ class SystemMonitor(QDialog):
         send_bytes, receive_bytes = network_usage()  # 示例数据，实际应为网络使用情况函数调用
         current_time = time.time()  # 获取当前时间戳
         # 计算前10秒和后10秒的时间戳
-        start_time = current_time - 300  # 当前时间前10秒
+        # now = QDateTime.currentDateTime()
+
+        start_time = current_time - constants.fire_wall_delay_time  # 当前时间前10秒 300/60
         end_time = current_time  # 当前时间后10秒
         # 设置时间窗口
-        self.axisX.setRange(start_time, end_time)
-
+        self.axisX.setRange(start_time, end_time)  # 设置时间范围
+        # self.axisX.setFormat("hh:mm:ss")
         # 如果需要，根据数据动态调整坐标轴范围
         minValue = min(mem_usage, cpu_usage, send_bytes, receive_bytes)
         maxValue = max(mem_usage, cpu_usage, send_bytes, receive_bytes)
@@ -127,15 +134,22 @@ class SystemMonitor(QDialog):
 
         # 更新内存使用数据系列
         self.memory_series.append(current_time, current_memory_usage)
+        self.memory_series.setName("Memory Usage")  # 设置内存使用数据系列的标签
 
         # 更新CPU使用数据系列
         self.cpu_series.append(current_time, cpu_usage)
+        self.cpu_series.setName("CPU Usage")  # 设置CPU使用数据系列的标签
 
         # 更新发送字节数据系列
         self.send_bytes_series.append(current_time, send_bytes)
+        self.send_bytes_series.setName("Sent Bytes")  # 设置发送字节数据系列的标签
 
         # 更新接收字节数据系列
         self.receive_bytes_series.append(current_time, receive_bytes)
+        self.receive_bytes_series.setName("Received Bytes")  # 设置接收字节数据系列的标签
+
+        # 如果您还希望更新图表的图例，确保图表的图例是可见的
+        self.chart.legend().setVisible(True)
 
         # 确保图表视图重绘或刷新以显示更新后的数据
         self.chart_view.update()

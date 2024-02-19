@@ -25,6 +25,7 @@ class AutoImageDialog(QDialog):
         self.label = QLabel()
 
         self.scroll_area = QScrollArea()
+        self.show_page_label_auto = QLabel()
         self.scroll_area.setWidget(self.label)
         self.label.resize(self.scroll_area.width(), self.scroll_area.height())
         layout.addWidget(self.scroll_area)
@@ -42,7 +43,10 @@ class AutoImageDialog(QDialog):
         self.next_button.clicked.connect(self.stop_timer)
         h_box_layout.addWidget(self.next_button)
 
+        h_box_layout.addWidget(self.show_page_label_auto)
+
         layout.addLayout(h_box_layout)
+        self.show_page_label_auto.setText(str(self.current_image_index) + "/" + str(len(self.image_files)))
 
         if len(constants.online_img_list) <= 0:
             logger.warning("cur data dir no image!")
@@ -76,6 +80,8 @@ class AutoImageDialog(QDialog):
         image_path = self.image_files[image_path]
         pixmap = QPixmap(image_path)  # 创建新的QPixmap实例
         self.label.setPixmap(pixmap)  # 更新QLabel的显示内容
+        self.show_page_label_auto.setText(str(self.current_image_index) + "/" + str(len(self.image_files)))
+
         # self.label.resize(self.pixmap_image_tab1.width(), self.pixmap_image_tab1.height())
 
 
