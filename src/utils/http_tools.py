@@ -9,14 +9,14 @@ import re
 
 
 @logger.catch
-def is_valid_url(url):
+def is_valid_url(http_url):
     """
     url valid
-    :param url:
+    :param http_url:
     :return: True or False
     """
     pattern = r'^https?://.+$'
-    if re.match(pattern, url):
+    if re.match(pattern, http_url):
         return True
     else:
         return False

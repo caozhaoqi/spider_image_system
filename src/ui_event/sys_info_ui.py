@@ -98,7 +98,7 @@ class SystemMonitor(QDialog):
         send_bytes, receive_bytes = network_usage()  # 示例数据，实际应为网络使用情况函数调用
         current_time = time.time()  # 获取当前时间戳
         # 计算前10秒和后10秒的时间戳
-        start_time = current_time - 30  # 当前时间前10秒
+        start_time = current_time - 300  # 当前时间前10秒
         end_time = current_time  # 当前时间后10秒
         # 设置时间窗口
         self.axisX.setRange(start_time, end_time)
@@ -108,7 +108,7 @@ class SystemMonitor(QDialog):
         maxValue = max(mem_usage, cpu_usage, send_bytes, receive_bytes)
         # 例如，如果内存使用量增长过快，可能需要扩大Y轴范围
         # self.axis_y = QtChart.QValueAxis()
-        self.axisY.setRange(minValue, maxValue)
+        self.axisY.setRange(minValue, maxValue + maxValue / 2)
 
         min_memory_usage = minValue  # 初始最小内存使用量
         max_memory_usage = maxValue  # 初始最大内存使用量

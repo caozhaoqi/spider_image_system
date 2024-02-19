@@ -46,9 +46,9 @@ def look_sys_info():
     """
     # 获取当前Python脚本的内存占用
     memory_usage = get_memory_usage()
-    logger.info(f"当前内存占用: {memory_usage:.2f} MB")
+    # logger.info(f"当前内存占用: {memory_usage:.2f} MB")
     cpu_usage = get_cpu_usage_percentage()
-    logger.info(f"当前CPU占用: {cpu_usage} %")
+    # logger.info(f"当前CPU占用: {cpu_usage} %")
     # logger.debug(f"Bytes sent: {net_io_counters.write_bytes / 1024 / 1024} Mb/s")
     # logger.debug(f"Bytes received: {net_io_counters.read_bytes / 1024 / 1024} Mb/s")
     return memory_usage, cpu_usage
@@ -69,8 +69,8 @@ def network_usage():
     # 输出网络连接信息
     send_bytes = net_io_counters.write_bytes / 1024 / 1024
     receive_bytes = net_io_counters.read_bytes / 1024 / 1024
-    logger.debug(f"Bytes sent: {net_io_counters.write_bytes / 1024 / 1024} Mb/s")
-    logger.debug(f"Bytes received: {net_io_counters.read_bytes / 1024 / 1024} Mb/s")
+    # logger.debug(f"Bytes sent: {net_io_counters.write_bytes / 1024 / 1024} Mb/s")
+    # logger.debug(f"Bytes received: {net_io_counters.read_bytes / 1024 / 1024} Mb/s")
     return send_bytes, receive_bytes
 
 

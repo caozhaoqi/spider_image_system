@@ -183,9 +183,9 @@ def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
             resized_image = cv2.resize(image, (width, height))  # 将图像的宽度和高度设置为适合MPEG-4的尺寸
             if image is not None:
                 video.write(resized_image)
-            if percent_cur / 10:
-                logger.info(f"export process to export_index / image_size_len：{export_index} / {image_size_len} * "
-                            f"100 /10 {percent_cur}%")
+            # if percent_cur / 10:
+            #     logger.info(f"export process to export_index / image_size_len：{export_index} / {image_size_len} * "
+            #                 f"100 /10 {percent_cur}%")
     finally:  # 确保视频资源被释放，无论是否有异常发生
         video.release()
     return video_name

@@ -18,12 +18,12 @@ def spider_gif_images(keyword, chrome_driver):
     :return:
     """
     api_urls = []
-
     requests = chrome_driver.execute_script("return window.performance.getEntriesByType('resource')")
     for request in requests:
         if request['initiatorType'] == 'fetch' and "img-zip-ugoira" in request['name']:
             api_urls.append(request['name'])
             logger.success(f"spider gif zip url: {request['name']}")
+            continue
     txt_path_name = os.path.join(constants.data_path, "href_url")
     if not os.path.exists(txt_path_name):
         os.makedirs(txt_path_name)

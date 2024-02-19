@@ -25,7 +25,7 @@ def log_record():
     logging.getLogger().handlers = [InterceptHandler()]
     logger.configure(
         handlers=[{"sink": sys.stdout, "level": sis_log_level, "format": format_record}])
-    logger.add(LOG_DIR, encoding='utf-8', rotation="12:00")
+    logger.add(LOG_DIR, encoding='utf-8', rotation="00:00")
     logger.debug('Spider Image System log system loaded, current log folder: ' + LOG_DIR)
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
     return True

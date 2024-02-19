@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 
 from utils.http_tools import image_url_re

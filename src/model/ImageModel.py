@@ -5,7 +5,7 @@
 
 class ImageModel:
 
-    def __init__(self, image_index, txt_name, image_url, image_name, download_date, txt_index):
+    def __init__(self, image_index, txt_name, image_url, image_name, download_date, txt_index, continue_flag):
         """
 
         :param image_index:
@@ -21,6 +21,7 @@ class ImageModel:
         self.image_name = image_name
         self.download_date = download_date
         self.txt_index = txt_index
+        self.continue_flag = continue_flag
 
     image_index = 0
     txt_index = 0
@@ -28,3 +29,4 @@ class ImageModel:
     image_url = ''
     image_name = ''
     download_date = ''
+    continue_flag = False
