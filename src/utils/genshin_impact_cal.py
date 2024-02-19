@@ -174,9 +174,16 @@ def cal_role_talent(level):
 
 
 @logger.catch
-def get_result_str(talent_Q, talent_E, talent_A, small_day_month_card, other_ys_, level, weapon_star, weapon_level):
+def get_result_str(talent_Q=1, talent_E=1, talent_A=1, small_day_month_card=0, other_ys_=0, level=1, weapon_star=3,
+                   weapon_level=1,
+                   relic_level_flower=1, relic_level_bz=1, relic_level_sl=1, relic_level_t=1, relic_level_ym=1):
     """
     return cal result from data
+    :param relic_level_ym:
+    :param relic_level_t:
+    :param relic_level_sl:
+    :param relic_level_bz:
+    :param relic_level_flower:
     :param talent_Q:
     :param talent_E:
     :param talent_A:
@@ -202,10 +209,14 @@ def get_result_str(talent_Q, talent_E, talent_A, small_day_month_card, other_ys_
                   f', {l_b_e}, {s_c_e}, {m_c_e}, {l_c_e}, {zb_e}, {hg_e}; s_b_a, m_b_a, l_b_a, s_c_a, m_c_a, ' \
                   f'l_c_a, zb_a, hg_a, moral_count_a: {s_b_a}, {m_b_a}, {l_b_a}, {s_c_a}, {m_c_a}, {l_c_a}, {zb_a},' \
                   f' {hg_a}, {moral_count_a}; '
-    result = "level up need book: big:" + str(big) + ",middle:" + str(middle) + ",small:" + str(
-        small) + ",total:" + str(
-        total_jy) + ", need moral :" + str(moral) + ", ys: " + str(total_ys) + ", weap moral: " + str(weapons_morl) \
+    result = "level up need book: big: " + str(big) + ",middle:" + str(middle) + ", small:" + str(
+        small) + ", total: " + str(
+        total_jy) + ", need moral:" + str(moral) + ", ys: " + str(total_ys) + ", weapons moral: " + str(weapons_morl) \
              + talent_desc
+    relic_count_result = relic_level_flower * 270475 / 20 + relic_level_t * 270475 / 20 + relic_level_ym * 270475 \
+                         / 20 + relic_level_sl * 270475 / 20 + relic_level_bz * 270475 / 20
+
+    result = result + relic_count_result
     logger.info(result)
     return result
 

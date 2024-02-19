@@ -121,18 +121,21 @@ class GICharacterDialog(QDialog):
         # 270475 3780000
         relic_level_ym = self.relic_level_line_edit_ym.text()
 
-        relic_count_result = relic_level_flower * 270475 / 20 + relic_level_t * 270475 / 20 + relic_level_ym * 270475 \
-                             / 20 + relic_level_sl * 270475 / 20 + relic_level_bz * 270475 / 20
         big_day_month_card = self.big_month_card_ys.text()
         small_day_month_card = self.small_month_card_ys.text()
         shenyuan_num = self.shenyuan_num.text()
-        if self.shenyuan_num != '':
+        if self.shenyuan_num != '' and big_day_month_card != '':
             other_ys_ = self.other_ys.text() + big_day_month_card + shenyuan_num * 600 + 5 * 160
         else:
             other_ys_ = self.other_ys.text()
+        if talent_A == '' or talent_E == '' or talent_Q == '' or small_day_month_card == '' or level == '' or weapon_level \
+                == '' or relic_level_flower == '' or relic_level_bz == '' or relic_level_ym == '' or relic_level_t == '' or \
+                relic_level_sl == '':
+            self.result_label.setText('input msg null!')
+            return False
         result = get_result_str(talent_Q, talent_E, talent_A, small_day_month_card, other_ys_, level, weapon_star,
-                                weapon_level)
-        result = result + relic_count_result
+                                weapon_level, relic_level_flower, relic_level_bz, relic_level_sl, relic_level_t,
+                                relic_level_ym)
         self.result_label.setText(result)
 
 
