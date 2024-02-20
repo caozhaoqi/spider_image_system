@@ -27,6 +27,7 @@ class AutoImageDialog(QDialog):
         self.scroll_area = QScrollArea()
         self.show_page_label_auto = QLabel()
         self.scroll_area.setWidget(self.label)
+        # self.scroll_area.setParent(self.label)
         self.label.resize(self.scroll_area.width(), self.scroll_area.height())
         layout.addWidget(self.scroll_area)
 
@@ -82,7 +83,7 @@ class AutoImageDialog(QDialog):
         self.label.setPixmap(pixmap)  # 更新QLabel的显示内容
         self.show_page_label_auto.setText(str(self.current_image_index) + "/" + str(len(self.image_files)))
 
-        # self.label.resize(self.pixmap_image_tab1.width(), self.pixmap_image_tab1.height())
+        self.label.resize(pixmap.width(), pixmap.height())
 
 
 @logger.catch

@@ -33,7 +33,7 @@ class GICharacterDialog(QDialog):
 
     def initUI(self):
         self.setWindowTitle('genshin impact view tools')
-        self.setFixedSize(800, 800)
+        # self.setFixedSize(800, 800)
 
         # 创建垂直布局
         layout = QVBoxLayout()

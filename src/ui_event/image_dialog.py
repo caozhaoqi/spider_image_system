@@ -1,5 +1,4 @@
 import cProfile
-import sys
 import threading
 
 import requests
@@ -24,6 +23,7 @@ class ImageDialog(QDialog):
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.label)
+        # self.scroll_area.setParent(self)
         self.label.resize(self.scroll_area.width(), self.scroll_area.height())
         layout.addWidget(self.scroll_area)
 
@@ -105,6 +105,7 @@ class ImageDialog(QDialog):
             # 创建QPixmap对象并加载图片数据
             pixmap = QPixmap.fromImage(QImage.fromData(response.content))
             self.label.setPixmap(pixmap)
+            self.label.resize(pixmap.width(), pixmap.height())
             self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
                 constants.online_img_list)))
             logger.debug(f"loading image: {image_path} success!")
