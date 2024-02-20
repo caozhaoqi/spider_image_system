@@ -137,7 +137,7 @@ def auto_start_spider_image(self):
 def auto_spider_img_thread(self):
     """
     auto spider img thread
-    @:param self .
+    @:param self.
     :return:
     """
     # read txt file spider keyword

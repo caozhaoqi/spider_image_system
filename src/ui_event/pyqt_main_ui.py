@@ -2,6 +2,7 @@
 import os
 import sys
 
+from ui_event.async_message_box import send_cross_platform_notification
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -158,7 +159,7 @@ class UIMainWindows(QMainWindow):
             if key_word == '' or key_word is None:
                 logger.warning("input keyword empty or error!")
                 return False
-            logger.debug("you input key word is: " + str(key_word))
+            logger.debug("you input keyword is: " + str(key_word))
             spider_thread_obj = threading.Thread(
                 target=spider_artworks_url,
                 args=(self, key_word,))
@@ -205,6 +206,7 @@ class UIMainWindows(QMainWindow):
         success tips
         :return:
         """
+        send_cross_platform_notification("sis-info:完成", "完成！")
         logger.success('show success tips.')
         # success_tips_thread = threading.Thread(
         #     target=show_msg_alert,
@@ -218,6 +220,7 @@ class UIMainWindows(QMainWindow):
         error tips
         :return:
         """
+        send_cross_platform_notification("sis-error:错误", "请等待当前操作完成！")
         logger.error('show error tips.')
         # error_tips_thread = threading.Thread(
         #     target=show_msg_alert,

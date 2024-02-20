@@ -52,5 +52,60 @@ def test():
     sys.exit(app.exec_())
 
 
+# def show_message_box():
+#     win32api.MessageBox(0, "这是你的消息", "消息框标题", win32con.MB_OK)
+
+import ctypes
+
+
+def show_message_box():
+    # 加载user32.dll库
+    user32 = ctypes.windll.user32
+    # ctypes.windll.
+
+    # 定义消息框的参数
+    MB_OK = 0x00000000  # 只包含一个确定按钮
+    title = "消息框标题"
+    message = "这是一条系统消息提示"
+
+    # 显示消息框
+    user32.MessageBoxW(0, message, title, MB_OK)
+
+
+from plyer import notification
+
+
+def send_cross_platform_notification(title, message):
+    """
+    system send_cross_platform_notification
+    :param title: info title
+    :param message: info content
+    :return:
+    """
+    platform = "windows" if os.name == "nt" else "macosx" if sys.platform == "darwin" else "linux"
+
+    if platform == "windows":
+        notification.notify(
+            title=title,
+            message=message,
+            app_icon=None,
+            timeout=10
+        )
+    elif platform == "macosx":
+        notification.notify(
+            title=title,
+            message=message,
+            app_icon=None
+        )
+    elif platform == "linux":
+        # 在Linux上，plyer使用DBus发送通知，你可能需要安装一些依赖
+        notification.notify(
+            title=title,
+            message=message,
+            app_icon=None,
+            timeout=10
+        )
+
+
 if __name__ == '__main__':
-    cProfile.run('test()')
+    cProfile.run('send_cross_platform_notification()')

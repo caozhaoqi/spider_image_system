@@ -62,6 +62,10 @@ class AutoImageDialog(QDialog):
         logger.info("all image start play!")
 
     def stop_timer(self):
+        """
+        stop play picture
+        :return:
+        """
         self.timer.stop()
         logger.warning("all image stop play!")
 

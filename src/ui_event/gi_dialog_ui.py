@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QPushButton, QHBoxLayout
 from loguru import logger
 
-from utils.genshin_impact_cal import cal_role_book, cal_ys_total, cal_weapons_materials, cal_role_talent, get_result_str
+from utils.genshin_impact_cal import get_result_str
 
 
 class GICharacterDialog(QDialog):
@@ -66,9 +66,9 @@ class GICharacterDialog(QDialog):
         form_layout.addRow("角色星级", self.character_star_line_edit)
         form_layout.addRow("角色目标等级", self.level_line_edit)
 
-        form_layout.addRow("目标天赋A", self.talent_line_edit_A)
-        form_layout.addRow("目标天赋E", self.talent_line_edit_E)
-        form_layout.addRow("目标天赋Q", self.talent_line_edit_Q)
+        form_layout.addRow("目标天赋-A", self.talent_line_edit_A)
+        form_layout.addRow("目标天赋-E", self.talent_line_edit_E)
+        form_layout.addRow("目标天赋-Q", self.talent_line_edit_Q)
 
         form_layout.addRow("武器星级", self.weapon_star_line_edit)
         form_layout.addRow("武器目标等级", self.weapon_level_line_edit)
