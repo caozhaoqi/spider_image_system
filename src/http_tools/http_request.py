@@ -106,7 +106,7 @@ def generate_gif_video(zip_file_list):
         folder_path = folder_path.replace("gif_zip", "")
         unzip_path = extract_file(folder_path, zip_file_name_detail)
         if unzip_path is None:
-            logger.error("Failed to  extract the file.")
+            logger.error(f"Failed to extract the file: {unzip_path}")
         else:
             result_path_list.append(unzip_path)
             logger.success(f"File extracted successfully to {unzip_path}.")
@@ -172,10 +172,10 @@ def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
 
     try:
         export_index = 0
-        image_size_len = len(image_path_list)
+        # image_size_len = len(image_path_list)
         for image_path in image_path_list:
             export_index += 1
-            percent_cur = int((export_index / image_size_len) * 100)
+            # percent_cur = int((export_index / image_size_len) * 100)
             image = cv2.imread(image_path)
             if image is None:  # 增加对图像是否正确读取的检查
                 logger.error("Image not loaded:" + image_path)

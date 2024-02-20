@@ -78,7 +78,7 @@ def save_img_url(driver, key_word):
 @logger.catch
 def spider_artworks_url(self, key_word):
     """
-     spider image from point url .
+     spider image from point url.
     :param self:
     :parameter key_word 关键字
     :return:
