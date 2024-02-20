@@ -112,17 +112,29 @@ class ImageDialog(QDialog):
         else:
             logger.warning(f"error, Invalid image format! response content: {response}")
 
+    def closeEvent(self, event):
+        """
+        对话框关闭
+        :param event:
+        :return:
+        """
+        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
+        logger.debug('ImageDialog Dialog is closing!')
+        constants.online_look_image_visible = False
+        # 调用基类的 closeEvent 方法以确保对话框正常关闭
+        super(ImageDialog, self).closeEvent(event)
 
-@logger.catch
-def show_image_viewer():
-    """
-    show image to tool
-    :return:
-    """
-    dialog = ImageDialog()
-    dialog.showMaximized()
-    dialog.show()
-    dialog.exec_()
+
+# @logger.catch
+# def show_image_viewer():
+#     """
+#     show image to tool
+#     :return:
+#     """
+#     dialog = ImageDialog()
+#     dialog.showMaximized()
+#     dialog.show()
+#     dialog.exec_()
 
 
 if __name__ == '__main__':

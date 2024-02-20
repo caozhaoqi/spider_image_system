@@ -78,6 +78,7 @@ def network_usage():
     return send_bytes, receive_bytes
 
 
+@logger.catch
 def get_network_io_speed(process_name):
     # 找到与给定名称匹配的进程
     for proc in psutil.process_iter(['pid', 'name']):
@@ -113,11 +114,6 @@ def get_network_io_speed(process_name):
 
 
 if __name__ == '__main__':
-    # for i in range(10002):
-    #     logger.debug(i)
-    # logger.info(get_cpu_usage_percentage())
-    # look_sys_info()
-    # network_usage()
     send_speed, recv_speed = get_network_io_speed("cmd.exe")
     print(f"Upload Speed: {send_speed} Bytes/s")
     print(f"Download Speed: {recv_speed} Bytes/s")

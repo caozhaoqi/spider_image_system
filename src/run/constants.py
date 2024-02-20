@@ -15,6 +15,13 @@ filter_image_url = read_ini_config(ini_file_path, "spider_config", "filter_image
 stop_spider_url_flag = True
 # download_image_flag
 stop_download_image_flag = True
+# dialog show
+edit_config_msg_visible = False
+about_message_lookup_visible = False
+online_look_image_visible = False
+auto_play_image_visible = False
+performance_monitor_visible = False
+genshin_impact_view_visible = False
 # firewall_flag
 firewall_flag = False
 # fire_wall_delay_time

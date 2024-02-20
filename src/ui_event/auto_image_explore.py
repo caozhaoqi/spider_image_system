@@ -89,17 +89,28 @@ class AutoImageDialog(QDialog):
 
         self.label.resize(pixmap.width(), pixmap.height())
 
+    def closeEvent(self, event):
+        """
+        对话框关闭
+        :param event:
+        :return:
+        """
+        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
+        logger.debug('AutoImageDialog Dialog is closing!')
+        constants.auto_play_image_visible = False
+        # 调用基类的 closeEvent 方法以确保对话框正常关闭
+        super(AutoImageDialog, self).closeEvent(event)
 
-@logger.catch
-def show_image_auto():
-    """
-    show image to tool
-    :return:
-    """
-    dialog = AutoImageDialog()
-    dialog.showMaximized()
-    dialog.show()
-    dialog.exec_()
+# @logger.catch
+# def show_image_auto():
+#     """
+#     show image to tool
+#     :return:
+#     """
+#     dialog = AutoImageDialog()
+#     dialog.showMaximized()
+#     dialog.show()
+#     dialog.exec_()
 
 
 if __name__ == '__main__':

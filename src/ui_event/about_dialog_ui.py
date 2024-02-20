@@ -1,6 +1,9 @@
 import os
 import sys
 
+from loguru import logger
+
+from run import constants
 from run.constants import sis_server_version, publish_date, build_date
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -59,3 +62,14 @@ class InformationDialog(QDialog):
 
         self.setLayout(layout)  # 设置对话框的布局为刚才创建的布局对象
 
+    def closeEvent(self, event):
+        """
+        对话框关闭
+        :param event:
+        :return:
+        """
+        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
+        logger.debug('about_message_lookup_visible Dialog is closing!')
+        constants.about_message_lookup_visible = False
+        # 调用基类的 closeEvent 方法以确保对话框正常关闭
+        super(InformationDialog, self).closeEvent(event)

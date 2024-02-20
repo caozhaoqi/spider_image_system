@@ -8,7 +8,6 @@ from loguru import logger
 
 from run import constants
 from utils.sys_info import look_sys_info, network_usage
-from utils.time_utils import time_to_utc
 
 
 @logger.catch
@@ -44,7 +43,7 @@ class SystemMonitor(QDialog):
         self.initUI()
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update_data)
-        self.timer.start(100)  # 每秒更新一次数据
+        self.timer.start(500)  # 每0.5秒更新一次数据
 
     def initUI(self):
         """
@@ -154,20 +153,32 @@ class SystemMonitor(QDialog):
         # 确保图表视图重绘或刷新以显示更新后的数据
         self.chart_view.update()
 
-
-@logger.catch
-def show_sys_info_ui():
-    """
-    show sys info ui
-    :return:
-    """
-    # app = QtWidgets.QApplication(sys.argv)
-    monitor = SystemMonitor()
-    monitor.show()
-    monitor.showMaximized()
-    monitor.exec_()
-    # sys.exit(app.exec_())
+    def closeEvent(self, event):
+        """
+        对话框关闭
+        :param event:
+        :return:
+        """
+        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
+        logger.debug('AutoImageDialog Dialog is closing!')
+        constants.performance_monitor_visible = False
+        # 调用基类的 closeEvent 方法以确保对话框正常关闭
+        super(SystemMonitor, self).closeEvent(event)
 
 
-if __name__ == '__main__':
-    show_sys_info_ui()
+# @logger.catch
+# def show_sys_info_ui():
+#     """
+#     show sys info ui
+#     :return:
+#     """
+#     # app = QtWidgets.QApplication(sys.argv)
+#     monitor = SystemMonitor()
+#     monitor.show()
+#     monitor.showMaximized()
+#     monitor.exec_()
+#     # sys.exit(app.exec_())
+
+#
+# if __name__ == '__main__':
+#     show_sys_info_ui()

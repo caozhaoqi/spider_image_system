@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QPushButton, QHBoxLayout
 from loguru import logger
 
+from run import constants
 from utils.genshin_impact_cal import get_result_str
 
 
@@ -138,22 +139,34 @@ class GICharacterDialog(QDialog):
                                 relic_level_ym)
         self.result_label.setText(result)
 
+    def closeEvent(self, event):
+        """
+        对话框关闭
+        :param event:
+        :return:
+        """
+        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
+        logger.debug('GICharacterDialog Dialog is closing!')
+        constants.genshin_impact_view_visible = False
+        # 调用基类的 closeEvent 方法以确保对话框正常关闭
+        super(GICharacterDialog, self).closeEvent(event)
 
-@logger.catch
-def show_image_auto_viewer():
-    """
-    show image to tool
-    :return:
-    """
-    dialog_gi = GICharacterDialog()
-    dialog_gi.showMaximized()
-    dialog_gi.show()
-    dialog_gi.exec_()
 
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    dialog = GICharacterDialog()
-    dialog.show()
-    # dialog.showMaximized()
-    sys.exit(app.exec_())
+# @logger.catch
+# def show_image_auto_viewer():
+#     """
+#     show image to tool
+#     :return:
+#     """
+#     dialog_gi = GICharacterDialog()
+#     dialog_gi.showMaximized()
+#     dialog_gi.show()
+#     dialog_gi.exec_()
+#
+#
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     dialog = GICharacterDialog()
+#     dialog.show()
+#     # dialog.showMaximized()
+#     sys.exit(app.exec_())

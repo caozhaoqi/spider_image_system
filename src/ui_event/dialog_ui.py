@@ -1,6 +1,7 @@
 import os
 import sys
 
+from run import constants
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -220,6 +221,18 @@ class Dialog(QDialog):
         # 连接信号和槽
         save_button.clicked.connect(lambda: save_data(self))
         cancel_button.clicked.connect(self.reject)
+
+    def closeEvent(self, event):
+        """
+        对话框关闭
+        :param event:
+        :return:
+        """
+        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
+        logger.debug('config msg dialog Dialog is closing!')
+        constants.edit_config_msg_visible = False
+        # 调用基类的 closeEvent 方法以确保对话框正常关闭
+        super(Dialog, self).closeEvent(event)
 
 
 @logger.catch

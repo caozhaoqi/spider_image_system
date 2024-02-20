@@ -3,10 +3,10 @@ import sys
 
 from selenium.common import StaleElementReferenceException
 
-from ui_event.auto_image_explore import show_image_auto
-from ui_event.gi_dialog_ui import show_image_auto_viewer
-from ui_event.image_dialog import show_image_viewer
-from ui_event.sys_info_ui import show_sys_info_ui
+from ui_event.auto_image_explore import AutoImageDialog
+from ui_event.gi_dialog_ui import GICharacterDialog
+from ui_event.image_dialog import ImageDialog
+from ui_event.sys_info_ui import SystemMonitor
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -15,7 +15,7 @@ import time
 
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QListWidgetItem, QHBoxLayout
+from PyQt5.QtWidgets import QListWidgetItem
 from loguru import logger
 from run.constants import fire_wall_delay_time
 from ui_event.about_dialog_ui import InformationDialog
@@ -32,10 +32,13 @@ def edit_config_msg():
     update ini config msg
     :return:
     """
-    dialog = Dialog()
-    logger.info("config msg dialog show visible.")
-    dialog.exec_()
-    # pass
+    if not constants.edit_config_msg_visible:
+        dialog = Dialog()
+        constants.edit_config_msg_visible = True
+        logger.info("config msg dialog show visible.")
+        dialog.exec_()
+    else:
+        logger.warning("edit_config_msg dialog already open!")
 
 
 @logger.catch
@@ -46,7 +49,6 @@ def visit_web():
     """
     QDesktopServices.openUrl(QUrl("https://caozhaoqi.github.io/"))
     logger.info("jump target help web url.")
-    pass
 
 
 @logger.catch
@@ -55,10 +57,13 @@ def about_message_lookup():
     about msg show
     :return:
     """
-    information_dialog = InformationDialog()
-    information_dialog.exec_()
-    logger.info("show sis tools basic info.")
-    pass
+    if not constants.about_message_lookup_visible:
+        information_dialog = InformationDialog()
+        constants.about_message_lookup_visible = True
+        logger.info("show sis tools basic info.")
+        information_dialog.exec_()
+    else:
+        logger.warning("about_message_lookup_visible dialog already open!")
 
 
 @logger.catch
@@ -114,9 +119,11 @@ def stop_spider_image():
     stop spider images action
     :return:
     """
-    constants.stop_spider_url_flag = True
-    logger.warning("flag stop_spider_url_flag set true!")
-    pass
+    if not constants.stop_spider_url_flag:
+        constants.stop_spider_url_flag = True
+        logger.warning("flag stop_spider_url_flag set true!")
+    else:
+        logger.warning("spider url already stop!")
 
 
 @logger.catch
@@ -213,8 +220,11 @@ def stop_download_image():
     stop download image
     :return:
     """
-    constants.stop_download_image_flag = True
-    # logger.warning("flag stop_download_mage_flag set true!")
+    if not constants.stop_download_image_flag:
+        constants.stop_download_image_flag = True
+        logger.warning("flag stop_download_mage_flag set true!")
+    else:
+        logger.warning("download image already stop or not download image!")
 
 
 @logger.catch
@@ -223,9 +233,15 @@ def online_look_image():
     online image look event
     :return:
     """
-    show_image_viewer()
-    logger.info("online image viewer show!")
-    pass
+    if not constants.online_look_image_visible:
+        dialog = ImageDialog()
+        dialog.showMaximized()
+        dialog.show()
+        logger.info("online image viewer show!")
+        constants.online_look_image_visible = True
+        dialog.exec_()
+    else:
+        logger.warning("online look msg already open!")
 
 
 @logger.catch
@@ -234,9 +250,15 @@ def auto_play_image():
     auto image play event
     :return:
     """
-    show_image_auto()
-    logger.info("auto_play_image show!")
-    pass
+    if not constants.auto_play_image_visible:
+        dialog = AutoImageDialog()
+        dialog.showMaximized()
+        dialog.show()
+        logger.info("auto_play_image show!")
+        constants.auto_play_image_visible = True
+        dialog.exec_()
+    else:
+        logger.warning("auto play image already show!")
 
 
 @logger.catch
@@ -245,9 +267,15 @@ def performance_monitor():
     performance monitor event
     :return:
     """
-    show_sys_info_ui()
-    logger.info("sys info show!")
-    pass
+    if not constants.performance_monitor_visible:
+        monitor = SystemMonitor()
+        monitor.show()
+        monitor.showMaximized()
+        logger.info("sys info show!")
+        constants.performance_monitor_visible = True
+        monitor.exec_()
+    else:
+        logger.warning("performance_monitor already show!")
 
 
 @logger.catch
@@ -256,9 +284,15 @@ def genshin_impact_view():
     genshin impact tools view
     :return:
     """
-    show_image_auto_viewer()
-    logger.info("show genshin impact show!")
-    pass
+    if not constants.genshin_impact_view_visible:
+        dialog_gi = GICharacterDialog()
+        dialog_gi.showMaximized()
+        dialog_gi.show()
+        logger.info("show genshin impact show!")
+        constants.genshin_impact_view_visible = True
+        dialog_gi.exec_()
+    else:
+        logger.warning("genshin_impact_view already show!")
 
 
 @logger.catch
