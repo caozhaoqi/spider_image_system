@@ -97,9 +97,12 @@ def spider_artworks_url(self, key_word):
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        logger.warning("current spider mode: auto mode!")
+        logger.warning("current spider mode: auto spider image mode!")
 
+    # open dev tools
     options.add_argument("--auto-open-devtools-for-tabs")
+    # 接受不安全证书
+    options.add_argument("--ignore-certificate-errors")
     if proxy_flag == 'True':
         options.set_capability("proxy", proxy)
         logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
@@ -109,13 +112,15 @@ def spider_artworks_url(self, key_word):
     if r18_mode == 'True':
         mode = 'mode=r18&'
         logger.info("current start use r18 mode!")
-    if all_show == 'True':
-        other = 'illustrations'
+
     cur_page = 1
     url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode
+    if all_show != 'False':
+        # self define url by config file
+        url = all_show
     while True:
         if constants.stop_spider_url_flag:
-            logger.warning("stop spider url. get url spider artwork url.")
+            logger.warning("stop spider url, get url spider artwork url.")
             break
         url_detail = url_process_page(url, current_page=cur_page)
         logger.info("current use url: " + str(url_detail))
