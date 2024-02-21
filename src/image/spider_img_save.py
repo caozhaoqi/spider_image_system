@@ -69,9 +69,11 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
 
 
 @logger.catch
-def download_images_from_file(file_path, cdds_index, final_download_url, continue_download_flag):
+def download_images_from_file(file_path, cdds_index, final_download_url, continue_download_flag,
+                              txt_all_image_download_flag):
     """
     save image to point url from website download image
+    :param txt_all_image_download_flag: cur txt download image flag
     :param continue_download_flag:
     :param final_download_url:
     :param cdds_index:
@@ -96,7 +98,11 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
             else:
                 continue
     else:
-        logger.warning("no final download image message or already download last download image!")
+        logger.warning("Hasn't final download image message or already download last download image!")
+        if txt_all_image_download_flag:
+            # txt_all_image_download_flag
+            logger.warning("cur txt all downloaded, start next txt.")
+            return False
 
     for index, line in enumerate(cur_image_list):
         url = line.strip()
@@ -126,9 +132,6 @@ def download_img_txt(self):
     """
     # 查询上次下载记录
     final_download_txt_name = None
-    # final_download_image_name = None
-    final_download_url = None
-    final_download_image_index = None
     final_cdds_index = None
     continue_download_flag = False
     download_final_flag = look_end_download_image(constants.data_path + "\\download_final_image.json")
@@ -137,7 +140,6 @@ def download_img_txt(self):
                                                download_final_flag['image_url'], download_final_flag['image_name'],
                                                download_final_flag['download_date'], download_final_flag['txt_index'],
                                                download_final_flag['continue_flag'])
-        final_download_image_index = download_final_flag_model.image_index
         final_download_txt_name = download_final_flag_model.txt_name
         final_download_url = download_final_flag_model.image_url
         final_cdds_index = download_final_flag_model.txt_index
@@ -151,10 +153,9 @@ def download_img_txt(self):
         constants.stop_download_image_flag = True
         return False
     for cdds_path in cdds:
+        txt_all_image_download_flag = False
         if constants.stop_download_image_flag:
-            constants.stop_download_image_flag = True
             break
-        # logger.debug("download img before, remove duplicate.")
         file_path, file_name = os.path.split(cdds_path)
         base_name, ext = os.path.splitext(file_name)
         new_file_name = file_path + "/" + base_name + "_result.txt"
@@ -170,7 +171,17 @@ def download_img_txt(self):
                 update_download_continue_flag()
                 logger.warning(f"last download txt file name: {cdds[cdds_index]}! image name: {final_download_url}")
                 # continue
-            download_images_from_file(new_file_name, cdds_index, final_download_url, continue_download_flag)
+                cur_file_name = cdds_path.split('\\')[-1].split('.')[0]
+                final_file_name = final_download_txt_name.split('/')[-1]
+                if cur_file_name not in final_file_name:
+                    # 如果当前下载txt文件名不在最后下载文件名中，则说明当前文件已下载完成，结束继续下载，开始下载下一个文件
+                    logger.warning(f"current txt already download finished, start download next txt file image, "
+                                   f"txt name: {cdds_path}.")
+                    continue_download_flag = False
+                    txt_all_image_download_flag = True
+
+            download_images_from_file(new_file_name, cdds_index, final_download_url, continue_download_flag,
+                                      txt_all_image_download_flag)
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
         cdds_index += 1
@@ -185,3 +196,4 @@ def update_download_continue_flag():
                       time_to_utc(time.time()), None, False)
     record_end_download_image(constants.data_path + "\\download_final_image.json", data)
     logger.info("download final image json continue_flag update success!")
+    # constants.con
