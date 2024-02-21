@@ -2,6 +2,9 @@ import json
 import os
 import sys
 
+from model.ImageModel import ImageModel
+from run import constants
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import os
@@ -133,3 +136,23 @@ def look_end_download_image(file_name):
         with open(file_name, 'r') as f:
             data = json.load(f)
         return data
+
+
+@logger.catch
+def read_end_download():
+    """
+    return download msg for last download
+    :return:
+    """
+    download_final_flag = look_end_download_image(constants.data_path + "\\download_final_image.json")
+    if download_final_flag:
+        download_final_flag_model = ImageModel(download_final_flag['image_index'], download_final_flag['txt_name'],
+                                               download_final_flag['image_url'], download_final_flag['image_name'],
+                                               download_final_flag['download_date'], download_final_flag['txt_index'],
+                                               download_final_flag['continue_flag'])
+        final_download_txt_name = download_final_flag_model.txt_name
+        final_download_url = download_final_flag_model.image_url
+        final_cdds_index = download_final_flag_model.txt_index
+        continue_download_flag = download_final_flag_model.continue_flag
+        return download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
+               continue_download_flag

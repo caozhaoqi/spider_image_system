@@ -16,7 +16,8 @@ from urllib3.exceptions import ProtocolError
 
 from run import constants
 from run.constants import data_path
-from file.file_process import count_lines, write_error_image, record_end_download_image, look_end_download_image
+from file.file_process import count_lines, write_error_image, record_end_download_image, look_end_download_image, \
+    read_end_download
 from ui_event.get_url import remove_duplicates_from_txt
 
 
@@ -98,10 +99,10 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
             else:
                 continue
     else:
-        logger.warning("Hasn't final download image message or already download last download image!")
+        logger.warning(f"Hasn't final download image message or already download last download txt name: {file_path}.")
         if txt_all_image_download_flag:
             # txt_all_image_download_flag
-            logger.warning("cur txt all downloaded, start next txt.")
+            logger.warning(f"cur txt all downloaded, start next txt name: {file_path}")
             return False
 
     for index, line in enumerate(cur_image_list):
@@ -130,20 +131,6 @@ def download_img_txt(self):
     :param self:
     :return:
     """
-    # 查询上次下载记录
-    final_download_txt_name = None
-    final_cdds_index = None
-    continue_download_flag = False
-    download_final_flag = look_end_download_image(constants.data_path + "\\download_final_image.json")
-    if download_final_flag:
-        download_final_flag_model = ImageModel(download_final_flag['image_index'], download_final_flag['txt_name'],
-                                               download_final_flag['image_url'], download_final_flag['image_name'],
-                                               download_final_flag['download_date'], download_final_flag['txt_index'],
-                                               download_final_flag['continue_flag'])
-        final_download_txt_name = download_final_flag_model.txt_name
-        final_download_url = download_final_flag_model.image_url
-        final_cdds_index = download_final_flag_model.txt_index
-        continue_download_flag = download_final_flag_model.continue_flag
 
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith("_img.txt")]
@@ -153,6 +140,9 @@ def download_img_txt(self):
         constants.stop_download_image_flag = True
         return False
     for cdds_path in cdds:
+        # 查询上次下载记录
+        download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
+        continue_download_flag = read_end_download()
         txt_all_image_download_flag = False
         if constants.stop_download_image_flag:
             break
