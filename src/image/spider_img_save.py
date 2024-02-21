@@ -16,9 +16,10 @@ from urllib3.exceptions import ProtocolError
 
 from run import constants
 from run.constants import data_path
-from file.file_process import count_lines, write_error_image, record_end_download_image, look_end_download_image, \
-    read_end_download
+from file.file_process import count_lines, record_end_download_image, look_end_download_image, \
+    read_end_download_image, save_download_end, update_download_continue_flag
 from ui_event.get_url import remove_duplicates_from_txt
+
 
 
 @logger.catch
@@ -31,8 +32,8 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
     :param filename: file name
     :return:
     """
-    image_name = image_url_re(url)
     now_image_list = find_images(constants.data_path)
+    image_name = image_url_re(url)
     if now_image_list is None:
         # 无数据 自动置位false
         image_exists_flag = False
@@ -46,25 +47,18 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
                     f.write(response.content)
                 logger.debug(f"Image saved as {filename}, cur images index: {cur_download_images_index}"
                              f", cur txt images download count: {cur_txt_image_count}")
-                # 下载完成查询error_image中是否包含，如果包含，则删除
-                if error_img_update(url):
-                    logger.warning(f"last download fail image: {url}, success download, error_txt update!")
             else:
-                write_error_image(constants.data_path + "\\download_fail_image.txt", url)
                 logger.error(
                     f"Error! Failed to download image from {url}, cur images index: {cur_download_images_index}, cur "
                     f"txt images download count: {cur_txt_image_count}" + "detail: " + str(response.content))
         except ConnectionError as ce:
-            write_error_image(constants.data_path + "\\download_fail_image.txt", url)
             logger.error(f"error, connect point url error,cur images index: {cur_download_images_index}, cur txt "
                          f"images download count: {cur_txt_image_count}, detail: " + str(ce))
         except ProtocolError as pe:
-            write_error_image(constants.data_path + "\\download_fail_image.txt", url)
             logger.error(f"error, Remote end closed connection without response, cur images index: "
                          f"{cur_download_images_index}, cur txt images download count: {cur_txt_image_count}, detail: "
                          + str(pe))
         except Exception as e:
-            write_error_image(constants.data_path + "\\download_fail_image.txt", url)
             logger.error(f"error, unknown error,cur images index: {cur_download_images_index}, cur txt images "
                          f"download count: {cur_txt_image_count}, detail: " + str(e))
 
@@ -75,9 +69,9 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
     """
     save image to point url from website download image
     :param txt_all_image_download_flag: cur txt download image flag
-    :param continue_download_flag:
-    :param final_download_url:
-    :param cdds_index:
+    :param continue_download_flag: is continue download
+    :param final_download_url: final download image url
+    :param cdds_index: txt index
     :param file_path: save path
     :return:
     """
@@ -110,11 +104,7 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
         if index >= cur_download_finish_images_index:
             # 当前下载图片下标大于等于已下载图片下标 0 > = 0 下载0
             if constants.stop_download_image_flag:
-                data = ImageModel(index, file_path, url, image_url_re(url),
-                                  time_to_utc(time.time()), cdds_index, True)
-                record_end_download_image(constants.data_path + "\\download_final_image.json", data)
-                logger.warning(
-                    f"set stop image stop_download_image_flag True! save result: {data.image_url}, txt name: {file_path}.")
+                save_download_end(index, file_path, url, cdds_index)
                 break
             if url:  # 跳过空行
                 if not os.path.exists(save_img_url):
@@ -142,7 +132,7 @@ def download_img_txt(self):
     for cdds_path in cdds:
         # 查询上次下载记录
         download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
-        continue_download_flag = read_end_download()
+        continue_download_flag = read_end_download_image()
         txt_all_image_download_flag = False
         if constants.stop_download_image_flag:
             break
@@ -178,12 +168,3 @@ def download_img_txt(self):
     logger.success("downloaded all image!")
     self.success_tips()
     return True
-
-
-@logger.catch
-def update_download_continue_flag():
-    data = ImageModel(None, None, None, None,
-                      time_to_utc(time.time()), None, False)
-    record_end_download_image(constants.data_path + "\\download_final_image.json", data)
-    logger.info("download final image json continue_flag update success!")
-    # constants.con

@@ -1,9 +1,12 @@
 import json
 import os
 import sys
+import time
 
 from model.ImageModel import ImageModel
 from run import constants
+from utils.http_tools import image_url_re
+from utils.time_utils import time_to_utc
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -139,7 +142,7 @@ def look_end_download_image(file_name):
 
 
 @logger.catch
-def read_end_download():
+def read_end_download_image():
     """
     return download msg for last download
     :return:
@@ -156,3 +159,33 @@ def read_end_download():
         continue_download_flag = download_final_flag_model.continue_flag
         return download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
                continue_download_flag
+
+
+@logger.catch
+def save_download_end(index, file_path, url, cdds_index):
+    """
+    save data to json file
+    :param index:
+    :param file_path:
+    :param url:
+    :param cdds_index:
+    :return:
+    """
+    data = ImageModel(index, file_path, url, image_url_re(url),
+                      time_to_utc(time.time()), cdds_index, True)
+    record_end_download_image(constants.data_path + "\\download_final_image.json", data)
+    logger.warning(
+        f"set stop image stop_download_image_flag True! save result: {data.image_url}, txt name: {file_path}.")
+
+
+@logger.catch
+def update_download_continue_flag():
+    """
+    update json file
+    :return:
+    """
+    data = ImageModel(None, None, None, None,
+                      time_to_utc(time.time()), None, False)
+    record_end_download_image(constants.data_path + "\\download_final_image.json", data)
+    logger.info("download final image json continue_flag update success!")
+    # constants.con
