@@ -1,111 +1,56 @@
 import os
 import sys
 
+from PyQt5.QtGui import QFont, QIcon
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import cProfile
-import sys
-
-import time
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtCore import QThread, pyqtSignal
-from run import constants
+from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout, QPushButton, QMessageBox
 
 
-class Worker(QThread):
-    finished = pyqtSignal(str)
+class MessageDialog(QDialog):
+    def __init__(self, message_type, message_text, parent=None):
+        super(MessageDialog, self).__init__(parent)
 
-    def run(self):
-        # 在这里执行耗时操作
-        time.sleep(5)  # 模拟耗时操作
-        # if not constants.stop_download_image_flag:
-        self.finished.emit("操作完成")  # 发送信号表示工作完成
+        self.setWindowTitle(message_type)
+        self.setFixedSize(300, 200)
+        self.setWindowIcon(QIcon("../run/favicon.ico"))
+
+        # 设置对话框居中显示
+        screen = QApplication.desktop().screenGeometry()
+        size = self.geometry()
+        self.move(screen.center() - size.center())
+
+        layout = QVBoxLayout()
+
+        # 创建粗体字体
+        bold_font = QFont(self.font())
+        bold_font.setBold(True)
+
+        # 创建标签来显示消息内容
+        message_text_label = QLabel(message_text)
+        layout.addWidget(message_text_label)
+
+        close_button = QPushButton("关闭")
+        close_button.clicked.connect(self.close)
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
 
 
-class MyApp(QApplication):
-    def __init__(self, sys_argv):
-        super(MyApp, self).__init__(sys_argv)
-        self.messageBox = None
-        self.thread = None
-        self.initUI()
-
-    def initUI(self):
-        self.messageBox = QMessageBox()
-        self.messageBox.setWindowTitle('提示')
-        self.messageBox.setText('开始执行任务...')
-        self.messageBox.setModal(True)
-        self.thread = Worker()
-        self.thread.start()  # 开始线程
-        self.thread.finished.connect(self.onFinished)  # 连接信号到槽函数
-
-    def onFinished(self, result):
-        self.messageBox.setText('操作完成')  # 更新对话框文本
-        self.messageBox.exec_()  # 显示对话框，等待用户关闭
-
-
-def test():
+def show_message(message_type, message_content):
     """
-    profile test.
+    show tips
+    :param message_type: 消息类型： 错误  警告 成功
+    :param message_content: 消息内容
     :return:
     """
-    app = MyApp(sys.argv)
-    sys.exit(app.exec_())
 
-
-# def show_message_box():
-#     win32api.MessageBox(0, "这是你的消息", "消息框标题", win32con.MB_OK)
-
-import ctypes
-
-
-def show_message_box():
-    # 加载user32.dll库
-    user32 = ctypes.windll.user32
-    # ctypes.windll.
-
-    # 定义消息框的参数
-    MB_OK = 0x00000000  # 只包含一个确定按钮
-    title = "消息框标题"
-    message = "这是一条系统消息提示"
-
-    # 显示消息框
-    user32.MessageBoxW(0, message, title, MB_OK)
-
-
-from plyer import notification
-
-
-def send_cross_platform_notification(title, message):
-    """
-    system send_cross_platform_notification
-    :param title: info title
-    :param message: info content
-    :return:
-    """
-    platform = "windows" if os.name == "nt" else "macosx" if sys.platform == "darwin" else "linux"
-
-    if platform == "windows":
-        notification.notify(
-            title=title,
-            message=message,
-            app_icon=None,
-            timeout=10
-        )
-    elif platform == "macosx":
-        notification.notify(
-            title=title,
-            message=message,
-            app_icon=None
-        )
-    elif platform == "linux":
-        # 在Linux上，plyer使用DBus发送通知，你可能需要安装一些依赖
-        notification.notify(
-            title=title,
-            message=message,
-            app_icon=None,
-            timeout=10
-        )
+    dialog_mg = MessageDialog(message_type, message_content)
+    dialog_mg.show()
+    dialog_mg.exec_()
 
 
 if __name__ == '__main__':
-    cProfile.run('send_cross_platform_notification()')
+    # cProfile.run('main()')
+    show_message("成功", "已完成！")

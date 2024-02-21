@@ -26,7 +26,7 @@ def log_record():
     logger.configure(
         handlers=[{"sink": sys.stdout, "level": sis_log_level, "format": format_record}])
     logger.add(LOG_DIR, encoding='utf-8', rotation="00:00")
-    logger.debug('Spider Image System log system loaded, current log folder: ' + LOG_DIR)
+    logger.debug('SIS log system loaded, current log file: ' + LOG_DIR)
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
     return True
 
@@ -37,32 +37,31 @@ def sys_info_select():
     sys info print
     :return:
     """
-    logger.info("start out current system info: ")
-    logger.info("python_version: " + sys.version)
+    logger.info("start print current system info: ")
+    logger.info("python version: " + sys.version)
     logger.info("os and version info: " + platform.platform())
-    logger.info('get os version: ' + platform.version())
-    logger.info('get os name: ' + platform.system())
+    logger.info('os version: ' + platform.version())
+    logger.info('os name: ' + platform.system())
     logger.info('os bit: ' + str(platform.architecture()))
-    logger.info('compute type: ' + platform.machine())
-    logger.info('compute name: ' + platform.node())
+    logger.info('pc type: ' + platform.machine())
+    logger.info('pc name: ' + platform.node())
     logger.info('CPU type: ' + platform.processor())
-    logger.info('compute other info: ' + str(platform.uname()))
-    logger.info("end out current system info.")
+    logger.info('pc other info: ' + str(platform.uname()))
+    logger.info("end print current system info. ")
 
 
 @logger.catch
 def check_version():
     """
-    out app version msg
+    print sis version msg
     :return:
     """
-    logger.info("-------------start print version info---------------------------")
-    logger.info("system starting, current server version: " + sis_server_version)
-    logger.info("---------------------------------------------------------------")
-    logger.info("current version build date: "
-                + build_date)
-    logger.info("---------------------------------------------------------------")
-    logger.info(" current version publish date: " + publish_date)
-    logger.info("---------------end print version info---------------------------")
+    logger.info("-------------start print SIS version info---------------------------")
+    logger.info("system started, current SIS system version: " + sis_server_version)
+    logger.info("--------------------------------------------------------------------")
+    logger.info("current version build time: " + build_date)
+    logger.info("--------------------------------------------------------------------")
+    logger.info("current version publish time: " + publish_date)
+    logger.info("---------------end print SIS version info---------------------------")
     sys_info_select()
     return True

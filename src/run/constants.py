@@ -20,6 +20,7 @@ edit_config_msg_visible = False
 about_message_lookup_visible = False
 online_look_image_visible = False
 auto_play_image_visible = False
+start_auto_play_flag = False
 performance_monitor_visible = False
 genshin_impact_view_visible = False
 # firewall_flag
@@ -82,6 +83,6 @@ proxy_server_port = int(read_ini_config(ini_file_path, "spider_config", "proxy_s
 search_delta_time = int(read_ini_config(ini_file_path, "spider_config", "search_delta_time"))
 # 详情页等待时间
 detail_delta_time = int(read_ini_config(ini_file_path, "spider_config", "detail_delta_time"))
-sis_server_version = "v1.0.7_alpha"
-build_date = "2024-02-20 12:00"
-publish_date = "2024-02-20 12:00"
+sis_server_version = "v1.0.7-beta"
+build_date = "2024-02-21 12:00"
+publish_date = "2024-02-21 12:00"

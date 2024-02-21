@@ -56,18 +56,26 @@ class AutoImageDialog(QDialog):
         """
         Start the timer to change images periodically.
         """
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.show_next_image)
-        self.timer.start(self.interval)
-        logger.info("all image start play!")
+        if not constants.start_auto_play_flag:
+            self.timer = QTimer(self)
+            self.timer.timeout.connect(self.show_next_image)
+            self.timer.start(self.interval)
+            logger.info("all image start play!")
+            constants.start_auto_play_flag = True
+        else:
+            logger.warning("all image already play!")
 
     def stop_timer(self):
         """
         stop play picture
         :return:
         """
-        self.timer.stop()
-        logger.warning("all image stop play!")
+        if constants.start_auto_play_flag:
+            constants.start_auto_play_flag = False
+            self.timer.stop()
+            logger.info("all image stop play!")
+        else:
+            logger.warning("all image not start!")
 
     def show_next_image(self):
         """

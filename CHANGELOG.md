@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.0.7-beta
+### 2024/2/21
+- 已知bug修复(见issue)
+- log输出精确
+
+
 ## v1.0.7_alpha
 ### 2024/2/20
 - 已知bug修复

@@ -51,18 +51,21 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
             else:
                 write_error_image(constants.data_path + "\\download_fail_image.txt", url)
                 logger.error(
-                    f"Error! Failed to download image from {url}, " + "detail reason: " + str(response.content))
+                    f"Error! Failed to download image from {url}, cur images index: {cur_download_images_index}, cur "
+                    f"txt images download count: {cur_txt_image_count}" + "detail: " + str(response.content))
         except ConnectionError as ce:
             write_error_image(constants.data_path + "\\download_fail_image.txt", url)
-            logger.error("error, connect point url error, detail: " + str(ce))
+            logger.error(f"error, connect point url error,cur images index: {cur_download_images_index}, cur txt "
+                         f"images download count: {cur_txt_image_count}, detail: " + str(ce))
         except ProtocolError as pe:
             write_error_image(constants.data_path + "\\download_fail_image.txt", url)
-            logger.error("error, Remote end closed connection without response, detail: " + str(pe))
+            logger.error(f"error, Remote end closed connection without response, cur images index: "
+                         f"{cur_download_images_index}, cur txt images download count: {cur_txt_image_count}, detail: "
+                         + str(pe))
         except Exception as e:
             write_error_image(constants.data_path + "\\download_fail_image.txt", url)
-            logger.error("error, unknown error, detail: " + str(e))
-    # else:
-    #     logger.warning("file exists will skip file, file name: " + str(filename))
+            logger.error(f"error, unknown error,cur images index: {cur_download_images_index}, cur txt images "
+                         f"download count: {cur_txt_image_count}, detail: " + str(e))
 
 
 @logger.catch
@@ -86,10 +89,12 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
         cur_image_list = f.readlines()
     if continue_download_flag:
         for index, cur_image in enumerate(cur_image_list):
-            if cur_image == final_download_url:
+            if cur_image.strip() == final_download_url:
                 logger.warning(f"download image url: {final_download_url}, will continue!")
                 cur_download_finish_images_index = index
                 break
+            else:
+                continue
     else:
         logger.warning("no final download image message or already download last download image!")
 
@@ -98,7 +103,7 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
         if index >= cur_download_finish_images_index:
             # 当前下载图片下标大于等于已下载图片下标 0 > = 0 下载0
             if constants.stop_download_image_flag:
-                data = ImageModel(cur_download_images_index, file_path, url, image_url_re(url),
+                data = ImageModel(index, file_path, url, image_url_re(url),
                                   time_to_utc(time.time()), cdds_index, True)
                 record_end_download_image(constants.data_path + "\\download_final_image.json", data)
                 logger.warning(
@@ -109,7 +114,7 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
                     os.makedirs(save_img_url)
                 filename = os.path.join(name + "/images", f"{os.path.basename(url)}")
                 cur_download_images_index += 1
-                download_image(url, filename, cur_txt_image_count, cur_download_images_index)
+                download_image(url, filename, cur_txt_image_count, index)
 
 
 @logger.catch
@@ -123,7 +128,7 @@ def download_img_txt(self):
     final_download_txt_name = None
     # final_download_image_name = None
     final_download_url = None
-    # final_download_image_index = None
+    final_download_image_index = None
     final_cdds_index = None
     continue_download_flag = False
     download_final_flag = look_end_download_image(constants.data_path + "\\download_final_image.json")
@@ -132,6 +137,7 @@ def download_img_txt(self):
                                                download_final_flag['image_url'], download_final_flag['image_name'],
                                                download_final_flag['download_date'], download_final_flag['txt_index'],
                                                download_final_flag['continue_flag'])
+        final_download_image_index = download_final_flag_model.image_index
         final_download_txt_name = download_final_flag_model.txt_name
         final_download_url = download_final_flag_model.image_url
         final_cdds_index = download_final_flag_model.txt_index

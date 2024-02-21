@@ -2,7 +2,7 @@
 import os
 import sys
 
-from ui_event.async_message_box import send_cross_platform_notification
+from ui_event.async_message_box import show_message
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -206,11 +206,11 @@ class UIMainWindows(QMainWindow):
         success tips
         :return:
         """
-        send_cross_platform_notification("sis-info:完成", "完成！")
+        # show_message("sis-info:完成", "完成！")
         logger.success('show success tips.')
         # success_tips_thread = threading.Thread(
-        #     target=show_msg_alert,
-        #     args=(self, "完成", "完成！",))
+        #     target=show_message,
+        #     args=("完成", "完成！",))
         # success_tips_thread.start()
         # show_msg_alert("完成", "完成！")
 
@@ -220,7 +220,7 @@ class UIMainWindows(QMainWindow):
         error tips
         :return:
         """
-        send_cross_platform_notification("sis-error:错误", "请等待当前操作完成！")
+        # show_message("sis-error:错误", "请等待当前操作完成！")
         logger.error('show error tips.')
         # error_tips_thread = threading.Thread(
         #     target=show_msg_alert,
