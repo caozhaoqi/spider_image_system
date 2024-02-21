@@ -3,6 +3,7 @@ import sys
 
 from selenium.common import StaleElementReferenceException
 
+from ui_event.async_message_box import show_message
 from ui_event.auto_image_explore import AutoImageDialog
 from ui_event.gi_dialog_ui import GICharacterDialog
 from ui_event.image_dialog import ImageDialog
@@ -302,3 +303,13 @@ def star_rail_view():
     :return:
     """
     ...
+
+
+@logger.catch
+def test_button_event():
+    """
+    test menu event.
+    :return:
+    """
+    # ...
+    show_message("test", "test info")

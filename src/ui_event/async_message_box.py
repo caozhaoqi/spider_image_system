@@ -9,7 +9,16 @@ from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout, QPushBut
 
 
 class MessageDialog(QDialog):
+    """
+    message dialog
+    """
     def __init__(self, message_type, message_text, parent=None):
+        """
+        dialog init
+        :param message_type:
+        :param message_text:
+        :param parent:
+        """
         super(MessageDialog, self).__init__(parent)
 
         self.setWindowTitle(message_type)
