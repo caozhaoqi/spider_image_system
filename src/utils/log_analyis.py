@@ -158,7 +158,7 @@ def log_data_analyze():
     :return:
     """
     log_analyze_data = []
-    log_list = find_log(constants.data_path)
+    log_list = find_log(".\\")
     for log_index, log_content in enumerate(log_list):
         log_list_content = []
         result_count_list, result_detail_list = log_analyze(log_content)

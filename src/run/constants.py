@@ -23,6 +23,7 @@ auto_play_image_visible = False
 start_auto_play_flag = False
 performance_monitor_visible = False
 genshin_impact_view_visible = False
+log_analyze_visible = False
 # firewall_flag
 firewall_flag = False
 # fire_wall_delay_time

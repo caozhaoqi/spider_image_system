@@ -7,6 +7,7 @@ from ui_event.async_message_box import show_message
 from ui_event.auto_image_explore import AutoImageDialog
 from ui_event.gi_dialog_ui import GICharacterDialog
 from ui_event.image_dialog import ImageDialog
+from ui_event.log_analyze_dialog import LogAnalyzeHistogram
 from ui_event.sys_info_ui import SystemMonitor
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -306,10 +307,27 @@ def star_rail_view():
 
 
 @logger.catch
+def log_analyze_ui():
+    """
+
+    :return:
+    """
+    if not constants.log_analyze_visible:
+        dialog_lah = LogAnalyzeHistogram()
+        dialog_lah.showMaximized()
+        dialog_lah.show()
+        logger.info("log_analyze_visible show!")
+        constants.log_analyze_visible = True
+        dialog_lah.exec_()
+    else:
+        logger.warning("genshin_impact_view already show!")
+
+
+@logger.catch
 def test_button_event():
     """
     test menu event.
     :return:
     """
     # ...
-    show_message("test", "test info")
+    # show_message("test", "test info")

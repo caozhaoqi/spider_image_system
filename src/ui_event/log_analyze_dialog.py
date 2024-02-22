@@ -1,30 +1,30 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QDialog
 from PyQt5.QtChart import QChart, QChartView, QBarSeries, QBarSet, QBarCategoryAxis, QValueAxis
 from PyQt5.QtGui import QPainter
 from loguru import logger
 
+from run import constants
 from utils.data_json import data_json
 from utils.log_analyis import log_analyze_data_output, log_analyze_data_output_new
 
 
-class LogAnalyzeHistogram:
-    """
-
-    """
+class LogAnalyzeHistogram(QDialog):
 
     def __init__(self, window_title="Log Analyze Histogram"):
         """
 
         :param window_title:
         """
+        super().__init__()
+
         self.chart_view = None
         self.layout = None
         self.central_widget = None
-        self.app = None
-        self.main_window = None
+        # self.app = None
+        # self.main_window = None
         self.error_counts = None
         self.window_title = None
         self.next_button = None
@@ -48,13 +48,11 @@ class LogAnalyzeHistogram:
         """
         self.window_title = window_title
         self.error_counts, self.log_item = self.parse_log_data()
-        self.app = QApplication(sys.argv)
-        self.main_window = QMainWindow()
-        self.main_window.setWindowTitle(self.window_title)
+
+        self.setWindowTitle(self.window_title)
         self.central_widget = QWidget()
         self.layout = QVBoxLayout()
-        self.central_widget.setLayout(self.layout)
-        self.main_window.setCentralWidget(self.central_widget)
+        self.setLayout(self.layout)
         self.chart = self.create_chart()
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.Antialiasing)
@@ -62,6 +60,8 @@ class LogAnalyzeHistogram:
         self.next_button = QPushButton('Next Group')
         self.next_button.clicked.connect(self.showNextGroup)
 
+        self.setFixedSize(1920, 1080)
+        self.showMaximized()
         self.layout.addWidget(self.chart_view)
         self.layout.addWidget(self.next_button)
 
@@ -73,9 +73,9 @@ class LogAnalyzeHistogram:
 
         # error_counts = {}
         data_json(log_analyze_data_output())
-        logger.info("log analyze result saved json.")
+        logger.success("log analyze result saved json.")
         error_name_list, error_count_list = log_analyze_data_output_new()
-        logger.info(f"{len(error_name_list)}, {len(error_count_list)}")
+        # logger.info(f"{len(error_name_list)}, {len(error_count_list)}")
         return error_count_list, error_name_list
 
     def create_chart(self):
@@ -97,14 +97,6 @@ class LogAnalyzeHistogram:
         self.axis_y = QValueAxis()
 
         return self.chart
-
-    def show(self):
-        """
-
-        :return:
-        """
-        self.main_window.show()
-        sys.exit(self.app.exec_())
 
     def showNextGroup(self):
         # 更新当前数据组索引
@@ -144,9 +136,10 @@ class LogAnalyzeHistogram:
 
         self.axis_x.append(update_list_item)
         # 更新图表视图
-        self.min_value = min(update_list_count) if update_list_count else 0  # 获取最小值
-        self.max_value = max(update_list_count)  # 获取最大值
-        self.axis_y.setRange(self.min_value, self.max_value)  # 设置 Y 轴范围
+        if update_list_count:
+            self.min_value = min(update_list_count) if update_list_count else 0  # 获取最小值
+            self.max_value = max(update_list_count)  # 获取最大值
+            self.axis_y.setRange(self.min_value, self.max_value)  # 设置 Y 轴范围
         self.chart.addAxis(self.axis_y, Qt.AlignLeft)  # 将 Y 轴添加到图表左侧
         self.chart.setAxisY(self.axis_y, self.series)  # 将 Y 轴与系列关联
         self.chart.addAxis(self.axis_x, Qt.AlignBottom)  # 将轴添加到图表的底部
@@ -154,6 +147,18 @@ class LogAnalyzeHistogram:
         bar_width = 0.8  # 例如，设置为0.5
         self.series.setBarWidth(bar_width)
         self.chart.addSeries(self.series)
+
+    def closeEvent(self, event):
+        """
+        对话框关闭
+        :param event:
+        :return:
+        """
+        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
+        logger.debug('LogAnalyzeHistogram Dialog is closing!')
+        constants.log_analyze_visible = False
+        # 调用基类的 closeEvent 方法以确保对话框正常关闭
+        super(LogAnalyzeHistogram, self).closeEvent(event)
 
 
 # 使用示例

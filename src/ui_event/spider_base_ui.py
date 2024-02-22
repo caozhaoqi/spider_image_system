@@ -10,7 +10,7 @@ from loguru import logger
 
 from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, genshin_impact_view, \
-    star_rail_view, test_button_event
+    star_rail_view, test_button_event, log_analyze_ui
 
 
 @logger.catch
@@ -59,12 +59,15 @@ def base_menu(self):
     self.tools_menu = QMenu('工具', self.menu_bar)
     self.genshin_impact = QAction('genshin_impact', self.tools_menu)
     self.star_rail = QAction('star_rail', self.tools_menu)
+    self.log_analyze = QAction('log_analyze', self.tools_menu)
     self.test_button = QAction('test_tools', self.tools_menu)
     self.genshin_impact.triggered.connect(lambda: genshin_impact_view())
     self.star_rail.triggered.connect(lambda: star_rail_view())
+    self.log_analyze.triggered.connect(lambda: log_analyze_ui())
     self.test_button.triggered.connect(lambda: test_button_event())
     self.tools_menu.addAction(self.genshin_impact)
     self.tools_menu.addAction(self.star_rail)
+    self.tools_menu.addAction(self.log_analyze)
     self.tools_menu.addAction(self.test_button)
 
     self.settings_menu = QMenu('设置', self.menu_bar)
