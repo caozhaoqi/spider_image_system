@@ -241,8 +241,6 @@ def log_analyze_data_output_new():
                 if error_details_d and error_details_d != '':
                     error_name_list.append(error_details_d)
         error_count_zero_list.clear()
-    # 去重，合并相同列表数据
-    # duplicates_list_count = find_duplicates_indices(error_name_list)
     error_count_new_list, error_name_list_new = mege_same_value(error_name_list, error_count_list)
     return error_count_new_list, error_name_list_new
 

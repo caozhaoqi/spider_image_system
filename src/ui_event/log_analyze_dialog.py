@@ -1,8 +1,6 @@
-import sys
-
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QDialog
-from PyQt5.QtChart import QChart, QChartView, QBarSeries, QBarSet, QBarCategoryAxis, QValueAxis
+from PyQt5.QtWidgets import QVBoxLayout, QWidget, QPushButton, QDialog, QHBoxLayout
+from PyQt5.QtChart import QChart, QChartView, QBarSeries, QBarSet, QBarCategoryAxis, QValueAxis, QPieSeries
 from PyQt5.QtGui import QPainter
 from loguru import logger
 
@@ -20,6 +18,10 @@ class LogAnalyzeHistogram(QDialog):
         """
         super().__init__()
 
+        self.pie_chart = None
+        self.series_pie = None
+        self.h_layout = None
+        self.pie_chart_view = None
         self.chart_view = None
         self.layout = None
         self.central_widget = None
@@ -52,17 +54,25 @@ class LogAnalyzeHistogram(QDialog):
         self.setWindowTitle(self.window_title)
         self.central_widget = QWidget()
         self.layout = QVBoxLayout()
+        self.h_layout = QHBoxLayout()
         self.setLayout(self.layout)
         self.chart = self.create_chart()
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.Antialiasing)
+        self.pie_chart_view = self.create_pie_chart()
+        # layout.addWidget(self.pie_chart_view)
+
         # 创建按钮
         self.next_button = QPushButton('Next Group')
         self.next_button.clicked.connect(self.showNextGroup)
 
         self.setFixedSize(1920, 1080)
         self.showMaximized()
-        self.layout.addWidget(self.chart_view)
+        # 添加第一个图表视图，并设置其伸缩因子为1
+        self.h_layout.addWidget(self.chart_view, stretch=1)
+        self.h_layout.addWidget(self.pie_chart_view, stretch=1)
+
+        self.layout.addLayout(self.h_layout)
         self.layout.addWidget(self.next_button)
 
     def parse_log_data(self):
@@ -71,11 +81,9 @@ class LogAnalyzeHistogram(QDialog):
         :return:
         """
 
-        # error_counts = {}
-        data_json(log_analyze_data_output())
-        logger.success("log analyze result saved json.")
+        # data_json(log_analyze_data_output())
+        # logger.success("log analyze result saved json.")
         error_name_list, error_count_list = log_analyze_data_output_new()
-        # logger.info(f"{len(error_name_list)}, {len(error_count_list)}")
         return error_count_list, error_name_list
 
     def create_chart(self):
@@ -98,6 +106,17 @@ class LogAnalyzeHistogram(QDialog):
 
         return self.chart
 
+    def create_pie_chart(self):
+        # 创建饼图数据
+        self.series_pie = QPieSeries()
+        # 创建图表
+        self.pie_chart = QChart()
+        # 创建图表视图
+        chart_view = QChartView(self.pie_chart)
+        chart_view.setRenderHint(QPainter.Antialiasing)
+
+        return chart_view
+
     def showNextGroup(self):
         # 更新当前数据组索引
         try:
@@ -117,7 +136,11 @@ class LogAnalyzeHistogram(QDialog):
         for series in self.chart.series():
             self.chart.removeSeries(series)
 
+        for series in self.pie_chart.series():
+            self.pie_chart.removeSeries(series)
+
         self.series.clear()  # 清除序列中的数据
+        self.series_pie.clear()
 
         update_list_count = []
         update_list_item = []
@@ -148,6 +171,23 @@ class LogAnalyzeHistogram(QDialog):
         self.series.setBarWidth(bar_width)
         self.chart.addSeries(self.series)
 
+        # if self.log_item != [] and self.log_data != [] and self.log_data and self.log_item:
+        for index, data_content in enumerate(update_list_item):
+            self.series_pie.append(data_content, update_list_count[index])
+
+            # 设置每个部分的标签和可见性
+            # 计算总和
+        total = sum(slice.value() for slice in self.series_pie.slices())
+        for index, pie_slice in enumerate(self.series_pie.slices()):
+            # 计算百分比并格式化为字符串
+            percentage = (pie_slice.value() / total) * 100
+            pie_slice.setLabel(f"{update_list_item[index][0:6]}:{percentage:.1f}%")
+            pie_slice.setLabelVisible()  # 设置标签为可见
+        # 创建图表
+        # self.pie_chart = QChart()
+        self.pie_chart.addSeries(self.series_pie)
+        self.pie_chart.setTitle(self.window_title)
+
     def closeEvent(self, event):
         """
         对话框关闭
@@ -163,9 +203,5 @@ class LogAnalyzeHistogram(QDialog):
 
 # 使用示例
 if __name__ == "__main__":
-    # log_data = [
-    #     # ... (你的日志数据)
-    # ]
     histogram = LogAnalyzeHistogram()
     histogram.show()
-    # histogram.parse_log_data()
