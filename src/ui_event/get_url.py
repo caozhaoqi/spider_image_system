@@ -311,7 +311,8 @@ def remove_duplicates_from_txt(input_file, output_file):
 
         with open(output_file, 'w', encoding='utf-8') as file:
             for line in unique_lines:
-                file.write(line)
+                if line.strip():
+                    file.write(line)
     except FileNotFoundError as ffe:
         logger.warning("dir not exists, will create dir. detail: " + str(ffe))
         if not os.path.exists(input_file):
@@ -326,7 +327,8 @@ def remove_duplicates_from_txt(input_file, output_file):
 
         with open(output_file, 'w', encoding='utf-8') as file:
             for line in unique_lines:
-                file.write(line)
+                if line.strip():
+                    file.write(line)
     except Exception as ue:
         logger.error("unknown error, detail: " + str(ue))
 

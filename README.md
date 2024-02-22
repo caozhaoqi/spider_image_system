@@ -20,9 +20,9 @@
 ## Folder
 1. ./data/href_url/ artwork url folder.
 2. ./data/img_url/ img url txt folder.
-3. ./data/*/images save img folder.
-7. ./log_dir script run log folder.
-8. Other see ./data.
+3. ./data/*/images/ save img folder.
+7. ./log_dir/ script run log folder.
+8. Other see ./data/.
 ## Other
 1. Self config constant val(Finished).
 2. Play all video(Finished).

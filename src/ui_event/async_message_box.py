@@ -5,7 +5,7 @@ from PyQt5.QtGui import QFont, QIcon
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout, QPushButton, QMessageBox
+from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout, QPushButton
 
 
 class MessageDialog(QDialog):

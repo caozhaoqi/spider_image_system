@@ -50,7 +50,7 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
             else:
                 logger.error(
                     f"Error! Failed to download image from {url}, cur images index: {cur_download_images_index}, cur "
-                    f"txt images download count: {cur_txt_image_count}" + "detail: " + str(response.content))
+                    f"txt images download count: {cur_txt_image_count}, " + "detail: " + str(response.content))
         except ConnectionError as ce:
             logger.error(f"error, connect point url error,cur images index: {cur_download_images_index}, cur txt "
                          f"images download count: {cur_txt_image_count}, detail: " + str(ce))
@@ -69,7 +69,7 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
     """
     save image to point url from website download image
     :param txt_all_image_download_flag: cur txt download image flag
-    :param continue_download_flag: is continue download
+    :param continue_download_flag: is continued download
     :param final_download_url: final download image url
     :param cdds_index: txt index
     :param file_path: save path
