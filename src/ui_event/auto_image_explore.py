@@ -56,14 +56,14 @@ class AutoImageDialog(QDialog):
         """
         Start the timer to change images periodically.
         """
-        if not constants.start_auto_play_flag:
+        if not constants.start_auto_play_flag and self.current_image_index >= 0 and self.image_files != []:
             self.timer = QTimer(self)
             self.timer.timeout.connect(self.show_next_image)
             self.timer.start(self.interval)
             logger.info("all image start play!")
             constants.start_auto_play_flag = True
         else:
-            logger.warning("all image already play!")
+            logger.warning("all image already play, or no image!")
 
     def stop_timer(self):
         """
@@ -75,14 +75,17 @@ class AutoImageDialog(QDialog):
             self.timer.stop()
             logger.info("all image stop play!")
         else:
-            logger.warning("all image not start!")
+            logger.warning("all image not start, or no image!")
 
     def show_next_image(self):
         """
         Show the next image in the list.
         """
-        self.current_image_index = (self.current_image_index + 1) % len(self.image_files)
-        self.show_image_view(self.current_image_index)
+        if self.current_image_index >= 0 and self.image_files != []:
+            self.current_image_index = (self.current_image_index + 1) % len(self.image_files)
+            self.show_image_view(self.current_image_index)
+        else:
+            logger.warning("no image in cur dir!")
 
     def show_image_view(self, image_path):
         """
