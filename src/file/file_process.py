@@ -4,6 +4,7 @@ import sys
 import time
 
 from model.ImageModel import ImageModel
+from model.SpiderKeywordModel import SpiderKeyWordModel
 from run import constants
 from utils.http_tools import image_url_re
 from utils.time_utils import time_to_utc
@@ -227,3 +228,119 @@ def exists_txt_from_finish(content):
         if content in txt:
             logger.warning(f"{content} already download finished, will skip txt!")
             return True
+
+
+@logger.catch
+def record_end_spider_image_keyword(key_word, cur_page):
+    """
+    record end spider image keyword
+    :param key_word:
+    :param cur_page:
+    :return:
+    """
+    spider_image_keyword, txt_file_list = get_image_keyword()
+    cur_keyword_txt = find_keyword_txt(key_word, txt_file_list, spider_image_keyword)
+    file_name = constants.data_path + '/spider_img_keyword_final.json'
+    if cur_keyword_txt:
+        data = SpiderKeyWordModel(cur_keyword_txt, key_word, cur_page, True)
+        json_str = json.dumps(data.__dict__, ensure_ascii=False)
+        with open(file_name, 'w', encoding='utf-8') as f:
+            f.write(json_str)
+        logger.success("stop spider, spider end keyword already write txt.")
+        return True
+    else:
+        logger.warning("new keyword! txt not save.")
+        return False
+
+
+@logger.catch
+def get_image_keyword():
+    """
+    get image keyword list
+    :return:
+    """
+    auto_spider_file_path = os.path.join(constants.data_path, "auto_spider_img")
+
+    if not os.path.exists(auto_spider_file_path):
+        os.makedirs(auto_spider_file_path)
+
+    txt_file_list = []
+    for root, dirs, files in os.walk(auto_spider_file_path):
+        for file in files:
+            if file.endswith('spider_img_keyword.txt'):
+                txt_file_list.append(os.path.join(root, file))
+
+    file_name = 'spider_img_keyword.txt'
+    full_file_path = os.path.join(auto_spider_file_path, file_name)
+    if not os.path.exists(full_file_path):
+        # 如果文件不存在，创建它
+        with open(full_file_path, 'w') as f:
+            logger.warning(f"{full_file_path} not exists, will create demo txt!")
+    try:
+        if len(txt_file_list) == 0:
+            logger.warning("spider_img_keyword txt length null!")
+            return [], []
+        spider_image_keyword = []
+        for txt_name in txt_file_list:
+            with open(txt_name, 'r', encoding='utf-8') as f:
+                spider_image_keyword.append(f.readlines())
+        return spider_image_keyword, txt_file_list
+    except Exception as e:
+        logger.error(f"unknown error, detail {e}")
+        return [], []
+
+
+@logger.catch
+def find_keyword_txt(key_word, txt_file_list, spider_image_keyword):
+    """
+    find point keyword in txt
+    :param spider_image_keyword:
+    :param key_word:
+    :param txt_file_list:
+    :return:
+    """
+    cur_keyword_txt = None
+    for spider_image in txt_file_list:
+        with open(spider_image, 'r', encoding='utf-8') as f:
+            spider_image_keyword.append(f.readlines())
+            for spider_image_k in spider_image_keyword:
+                for s_i_k in spider_image_k:
+                    if key_word in s_i_k:
+                        cur_keyword_txt = spider_image
+                        break
+    return cur_keyword_txt
+
+
+@logger.catch
+def record_finish_keyword(keyword, cur_page):
+    """
+    record finish spider keyword and page
+    :param keyword:
+    :param cur_page:
+    :return:
+    """
+    file_name = "spider_finished_keyword.txt"
+    content = keyword + "," + cur_page
+    with open(constants.data_path + file_name) as f:
+        f.write(content + "\n")
+    logger.success(f"record finish keyword {keyword}, page {cur_page}!")
+
+
+@logger.catch
+def exists_image_keyword(key_word):
+    """
+    get image keyword list
+    :return:
+    """
+    file_name = 'spider_finished_keyword.txt'
+    try:
+        with open(constants.data_path + file_name, 'r', encoding='utf-8') as f:
+            spider_image_keyword = f.readlines()
+        for spider_image in spider_image_keyword:
+            sik_w = spider_image.split(',')[0]
+            sik_page = spider_image.split(',')[1]
+            if key_word in sik_w:
+                return True, sik_page
+    except Exception as e:
+        logger.error(f"unknown error, detail {e}")
+        return False, 0

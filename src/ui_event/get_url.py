@@ -1,6 +1,8 @@
 import os
 import sys
 
+from file.file_process import record_end_spider_image_keyword, record_finish_keyword, exists_txt_from_finish, \
+    exists_image_keyword
 from utils.http_tools import image_url_re
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -119,6 +121,11 @@ def spider_artworks_url(self, key_word):
         # self define url by config file
         url = all_show
     while True:
+        key_word_flag, last_page = exists_image_keyword(key_word)
+        if key_word_flag:
+            logger.warning(f"cur keyword already spider: {key_word}, {last_page}")
+            cur_page = last_page + 1
+            continue
         if constants.stop_spider_url_flag:
             logger.warning("stop spider url, get url spider artwork url.")
             break
@@ -136,6 +143,7 @@ def spider_artworks_url(self, key_word):
             try:
                 if not save_img_url(driver, key_word):
                     break
+                record_finish_keyword(key_word, cur_page)
                 cur_page += 1
                 logger.success("save img all finish, current page:  " + str(cur_page))
 
@@ -143,11 +151,13 @@ def spider_artworks_url(self, key_word):
                 logger.warning("chrome force exit! detail:" + str(nswe))
 
         else:
+            logger.warning("skip spider loop!")
             break
     self.success_tips()
     if constants.spider_mode == 'manual':
         constants.stop_spider_url_flag = True
     logger.warning("google chrome will exit! ")
+    record_end_spider_image_keyword(cur_page=cur_page, key_word=key_word)
     driver.quit()
 
 
@@ -254,7 +264,7 @@ def load_href_save(driver, key_word):
                     constants.stop_spider_url_flag = False
                     break
             else:
-                logger.warning(f"spider url stop！cur spider image_element {image_element}")
+                # logger.warning(f"spider url stop！cur spider image_element {image_element}")
                 break
         if url_list_save(key_word_pinyin, image_urls_list):
             logger.success("save url and remove duplicates content success!")
@@ -290,7 +300,7 @@ def url_list_save(key_word, image_urls_list):
             logger.warning("you input key word error or other err, please check log file!")
             return False
     else:
-        logger.warning("stop spider url! url list save")
+        logger.warning("stop spider url! url list save will exit.")
         return False
 
 

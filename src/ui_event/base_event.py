@@ -3,6 +3,7 @@ import sys
 
 from selenium.common import StaleElementReferenceException
 
+from file.file_process import get_image_keyword
 from ui_event.async_message_box import show_message
 from ui_event.auto_image_explore import AutoImageDialog
 from ui_event.gi_dialog_ui import GICharacterDialog
@@ -153,37 +154,8 @@ def auto_spider_img_thread(self):
     if not constants.stop_spider_url_flag:
         logger.error("already spider img, please stop here before operate!")
         return False
-    auto_spider_file_path = os.path.join(constants.data_path, "auto_spider_img")
-
-    if not os.path.exists(auto_spider_file_path):
-        os.makedirs(auto_spider_file_path)
-
-    txt_file_list = []
-    for root, dirs, files in os.walk(auto_spider_file_path):
-        for file in files:
-            if file.endswith('spider_img_keyword.txt'):
-                txt_file_list.append(os.path.join(root, file))
-
-    file_name = 'spider_img_keyword.txt'
-    full_file_path = os.path.join(auto_spider_file_path, file_name)
-    if not os.path.exists(full_file_path):
-        # 如果文件不存在，创建它
-        with open(full_file_path, 'w') as f:
-            logger.warning(f"{full_file_path} not exists, will create demo txt!")
-            pass  # 创建一个空文件
-    try:
-        if len(txt_file_list) == 0:
-            logger.warning("spider_img_keyword txt length null!")
-            return False
-        spider_image_keyword = []
-        for txt_name in txt_file_list:
-            with open(txt_name, 'r', encoding='utf-8') as f:
-                spider_image_keyword.append(f.readlines())
-    except Exception as e:
-        logger.error(f"unknown error, detail {e}")
-        return False
-
-    if len(spider_image_keyword) == 0:
+    spider_image_keyword, txt_file_list = get_image_keyword()
+    if len(spider_image_keyword) == 0 or spider_image_keyword == []:
         logger.warning("auto spider image null, will exit!")
         return False
     constants.spider_mode = 'auto'

@@ -51,7 +51,8 @@ class SystemMonitor(QDialog):
         :return:
         """
         self.setWindowTitle('System Monitor')
-        self.setGeometry(300, 300, 800, 600)
+        self.resize(800, 600)
+
         self.chart = QtChart.QChart()
         self.chart.setTitle("System Resource Usage")
         self.chart_view = QtChart.QChartView(self.chart)
