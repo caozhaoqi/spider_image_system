@@ -178,7 +178,7 @@ def auto_spider_img_thread(self):
                 break
             if constants.firewall_flag:
                 logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time:"
-                               f" {int(fire_wall_delay_time / 60)} minutes.")
+                               f" {float(fire_wall_delay_time / 60)} minutes.")
                 # 设置重试时间
                 time.sleep(fire_wall_delay_time)
                 continue
