@@ -242,6 +242,7 @@ def load_href_save(driver, key_word):
     """
     key_word_pinyin = ''.join(lazy_pinyin(key_word, style=Style.TONE3))
     image_urls_list = []
+    image_urls_exists_list = []
     try:
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
         for image_element in image_elements:
@@ -254,6 +255,7 @@ def load_href_save(driver, key_word):
                 driver.execute_script("return arguments[0].href;", image_element)
                 # filter already exists image
                 if filter_exists_images(key_word_pinyin, image_url, "_url"):
+                    image_urls_exists_list.append(image_url)
                     continue
                 image_urls_list.append(image_url)
                 if constants.spider_images_current_count >= int(spider_images_max_count) and constants.spider_mode \
@@ -268,6 +270,9 @@ def load_href_save(driver, key_word):
                 break
         if url_list_save(key_word_pinyin, image_urls_list):
             logger.success("save url and remove duplicates content success!")
+            return True
+        elif len(image_urls_list) == len(image_urls_exists_list):
+            logger.warning("cur page image already save, will spider next page!")
             return True
         else:
             return False
