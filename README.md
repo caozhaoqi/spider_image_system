@@ -42,6 +42,23 @@
 
 TypeError: next_img() takes 1 positional argument but 3 were given
 ```
+- problem 1 on ubuntu: opencv-python与pyqt5冲突(问题解决)
+```shell
+sudo pip3 uninstall opencv-python
+sudo pip3 install opencv-python-headless
+```
+```shell
+QObject::moveToThread: Current thread (0x55f29a27e0e0) is not the object's thread (0x55f29a946dd0).
+Cannot move to target thread (0x55f29a27e0e0)
+
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "/usr/local/lib/python3.10/dist-packages/cv2/qt/plugins" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: xcb, eglfs, linuxfb, minimal, minimalegl, offscreen, vnc, wayland-egl, wayland, wayland-xcomposite-egl, wayland-xcomposite-glx, webgl.
+
+Aborted
+
+```
 - Install third-party libraries for project
 ```shell
 # recommend use
