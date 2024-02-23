@@ -16,10 +16,9 @@ from urllib3.exceptions import ProtocolError
 
 from run import constants
 from run.constants import data_path
-from file.file_process import count_lines, record_end_download_image, look_end_download_image, \
-    read_end_download_image, save_download_end, update_download_continue_flag
+from file.file_process import count_lines, read_end_download_image, save_download_end, update_download_continue_flag, \
+    record_download_finish_txt, exists_txt_from_finish
 from ui_event.get_url import remove_duplicates_from_txt
-
 
 
 @logger.catch
@@ -130,41 +129,66 @@ def download_img_txt(self):
         constants.stop_download_image_flag = True
         return False
     for cdds_path in cdds:
-        # 查询上次下载记录
         download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
         continue_download_flag = read_end_download_image()
         txt_all_image_download_flag = False
         if constants.stop_download_image_flag:
             break
-        file_path, file_name = os.path.split(cdds_path)
-        base_name, ext = os.path.splitext(file_name)
-        new_file_name = file_path + "/" + base_name + "_result.txt"
-        logger.success("download_img_txt: remove duplicate success, start new file name: " + new_file_name)
-        remove_duplicates_from_txt(cdds_path,
-                                   new_file_name)
         try:
-            logger.info(
-                f"start download image, txt file name {cdds_path}, index: {cdds_index}, txt count: {len(cdds)}.")
-            if final_download_txt_name and continue_download_flag:
-                new_file_name = final_download_txt_name
-                cdds_index = final_cdds_index
-                update_download_continue_flag()
-                logger.warning(f"last download txt file name: {cdds[cdds_index]}! image name: {final_download_url}")
-                # continue
-                cur_file_name = cdds_path.split('\\')[-1].split('.')[0]
-                final_file_name = final_download_txt_name.split('/')[-1]
-                if cur_file_name not in final_file_name:
-                    # 如果当前下载txt文件名不在最后下载文件名中，则说明当前文件已下载完成，结束继续下载，开始下载下一个文件
-                    logger.warning(f"current txt already download finished, start download next txt file image, "
-                                   f"txt name: {cdds_path}.")
-                    continue_download_flag = False
-                    txt_all_image_download_flag = True
+            if not exists_txt_from_finish(cdds_path):
+                logger.info(
+                    f"start download image, txt file name {cdds_path}, index: {cdds_index}, txt count: {len(cdds)}.")
+                if final_download_txt_name and continue_download_flag:
+                    update_download_continue_flag()
+                    logger.warning(f"last download txt file name: {cdds_path}! image name: {final_download_url}")
 
-            download_images_from_file(new_file_name, cdds_index, final_download_url, continue_download_flag,
-                                      txt_all_image_download_flag)
+                new_file_name = remove_repeat_content(cdds_path)
+                download_images_from_file(new_file_name, cdds_index, final_download_url, continue_download_flag,
+                                          txt_all_image_download_flag)
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
         cdds_index += 1
+        #     记录已下载完成txt
+        if not constants.stop_download_image_flag:
+            # 非当前停止txt记录
+            record_download_finish_txt(cdds_path)
     logger.success("downloaded all image!")
     self.success_tips()
     return True
+
+
+@logger.catch
+def skip_txt_index(cdds_path, final_download_txt_name):
+    """
+     un use
+    :param cdds_path:
+    :param final_download_txt_name:
+    :return:
+    """
+    # continue
+    cur_file_name = cdds_path.split('\\')[-1].split('.')[0]
+    final_file_name = final_download_txt_name.split('/')[-1]
+    if cur_file_name not in final_file_name:
+        # 如果当前下载txt文件名不在最后下载文件名中，则说明当前文件已下载完成，结束继续下载，开始下载下一个文件
+        logger.warning(f"current txt already download finished, start download next txt file image, "
+                       f"txt name: {cdds_path}.")
+        continue_download_flag = False
+        txt_all_image_download_flag = True
+        return continue_download_flag, txt_all_image_download_flag
+    return None, None
+
+
+@logger.catch
+def remove_repeat_content(cdds_path):
+    """
+
+    :param cdds_path:
+    :return:
+    """
+    file_path, file_name = os.path.split(cdds_path)
+    base_name, ext = os.path.splitext(file_name)
+    new_file_name = file_path + "/" + base_name + "_result.txt"
+    logger.success("download_img_txt: remove duplicate success, start new file name: " + new_file_name)
+    remove_duplicates_from_txt(cdds_path,
+                               new_file_name)
+    return new_file_name

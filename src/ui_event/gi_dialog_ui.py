@@ -1,5 +1,4 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QPushButton, QHBoxLayout
 from loguru import logger
 
 from run import constants
@@ -34,12 +33,9 @@ class GICharacterDialog(QDialog):
 
     def initUI(self):
         self.setWindowTitle('genshin impact view tools')
-        # self.setFixedSize(800, 800)
 
-        # 创建垂直布局
         layout = QVBoxLayout()
 
-        # 创建表单布局
         form_layout = QFormLayout()
         self.level_line_edit = QLineEdit()
         self.talent_line_edit_A = QLineEdit()
@@ -86,27 +82,22 @@ class GICharacterDialog(QDialog):
         form_layout.addRow("深渊期数", self.shenyuan_num)
         form_layout.addRow("other", self.other_ys)
 
-        # 创建计算按钮和结果显示
         self.calculate_button = QPushButton("计算")
         self.result_label = QLabel("结果将在这里显示")
 
-        # 创建水平布局用于放置计算按钮和结果显示
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.calculate_button)
         # h_layout.addWidget(self.result_label)
 
-        # 将表单布局和水平布局添加到垂直布局中
         layout.addLayout(form_layout)
         layout.addLayout(h_layout)
         layout.addWidget(self.result_label)
 
         self.setLayout(layout)
 
-        # 连接计算按钮的点击事件到计算槽函数
         self.calculate_button.clicked.connect(self.calculate)
 
     def calculate(self):
-        # 获取输入框的内容
         level = self.level_line_edit.text()
         talent_A = self.talent_line_edit_A.text()
         talent_E = self.talent_line_edit_A.text()
@@ -126,7 +117,7 @@ class GICharacterDialog(QDialog):
         small_day_month_card = self.small_month_card_ys.text()
         shenyuan_num = self.shenyuan_num.text()
         if self.shenyuan_num != '' and big_day_month_card != '':
-            other_ys_ = self.other_ys.text() + big_day_month_card + shenyuan_num * 600 + 5 * 160
+            other_ys_ = int(self.other_ys.text()) + int(big_day_month_card) + int(shenyuan_num) * 600 + 5 * 160
         else:
             other_ys_ = self.other_ys.text()
         if talent_A == '' or talent_E == '' or talent_Q == '' or small_day_month_card == '' or level == '' or weapon_level \
@@ -151,22 +142,3 @@ class GICharacterDialog(QDialog):
         # 调用基类的 closeEvent 方法以确保对话框正常关闭
         super(GICharacterDialog, self).closeEvent(event)
 
-
-# @logger.catch
-# def show_image_auto_viewer():
-#     """
-#     show image to tool
-#     :return:
-#     """
-#     dialog_gi = GICharacterDialog()
-#     dialog_gi.showMaximized()
-#     dialog_gi.show()
-#     dialog_gi.exec_()
-#
-#
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     dialog = GICharacterDialog()
-#     dialog.show()
-#     # dialog.showMaximized()
-#     sys.exit(app.exec_())

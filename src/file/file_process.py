@@ -159,6 +159,7 @@ def read_end_download_image():
         continue_download_flag = download_final_flag_model.continue_flag
         return download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
                continue_download_flag
+    return None, None, None, None, None
 
 
 @logger.catch
@@ -189,3 +190,40 @@ def update_download_continue_flag():
     record_end_download_image(constants.data_path + "\\download_final_image.json", data)
     logger.info("download final image json continue_flag update success!")
     # constants.con
+
+
+@logger.catch
+def record_download_finish_txt(content):
+    """
+    record already download txt
+    :param content:
+    :return:
+    """
+    if exists_txt_from_finish(content):
+        return True
+    file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
+    with open(file_name, 'a') as f:
+        f.write(content + "\n")
+    logger.success(f"download {content} finished, will write txt.")
+    return True
+
+
+@logger.catch
+def exists_txt_from_finish(content):
+    """
+    exists txt download finish image
+    :param content:
+    :return:
+    """
+    # txt_list = []
+    file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
+    if not os.path.exists(file_name):
+        with open(file_name, 'w') as f:
+            f.write("")
+        return False
+    with open(file_name, 'r') as f:
+        txt_list = f.readlines()
+    for txt in txt_list:
+        if content in txt:
+            logger.warning(f"{content} already download finished, will skip txt!")
+            return True

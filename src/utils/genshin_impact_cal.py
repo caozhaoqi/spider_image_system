@@ -15,6 +15,10 @@ def cal_ys_total(day, is_month, sy, other_ys):
     :param other_ys: 其他
     :return:ys_total
     """
+    day = int(day)
+    other_ys = int(other_ys)
+    is_month = int(is_month)
+    sy = int(sy)
     if day == '':
         return 0
     if other_ys == '':
@@ -35,6 +39,7 @@ def cal_role_book(level):
     middle 1676
     small 8380
     """
+    level = int(level)
     if level == 0:
         return 0, 0, 0, 0, 0
     elif level == 20:
@@ -65,6 +70,8 @@ def cal_weapons_materials(star, level):
     :param level: 1->90
     :return:moral,kw
     """
+    star = int(star)
+    level = int(level)
     if star == 3:
         if level == 20:
             return 14925
@@ -153,7 +160,10 @@ def cal_role_talent(level):
     :return:book,mora,cl
     # 3 4 5 2 3 4 z z
     """
-    if level == 2:
+    level = int(level)
+    if level < 2:
+        return 0, 0, 0, 6, 0, 0, 0, 0, 0
+    elif level == 2:
         return 3, 0, 0, 6, 0, 0, 0, 0, 12500
     elif level == 3:
         return 0, 2, 0, 0, 3, 0, 0, 0, 17500
@@ -214,10 +224,10 @@ def get_result_str(talent_Q=1, talent_E=1, talent_A=1, small_day_month_card=0, o
         small) + ", total: " + str(
         total_jy) + ", need moral:" + str(moral) + ", ys: " + str(total_ys) + ", weapons moral: " + str(weapons_morl) \
              + talent_desc
-    relic_count_result = relic_level_flower * 270475 / 20 + relic_level_t * 270475 / 20 + relic_level_ym * 270475 \
-                         / 20 + relic_level_sl * 270475 / 20 + relic_level_bz * 270475 / 20
+    relic_count_result = int(relic_level_flower) * 270475 / 20 + int(relic_level_t) * 270475 / 20 + int(relic_level_ym) \
+                         * 27047520 + int(relic_level_sl) * 270475 / 20 + int(relic_level_bz) * 270475 / 20
 
-    result = result + relic_count_result
+    result = result + str(relic_count_result)
     logger.info(result)
     return result
 

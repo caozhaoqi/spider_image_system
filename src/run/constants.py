@@ -84,6 +84,6 @@ proxy_server_port = int(read_ini_config(ini_file_path, "spider_config", "proxy_s
 search_delta_time = int(read_ini_config(ini_file_path, "spider_config", "search_delta_time"))
 # 详情页等待时间
 detail_delta_time = int(read_ini_config(ini_file_path, "spider_config", "detail_delta_time"))
-sis_server_version = "v1.0.7-beta.2"
-build_date = "2024-02-22 12:00"
-publish_date = "2024-02-22 12:00"
+sis_server_version = "v1.0.7"
+build_date = "2024-02-23 18:00"
+publish_date = "2024-02-23 18:30"

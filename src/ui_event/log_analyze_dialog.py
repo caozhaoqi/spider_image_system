@@ -92,7 +92,7 @@ class LogAnalyzeHistogram(QDialog):
         :return: QChart 对象
         """
         self.chart = QChart()
-        self.chart.setTitle(self.window_title)
+        self.chart.setTitle("chart view")
         self.chart.legend().hide()
         self.chart.setAnimationOptions(QChart.SeriesAnimations)
 
@@ -186,7 +186,7 @@ class LogAnalyzeHistogram(QDialog):
         # 创建图表
         # self.pie_chart = QChart()
         self.pie_chart.addSeries(self.series_pie)
-        self.pie_chart.setTitle(self.window_title)
+        self.pie_chart.setTitle("pie chart")
 
     def closeEvent(self, event):
         """
