@@ -342,5 +342,5 @@ def exists_image_keyword(key_word):
             if key_word in sik_w:
                 return True, sik_page
     except Exception as e:
-        logger.warning(f"unknown error, detail {e}")
+        # logger.warning(f"unknown error, detail {e}")
         return False, 0
