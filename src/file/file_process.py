@@ -332,7 +332,7 @@ def exists_image_keyword(key_word):
     get image keyword list
     :return:
     """
-    file_name = 'spider_finished_keyword.txt'
+    file_name = '/spider_finished_keyword.txt'
     try:
         with open(constants.data_path + file_name, 'r', encoding='utf-8') as f:
             spider_image_keyword = f.readlines()
