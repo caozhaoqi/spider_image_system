@@ -140,7 +140,7 @@ def auto_start_spider_image(self):
         target=auto_spider_img_thread,
         args=(self,))
     spider_thread_obj.start()
-    logger.info("auto spider img thread stating.")
+    logger.info("auto spider img thread starting.")
 
 
 @logger.catch
@@ -155,7 +155,7 @@ def auto_spider_img_thread(self):
         logger.error("already spider img, please stop here before operate!")
         return False
     spider_image_keyword, txt_file_list = get_image_keyword()
-    if len(spider_image_keyword) == 0 or spider_image_keyword == []:
+    if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
         logger.warning("auto spider image null, will exit!")
         return False
     constants.spider_mode = 'auto'
@@ -243,8 +243,8 @@ def performance_monitor():
     """
     if not constants.performance_monitor_visible:
         monitor = SystemMonitor()
-        monitor.show()
         monitor.showMaximized()
+        monitor.show()
         logger.info("sys info show!")
         constants.performance_monitor_visible = True
         monitor.exec_()

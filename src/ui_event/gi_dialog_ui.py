@@ -29,9 +29,9 @@ class GICharacterDialog(QDialog):
         self.level_line_edit = None
         self.result_label = None
         self.calculate_button = None
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
         self.setWindowTitle('genshin impact view tools')
 
         layout = QVBoxLayout()

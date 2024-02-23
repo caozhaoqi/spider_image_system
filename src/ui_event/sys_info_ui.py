@@ -21,7 +21,6 @@ def get_system_info():
     return memory_usage, cpu_usage, send_bytes, receiver_bytes
 
 
-import sys
 from PyQt5 import QtWidgets, QtChart
 
 
@@ -40,12 +39,12 @@ class SystemMonitor(QDialog):
         self.memory_series = None
         self.chart_view = None
         self.chart = None
-        self.initUI()
+        self.init_ui()
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update_data)
         self.timer.start(500)  # 每0.5秒更新一次数据
 
-    def initUI(self):
+    def init_ui(self):
         """
 
         :return:
