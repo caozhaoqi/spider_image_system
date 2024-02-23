@@ -22,7 +22,6 @@ def find_images(directory):
     :param directory:
     :return:
     """
-    # logger.info("current use image dir: " + str(directory))
     image_files_lists = []
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -39,8 +38,8 @@ def find_images(directory):
 def image_exists(image_path, image_list):
     """
     判断图片是否存在
-    :param image_path:
-    :param image_list:
+    :param image_path:预下载图片名
+    :param image_list:已下载图片list
     :return:
     """
     for image_detail in image_list:

@@ -23,7 +23,6 @@ class ImageDialog(QDialog):
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.label)
-        # self.scroll_area.setParent(self)
         self.label.resize(self.scroll_area.width(), self.scroll_area.height())
         layout.addWidget(self.scroll_area)
 

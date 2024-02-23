@@ -63,11 +63,9 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
 
 
 @logger.catch
-def download_images_from_file(file_path, cdds_index, final_download_url, continue_download_flag,
-                              txt_all_image_download_flag):
+def download_images_from_file(file_path, cdds_index, final_download_url, continue_download_flag):
     """
     save image to point url from website download image
-    :param txt_all_image_download_flag: cur txt download image flag
     :param continue_download_flag: is continued download
     :param final_download_url: final download image url
     :param cdds_index: txt index
@@ -93,10 +91,6 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
                 continue
     else:
         logger.warning(f"Hasn't final download image message or already download last download txt name: {file_path}.")
-        if txt_all_image_download_flag:
-            # txt_all_image_download_flag
-            logger.warning(f"cur txt all downloaded, start next txt name: {file_path}")
-            return False
 
     for index, line in enumerate(cur_image_list):
         url = line.strip()
@@ -125,13 +119,12 @@ def download_img_txt(self):
             _.endswith("_img.txt")]
     cdds_index = 0
     if len(cdds) == 0:
-        logger.warning("no image!")
+        logger.warning("current dir no image!")
         constants.stop_download_image_flag = True
         return False
     for cdds_path in cdds:
         download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
-        continue_download_flag = read_end_download_image()
-        txt_all_image_download_flag = False
+            continue_download_flag = read_end_download_image()
         if constants.stop_download_image_flag:
             break
         try:
@@ -143,8 +136,7 @@ def download_img_txt(self):
                     logger.warning(f"last download txt file name: {cdds_path}! image name: {final_download_url}")
 
                 new_file_name = remove_repeat_content(cdds_path)
-                download_images_from_file(new_file_name, cdds_index, final_download_url, continue_download_flag,
-                                          txt_all_image_download_flag)
+                download_images_from_file(new_file_name, cdds_index, final_download_url, continue_download_flag)
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
         cdds_index += 1
