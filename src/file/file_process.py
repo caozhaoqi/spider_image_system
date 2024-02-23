@@ -319,7 +319,7 @@ def record_finish_keyword(keyword, cur_page):
     :param cur_page:
     :return:
     """
-    file_name = "spider_finished_keyword.txt"
+    file_name = "/spider_finished_keyword.txt"
     content = keyword + "," + str(cur_page)
     with open(constants.data_path + file_name) as f:
         f.write(content + "\n")
