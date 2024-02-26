@@ -4,6 +4,7 @@ import time
 
 from image.img_switch import find_images, image_exists, error_img_update
 from model.ImageModel import ImageModel
+from utils.file_utils import remove_duplicates_from_txt
 from utils.http_tools import image_url_re
 from utils.time_utils import time_to_utc
 
@@ -18,7 +19,6 @@ from run import constants
 from run.constants import data_path
 from file.file_process import count_lines, read_end_download_image, save_download_end, update_download_continue_flag, \
     record_download_finish_txt, exists_txt_from_finish
-from ui_event.get_url import remove_duplicates_from_txt
 
 
 @logger.catch

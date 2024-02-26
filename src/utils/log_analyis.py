@@ -158,7 +158,8 @@ def log_data_analyze():
     :return:
     """
     log_analyze_data = []
-    log_list = find_log(".\\")
+    log_dir = os.path.realpath('./log_dir')
+    log_list = find_log(log_dir)
     for log_index, log_content in enumerate(log_list):
         log_list_content = []
         result_count_list, result_detail_list = log_analyze(log_content)
@@ -166,7 +167,7 @@ def log_data_analyze():
         log_list_content.append(result_detail_list)
         log_list_content.append(log_content)
         log_analyze_data.append(log_list_content)
-
+    logger.info(f"scan log end finish, scan result log length: {len(log_list)}")
     return log_analyze_data
 
 

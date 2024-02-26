@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v1.0.8-alpha.1
+### 2024/2/26
+- issue bug修复
+- 单个pid image抓取
+- 代码逻辑梳理
+
+
 ## v1.0.7
 ### 2024/2/23
 - issue bug修复

@@ -1,23 +1,25 @@
 import os
 import sys
 
-from file.file_process import record_end_spider_image_keyword, record_finish_keyword, exists_txt_from_finish, \
+from selenium.webdriver.common.by import By
+
+from file.file_process import record_end_spider_image_keyword, record_finish_keyword,  \
     exists_image_keyword
-from utils.http_tools import image_url_re
+from utils.file_utils import filter_exists_images, url_list_save, write_url_txt
+from utils.spider_operate import filter_not_use_url, slider_page_down, url_process_page, open_look_all, filter_not_use
+from utils.spider_param import spider_param_config
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from image.spider_gif_url import spider_gif_images
 from loguru import logger
-from selenium import webdriver
 from selenium.common import NoSuchWindowException
 import time
 from pypinyin import lazy_pinyin, Style
-from selenium.webdriver import ActionChains, Keys
 
 from run import constants
-from run.constants import detail_delta_time, proxy_flag, search_delta_time, r18_mode, all_show, s1_url, \
-    visit_url, target_url, s2_url, data_path, spider_images_max_count
+from run.constants import detail_delta_time, search_delta_time, s1_url, target_url, s2_url, data_path,\
+    spider_images_max_count
 
 
 @logger.catch
@@ -32,48 +34,60 @@ def save_img_url(driver, key_word):
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith(key_word_pinyin + "_result_url.txt")]
     for cdds_path in cdds:
-        logger.debug("start save img url, artwork href from file name: " + str(cdds_path))
+        logger.debug("start save img url, save file name: " + str(cdds_path))
         with open(cdds_path, 'r') as f:
             for line in f:
                 url = line.strip()
                 if url and not constants.stop_spider_url_flag:
                     # 允许继续抓取url
-                    driver.get(url)
-                    if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
-                        logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
-                        constants.firewall_flag = True
+                    if not artwork_to_image(key_word_pinyin, driver, url):
                         break
-                    if open_look_all(driver):
-                        logger.success(f"click look all success! url: {url}")
-                    # 抓取动图link
-                    if constants.spider_mode == 'manual':
-                        # 手动模式滑动页面 自动模式不滑动
-                        slider_page_down(driver)
-                    time.sleep(detail_delta_time)
-                    if spider_gif_images(key_word_pinyin, driver):
-                        logger.success("gif url txt save success!")
-                    image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
-                    for image_element in image_elements:
-                        image_url = image_element.get_attribute("src")
-                        if filter_not_use(image_url):
-                            continue
-                        else:
-                            result = filter_exists_images(key_word_pinyin, image_url, "_img")
-                            if result:
-                                continue
-                            driver.execute_script("return arguments[0].src;", image_element)
-                            image_filename = os.path.basename(image_url)  # 获取图片文件名
-                            image_url = image_url.replace(s1_url, target_url)
-                            image_url = image_url.replace(s2_url, target_url)
-                            constants.spider_images_current_count += 1
-                            # 已获取img 数量自增 仅在此统计
-                            write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
-                            logger.debug(f"from url: {url}, replace point source url, save _img url success: "
-                                         f"{image_filename}, _img txt all save images count(cur spider count and _img "
-                                         f"count): {constants.spider_images_current_count}")
                 else:
                     logger.warning("stop spider url! save_img url.")
                     return False
+    return True
+
+
+@logger.catch
+def artwork_to_image(key_word_pinyin, driver, url):
+    """
+    spider point url image from url
+    :param key_word_pinyin:
+    :param driver:
+    :param url:
+    :return:
+    """
+    driver.get(url)
+    if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
+        logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+        constants.firewall_flag = True
+        return False
+    if open_look_all(driver):
+        logger.success(f"click look all success! url: {url}")
+    # 抓取动图link
+    if constants.spider_mode == 'manual':
+        # 手动模式滑动页面 自动模式不滑动
+        slider_page_down(driver)
+    time.sleep(detail_delta_time)
+    if spider_gif_images(key_word_pinyin, driver):
+        logger.success("gif url txt save success!")
+    image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
+    for image_element in image_elements:
+        image_url = image_element.get_attribute("src")
+        if filter_not_use(image_url):
+            continue
+        else:
+            result = filter_exists_images(key_word_pinyin, image_url, "_img")
+            if result:
+                continue
+            driver.execute_script("return arguments[0].src;", image_element)
+            image_filename = os.path.basename(image_url)  # 获取图片文件名
+            image_url = image_url.replace(s1_url, target_url)
+            image_url = image_url.replace(s2_url, target_url)
+            constants.spider_images_current_count += 1
+            # 已获取img 数量自增 仅在此统计
+            write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
+            logger.debug(f"save: {image_filename}, save num: {constants.spider_images_current_count}")
     return True
 
 
@@ -85,41 +99,11 @@ def spider_artworks_url(self, key_word):
     :parameter key_word 关键字
     :return:
     """
-    proxy = {
-        "proxyType": "manual",
-        "httpProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口
-        "ftpProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
-        "sslProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
-        "noProxy": "",
-        "proxyAutoconfigUrl": ""
-    }
-
-    options = webdriver.ChromeOptions()
-    if constants.spider_mode == 'auto':
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        logger.warning("current spider mode: auto spider image mode!")
-
-    # open dev tools
-    options.add_argument("--auto-open-devtools-for-tabs")
-    # 接受不安全证书
-    options.add_argument("--ignore-certificate-errors")
-    if proxy_flag == 'True':
-        options.set_capability("proxy", proxy)
-        logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
-
-    driver = webdriver.Chrome(options=options)
-    mode = ''
-    if r18_mode == 'True':
-        mode = 'mode=r18&'
-        logger.info("current start use r18 mode!")
-
-    cur_page = 1
-    url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode
-    if all_show != 'False':
-        # self define url by config file
-        url = all_show
+    driver, url, cur_page = spider_param_config(key_word)
+    if driver is None or url is None or cur_page is None:
+        constants.stop_spider_url_flag = True
+        logger.info("spider single image end, not execute follow operate!")
+        return True
     while True:
         key_word_flag, last_page = exists_image_keyword(key_word)
         if key_word_flag:
@@ -159,77 +143,6 @@ def spider_artworks_url(self, key_word):
     logger.warning("google chrome will exit! ")
     record_end_spider_image_keyword(cur_page=cur_page, key_word=key_word)
     driver.quit()
-
-
-@logger.catch
-def write_url_txt(path, file_name, url):
-    """
-    write url to txt file
-    :param path:
-    :param file_name:
-    :param url:
-    :return:
-    """
-    try:
-        with open(path + file_name + ".txt", "a") as f:
-            f.write(str(url) + "\n")
-        f.close()
-    except FileNotFoundError as ffe:
-        logger.warning("dir not exists , will create dir. detail: " + str(ffe))
-        if not os.path.exists(path):
-            os.makedirs(path)
-        with open(path + file_name + ".txt", "a") as f:
-            f.write(str(url) + "\n")
-        f.close()
-    except Exception as ue:
-        logger.error("unknown error, detail: " + str(ue))
-
-
-@logger.catch
-def filter_exists_images(key_word, image_url, txt_name):
-    """
-    filter already exists images
-    :param key_word:
-    :param image_url:
-    :param txt_name: 执行过程：存artwork url 存images url
-    过滤当前已存在的images或url
-    :return:
-    """
-    if txt_name == '_url':
-        file_name = constants.data_path + "/href_url/" + key_word + "_url.txt"
-        try:
-            with open(file_name, 'r') as f:
-                txt_url = f.readlines()
-            return find_value(image_url + "\n", txt_url)
-        except Exception as e:
-            return False
-    elif txt_name == '_img':
-        file_name = constants.data_path + "/img_url/" + key_word + "_img.txt"
-        # https://pixiv.srpr.cc/img-master/img/2024/01/29/15/41/31/115584905_p1_master1200.jpg
-        image_url = image_url_re(image_url)
-        # 115584905_p1_master1200.jpg
-        try:
-            with open(file_name, 'r') as f:
-                txt_url = f.readlines()
-            return find_value(image_url + "\n", txt_url)
-        except Exception as e:
-            return False
-    return False
-
-
-@logger.catch
-def find_value(target_value, data_list):
-    """
-    查找列表中是否存在目标值
-    :param target_value:
-    :param data_list:
-    :return:
-    """
-    for item in data_list:
-        if item == target_value:
-            logger.warning("image url or artwork url exists, will skip, file name: " + target_value)
-            return True
-    return False
 
 
 @logger.catch
@@ -280,162 +193,3 @@ def load_href_save(driver, key_word):
         logger.error("Error, unknown error, detail:" + str(un_e))
         return False
 
-
-@logger.catch
-def url_list_save(key_word, image_urls_list):
-    """
-    save url to txt
-    :param key_word: 关键字
-    :param image_urls_list: images lists
-    :return:
-    """
-    if not constants.stop_spider_url_flag:
-        if len(image_urls_list) > 0:
-            for image_url_content in image_urls_list:
-                write_url_txt(data_path + "/href_url/", key_word + "_url", image_url_content)
-            remove_duplicates_from_txt(data_path + "/href_url/" + key_word + "_url.txt",
-                                       data_path + "/href_url/" + key_word + "_result_url.txt")
-            logger.success("function load_href_save(): href remove duplicates content success, result: href_url: "
-                           "_result_url.txt.")
-            return True
-        elif len(image_urls_list) == 0:
-            logger.warning("no image! don't save to url txt, chrome will exit!")
-            return False
-        else:
-            logger.warning("you input key word error or other err, please check log file!")
-            return False
-    else:
-        logger.warning("stop spider url! url list save will exit.")
-        return False
-
-
-@logger.catch
-def remove_duplicates_from_txt(input_file, output_file):
-    """
-    remove duplicates content from txt
-    :param input_file: input
-    :param output_file: result
-    :return:
-    """
-    try:
-        with open(input_file, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
-
-        # 使用集合去重
-        unique_lines = set(lines)
-
-        with open(output_file, 'w', encoding='utf-8') as file:
-            for line in unique_lines:
-                if line.strip():
-                    file.write(line)
-    except FileNotFoundError as ffe:
-        logger.warning("dir not exists, will create dir. detail: " + str(ffe))
-        if not os.path.exists(input_file):
-            os.makedirs(input_file)
-        if not os.path.exists(output_file):
-            os.makedirs(output_file)
-        with open(input_file, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
-
-        # 使用集合去重
-        unique_lines = set(lines)
-
-        with open(output_file, 'w', encoding='utf-8') as file:
-            for line in unique_lines:
-                if line.strip():
-                    file.write(line)
-    except Exception as ue:
-        logger.error("unknown error, detail: " + str(ue))
-
-
-@logger.catch
-def filter_not_use(url):
-    """
-    filter not need url
-    :param url:
-    :return:
-    """
-    filter_url_http = constants.filter_http_url.split(',')
-    try:
-        for filter_url_http_content in filter_url_http:
-            if filter_url_http_content in url:
-                return True
-    except Exception as e:
-        # 遇到异常跳过该url
-        logger.warning("unknown error, detail: " + str(e))
-        return True
-
-
-@logger.catch
-def filter_not_use_url(image_url):
-    """
-    filter not need http_tools url
-    :param image_url: filter url
-    :return:
-    """
-    filter_url_image = constants.filter_image_url.split(',')
-    try:
-        for filter_url_image_content in filter_url_image:
-            if filter_url_image_content in image_url or "artworks" not in image_url:
-                return True
-    except Exception as e:
-        logger.warning("unknown error, detail: " + str(e))
-        return True
-
-
-@logger.catch
-def url_process_page(url, current_page):
-    """
-    split page from point url
-    :param current_page:
-    :param url:
-    :return:
-    """
-    page_url = url + "p=" + str(current_page) + "&s_mode=s_tag"
-    return page_url
-
-
-from selenium.webdriver.common.by import By
-
-
-@logger.catch
-def open_look_all(driver):
-    """
-    点击查看全部 按钮模拟点击
-    :param driver:
-    :return:
-    """
-    """
-    """
-    button = driver.execute_script("""
-var buttons = document.getElementsByTagName('button');
-for (var i = 0; i < buttons.length; i++) {
-  var button = buttons[i];
-  if (button.textContent.includes('查看全部') || button.textContent.includes('阅读作品')) {
-    return button;
-  }
-}
-""")
-    if button:
-        button.click()
-        return True
-    return False
-
-
-@logger.catch
-def slider_page_down(driver):
-    """
-
-    :param driver:
-    :return:
-    """
-    page_height = driver.execute_script("return document.body.scrollHeight")
-
-    actions = ActionChains(driver)
-    actions.send_keys(Keys.END).perform()
-    actions.send_keys(Keys.PAGE_DOWN).perform()
-    time.sleep(detail_delta_time)
-    actions.send_keys(Keys.HOME).perform()
-    actions.send_keys(Keys.PAGE_DOWN).perform()
-    time.sleep(detail_delta_time)
-    logger.info(f"slider page down! page height {page_height}px")

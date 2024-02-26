@@ -321,7 +321,12 @@ def record_finish_keyword(keyword, cur_page):
     """
     file_name = "/spider_finished_keyword.txt"
     content = keyword + "," + str(cur_page)
-    with open(constants.data_path + file_name) as f:
+    file_name = constants.data_path + file_name
+    if not os.path.exists(file_name):
+        with open(file_name, 'w') as f:
+            f.write("")
+        return False
+    with open(file_name) as f:
         f.write(content + "\n")
     logger.success(f"record finish keyword {keyword}, page {cur_page}!")
 
