@@ -175,7 +175,7 @@ class UIMainWindows(QMainWindow):
         self.edt_input_file_text_3 = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
         if self.edt_input_file_text_3:
             logger.debug('Selected folder:' + self.edt_input_file_text_3)
-        self.filetext.setText(self.edt_input_file_text_3)
+        # self.edt_input_file_text_3.setText(self.edt_input_file_text_3)
 
     def download_file_thread_3(self):
         """

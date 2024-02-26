@@ -351,3 +351,4 @@ def exists_image_keyword(key_word):
     except Exception as e:
         # logger.warning(f"unknown error, detail {e}")
         return False, 0
+    return False, 0

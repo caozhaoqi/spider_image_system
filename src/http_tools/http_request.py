@@ -1,6 +1,8 @@
 import os
 import sys
 
+from utils.file_utils import remove_duplicates_from_txt
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from file.file_process import scan_directory_zip
