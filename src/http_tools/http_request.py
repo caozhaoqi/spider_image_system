@@ -44,19 +44,19 @@ def download_all_zip(url, save_dir):
             return True
         return False
     except FileNotFoundError as fnee:  # 处理文件不存在错误
-        logger.warning(f"目标文件不存在: {fnee}")
+        logger.warning(f"target file not exists: {fnee}")
         return False
     except HTTPError as errh:  # 处理HTTP错误
-        logger.error(f"HTTP错误: {errh}")
+        logger.error(f"http error: {errh}")
         return False
     except Timeout:  # 处理请求超时错误
-        logger.error("请求超时.")
+        logger.error("connection time out.")
         return False
     except TooManyRedirects:  # 处理过多重定向错误
-        logger.error("过多重定向.")
+        logger.error("max redirects.")
         return False
     except Exception as e:  # 处理其他未知错误
-        logger.error(f"发生未知错误: {e}")
+        logger.error(f"unknown error, detail: {e}")
         return False
 
 
