@@ -37,6 +37,7 @@ class UIMainWindows(QMainWindow):
     # @logger.catch
     def __init__(self):
         QWidget.__init__(self)
+        self.edt_input_file_text_3_str = None
         self.edt_input_file_text_3 = None
         self.start_download_file_link_thread = None
         self.unzip_generate_video_thread = None
@@ -172,10 +173,10 @@ class UIMainWindows(QMainWindow):
         选中指定文件夹tab 3
         :return:
         """
-        self.edt_input_file_text_3 = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
-        if self.edt_input_file_text_3:
-            logger.debug('Selected folder:' + self.edt_input_file_text_3)
-        # self.edt_input_file_text_3.setText(self.edt_input_file_text_3)
+        self.edt_input_file_text_3_str = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
+        if self.edt_input_file_text_3_str:
+            logger.debug('Selected folder:' + self.edt_input_file_text_3_str)
+        self.edt_input_file_text_3.setText(self.edt_input_file_text_3_str)
 
     def download_file_thread_3(self):
         """
