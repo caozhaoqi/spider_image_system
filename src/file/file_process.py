@@ -341,9 +341,12 @@ def exists_image_keyword(key_word):
     try:
         with open(constants.data_path + file_name, 'r', encoding='utf-8') as f:
             spider_image_keyword = f.readlines()
+        if not spider_image_keyword:
+            return False, 0
         for spider_image in spider_image_keyword:
             sik_w = spider_image.split(',')[0]
             sik_page = spider_image.split(',')[1]
+
             if key_word in sik_w:
                 return True, sik_page
     except Exception as e:

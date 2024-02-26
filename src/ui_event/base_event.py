@@ -140,7 +140,7 @@ def auto_start_spider_image(self):
         target=auto_spider_img_thread,
         args=(self,))
     spider_thread_obj.start()
-    logger.info("auto spider img thread starting.")
+    logger.info("auto spider img thread starting...")
 
 
 @logger.catch

@@ -104,12 +104,12 @@ def log_analyze(log_file_path):
                                                                           connection_detail_pattern)
     success_download_counts, success_download_detail = analyze_log_errors(log_file_path, success_download_pattern,
                                                                           success_detail_pattern)
-    cannot_open_image_counts, cannot_open_image_detail = analyze_log_errors(log_file_path, cannot_open_image_pattern,
-                                                                            cannot_open_image_detail_pattern)
-    unknown_image_category_counts, unknown_image_category_detail = analyze_log_errors(
-        log_file_path,
-        unknown_image_category_pattern,
-        unknown_image_category_detail_pattern)
+    # cannot_open_image_counts, cannot_open_image_detail = analyze_log_errors(log_file_path, cannot_open_image_pattern,
+    #                                                                         cannot_open_image_detail_pattern)
+    # unknown_image_category_counts, unknown_image_category_detail = analyze_log_errors(
+    #     log_file_path,
+    #     unknown_image_category_pattern,
+    #     unknown_image_category_detail_pattern)
     establish_error_counts, establish_error_detail = analyze_log_errors(log_file_path, establish_error_pattern,
                                                                         establish_error_detail_pattern)
     error_list.append(connection_broken_error_counts)
@@ -118,8 +118,8 @@ def log_analyze(log_file_path):
     error_list.append(nginx_502_error_counts)
     error_list.append(connection_error_counts)
     error_list.append(success_download_counts)
-    error_list.append(cannot_open_image_counts)
-    error_list.append(unknown_image_category_counts)
+    # error_list.append(cannot_open_image_counts)
+    # error_list.append(unknown_image_category_counts)
     error_list.append(establish_error_counts)
     error_detail_list.append(connection_broken_error_detail)
     error_detail_list.append(connection_disconnection_error_detail)
@@ -127,8 +127,8 @@ def log_analyze(log_file_path):
     error_detail_list.append(nginx_502_error_detail)
     error_detail_list.append(connection_error_detail)
     error_detail_list.append(success_download_detail)
-    error_detail_list.append(cannot_open_image_detail)
-    error_detail_list.append(unknown_image_category_detail)
+    # error_detail_list.append(cannot_open_image_detail)
+    # error_detail_list.append(unknown_image_category_detail)
     error_detail_list.append(establish_error_detail)
     return error_list, error_detail_list
 

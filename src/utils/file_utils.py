@@ -76,7 +76,6 @@ def find_value(target_value, data_list):
     return False
 
 
-
 @logger.catch
 def url_list_save(key_word, image_urls_list):
     """
@@ -142,4 +141,3 @@ def remove_duplicates_from_txt(input_file, output_file):
                     file.write(line)
     except Exception as ue:
         logger.error("unknown error, detail: " + str(ue))
-

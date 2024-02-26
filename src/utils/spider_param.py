@@ -101,7 +101,7 @@ def download_single_image(key_word, url):
     else:
         image_exists_flag = image_exists(image_name, now_image_list)
     if not image_exists_flag:
-        file_dir = constants.data_path + "/" + key_word + "/images"
+        file_dir = constants.data_path + "/according_pid_download_image/" + key_word + "/images"
         if not os.path.exists(file_dir):
             logger.warning("single save dir not exists, will create!")
             os.makedirs(file_dir)
