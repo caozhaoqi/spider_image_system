@@ -326,7 +326,7 @@ def record_finish_keyword(keyword, cur_page):
         with open(file_name, 'w') as f:
             f.write("")
         return False
-    with open(file_name) as f:
+    with open(file_name, "a") as f:
         f.write(content + "\n")
     logger.success(f"record finish keyword {keyword}, page {cur_page}!")
 

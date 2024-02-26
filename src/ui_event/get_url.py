@@ -123,7 +123,7 @@ def spider_artworks_url(self, key_word):
             break
         logger.debug("start load href save url to txt.")
         load_save_flag = load_href_save(driver, key_word)
-        if load_save_flag:
+        if load_save_flag == 1:
             try:
                 if not save_img_url(driver, key_word):
                     break
@@ -133,7 +133,11 @@ def spider_artworks_url(self, key_word):
 
             except NoSuchWindowException as nswe:
                 logger.warning("chrome force exit! detail:" + str(nswe))
-
+        elif load_save_flag == 2:
+            # all pid exists skip, spider next page image
+            record_finish_keyword(key_word, cur_page)
+            cur_page += 1
+            logger.warning("all pid exists skip, spider next page image, current page:  " + str(cur_page))
         else:
             logger.warning("skip spider loop!")
             break
@@ -183,13 +187,13 @@ def load_href_save(driver, key_word):
                 break
         if url_list_save(key_word_pinyin, image_urls_list):
             logger.success("save url and remove duplicates content success!")
-            return True
+            return 1
         elif len(image_urls_list) == len(image_urls_exists_list):
             logger.warning("cur page image already save, will spider next page!")
-            return True
+            return 2
         else:
-            return False
+            return 0
     except Exception as un_e:
         logger.error("Error, unknown error, detail:" + str(un_e))
-        return False
+        return 0
 
