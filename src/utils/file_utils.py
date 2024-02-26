@@ -71,7 +71,7 @@ def find_value(target_value, data_list):
     """
     for item in data_list:
         if item == target_value:
-            logger.warning("image url or artwork url exists, will skip, file name: " + target_value)
+            logger.warning("item exists will skip, name: " + target_value)
             return True
     return False
 

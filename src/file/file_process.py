@@ -346,7 +346,6 @@ def exists_image_keyword(key_word):
         for spider_image in spider_image_keyword:
             sik_w = spider_image.split(',')[0]
             sik_page = spider_image.split(',')[1]
-
             if key_word in sik_w:
                 return True, sik_page
     except Exception as e:
