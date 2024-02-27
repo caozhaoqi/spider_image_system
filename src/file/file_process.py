@@ -339,6 +339,7 @@ def exists_image_keyword(key_word):
     """
     file_name = '/spider_finished_keyword.txt'
     try:
+        exists_record = []
         with open(constants.data_path + file_name, 'r', encoding='utf-8') as f:
             spider_image_keyword = f.readlines()
         if not spider_image_keyword:
@@ -347,7 +348,10 @@ def exists_image_keyword(key_word):
             sik_w = spider_image.split(',')[0]
             sik_page = spider_image.split(',')[1]
             if key_word in sik_w:
-                return True, sik_page
+                exists_record.append(sik_page)
+                # logger.success()
+        if exists_record:
+            return True, max(exists_record)
     except Exception as e:
         # logger.warning(f"unknown error, detail {e}")
         return False, 0

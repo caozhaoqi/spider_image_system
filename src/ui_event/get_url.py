@@ -107,7 +107,7 @@ def spider_artworks_url(self, key_word):
     while True:
         key_word_flag, last_page = exists_image_keyword(key_word)
         if key_word_flag:
-            logger.warning(f"cur keyword already spider: {key_word}, {last_page}")
+            logger.warning(f"cur keyword already spider: {key_word}, {cur_page}")
         if constants.stop_spider_url_flag:
             logger.warning("stop spider url, get url spider artwork url.")
             break
