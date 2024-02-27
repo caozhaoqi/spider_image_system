@@ -148,7 +148,7 @@ def read_end_download_image():
     return download msg for last download
     :return:
     """
-    download_final_flag = look_end_download_image(constants.data_path + "/download_final_image.json")
+    download_final_flag = look_end_download_image(os.path.join(constants.data_path, "download_final_image.json"))
     if download_final_flag:
         download_final_flag_model = ImageModel(download_final_flag['image_index'], download_final_flag['txt_name'],
                                                download_final_flag['image_url'], download_final_flag['image_name'],
@@ -175,7 +175,7 @@ def save_download_end(index, file_path, url, cdds_index):
     """
     data = ImageModel(index, file_path, url, image_url_re(url),
                       time_to_utc(time.time()), cdds_index, True)
-    record_end_download_image(constants.data_path + "/download_final_image.json", data)
+    record_end_download_image(os.path.join(constants.data_path, "download_final_image.json"), data)
     logger.warning(
         f"set stop image stop_download_image_flag True! save result: {data.image_url}, txt name: {file_path}.")
 
@@ -188,7 +188,7 @@ def update_download_continue_flag():
     """
     data = ImageModel(None, None, None, None,
                       time_to_utc(time.time()), None, False)
-    record_end_download_image(constants.data_path + "/download_final_image.json", data)
+    record_end_download_image(os.path.join(constants.data_path, "download_final_image.json"), data)
     logger.info("download final image json continue_flag update success!")
     # constants.con
 
