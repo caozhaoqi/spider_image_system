@@ -10,6 +10,7 @@ from ui_event.gi_dialog_ui import GICharacterDialog
 from ui_event.image_dialog import ImageDialog
 from ui_event.log_analyze_dialog import LogAnalyzeHistogram
 from ui_event.sys_info_ui import SystemMonitor
+from utils.face_detect import face_detect_result
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -303,3 +304,20 @@ def test_button_event():
     """
     # ...
     # show_message("test", "test info")
+
+
+@logger.catch
+def face_detect_action():
+    """
+
+    :return:
+    """
+    if not constants.face_detect_flag:
+        constants.face_detect_flag = True
+        face_detect_thread_obj = threading.Thread(
+            target=face_detect_result,
+            args=(constants.data_path,))
+        face_detect_thread_obj.start()
+        logger.info("start detect face!")
+    else:
+        logger.error("detect face ing, please wait.")

@@ -57,7 +57,7 @@ def check_version():
     :return:
     """
     logger.info("-------------start print SIS version info---------------------------")
-    logger.info("system started, current SIS system version: " + sis_server_version)
+    logger.info("system started, current SIS version: " + sis_server_version)
     logger.info("--------------------------------------------------------------------")
     logger.info("current version build time: " + build_date)
     logger.info("--------------------------------------------------------------------")
