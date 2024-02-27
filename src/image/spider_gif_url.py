@@ -22,13 +22,14 @@ def spider_gif_images(keyword, chrome_driver):
     for request in requests:
         if request['initiatorType'] == 'fetch' and "img-zip-ugoira" in request['name']:
             api_urls.append(request['name'])
-            logger.success(f"spider gif zip url: {request['name']}")
+            logger.success(f"found gif, start spider gif zip url: {request['name']}")
             break
     txt_path_name = os.path.join(constants.data_path, "href_url")
     if not os.path.exists(txt_path_name):
         os.makedirs(txt_path_name)
     if len(api_urls) == 0:
-        logger.warning("no zip gif images data!")
+        # no gif not out log
+        # logger.warning("no zip gif images data!")
         return False
     if read_gif_url(txt_path_name + "/" + keyword + "_zip.txt", api_urls):
         return True

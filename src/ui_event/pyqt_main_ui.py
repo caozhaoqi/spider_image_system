@@ -65,8 +65,8 @@ class UIMainWindows(QMainWindow):
         self.lastMousePos = None
         self.scaleFactor = 1.0
         self.label.installEventFilter(self)
-
-        show_next_image(self)
+        # default not show image click button show
+        # show_next_image(self)
         self.showMaximized()
 
     def jump_point_image_click(self):

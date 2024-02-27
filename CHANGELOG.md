@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.0.8-alpha.2
+### 2024/2/27
+- issue bug修复
+- 取消首页默认显示图片
+
 ## v1.0.8-alpha.1
 ### 2024/2/26
 - issue bug修复
