@@ -91,26 +91,30 @@ def save_face(path, img_path, img, faces, gray):
     faces_image_height = num_faces * target_size[0]
     faces_image_width = target_size[1]  # Assuming we want to fit only one face horizontally for simplicity
 
-    # Create a blank image to hold the resized faces
-    faces_image = np.zeros((faces_image_height, faces_image_width, 3), dtype=np.uint8)
+    try:
+        # Create a blank image to hold the resized faces
+        faces_image = np.zeros((faces_image_height, faces_image_width, 3), dtype=np.uint8)
 
-    # Iterate over the detected faces
-    for i, (x, y, w, h) in enumerate(faces):
-        # Resize the face to the target size
-        face_resized = cv2.resize(img[y:y + h, x:x + w], target_size)
+        # Iterate over the detected faces
+        for i, (x, y, w, h) in enumerate(faces):
+            # Resize the face to the target size
+            face_resized = cv2.resize(img[y:y + h, x:x + w], target_size)
 
-        row = i
-        col = 0
+            row = i
+            col = 0
 
-        # Place the resized face in the faces_image array
-        faces_image[row * target_size[0]:(row + 1) * target_size[0],
-        col * target_size[1]:(col + 1) * target_size[1]] = face_resized
+            # Place the resized face in the faces_image array
+            faces_image[row * target_size[0]:(row + 1) * target_size[0],
+            col * target_size[1]:(col + 1) * target_size[1]] = face_resized
 
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-    cv2.imwrite(img_file_name, faces_image)
-    cv2.imwrite(img_file_name_line, img)
+        cv2.imwrite(img_file_name, faces_image)
+        cv2.imwrite(img_file_name_line, img)
+    except Exception as e:
+        logger.error(f"unknown error, detial: {e}, name: {img_file_name}")
+        return False
     logger.success(f"save success, name: {img_file_name}")
     return True
 

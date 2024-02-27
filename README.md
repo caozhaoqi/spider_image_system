@@ -141,10 +141,17 @@ chmod -R 777 /home/czq/
 xdg-open https://www.baidu.com
 # re run ./sh/run.sh to solve the problem
 ```
+- For use face detect, you need run follow command on ubuntu:
+```shell
+sudo apt-get update
+sudo apt-get install libgtk2.0-dev pkg-config
+```
 - Install third-party libraries for project
 ```shell
 # recommend use
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+# single lib install command
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-contrib-python
 ```
 
 - Build project and publish pack
