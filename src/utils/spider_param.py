@@ -119,6 +119,7 @@ def download_single_image(key_word, url):
     else:
         logger.warning("image already exists, will skip!")
 
+
 @logger.catch
 def artwork_single_image(key_word_pinyin, driver, url):
     """
