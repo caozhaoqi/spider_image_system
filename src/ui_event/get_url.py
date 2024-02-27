@@ -107,7 +107,8 @@ def spider_artworks_url(self, key_word):
     while True:
         key_word_flag, last_page = exists_image_keyword(key_word)
         if key_word_flag:
-            logger.warning(f"cur keyword already spider: {key_word}, {cur_page}")
+            cur_page = int(last_page) + 1
+            logger.warning(f"cur keyword already spider: {key_word}, {last_page}, next spider: {cur_page}")
         if constants.stop_spider_url_flag:
             logger.warning("stop spider url, get url spider artwork url.")
             break
@@ -126,7 +127,7 @@ def spider_artworks_url(self, key_word):
                 if not save_img_url(driver, key_word):
                     break
                 record_finish_keyword(key_word, cur_page)
-                cur_page += 1
+                # cur_page += 1
                 logger.success("save img all finish, current page:  " + str(cur_page))
 
             except NoSuchWindowException as nswe:
@@ -134,7 +135,7 @@ def spider_artworks_url(self, key_word):
         elif load_save_flag == 2:
             # all pid exists skip, spider next page image
             record_finish_keyword(key_word, cur_page)
-            cur_page += 1
+            # cur_page += 1
             logger.warning("all pid exists skip, spider next page image, current page:  " + str(cur_page))
         else:
             logger.warning("skip spider loop!")
