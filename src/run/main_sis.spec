@@ -15,7 +15,7 @@ a = Analysis(
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\ui_event','ui_event'),
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\utils','utils'),
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\log','log'),
-    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\run\\xml_data','xml_data')
+    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\utils\\xml_data','xml_data')
     ],
     hiddenimports=[],
     hookspath=[],

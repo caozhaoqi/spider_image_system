@@ -106,8 +106,8 @@ def download_single_image(key_word, url):
             logger.warning("single save dir not exists, will create!")
             os.makedirs(file_dir)
         filename = os.path.join(file_dir, f"{os.path.basename(url)}")
-        response = requests.get(url, stream=True)
         try:
+            response = requests.get(url, stream=True)
             if response.status_code == 200:
                 with open(filename, 'wb') as f:
                     f.write(response.content)

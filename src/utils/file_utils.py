@@ -1,4 +1,5 @@
 import os
+import sys
 
 from loguru import logger
 
@@ -141,3 +142,16 @@ def remove_duplicates_from_txt(input_file, output_file):
                     file.write(line)
     except Exception as ue:
         logger.error("unknown error, detail: " + str(ue))
+
+
+@logger.catch
+def get_data_file(filename):
+    """获取数据文件的路径，无论是直接运行还是通过 PyInstaller 打包"""
+    if getattr(sys, 'frozen', False):
+        # 如果程序是“冷冻的”，即打包后的 exe
+        basedir = sys._MEIPASS
+    else:
+        # 如果程序是直接运行的，即没有打包
+        basedir = os.path.dirname(__file__)
+
+    return os.path.join(basedir, filename)

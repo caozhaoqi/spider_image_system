@@ -6,6 +6,7 @@ from loguru import logger
 
 from image.img_switch import find_images
 from run import constants
+from utils.file_utils import get_data_file
 
 
 @logger.catch
@@ -18,9 +19,11 @@ def face_detect(path, image_path):
     :return: None
     """
     try:
+        face_xml_path = get_data_file("xml_data/haarcascade_frontalface_default.xml")
+        eye_xml_path = get_data_file('xml_data/haarcascade_eye.xml')
         # 加载分类器
-        face_cascade = cv2.CascadeClassifier('./xml_data/haarcascade_frontalface_default.xml')
-        eye_cascade = cv2.CascadeClassifier('./xml_data/haarcascade_eye.xml')
+        face_cascade = cv2.CascadeClassifier(face_xml_path)
+        eye_cascade = cv2.CascadeClassifier(eye_xml_path)
 
         # 读取图像
         img = cv2.imread(image_path)
@@ -108,7 +111,7 @@ def save_face(path, img_path, img, faces, gray):
 
     cv2.imwrite(img_file_name, faces_image)
     cv2.imwrite(img_file_name_line, img)
-    logger.success(f"save success! image name: {img_file_name}")
+    logger.success(f"save success, name: {img_file_name}")
     return True
 
 
