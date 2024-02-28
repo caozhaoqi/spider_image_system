@@ -332,6 +332,32 @@ def record_finish_keyword(keyword, cur_page):
 
 
 @logger.catch
+def keyword_times(keyword, cur_page):
+    """
+    多次写入同一keyword+cur_page
+    :param keyword:
+    :param cur_page:
+    :return:
+    """
+    same_count = 0
+    file_name = "/spider_finished_keyword.txt"
+    file_name = constants.data_path + file_name
+    content = keyword + "," + str(cur_page)
+
+    if not os.path.exists(file_name):
+        with open(file_name, 'w') as f:
+            f.write("")
+        return False
+    with open(file_name, "a") as f:
+        keyword_list = f.readlines()
+
+    for keyword_con in keyword_list:
+        if content in keyword_con:
+            same_count += 1
+    return same_count
+
+
+@logger.catch
 def exists_image_keyword(key_word):
     """
     get image keyword list

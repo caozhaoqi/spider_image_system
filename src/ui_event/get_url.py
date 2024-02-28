@@ -4,7 +4,7 @@ import sys
 from selenium.webdriver.common.by import By
 
 from file.file_process import record_end_spider_image_keyword, record_finish_keyword, \
-    exists_image_keyword
+    exists_image_keyword, keyword_times
 from utils.file_utils import filter_exists_images, url_list_save, write_url_txt
 from utils.keyword_utils import exists_keyword_finish_txt
 from utils.spider_operate import filter_not_use_url, slider_page_down, url_process_page, open_look_all, filter_not_use
@@ -35,7 +35,7 @@ def save_img_url(driver, key_word):
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith(key_word_pinyin + "_result_url.txt")]
     for cdds_path in cdds:
-        logger.debug("start save img url, save file name: " + str(cdds_path))
+        logger.debug("save name: " + str(cdds_path))
         with open(cdds_path, 'r') as f:
             for line in f:
                 url = line.strip()
@@ -140,6 +140,11 @@ def spider_artworks_url(self, key_word):
             record_finish_keyword(key_word, cur_page)
             # cur_page += 1
             logger.warning("all pid exists skip, spider next page image, current page:  " + str(cur_page))
+
+            keyword_count = keyword_times(key_word, cur_page)
+            if keyword_count > 2:
+                logger.warning(f"cur keyword count: {keyword_count} > 2 , will spider next keyword! ")
+                break
         else:
             logger.warning("skip spider loop!")
             break
@@ -194,7 +199,7 @@ def load_href_save(driver, key_word):
             logger.warning("cur page image already save, will spider next page!")
             return 2
         else:
-            return 0
+            return 3
     except Exception as un_e:
         logger.error("Error, unknown error, detail:" + str(un_e))
         return 0

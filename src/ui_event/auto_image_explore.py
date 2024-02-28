@@ -15,7 +15,7 @@ class AutoImageDialog(QDialog):
 
         self.current_image_index = 0
         self.timer = None
-        self.interval = 1000 / constants.output_video_fps
+        self.interval = int(1000 / constants.output_video_fps)
         self.image_files = show_filter_image(find_images(folder_path))
         self.setWindowTitle("SIS Image Auto Viewer")
 
