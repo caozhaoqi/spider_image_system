@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from file.file_process import record_end_spider_image_keyword, record_finish_keyword, \
     exists_image_keyword
 from utils.file_utils import filter_exists_images, url_list_save, write_url_txt
+from utils.keyword_utils import exists_keyword_finish_txt
 from utils.spider_operate import filter_not_use_url, slider_page_down, url_process_page, open_look_all, filter_not_use
 from utils.spider_param import spider_param_config
 
@@ -106,6 +107,8 @@ def spider_artworks_url(self, key_word):
         return True
     while True:
         key_word_flag, last_page = exists_image_keyword(key_word)
+        # 处理 当抓取关键词存在于download_finish_txt.txt中,删除该关键词，以方便下次下载
+        exists_keyword_finish_txt(key_word)
         if key_word_flag:
             cur_page = int(last_page) + 1
             logger.warning(f"last already spider: {key_word} and page: {last_page}, next page: {cur_page}")
