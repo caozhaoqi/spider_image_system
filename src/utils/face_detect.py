@@ -114,9 +114,9 @@ def save_face(path, img_path, img, faces, gray):
         cv2.imwrite(img_file_name, faces_image)
         cv2.imwrite(img_file_name_line, img)
     except Exception as e:
-        logger.error(f"unknown error, detail: {e}, name: {img_file_name}")
+        logger.error(f"unknown error, detail: {e}, name: {img_file_name[-27:]}")
         return False
-    logger.success(f"save success, name: {img_file_name}")
+    logger.success(f"save success, name: {img_file_name[-27:]}")
     return True
 
 

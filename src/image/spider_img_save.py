@@ -102,7 +102,7 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
             if url:  # 跳过空行
                 if not os.path.exists(save_img_url):
                     os.makedirs(save_img_url)
-                filename = os.path.join(name + "/images", f"{os.path.basename(url)}")
+                filename = os.path.join(os.path.join(name, "images"), f"{os.path.basename(url)}")
                 cur_download_images_index += 1
                 download_image(url, filename, cur_txt_image_count, index)
 

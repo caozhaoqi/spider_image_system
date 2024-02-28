@@ -49,7 +49,7 @@ class ImageDialog(QDialog):
         else:
             #     load index page show image
             self.show_image_view_threading(constants.online_img_list[0])
-            logger.debug("index image show!")
+            # logger.debug("index image show!")
 
     def show_previous_image(self):
         """
@@ -116,7 +116,7 @@ class ImageDialog(QDialog):
                 self.label.resize(pixmap.width(), pixmap.height())
                 self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
                     constants.online_img_list)))
-                logger.debug(f"loading image: {image_path} success!")
+                logger.success(f"loading image: {image_path[-27:]} success!")
                 constants.online_show_image = True
             else:
                 logger.warning(f"error, Invalid image format! response content: {response}")

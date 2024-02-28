@@ -36,7 +36,7 @@ class InformationDialog(QDialog):
         author_label_2 = QLabel(author)
         layout.addWidget(author_label_2)
 
-        time_label = QLabel('版本发布时间(time zone: UTC(+8) Shanghai):')
+        time_label = QLabel('版本发布时间(CST(Shanghai, China)):')
         layout.addWidget(time_label)
 
         time_label_2 = QLabel(publish_date)
@@ -49,7 +49,7 @@ class InformationDialog(QDialog):
         website_label_2 = QLabel(website)
         layout.addWidget(website_label_2)
 
-        modified_label = QLabel('版本修改时间(modified time):')
+        modified_label = QLabel('版本修改时间(CST(Shanghai, China)):')
         layout.addWidget(modified_label)
 
         modified_time = build_date  # 替换为实际的修改时间，根据实际需要更新
