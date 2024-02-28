@@ -175,7 +175,7 @@ def auto_spider_img_thread(self):
             except Exception as e:
                 logger.error(f"unknown error, detail: {e}")
             if constants.stop_spider_url_flag:
-                logger.warning(f"auto spider img stop! will exit, end spider keyword: {spider_image_keyword_item}!")
+                logger.warning(f"auto spider img stop! will exit, final spider keyword: {spider_image_keyword_item}!")
                 break
             if constants.firewall_flag:
                 logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time:"

@@ -105,10 +105,10 @@ def spider_artworks_url(self, key_word):
         constants.stop_spider_url_flag = True
         logger.info("spider single image end, not execute follow operate!")
         return True
+    # 处理 当抓取关键词存在于download_finish_txt.txt中,删除该关键词，以方便下次下载
+    exists_keyword_finish_txt(key_word)
     while True:
         key_word_flag, last_page = exists_image_keyword(key_word)
-        # 处理 当抓取关键词存在于download_finish_txt.txt中,删除该关键词，以方便下次下载
-        exists_keyword_finish_txt(key_word)
         if key_word_flag:
             cur_page = int(last_page) + 1
             logger.warning(f"last already spider: {key_word} and page: {last_page}, next page: {cur_page}")

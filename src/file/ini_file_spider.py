@@ -2,7 +2,6 @@ import configparser
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model.SpiderConfigModel import SpiderConfigModel
@@ -81,9 +80,9 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "output_video_height", str(minio_config.output_video_height))
     conf.set("spider_config", "proxy_server_ip", minio_config.proxy_server_ip)
     conf.set("spider_config", "proxy_server_port", str(minio_config.proxy_server_port))
-    conf.set("spider_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.2021.host,"
+    conf.set("spider_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
                                                  "square,custom,_50.gif")
-    conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.2021.host,tags,square,custom,square,custom,"
+    conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
                                                   "_50.gif")
     conf.set("spider_config", "zoom_out_scale", "0.9")
     conf.set("spider_config", "zoom_in_scale", "1.1")
@@ -124,7 +123,7 @@ def check_ini_config():
     系统启动引入默认配置
     :return:
     """
-    iniPath = os.path.realpath('.\\config\\config.ini')
+    iniPath = os.path.realpath(os.path.join("config", "config.ini"))
     logger.info("generate file path: " + iniPath)
     conf = configparser.ConfigParser()
     if os.path.exists(iniPath):
@@ -137,29 +136,29 @@ def check_ini_config():
         conf.read(iniPath, 'utf-8')
         logger.info("start generate config ini file: ")
         conf.add_section("spider_config")
-        conf.set("spider_config", "visit_url", "sd.2021.host")
+        conf.set("spider_config", "visit_url", "sd.vv50.de")
         conf.set("spider_config", "s1_url", "i.pixivcat.com")
         conf.set("spider_config", "s2_url", "i.hcyacg.com")
         conf.set("spider_config", "target_url", "pximg.lolicon.run")  # 写入配置参数
         conf.set("spider_config", "r18_mode", 'True')
         conf.set("spider_config", "all_show", 'False')
         conf.set("spider_config", "proxy_flag", 'False')
-        conf.set("spider_config", "search_delta_time", '7')
-        conf.set("spider_config", "detail_delta_time", '3')
+        conf.set("spider_config", "search_delta_time", '5')
+        conf.set("spider_config", "detail_delta_time", '2')
         conf.set("spider_config", "sis_log_level", 'DEBUG')
-        conf.set("spider_config", "spider_images_max_count", '500')
-        conf.set("spider_config", "output_video_fps", "5")
+        conf.set("spider_config", "spider_images_max_count", '1000')
+        conf.set("spider_config", "output_video_fps", "24")
         conf.set("spider_config", "output_video_width", "2560")
         conf.set("spider_config", "output_video_height", "1440")
         conf.set("spider_config", "proxy_server_ip", "192.168.199.26")
         conf.set("spider_config", "proxy_server_port", "8080")
-        conf.set("spider_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.2021.host,"
+        conf.set("spider_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
                                                      "square,custom,_50.gif")
-        conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.2021.host,tags,square,custom,square,custom,"
+        conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
                                                       "_50.gif")
         conf.set("spider_config", "zoom_out_scale", "0.9")
         conf.set("spider_config", "zoom_in_scale", "1.1")
-        conf.set("spider_config", "fire_wall_delay_time", "300")
+        conf.set("spider_config", "fire_wall_delay_time", "90")
 
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
