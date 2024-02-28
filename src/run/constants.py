@@ -25,13 +25,14 @@ performance_monitor_visible = False
 genshin_impact_view_visible = False
 log_analyze_visible = False
 face_detect_flag = False
+online_show_image = False
 # firewall_flag
 firewall_flag = False
 # fire_wall_delay_time
 fire_wall_delay_time = int(read_ini_config(ini_file_path, "spider_config", "fire_wall_delay_time"))
 # spider mode
 spider_mode = 'manual'
-# process -image
+# process image
 process_image_flag = False
 # zip download flag
 download_finish_flag = True

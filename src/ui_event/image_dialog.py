@@ -56,6 +56,9 @@ class ImageDialog(QDialog):
         show previous image
         :return:
         """
+        if not constants.online_show_image:
+            logger.warning("loading image, please wait.")
+            return False
         if len(constants.online_img_list) <= 0:
             logger.warning("function show_previous_image, cur data dir no image!")
             return False
@@ -63,6 +66,7 @@ class ImageDialog(QDialog):
             constants.cur_show_img_index -= 1
         else:
             constants.cur_show_img_index = len(constants.online_img_list) - 1
+        constants.online_show_image = False
         self.show_image_view_threading(constants.online_img_list[constants.cur_show_img_index])
         logger.debug(f"function show_previous_image, current page: {constants.cur_show_img_index}")
         pass
@@ -72,6 +76,9 @@ class ImageDialog(QDialog):
         show next image
         :return:
         """
+        if not constants.online_show_image:
+            logger.warning("loading image, please wait.")
+            return False
         if len(constants.online_img_list) <= 0:
             logger.warning("function show_next_image, cur data dir no image!")
             return False
@@ -79,6 +86,7 @@ class ImageDialog(QDialog):
             constants.cur_show_img_index += 1
         else:
             constants.cur_show_img_index = 0
+        constants.online_show_image = False
         self.show_image_view_threading(constants.online_img_list[constants.cur_show_img_index])
         logger.debug(f"function show_next_image, current page: {constants.cur_show_img_index}")
         pass
@@ -99,17 +107,22 @@ class ImageDialog(QDialog):
         :param image_path:
         :return:
         """
-        response = requests.get(image_path)
-        if response.headers.get('Content-Type', '').startswith('image/'):
-            # 创建QPixmap对象并加载图片数据
-            pixmap = QPixmap.fromImage(QImage.fromData(response.content))
-            self.label.setPixmap(pixmap)
-            self.label.resize(pixmap.width(), pixmap.height())
-            self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
-                constants.online_img_list)))
-            logger.debug(f"loading image: {image_path} success!")
-        else:
-            logger.warning(f"error, Invalid image format! response content: {response}")
+        try:
+            response = requests.get(image_path)
+            if response.headers.get('Content-Type', '').startswith('image/'):
+                # 创建QPixmap对象并加载图片数据
+                pixmap = QPixmap.fromImage(QImage.fromData(response.content))
+                self.label.setPixmap(pixmap)
+                self.label.resize(pixmap.width(), pixmap.height())
+                self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
+                    constants.online_img_list)))
+                logger.debug(f"loading image: {image_path} success!")
+                constants.online_show_image = True
+            else:
+                logger.warning(f"error, Invalid image format! response content: {response}")
+        except Exception as e:
+            constants.online_show_image = True
+            logger.error(f"unknown error, detail: {e}")
 
     def closeEvent(self, event):
         """

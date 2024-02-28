@@ -32,11 +32,11 @@ class InformationDialog(QDialog):
         author_label = QLabel('作者(author):')
         layout.addWidget(author_label)
 
-        author = 'Copyright © 2023 - Now Zhaoqi.Cao | Powered by PyQt5'  # 替换为实际的作者姓名
+        author = 'Copyright © 2023 - 2024 Zhaoqi.Cao | Powered by PyQt5'  # 替换为实际的作者姓名
         author_label_2 = QLabel(author)
         layout.addWidget(author_label_2)
 
-        time_label = QLabel('版本发布时间(time zone: UTC(+8) shanghai):')
+        time_label = QLabel('版本发布时间(time zone: UTC(+8) Shanghai):')
         layout.addWidget(time_label)
 
         time_label_2 = QLabel(publish_date)

@@ -2,13 +2,7 @@ import os
 import re
 from collections import Counter
 
-# 日志文件路径
 from loguru import logger
-
-from model.LogModel import LogModel
-from run import constants
-
-# log_file_path = r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\log_dir\sis_2024-02-21.log'
 
 # 错误信息正则表达式
 connection_broken_error_pattern = r'ERROR.*unknown error.*Connection broken: IncompleteRead'
@@ -64,7 +58,6 @@ def analyze_log_errors(file_path, error_pattern, detail_pattern):
     return error_counts, error_pattern
 
 
-# 解析错误原因并添加到detail_causes字典中
 @logger.catch
 def parse_error_cause(detail, detail_causes):
     """
@@ -73,12 +66,10 @@ def parse_error_cause(detail, detail_causes):
     :param detail_causes:
     :return:
     """
-    # 根据具体情况解析错误原因，这里只是简单地将detail作为原因
     cause = detail.strip()
     detail_causes[cause] = detail_causes.get(cause, 0) + 1
 
 
-# 运行分析
 @logger.catch
 def log_analyze(log_file_path):
     """
@@ -181,10 +172,6 @@ def log_analyze_data_output():
     data_list = []
     data_list_set = []
     for line in data:
-        #     log_list_content.append(result_count_list)
-        #         log_list_content.append(result_detail_list)
-        #         log_list_content.append(log_content)
-        #         log_analyze_data.append(log_list_content)
         file_name = line[2]
         error_count = line[0]
         error_name_list = []
@@ -194,7 +181,6 @@ def log_analyze_data_output():
             if error_detail_count['error']:
                 error_count_list.append(error_detail_count['error'])
             else:
-                # error_count_list.append(0)
                 error_count_zero_list.append(index)
 
         error_details = line[1]
@@ -275,10 +261,8 @@ def mege_same_value(labels, values):
     :param values:
     :return:
     """
-    # 确保两个列表长度相同
     assert len(labels) == len(values), "Labels and values lists must have the same length"
 
-    # 使用字典来合并相同标签的值
     merged_dict = {}
     for label, value in zip(labels, values):
         if label in merged_dict:
@@ -286,16 +270,8 @@ def mege_same_value(labels, values):
         else:
             merged_dict[label] = value
 
-    # 从字典中提取标签和合并后的值，创建新的列表
     new_labels = list(merged_dict.keys())
     new_values = list(merged_dict.values())
     return new_labels, new_values
 
 
-if __name__ == '__main__':
-    data_list = log_analyze_data_output()
-    for data in data_list:
-        log_name = data[2]
-        error_count = data[1]
-        error_name = data[0]
-    logger.info(f"{data_list[0]}, {data_list[1]}")
