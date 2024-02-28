@@ -28,7 +28,7 @@ def find_images(directory):
         logger.info("dir not exists, create dir: " + str(directory))
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if "gif_unzip" not in root and "face_detect_result" not in root and "img_result" not in root:
+            if "img_url" in root or "according_pid_download_image" in root:
                 if file.endswith('.jpg') or file.endswith('.png'):
                     image_files_lists.append(os.path.join(root, file))
     return image_files_lists
