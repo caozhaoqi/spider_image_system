@@ -132,18 +132,18 @@ def artwork_single_image(key_word_pinyin, driver, url):
     image_url_list = []
     driver.get(url)
     if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
-        logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+        logger.warning("error! will exit: cur visit domain blocked.")
         constants.firewall_flag = True
         return False
     if open_look_all(driver):
-        logger.success(f"click look all success! url: {url}")
+        logger.success(f"click look all success! pid: {url[-9:]}")
     # 抓取动图link
     if constants.spider_mode == 'manual':
         # 手动模式滑动页面 自动模式不滑动
         slider_page_down(driver)
     time.sleep(detail_delta_time)
-    if spider_gif_images(key_word_pinyin, driver):
-        logger.success("gif url txt save success!")
+    spider_gif_images(key_word_pinyin, driver)
+    # logger.success("gif url txt save success!")
     image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
     for image_element in image_elements:
         image_url = image_element.get_attribute("src")

@@ -3,7 +3,7 @@ import sys
 
 from selenium.webdriver.common.by import By
 
-from file.file_process import record_end_spider_image_keyword, record_finish_keyword,  \
+from file.file_process import record_end_spider_image_keyword, record_finish_keyword, \
     exists_image_keyword
 from utils.file_utils import filter_exists_images, url_list_save, write_url_txt
 from utils.spider_operate import filter_not_use_url, slider_page_down, url_process_page, open_look_all, filter_not_use
@@ -18,7 +18,7 @@ import time
 from pypinyin import lazy_pinyin, Style
 
 from run import constants
-from run.constants import detail_delta_time, search_delta_time, s1_url, target_url, s2_url, data_path,\
+from run.constants import detail_delta_time, search_delta_time, s1_url, target_url, s2_url, data_path, \
     spider_images_max_count
 
 
@@ -59,18 +59,18 @@ def artwork_to_image(key_word_pinyin, driver, url):
     """
     driver.get(url)
     if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
-        logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+        logger.warning("error! will exit: cur visit domain blocked.")
         constants.firewall_flag = True
         return False
     if open_look_all(driver):
-        logger.success(f"click look all success! url: {url}")
+        logger.success(f"click look all success! pid: {url[-9:]}")  # 116299335
     # 抓取动图link
     if constants.spider_mode == 'manual':
         # 手动模式滑动页面 自动模式不滑动
         slider_page_down(driver)
     time.sleep(detail_delta_time)
-    if spider_gif_images(key_word_pinyin, driver):
-        logger.success("gif url txt save success!")
+    spider_gif_images(key_word_pinyin, driver)
+    # logger.success("gif url txt save success!")
     image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
     for image_element in image_elements:
         image_url = image_element.get_attribute("src")
@@ -117,7 +117,7 @@ def spider_artworks_url(self, key_word):
         driver.get(url_detail)
         time.sleep(search_delta_time)
         if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
-            logger.warning("error! will exit: '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'")
+            logger.warning("error! will exit: cur visit domain blocked.")
             constants.firewall_flag = True
             break
         logger.debug("start load href save url to txt.")
@@ -195,4 +195,3 @@ def load_href_save(driver, key_word):
     except Exception as un_e:
         logger.error("Error, unknown error, detail:" + str(un_e))
         return 0
-

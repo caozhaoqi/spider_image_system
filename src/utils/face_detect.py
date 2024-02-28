@@ -50,7 +50,8 @@ def face_detect(path, image_path):
             # 将绘制了眼睛矩形框的人脸区域放回原图的正确位置
             img[y:y + h, x:x + w] = roi_color
         if len(faces) == 0:
-            logger.warning(f"No faces detected:{image_path}")
+            # logger.warning(f"No faces detected:{image_path}")
+            return
         else:
             save_face(path, image_path, img, faces, gray)
         # 显示结果
@@ -113,7 +114,7 @@ def save_face(path, img_path, img, faces, gray):
         cv2.imwrite(img_file_name, faces_image)
         cv2.imwrite(img_file_name_line, img)
     except Exception as e:
-        logger.error(f"unknown error, detial: {e}, name: {img_file_name}")
+        logger.error(f"unknown error, detail: {e}, name: {img_file_name}")
         return False
     logger.success(f"save success, name: {img_file_name}")
     return True

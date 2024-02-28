@@ -72,7 +72,7 @@ def find_value(target_value, data_list):
     """
     for item in data_list:
         if item == target_value:
-            logger.warning("item exists will skip, name: " + target_value)
+            logger.warning("item exists will skip, pid: " + target_value[-9:])
             return True
     return False
 
@@ -91,8 +91,8 @@ def url_list_save(key_word, image_urls_list):
                 write_url_txt(data_path + "/href_url/", key_word + "_url", image_url_content)
             remove_duplicates_from_txt(data_path + "/href_url/" + key_word + "_url.txt",
                                        data_path + "/href_url/" + key_word + "_result_url.txt")
-            logger.success("function load_href_save(): href remove duplicates content success, result: href_url: "
-                           "_result_url.txt.")
+            # logger.success("function load_href_save(): href remove duplicates content success, result: href_url: "
+            #                "_result_url.txt.")
             return True
         elif len(image_urls_list) == 0:
             logger.warning("no image! don't save to url txt, chrome will exit!")
