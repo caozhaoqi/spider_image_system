@@ -10,7 +10,7 @@
 2. Run ./src/run/sh/run.bat(windows platform).
 3. Run ./src/run/sh/run.sh(linux platform).
 ## Position
-- If not visit pixiv.net website, could visit sd.2021.host or other url(sd.vv50.de) replace.
+- If not visit pixiv.net website, could visit sd.2021.host or other url(example: sd.vv50.de) replace.
 - Other.
 ## GUI
 - Pyqt5 paint main ui.
@@ -23,18 +23,29 @@
 1. ./data/href_url/ artwork url folder.
 2. ./data/img_url/ img url txt folder.
 3. ./data/*/images/ save img folder.
-7. ./log_dir/ script run log folder.
-8. Other see ./data/.
+4. ./data/video generate video folder.
+5. ./data/according_pid_download_image pid image download folder.
+6. ./data/face_detect_result face detect result folder.
+7. ./data/error_images error images folder.
+8. ./log_dir/ script run log folder.
+9. Other see ./data/.
+## File
+1. ./data/download_final_image.json: final download image info.
+2. ./data/download_finished_txt.txt: already download keyword txt.
+3. ./data/error_image_txt.txt: download fail image save txt.
+4. ./data/spider_finished_keyword.txt: already spider finish keyword txt.
+5. ./data/spider_img_keyword_final.json: final spider keyword image json.
 ## Other
-1. Self config constant val(Finished).
-2. Play all video(Finished).
-3. Autoplay all image(Finished).
-4. Auto spider image(Finished).
-5. System performance monitor(Finished).
-6. Online show image(Finished).
-7. Gif and image process(Finished).
-8. Other small tools(Finished).
-9. Other...(to be continued...)
+1. Self config constant val(Done).
+2. Play all video(Done).
+3. Autoplay all image(Done).
+4. Auto spider image(Done).
+5. System performance monitor(Done).
+6. Online show image(Done).
+7. Gif and image process(Done).
+8. Face detect from downloaded image folder(Done).
+9. Other small tools(Done).
+10. Other...(to be continued...)
 - bugs 1 : 在类方法中不能使用@logger.catch注解方法，会出现以下错误：
 ```shell
 > File "C:\Users\Administrator\PycharmProjects\calmcar_sf_server\src\test\gui\ui_main.py", line 130, in ui_paint
@@ -63,57 +74,7 @@ Aborted
 ``` 
 - Notice: if cannot start spider image, you need install google chrome explore, detail:
 ```shell
-ERROR     2024-02-23 11:56:07.032 - threading:run - An error has been caught in function 'run', process 'MainProcess' (123198), thread 'Thread-1 (spider_artworks_url)' (140194078520896): Traceback (most recent call last):
-
-  File "/usr/local/lib/python3.10/dist-packages/selenium/webdriver/common/driver_finder.py", line 38, in get_path
-    path = SeleniumManager().driver_location(options) if path is None else path
-           │                                 │           │                 └ None
-           │                                 │           └ None
-           │                                 └ <selenium.webdriver.chrome.options.Options object at 0x7f816cf3da20>
-           └ <class 'selenium.webdriver.common.selenium_manager.SeleniumManager'>
-  File "/usr/local/lib/python3.10/dist-packages/selenium/webdriver/common/selenium_manager.py", line 103, in driver_location
-    output = self.run(args)
-             │    │   └ ['/usr/local/lib/python3.10/dist-packages/selenium/webdriver/common/linux/selenium-manager', '--browser', 'chrome', '--output...
-             │    └ <staticmethod(<function SeleniumManager.run at 0x7f816eb9cd30>)>
-             └ <selenium.webdriver.common.selenium_manager.SeleniumManager object at 0x7f816cf3db10>
-  File "/usr/local/lib/python3.10/dist-packages/selenium/webdriver/common/selenium_manager.py", line 149, in run
-    raise WebDriverException(f"Unsuccessful command executed: {command}.\n{result}{stderr}")
-          └ <class 'selenium.common.exceptions.WebDriverException'>
-
-selenium.common.exceptions.WebDriverException: Message: Unsuccessful command executed: /usr/local/lib/python3.10/dist-packages/selenium/webdriver/common/linux/selenium-manager --browser chrome --output json.
-{'code': 65, 'message': 'request or response body error: operation timed out', 'driver_path': '', 'browser_path': ''}
-
-
-
-The above exception was the direct cause of the following exception:
-
-
-Traceback (most recent call last):
-
-  File "/usr/lib/python3.10/threading.py", line 973, in _bootstrap
-    self._bootstrap_inner()
-    │    └ <function Thread._bootstrap_inner at 0x7f817e13b6d0>
-    └ <Thread(Thread-1 (spider_artworks_url), started 140194078520896)>
-  File "/usr/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
-    self.run()
-    │    └ <function Thread.run at 0x7f817e13b400>
-    └ <Thread(Thread-1 (spider_artworks_url), started 140194078520896)>
-> File "/usr/lib/python3.10/threading.py", line 953, in run
-    self._target(*self._args, **self._kwargs)
-    │    │        │    │        │    └ {}
-    │    │        │    │        └ <Thread(Thread-1 (spider_artworks_url), started 140194078520896)>
-    │    │        │    └ (<ui_event.pyqt_main_ui.UIMainWindows object at 0x7f816d1cab00>, 'klee')
-    │    │        └ <Thread(Thread-1 (spider_artworks_url), started 140194078520896)>
-    │    └ <function spider_artworks_url at 0x7f816d5fb250>
-    └ <Thread(Thread-1 (spider_artworks_url), started 140194078520896)>
-
-  File "/home/czq/spider_image_system/src/ui_event/get_url.py", line 110, in spider_artworks_url
-    driver = webdriver.Chrome(options=options)
-             │         │              └ <selenium.webdriver.chrome.options.Options object at 0x7f816cf3da20>
-             │         └ <class 'selenium.webdriver.chrome.webdriver.WebDriver'>
-             └ <module 'selenium.webdriver' from '/usr/local/lib/python3.10/dist-packages/selenium/webdriver/__init__.py'>
-
-  File "/usr/local/lib/python3.10/dist-packages/selenium/webdriver/chrome/webdriver.py", line 45, in __init__
+File "/usr/local/lib/python3.10/dist-packages/selenium/webdriver/chrome/webdriver.py", line 45, in __init__
     super().__init__(
   File "/usr/local/lib/python3.10/dist-packages/selenium/webdriver/chromium/webdriver.py", line 49, in __init__
     self.service.path = DriverFinder.get_path(self.service, options)
