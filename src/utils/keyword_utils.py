@@ -36,5 +36,5 @@ def exists_keyword_finish_txt(keyword):
         logger.debug(f"already delete keyword_img: {txt_keyword} download_finish_txt.txt!")
         return True
     else:
-        logger.info(f"not found exists keyword:{keyword} from download_finish_txt.txt!")
+        logger.info(f"not found exists keyword: {keyword} from download_finish_txt.txt!")
         return False

@@ -348,7 +348,7 @@ def keyword_times(keyword, cur_page):
         with open(file_name, 'w') as f:
             f.write("")
         return False
-    with open(file_name, "a") as f:
+    with open(file_name, "r") as f:
         keyword_list = f.readlines()
 
     for keyword_con in keyword_list:
