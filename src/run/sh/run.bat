@@ -12,13 +12,13 @@ for /r %%i in (%FileName%) do (
 )
 
 :NotFound
-echo not foud ui_main.py: %FileName%, not execute any command!
+echo Error! not found ui_main.py: !FileName! not execute any command!
 goto :EOF
 
 :FoundFile
 echo find path dir: !FoundPath!.
 python !FoundPath!
-echo programmer already exited!
+echo program already exited!
 goto :EOF
 
 endlocal

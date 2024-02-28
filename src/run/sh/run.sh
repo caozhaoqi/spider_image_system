@@ -11,6 +11,6 @@ if [ -n "$found_path" ]; then
     echo "find file path: $found_path"
     python3 "$found_path"
 else
-    echo "not found file path: $filename"
+    echo "Error! not found file path: $filename"
 fi
-printf 'programmer already exited!'
+printf 'program already exited!'

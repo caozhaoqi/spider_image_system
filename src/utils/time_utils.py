@@ -32,21 +32,3 @@ def time_to_utc(time_str):
     mtime = time.localtime(time_str)
     formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", mtime)
     return formatted_time
-
-
-# 函数定义
-def fun():
-    """
-    h函数 if
-    :return:
-    """
-    # 布尔变量
-    flag = True
-    if flag:
-        print('True')
-    else:
-        print('False')
-
-
-if __name__ == '__main__':
-    fun()
