@@ -11,6 +11,7 @@ from ui_event.image_dialog import ImageDialog
 from ui_event.log_analyze_dialog import LogAnalyzeHistogram
 from ui_event.sys_info_ui import SystemMonitor
 from utils.face_detect import face_detect_result
+from utils.file_utils import convert_and_move_folder
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -321,3 +322,22 @@ def face_detect_action():
         logger.info("start detect face!")
     else:
         logger.error("detect face ing, please wait.")
+
+
+@logger.catch
+def convert_folder_name():
+    """
+
+    :return:
+    """
+    if not constants.convert_folder_name_flag:
+        constants.convert_folder_name_flag = True
+        convert_folder_thread_obj = threading.Thread(
+            target=convert_and_move_folder,
+            args=(constants.data_path,))
+        convert_folder_thread_obj.start()
+        logger.info("start convert folder_name!")
+    else:
+        logger.error("converting folder_name please wait.")
+    # convert_and_move_folder(constants.data_path)
+    ...

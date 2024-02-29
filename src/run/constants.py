@@ -25,6 +25,7 @@ performance_monitor_visible = False
 genshin_impact_view_visible = False
 log_analyze_visible = False
 face_detect_flag = False
+convert_folder_name_flag = False
 online_show_image = False
 # firewall_flag
 firewall_flag = False

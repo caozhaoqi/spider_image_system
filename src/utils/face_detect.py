@@ -74,7 +74,10 @@ def save_face(path, img_path, img, faces, gray):
     :return: 
     """
     file_path, file_name = os.path.split(img_path)
+    subdir, _ = os.path.split(os.path.dirname(img_path))
+    subdir_1, folder_name = os.path.split(subdir)
     base_path = os.path.join(path, "face_detect_result")
+    base_path = os.path.join(base_path, folder_name)
     img_file_path = os.path.join(base_path, "split_face")
     img_file_path_line = os.path.join(base_path, "red_line")
     if not os.path.exists(img_file_path):
@@ -85,6 +88,10 @@ def save_face(path, img_path, img, faces, gray):
         logger.warning("face detect red_line dir not exists, create it.")
     img_file_name = os.path.join(img_file_path, file_name)
     img_file_name_line = os.path.join(img_file_path_line, file_name)
+    # 只生成没有的
+    if os.path.exists(img_file_name) or os.path.exists(img_file_name_line):
+        logger.warning(f"img {img_file_name} already exists, will skip!")
+        return True
     target_size = (200, 200)
 
     # Calculate the dimensions of the faces_image based on the number of faces and target size
@@ -131,7 +138,7 @@ def face_detect_result(path):
     if img_list:
         for img in img_list:
             face_detect(path, img)
-        logger.success(f"generate success, file path: {path}")
+        logger.success(f"generate finish, data path: {path}")
     else:
         logger.warning("cur dir data path not image!")
     constants.face_detect_flag = False

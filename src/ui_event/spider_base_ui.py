@@ -10,7 +10,7 @@ from loguru import logger
 
 from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, genshin_impact_view, \
-    star_rail_view, test_button_event, log_analyze_ui, face_detect_action
+    star_rail_view, test_button_event, log_analyze_ui, face_detect_action, convert_folder_name
 
 
 @logger.catch
@@ -63,14 +63,17 @@ def base_menu(self):
     self.genshin_impact = QAction('原神工具(等待完善)', self.tools_menu)
     self.star_rail = QAction('星铁工具(等待开发)', self.tools_menu)
     self.log_analyze = QAction('日志分析', self.tools_menu)
+    self.folder_name = QAction('名称转换', self.tools_menu)
     self.test_button = QAction('测试工具', self.tools_menu)
     self.genshin_impact.triggered.connect(lambda: genshin_impact_view())
     self.star_rail.triggered.connect(lambda: star_rail_view())
     self.log_analyze.triggered.connect(lambda: log_analyze_ui())
+    self.folder_name.triggered.connect(lambda: convert_folder_name())
     self.test_button.triggered.connect(lambda: test_button_event())
     self.tools_menu.addAction(self.genshin_impact)
     self.tools_menu.addAction(self.star_rail)
     self.tools_menu.addAction(self.log_analyze)
+    self.tools_menu.addAction(self.folder_name)
     self.tools_menu.addAction(self.test_button)
 
     self.settings_menu = QMenu('设置', self.menu_bar)

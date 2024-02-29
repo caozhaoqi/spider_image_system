@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 
 from loguru import logger
@@ -6,6 +7,8 @@ from loguru import logger
 from run import constants
 from run.constants import data_path
 from utils.http_tools import image_url_re
+import shutil
+from pypinyin import lazy_pinyin
 
 
 @logger.catch
@@ -155,3 +158,84 @@ def get_data_file(filename):
         basedir = os.path.dirname(__file__)
 
     return os.path.join(basedir, filename)
+
+
+@logger.catch
+def get_all_folders(directory):
+    """
+
+    :param directory:
+    :return:
+    """
+    folders = []
+    for root, dirs, files in os.walk(directory):
+        folders.extend(dirs)
+    return folders
+
+
+@logger.catch
+def convert_and_move_folder(folder_path):
+    """
+
+    :param folder_path:
+    :return:
+    """
+    # 获取文件夹名称
+    all_folders = get_all_folders(folder_path)
+    for folder in all_folders:
+        folder_name = os.path.basename(folder)
+
+        if contains_chinese(folder_name):
+            # 将文件夹名称转换为拼音
+            pinyin_folder_name = ''.join(lazy_pinyin(folder_name))
+
+            # 创建新的拼音文件夹路径
+            pinyin_folder_path = os.path.join(os.path.dirname(folder_path), pinyin_folder_name)
+
+            # 检查新文件夹是否已存在
+            if os.path.exists(pinyin_folder_path):
+                logger.warning(f"Folder '{pinyin_folder_name}' already exists. Moving content to the existing folder.")
+                # 移动文件夹内容到已存在的文件夹
+                move_content_to_existing_folder(folder_path, pinyin_folder_path)
+            else:
+                # 如果新文件夹不存在，则创建它，并移动文件夹内容到新文件夹
+                os.makedirs(pinyin_folder_path)
+                shutil.move(folder_path, pinyin_folder_path)
+                logger.success(
+                    f"Folder '{folder_name}' has been converted to '{pinyin_folder_name}' and moved successfully.")
+        else:
+            logger.info(f"no chinese path: {folder_name}")
+    constants.convert_folder_name_flag = False
+    logger.success("all folder convert success!")
+
+
+@logger.catch
+def move_content_to_existing_folder(source_folder_path, target_folder_path):
+    # 获取源文件夹中的所有文件和子文件夹
+    for item in os.listdir(source_folder_path):
+        source_item_path = os.path.join(source_folder_path, item)
+        target_item_path = os.path.join(target_folder_path, item)
+
+        # 如果是文件夹，则递归调用此函数
+        if os.path.isdir(source_item_path):
+            move_content_to_existing_folder(source_item_path, target_item_path)
+        else:
+            # 如果是文件，则直接移动文件
+            shutil.move(source_item_path, target_item_path)
+
+
+@logger.catch
+def contains_chinese(folder_name):
+    """
+
+    :param folder_name:
+    :return:
+    """
+    # 使用正则表达式匹配中文字符
+    pattern = re.compile(r'[\u4e00-\u9fa5]')
+    return bool(pattern.search(folder_name))
+
+# 示例使用
+# # 示例使用
+# folder_to_convert = '/path/to/your/folder'  # 替换成你要转换的文件夹路径
+# convert_and_move_folder(folder_to_convert)
