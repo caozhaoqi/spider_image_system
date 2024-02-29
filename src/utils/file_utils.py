@@ -196,8 +196,7 @@ def convert_and_move_folder(folder_path):
 
             # base_path = os.path.join(folder_path, folder)
             # 创建新的拼音文件夹路径
-            pinyin_folder_path = os.path.join(os.path.join(os.path.join(folder_path, pinyin_folder_name), 'images'),
-                                              'master')
+            pinyin_folder_path = os.path.join(folder_path, pinyin_folder_name)
 
             # 检查新文件夹是否已存在
             if os.path.exists(pinyin_folder_path):
@@ -209,14 +208,12 @@ def convert_and_move_folder(folder_path):
                 os.makedirs(pinyin_folder_path)
                 move_sou_dir = os.path.join(folder_path, folder)
                 for img in os.listdir(move_sou_dir):
-                    # if os.path.isfile(os.path.join(path, filename)):
-                    shutil.move(os.path.join(move_sou_dir, img), pinyin_folder_path)
+                    src_path = os.path.join(move_sou_dir, img)
+                    shutil.move(src_path, pinyin_folder_path)
+                # if "master" not in folder_name or "images" not in folder_name:
                 logger.success(
                     f"Folder '{folder_name}' has been converted to '{pinyin_folder_name}' and moved successfully.")
-                # os.remove(move_sou_dir)
-        else:
-            if not "master" in folder_name or not "images" in folder_name:
-                logger.info(f"no chinese path: {folder_name}")
+
     constants.convert_folder_name_flag = False
     logger.success("all folder convert success!")
 
@@ -232,7 +229,6 @@ def move_content_to_existing_folder(source_folder_path, target_folder_path):
     # 获取源文件夹中的所有文件和子文件夹
     for item in os.listdir(source_folder_path):
         source_item_path = os.path.join(source_folder_path, item)
-        # target_item_path = os.path.join(target_folder_path, item)
 
         # 如果是文件夹，则递归调用此函数
         if os.path.isdir(source_item_path):
@@ -254,7 +250,3 @@ def contains_chinese(folder_name):
     pattern = re.compile(r'[\u4e00-\u9fa5]')
     return bool(pattern.search(folder_name))
 
-# 示例使用
-# # 示例使用
-# folder_to_convert = '/path/to/your/folder'  # 替换成你要转换的文件夹路径
-# convert_and_move_folder(folder_to_convert)
