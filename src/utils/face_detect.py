@@ -152,4 +152,4 @@ def face_detect_result(path):
 
 
 if __name__ == '__main__':
-    face_detect_result()
+    face_detect_result('../run/data/')
