@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
@@ -255,3 +254,21 @@ def contains_chinese(folder_name):
     pattern = re.compile(r'[\u4e00-\u9fa5]')
     return bool(pattern.search(folder_name))
 
+
+@logger.catch
+def find_img_result(path):
+    """
+
+    :param path:
+    :return:
+    """
+    folder_name = None
+    # 分割路径到各个部分
+    parts = path.split("\\")
+
+    # 从后往前遍历，找到第一个包含'_img_result'的文件夹名
+    for i in range(len(parts) - 1, -1, -1):
+        if "_img_result" in parts[i]:
+            folder_name = parts[i]
+            break
+    return folder_name

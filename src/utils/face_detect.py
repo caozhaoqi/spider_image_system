@@ -12,7 +12,7 @@ from loguru import logger
 
 from image.img_switch import find_images
 from run import constants
-from utils.file_utils import get_data_file
+from utils.file_utils import get_data_file, find_img_result
 
 
 @logger.catch
@@ -80,8 +80,9 @@ def save_face(path, img_path, img, faces, gray):
     :return: 
     """
     file_path, file_name = os.path.split(img_path)
-    subdir, _ = os.path.split(os.path.dirname(img_path))
-    subdir_1, folder_name = os.path.split(subdir)
+    # subdir, _ = os.path.split(os.path.dirname(img_path))
+    # subdir_1, folder_name = os.path.split(subdir)
+    folder_name = find_img_result(img_path)
     base_path = os.path.join(path, "face_detect_result")
     base_path = os.path.join(base_path, folder_name)
     img_file_path = os.path.join(base_path, "split_face")
