@@ -189,20 +189,25 @@ def convert_and_move_folder(folder_path):
             # 将文件夹名称转换为拼音
             pinyin_folder_name = ''.join(lazy_pinyin(folder_name, style=Style.TONE3))
 
+            # base_path = os.path.join(folder_path, folder)
             # 创建新的拼音文件夹路径
-            pinyin_folder_path = os.path.join(os.path.dirname(folder_path), pinyin_folder_name)
+            pinyin_folder_path = os.path.join(os.path.join(folder_path, pinyin_folder_name), 'images')
 
             # 检查新文件夹是否已存在
             if os.path.exists(pinyin_folder_path):
                 logger.warning(f"Folder '{pinyin_folder_name}' already exists. Moving content to the existing folder.")
                 # 移动文件夹内容到已存在的文件夹
-                move_content_to_existing_folder(folder_path, pinyin_folder_path)
+                move_content_to_existing_folder(os.path.join(folder_path, folder), pinyin_folder_path)
             else:
                 # 如果新文件夹不存在，则创建它，并移动文件夹内容到新文件夹
                 os.makedirs(pinyin_folder_path)
-                shutil.move(folder_path, pinyin_folder_path)
+                move_sou_dir = os.path.join(folder_path, folder)
+                for img in os.listdir(move_sou_dir):
+                    # if os.path.isfile(os.path.join(path, filename)):
+                    shutil.move(os.path.join(move_sou_dir, img), pinyin_folder_path)
                 logger.success(
                     f"Folder '{folder_name}' has been converted to '{pinyin_folder_name}' and moved successfully.")
+                # os.remove(move_sou_dir)
         else:
             logger.info(f"no chinese path: {folder_name}")
     constants.convert_folder_name_flag = False
@@ -211,6 +216,12 @@ def convert_and_move_folder(folder_path):
 
 @logger.catch
 def move_content_to_existing_folder(source_folder_path, target_folder_path):
+    """
+
+    :param source_folder_path:
+    :param target_folder_path:
+    :return:
+    """
     # 获取源文件夹中的所有文件和子文件夹
     for item in os.listdir(source_folder_path):
         source_item_path = os.path.join(source_folder_path, item)
@@ -222,6 +233,7 @@ def move_content_to_existing_folder(source_folder_path, target_folder_path):
         else:
             # 如果是文件，则直接移动文件
             shutil.move(source_item_path, target_item_path)
+    # os.remove(source_folder_path)
 
 
 @logger.catch

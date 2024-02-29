@@ -334,7 +334,7 @@ def convert_folder_name():
         constants.convert_folder_name_flag = True
         convert_folder_thread_obj = threading.Thread(
             target=convert_and_move_folder,
-            args=(constants.data_path,))
+            args=(os.path.join(constants.data_path, 'img_url'),))
         convert_folder_thread_obj.start()
         logger.info("start convert folder_name!")
     else:
