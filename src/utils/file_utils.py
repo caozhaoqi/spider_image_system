@@ -149,7 +149,12 @@ def remove_duplicates_from_txt(input_file, output_file):
 
 @logger.catch
 def get_data_file(filename):
-    """获取数据文件的路径，无论是直接运行还是通过 PyInstaller 打包"""
+    """
+
+    获取数据文件的路径，无论是直接运行还是通过 PyInstaller 打包
+    :param filename
+    :return
+    """
     if getattr(sys, 'frozen', False):
         # 如果程序是“冷冻的”，即打包后的 exe
         basedir = sys._MEIPASS
@@ -191,7 +196,8 @@ def convert_and_move_folder(folder_path):
 
             # base_path = os.path.join(folder_path, folder)
             # 创建新的拼音文件夹路径
-            pinyin_folder_path = os.path.join(os.path.join(folder_path, pinyin_folder_name), 'images')
+            pinyin_folder_path = os.path.join(os.path.join(os.path.join(folder_path, pinyin_folder_name), 'images'),
+                                              'master')
 
             # 检查新文件夹是否已存在
             if os.path.exists(pinyin_folder_path):
@@ -209,7 +215,8 @@ def convert_and_move_folder(folder_path):
                     f"Folder '{folder_name}' has been converted to '{pinyin_folder_name}' and moved successfully.")
                 # os.remove(move_sou_dir)
         else:
-            logger.info(f"no chinese path: {folder_name}")
+            if "master" in folder_name or "images" in folder_name:
+                logger.info(f"no chinese path: {folder_name}")
     constants.convert_folder_name_flag = False
     logger.success("all folder convert success!")
 
