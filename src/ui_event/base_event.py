@@ -4,7 +4,6 @@ import sys
 from selenium.common import StaleElementReferenceException
 
 from file.file_process import get_image_keyword
-from ui_event.async_message_box import show_message
 from ui_event.auto_image_explore import AutoImageDialog
 from ui_event.gi_dialog_ui import GICharacterDialog
 from ui_event.image_dialog import ImageDialog

@@ -1,12 +1,9 @@
 import os
 import sys
-import time
 
-from image.img_switch import find_images, image_exists, error_img_update
-from model.ImageModel import ImageModel
+from image.img_switch import find_images, image_exists
 from utils.file_utils import remove_duplicates_from_txt
 from utils.http_tools import image_url_re
-from utils.time_utils import time_to_utc
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

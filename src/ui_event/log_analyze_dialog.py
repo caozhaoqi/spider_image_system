@@ -1,12 +1,16 @@
+import os
+import sys
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QVBoxLayout, QWidget, QPushButton, QDialog, QHBoxLayout
+from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QDialog, QHBoxLayout
 from PyQt5.QtChart import QChart, QChartView, QBarSeries, QBarSet, QBarCategoryAxis, QValueAxis, QPieSeries
 from PyQt5.QtGui import QPainter
 from loguru import logger
 
 from run import constants
-from utils.data_json import data_json
-from utils.log_analyis import log_analyze_data_output, log_analyze_data_output_new
+from utils.log_analyis import  log_analyze_data_output_new
 
 
 class LogAnalyzeHistogram(QDialog):

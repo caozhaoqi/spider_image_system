@@ -1,8 +1,12 @@
+import os
+import sys
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import time
 
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtChart import QLineSeries
-from PyQt5.QtCore import QDateTime
 from PyQt5.QtWidgets import QDialog
 from loguru import logger
 
