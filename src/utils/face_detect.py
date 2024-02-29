@@ -83,6 +83,9 @@ def save_face(path, img_path, img, faces, gray):
     # subdir, _ = os.path.split(os.path.dirname(img_path))
     # subdir_1, folder_name = os.path.split(subdir)
     folder_name = find_img_result(img_path)
+    if folder_name is None:
+        folder_name = 'unknown_name'
+        logger.warning('folder_name is None, default use unknown_name.')
     base_path = os.path.join(path, "face_detect_result")
     base_path = os.path.join(base_path, folder_name)
     img_file_path = os.path.join(base_path, "split_face")
@@ -97,7 +100,7 @@ def save_face(path, img_path, img, faces, gray):
     img_file_name_line = os.path.join(img_file_path_line, file_name)
     # 只生成没有的
     if os.path.exists(img_file_name) or os.path.exists(img_file_name_line):
-        logger.warning(f"img {img_file_name} already exists, will skip!")
+        logger.warning(f"{img_file_name} already exists, will skip!")
         return True
     target_size = (200, 200)
 
