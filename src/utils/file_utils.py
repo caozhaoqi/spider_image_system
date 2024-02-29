@@ -278,6 +278,9 @@ def find_img_result(path):
         # Linux系统
         parts = path.split("/")
 
+    else:
+        logger.error("unknown error!")
+
     # 从后往前遍历，找到第一个包含'_img_result'的文件夹名
     for i in range(len(parts) - 1, -1, -1):
         if "_img_result" in parts[i]:
