@@ -8,7 +8,7 @@ from run import constants
 from run.constants import data_path
 from utils.http_tools import image_url_re
 import shutil
-from pypinyin import lazy_pinyin
+from pypinyin import lazy_pinyin, Style
 
 
 @logger.catch
@@ -187,7 +187,7 @@ def convert_and_move_folder(folder_path):
 
         if contains_chinese(folder_name):
             # 将文件夹名称转换为拼音
-            pinyin_folder_name = ''.join(lazy_pinyin(folder_name))
+            pinyin_folder_name = ''.join(lazy_pinyin(folder_name, style=Style.TONE3))
 
             # 创建新的拼音文件夹路径
             pinyin_folder_path = os.path.join(os.path.dirname(folder_path), pinyin_folder_name)
