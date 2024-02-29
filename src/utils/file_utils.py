@@ -215,7 +215,7 @@ def convert_and_move_folder(folder_path):
                     f"Folder '{folder_name}' has been converted to '{pinyin_folder_name}' and moved successfully.")
                 # os.remove(move_sou_dir)
         else:
-            if "master" in folder_name or "images" in folder_name:
+            if not "master" in folder_name or not "images" in folder_name:
                 logger.info(f"no chinese path: {folder_name}")
     constants.convert_folder_name_flag = False
     logger.success("all folder convert success!")
@@ -232,14 +232,14 @@ def move_content_to_existing_folder(source_folder_path, target_folder_path):
     # 获取源文件夹中的所有文件和子文件夹
     for item in os.listdir(source_folder_path):
         source_item_path = os.path.join(source_folder_path, item)
-        target_item_path = os.path.join(target_folder_path, item)
+        # target_item_path = os.path.join(target_folder_path, item)
 
         # 如果是文件夹，则递归调用此函数
         if os.path.isdir(source_item_path):
-            move_content_to_existing_folder(source_item_path, target_item_path)
+            move_content_to_existing_folder(source_item_path, target_folder_path)
         else:
             # 如果是文件，则直接移动文件
-            shutil.move(source_item_path, target_item_path)
+            shutil.move(source_item_path, target_folder_path)
     # os.remove(source_folder_path)
 
 
