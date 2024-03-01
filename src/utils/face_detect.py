@@ -1,5 +1,7 @@
 import os
 import sys
+import time
+from datetime import datetime
 
 from log.log_record import log_record
 
@@ -49,7 +51,7 @@ def face_detect(path, image_path):
     # 只生成没有的
     if os.path.exists(img_file_name) or os.path.exists(img_file_name_line):
         logger.warning(f"{img_file_name} already exists, will skip!")
-        return
+        return False
     try:
         face_xml_path = get_data_file("xml_data/haarcascade_frontalface_default.xml")
         # eye_xml_path = get_data_file('xml_data/haarcascade_eye.xml')
@@ -61,7 +63,7 @@ def face_detect(path, image_path):
         img = cv2.imread(image_path)
         if img is None:
             logger.error(f"Error: Unable to load image at {image_path}")
-            return
+            return False
 
         # 转换为灰度图像
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -71,7 +73,7 @@ def face_detect(path, image_path):
         # eye_cascade.detectMultiScale(gray, 1.1, 5)
         if len(faces) == 0:
             # logger.warning(f"No faces detected:{image_path}")
-            return
+            return False
         else:
             save_face(img_file_name, img_file_name_line, img, faces)
         # 显示结果
@@ -80,7 +82,7 @@ def face_detect(path, image_path):
 
     except Exception as e:
         logger.error(f"An error occurred: {e}")
-        return
+        return False
 
 
 @logger.catch
@@ -136,15 +138,21 @@ def face_detect_result(path):
     :return:
     """
     # 调用 show_detection() 函数标示检测到的人脸
-    img_list = find_images(path)
-    if img_list:
-        for img in img_list:
-            face_detect(path, img)
-        logger.success(f"generate finish, data path: {path}")
-    else:
+    start_time = time.time()
+    img_list = find_images(path)  # 10 ms
+    # 2024-03-01 14:12:04.065162
+    if not img_list:
         logger.warning("cur dir data path not image!")
-    constants.face_detect_flag = False
+        return False
+    for img in img_list:
+        if not face_detect(path, img):
+            continue
 
+    end_time = time.time()
+    logger.success(f'generate finish , data path: {path}, cost time:{int((end_time - start_time))} seconds')
+
+
+constants.face_detect_flag = False
 
 if __name__ == '__main__':
     log_record()

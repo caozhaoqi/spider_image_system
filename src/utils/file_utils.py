@@ -282,6 +282,9 @@ def move_content_to_existing_folder(source_folder_path, target_folder_path):
             move_content_to_existing_folder(source_item_path, target_folder_path)
         else:
             # 如果是文件，则直接移动文件
+            if os.path.exists(source_item_path):
+                # logger.warning(f"item: {source_item_path} exists, will skip.")
+                continue
             shutil.move(source_item_path, target_folder_path)
     # os.remove(source_folder_path)
 
