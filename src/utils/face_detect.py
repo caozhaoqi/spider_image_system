@@ -1,9 +1,6 @@
 import os
 import sys
 import time
-from datetime import datetime
-
-from log.log_record import log_record
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -151,9 +148,9 @@ def face_detect_result(path):
     end_time = time.time()
     logger.success(f'generate finish , data path: {path}, cost time: {int((end_time - start_time))} seconds')
 
+    constants.face_detect_flag = False
 
-constants.face_detect_flag = False
 
 if __name__ == '__main__':
-    log_record()
+    # log_record()
     face_detect_result('../run/data/')
