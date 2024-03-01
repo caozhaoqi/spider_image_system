@@ -51,10 +51,10 @@ def face_detect(path, image_path):
         return False
     try:
         face_xml_path = get_data_file("xml_data/haarcascade_frontalface_default.xml")
-        # eye_xml_path = get_data_file('xml_data/haarcascade_eye.xml')
+        eye_xml_path = get_data_file('xml_data/haarcascade_eye.xml')
         # 加载分类器
         face_cascade = cv2.CascadeClassifier(face_xml_path)
-        # eye_cascade = cv2.CascadeClassifier(eye_xml_path)
+        eye_cascade = cv2.CascadeClassifier(eye_xml_path)
 
         # 读取图像
         img = cv2.imread(image_path)
@@ -72,7 +72,7 @@ def face_detect(path, image_path):
             # logger.warning(f"No faces detected:{image_path}")
             return False
         else:
-            save_face(img_file_name, img_file_name_line, img, faces)
+            save_face(img_file_name, img_file_name_line, img, faces, gray, eye_cascade)
         # 显示结果
         cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -83,9 +83,11 @@ def face_detect(path, image_path):
 
 
 @logger.catch
-def save_face(img_file_name, img_file_name_line, img, faces):
+def save_face(img_file_name, img_file_name_line, img, faces, gray, eye_cascade):
     """
     
+    :param eye_cascade:
+    :param gray:
     :param img_file_name_line:
     :param img_file_name:
     :param img:
@@ -103,6 +105,19 @@ def save_face(img_file_name, img_file_name_line, img, faces):
     try:
         # Create a blank image to hold the resized faces
         faces_image = np.zeros((faces_image_height, faces_image_width, 3), dtype=np.uint8)
+
+        for (x, y, w, h) in faces:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            roi_gray = gray[y:y + h, x:x + w]
+            roi_color = img[y:y + h, x:x + w]
+
+            # 在人脸区域内检测眼睛
+            eyes = eye_cascade.detectMultiScale(roi_gray)
+            for (ex, ey, ew, eh) in eyes:
+                cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+
+            # 将绘制了眼睛矩形框的人脸区域放回原图的正确位置
+            img[y:y + h, x:x + w] = roi_color
 
         # Iterate over the detected faces
         for i, (x, y, w, h) in enumerate(faces):
