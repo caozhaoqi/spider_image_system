@@ -149,7 +149,7 @@ def face_detect_result(path):
             continue
 
     end_time = time.time()
-    logger.success(f'generate finish , data path: {path}, cost time:{int((end_time - start_time))} seconds')
+    logger.success(f'generate finish , data path: {path}, cost time: {int((end_time - start_time))} seconds')
 
 
 constants.face_detect_flag = False

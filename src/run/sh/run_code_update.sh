@@ -20,7 +20,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # 克隆Git仓库到目标文件夹
-git clone https://gitee.com/caozhaoqi/spider_image_system "$folder_name"
+git clone https://gitee.com/caozhaoqi/spider_image_system "$folder_name/spider_image_system"
 
 # 检查Git克隆是否成功
 if [ $? -ne 0 ]; then
@@ -36,7 +36,7 @@ cd "$folder_name/spider_image_system/src/run" || exit
 
 # 将源文件夹中的数据移动到当前目录
 if [ -d "$src_name/spider_image_system/src/run/data" ]; then
-    mv "$src_name/spider_image_system/src/run/data" ./
+    mv "./$src_name/spider_image_system/src/run/data" "./$folder_name/spider_image_system/src/run"
 else
     echo "Data directory not found in source folder: $src_name/spider_image_system/src/run/data"
     exit 1
