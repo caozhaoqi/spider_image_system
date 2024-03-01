@@ -140,7 +140,7 @@ def check_images(self, image_path):
                     logger.error(f"无法打开图片 {filename}, 错误信息:{e}, 已移动至error_images文件夹。")
                     error_image_lists.append(filepath)
     for error_images in error_image_lists:
-        with open(image_path + '/error_image_txt.txt', 'a') as f:
+        with open(image_path + '/error_image_txt.txt', 'a', encoding='utf-8') as f:
             if not os.path.exists(image_path + "/error_images/"):
                 os.makedirs(image_path + "/error_images/")
             file_path, file_name = os.path.split(error_images)
@@ -151,7 +151,7 @@ def check_images(self, image_path):
                 shutil.move(error_images, image_path + "/error_images/" + file_name)
         f.close()
     for small_image in small_image_lists:
-        with open(image_path + '/small_image_txt.txt', 'a') as f:
+        with open(image_path + '/small_image_txt.txt', 'a', encoding='utf-8') as f:
             if not os.path.exists(image_path + "/small_images/"):
                 os.makedirs(image_path + "/small_images/")
             file_path, file_name = os.path.split(small_image)
@@ -197,7 +197,7 @@ def img_category_images(self, image_path):
         dir_path, file_name = os.path.split(square_image)
         if not os.path.exists(dir_path + "/square/"):
             os.makedirs(dir_path + "/square/")
-        with open(dir_path + '/square_image_txt.txt', 'a') as f:
+        with open(dir_path + '/square_image_txt.txt', 'a', encoding='utf-8') as f:
             f.write(square_image + "\n")
         shutil.move(square_image, dir_path + "/square/" + file_name)
         f.close()
@@ -205,7 +205,7 @@ def img_category_images(self, image_path):
         dir_path, file_name = os.path.split(custom_image)
         if not os.path.exists(dir_path + "/custom/"):
             os.makedirs(dir_path + "/custom/")
-        with open(dir_path + '/custom_image_txt.txt', 'a') as f:
+        with open(dir_path + '/custom_image_txt.txt', 'a', encoding='utf-8') as f:
             f.write(custom_image + "\n")
         shutil.move(custom_image, dir_path + "/custom/" + file_name)
         f.close()
@@ -213,7 +213,7 @@ def img_category_images(self, image_path):
         dir_path, file_name = os.path.split(master_image)
         if not os.path.exists(dir_path + "/master/"):
             os.makedirs(dir_path + "/master/")
-        with open(dir_path + '/master_image_txt.txt', 'a') as f:
+        with open(dir_path + '/master_image_txt.txt', 'a', encoding='utf-8') as f:
             f.write(master_image + "\n")
         shutil.move(master_image, dir_path + "/master/" + file_name)
         f.close()
@@ -231,7 +231,7 @@ def error_img_update(url):
     exists_error_url_flag = False
     error_img_txt_path = constants.data_path + "\\download_fail_image.txt"
     if os.path.exists(error_img_txt_path):
-        with open(error_img_txt_path, "r") as f:
+        with open(error_img_txt_path, "r", encoding='utf-8') as f:
             error_img_list = f.readlines()
         for error_img in error_img_list:
             if error_img is url:
@@ -240,7 +240,7 @@ def error_img_update(url):
         if exists_error_url_flag:
             for error_img_new in error_img_list:
                 # 打开文件并写入元素
-                with open(error_img_txt_path, 'w') as file:
+                with open(error_img_txt_path, 'w', encoding='utf-8') as file:
                     file.write(str(error_img_new + "\n"))
             return True
     return False

@@ -39,7 +39,7 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
         try:
             response = requests.get(url, stream=True)
             if response.status_code == 200:
-                with open(filename, 'wb') as f:
+                with open(filename, 'wb', encoding='utf-8') as f:
                     f.write(response.content)
                 logger.debug(f"Image saved as {filename}, cur images index: {cur_download_images_index}"
                              f", cur txt images download count: {cur_txt_image_count}")
@@ -76,7 +76,7 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
     cur_download_finish_images_index = 0
     cur_txt_image_count = count_lines(file_path)
 
-    with open(file_path, 'r') as f:
+    with open(file_path, 'r', encoding='utf-8') as f:
         cur_image_list = f.readlines()
     if continue_download_flag:
         for index, cur_image in enumerate(cur_image_list):

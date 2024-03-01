@@ -70,7 +70,7 @@ def count_lines(filename):
     :param filename:
     :return:
     """
-    with open(filename, 'r') as file:
+    with open(filename, 'r', encoding='utf-8') as file:
         lines = file.readlines()
     return len(lines)
 
@@ -92,7 +92,7 @@ def scan_img_txt(path):
     # single txt
     img_list_set = []
     for img_txt in img_txt_files:
-        with open(img_txt, 'r') as f:
+        with open(img_txt, 'r', encoding='utf-8') as f:
             img_list_set.append(f.readlines())
     # img
     img_list = []
@@ -110,7 +110,7 @@ def write_error_image(txt_path, image_path):
     :param image_path:
     :return:
     """
-    with open(txt_path, 'a') as f:
+    with open(txt_path, 'a', encoding='utf-8') as f:
         f.write(image_path + "\n")
     return True
 
@@ -125,7 +125,7 @@ def record_end_download_image(file_name, data):
     """
     # .__dict__
     json_str = json.dumps(data.__dict__)
-    with open(file_name, 'w') as f:
+    with open(file_name, 'w', encoding='utf-8') as f:
         f.write(json_str)
     return True
 
@@ -137,7 +137,7 @@ def look_end_download_image(file_name):
         return None
     else:
         # 打开JSON文件并读取其内容
-        with open(file_name, 'r') as f:
+        with open(file_name, 'r', encoding='utf-8') as f:
             data = json.load(f)
         return data
 
@@ -203,7 +203,7 @@ def record_download_finish_txt(content):
     if exists_txt_from_finish(content):
         return True
     file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
-    with open(file_name, 'a') as f:
+    with open(file_name, 'a', encoding='utf-8') as f:
         f.write(content + "\n")
     logger.success(f"download {content} finished, will write txt.")
     return True
@@ -219,10 +219,10 @@ def exists_txt_from_finish(content):
     # txt_list = []
     file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
     if not os.path.exists(file_name):
-        with open(file_name, 'w') as f:
+        with open(file_name, 'w', encoding='utf-8') as f:
             f.write("")
         return False
-    with open(file_name, 'r') as f:
+    with open(file_name, 'r', encoding='utf-8') as f:
         txt_list = f.readlines()
     for txt in txt_list:
         if content in txt:
@@ -274,7 +274,7 @@ def get_image_keyword():
     full_file_path = os.path.join(auto_spider_file_path, file_name)
     if not os.path.exists(full_file_path):
         # 如果文件不存在，创建它
-        with open(full_file_path, 'w') as f:
+        with open(full_file_path, 'w', encoding='utf-8') as f:
             logger.warning(f"{full_file_path} not exists, will create demo txt!")
     try:
         if len(txt_file_list) == 0:
@@ -323,10 +323,10 @@ def record_finish_keyword(keyword, cur_page):
     content = keyword + "," + str(cur_page)
     file_name = constants.data_path + file_name
     if not os.path.exists(file_name):
-        with open(file_name, 'w') as f:
+        with open(file_name, 'w', encoding='utf-8') as f:
             f.write("")
         return False
-    with open(file_name, "a") as f:
+    with open(file_name, "a", encoding='utf-8') as f:
         f.write(content + "\n")
     logger.success(f"record finish keyword {keyword}, page {cur_page}!")
 
@@ -345,10 +345,10 @@ def keyword_times(keyword, cur_page):
     content = keyword + "," + str(cur_page)
 
     if not os.path.exists(file_name):
-        with open(file_name, 'w') as f:
+        with open(file_name, 'w', encoding='utf-8') as f:
             f.write("")
         return False
-    with open(file_name, "r") as f:
+    with open(file_name, "r", encoding='utf-8') as f:
         keyword_list = f.readlines()
 
     for keyword_con in keyword_list:

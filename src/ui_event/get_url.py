@@ -36,7 +36,7 @@ def save_img_url(driver, key_word):
             _.endswith(key_word_pinyin + "_result_url.txt")]
     for cdds_path in cdds:
         logger.debug("save name: " + str(cdds_path))
-        with open(cdds_path, 'r') as f:
+        with open(cdds_path, 'r', encoding='utf-8') as f:
             for line in f:
                 url = line.strip()
                 if url and not constants.stop_spider_url_flag:

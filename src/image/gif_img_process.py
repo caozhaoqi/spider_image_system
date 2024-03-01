@@ -15,6 +15,6 @@ def read_gif_url(zip_txt_path, url_list):
     :return:
     """
     for url_detail in url_list:
-        with open(zip_txt_path, "a") as f:
+        with open(zip_txt_path, "a", encoding='utf-8') as f:
             f.write(url_detail + "\n")
     return True

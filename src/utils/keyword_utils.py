@@ -22,7 +22,7 @@ def exists_keyword_finish_txt(keyword):
     exists_keyword_flag = False
     # read download_finish_keyword.txt
     file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
-    with open(file_name, 'r') as f:
+    with open(file_name, 'r', encoding='utf-8') as f:
         txt_list = f.readlines()
 
     for txt in txt_list:

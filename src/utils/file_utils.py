@@ -25,14 +25,14 @@ def write_url_txt(path, file_name, url):
     :return:
     """
     try:
-        with open(path + file_name + ".txt", "a") as f:
+        with open(path + file_name + ".txt", "a", encoding='utf-8') as f:
             f.write(str(url) + "\n")
         f.close()
     except FileNotFoundError as ffe:
         logger.warning("dir not exists , will create dir. detail: " + str(ffe))
         if not os.path.exists(path):
             os.makedirs(path)
-        with open(path + file_name + ".txt", "a") as f:
+        with open(path + file_name + ".txt", "a", encoding='utf-8') as f:
             f.write(str(url) + "\n")
         f.close()
     except Exception as ue:
@@ -52,7 +52,7 @@ def filter_exists_images(key_word, image_url, txt_name):
     if txt_name == '_url':
         file_name = constants.data_path + "/href_url/" + key_word + "_url.txt"
         try:
-            with open(file_name, 'r') as f:
+            with open(file_name, 'r', encoding='utf-8') as f:
                 txt_url = f.readlines()
             return find_value(image_url + "\n", txt_url)
         except Exception as e:
@@ -61,7 +61,7 @@ def filter_exists_images(key_word, image_url, txt_name):
         file_name = constants.data_path + "/img_url/" + key_word + "_img.txt"
         image_url = image_url_re(image_url)
         try:
-            with open(file_name, 'r') as f:
+            with open(file_name, 'r', encoding='utf-8') as f:
                 txt_url = f.readlines()
             return find_value(image_url + "\n", txt_url)
         except Exception as e:
@@ -190,7 +190,7 @@ def contains_special_chars(input_string):
     :return:
     """
     # 使用正则表达式匹配非字母数字字符
-    pattern = r'[^a-zA-Z0-9]'
+    pattern = r'[^\u4e00-\u9fffa-zA-Z0-9]'
     # 检查字符串中是否存在匹配项
     return bool(re.search(pattern, input_string))
 
@@ -203,7 +203,7 @@ def replace_special_chars(input_string):
     :return:
     """
     # 使用正则表达式匹配非字母数字字符
-    pattern = r'[^a-zA-Z0-9]'
+    pattern = r'[^\u4e00-\u9fffa-zA-Z0-9]'
     # 使用下划线替换匹配到的特殊符号
     replaced_string = re.sub(pattern, '_', input_string)
     return replaced_string

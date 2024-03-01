@@ -249,7 +249,7 @@ def url_zip_all_process(zip_url_txt_list):
         new_file_name = os.path.join(txt_path, txt_file_name + "_result" + ext)
         remove_duplicates_from_txt(old_file_name, new_file_name)
         logger.success(f"remove duplicate file success: {zip_url_detail}")
-        with open(new_file_name, 'r') as f:
+        with open(new_file_name, 'r', encoding='utf-8') as f:
             zip_url_list = f.readlines()
         if len(zip_url_list) == 0:
             logger.warning(f"txt file null, name：{zip_url_detail}")
