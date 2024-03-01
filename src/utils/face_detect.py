@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import os.path
@@ -24,12 +23,37 @@ def face_detect(path, image_path):
     :param image_path: 图像文件的路径。
     :return: None
     """
+    file_path, file_name = os.path.split(image_path)
+    folder_name = find_img_result(image_path)
+
+    if folder_name is None:
+        folder_name = 'unknown_name'
+        logger.warning('folder_name is None, default use unknown_name.')
+
+    base_path = os.path.join(path, "face_detect_result")
+    base_path = os.path.join(base_path, folder_name)
+    img_file_path = os.path.join(base_path, "split_face")
+    img_file_path_line = os.path.join(base_path, "red_line")
+    img_file_name = os.path.join(img_file_path, file_name)
+    img_file_name_line = os.path.join(img_file_path_line, file_name)
+
+    if not os.path.exists(img_file_path):
+        os.makedirs(img_file_path)
+        logger.warning("face detect split_face dir not exists, create it.")
+    if not os.path.exists(img_file_path_line):
+        os.makedirs(img_file_path_line)
+        logger.warning(f"face detect red_line dir not exists, create it: {img_file_path}.")
+
+    # 只生成没有的
+    if os.path.exists(img_file_name) or os.path.exists(img_file_name_line):
+        logger.warning(f"{img_file_name} already exists, will skip!")
+        return True
     try:
         face_xml_path = get_data_file("xml_data/haarcascade_frontalface_default.xml")
-        eye_xml_path = get_data_file('xml_data/haarcascade_eye.xml')
+        # eye_xml_path = get_data_file('xml_data/haarcascade_eye.xml')
         # 加载分类器
         face_cascade = cv2.CascadeClassifier(face_xml_path)
-        eye_cascade = cv2.CascadeClassifier(eye_xml_path)
+        # eye_cascade = cv2.CascadeClassifier(eye_xml_path)
 
         # 读取图像
         img = cv2.imread(image_path)
@@ -43,23 +67,11 @@ def face_detect(path, image_path):
         # 检测人脸
         faces = face_cascade.detectMultiScale(gray, 1.1, 5)
 
-        for (x, y, w, h) in faces:
-            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            roi_gray = gray[y:y + h, x:x + w]
-            roi_color = img[y:y + h, x:x + w]
-
-            # 在人脸区域内检测眼睛
-            eyes = eye_cascade.detectMultiScale(roi_gray)
-            for (ex, ey, ew, eh) in eyes:
-                cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
-
-            # 将绘制了眼睛矩形框的人脸区域放回原图的正确位置
-            img[y:y + h, x:x + w] = roi_color
         if len(faces) == 0:
             # logger.warning(f"No faces detected:{image_path}")
             return
         else:
-            save_face(path, image_path, img, faces, gray)
+            save_face(img_file_name, img_file_name_line, img, faces)
         # 显示结果
         cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -69,39 +81,16 @@ def face_detect(path, image_path):
 
 
 @logger.catch
-def save_face(path, img_path, img, faces, gray):
+def save_face(img_file_name, img_file_name_line, img, faces):
     """
     
-    :param path:
+    :param img_file_name_line:
+    :param img_file_name:
     :param img:
-    :param gray:
     :param faces:
-    :param img_path:
-    :return: 
+    :return:
     """
-    file_path, file_name = os.path.split(img_path)
-    # subdir, _ = os.path.split(os.path.dirname(img_path))
-    # subdir_1, folder_name = os.path.split(subdir)
-    folder_name = find_img_result(img_path)
-    if folder_name is None:
-        folder_name = 'unknown_name'
-        logger.warning('folder_name is None, default use unknown_name.')
-    base_path = os.path.join(path, "face_detect_result")
-    base_path = os.path.join(base_path, folder_name)
-    img_file_path = os.path.join(base_path, "split_face")
-    img_file_path_line = os.path.join(base_path, "red_line")
-    if not os.path.exists(img_file_path):
-        os.makedirs(img_file_path)
-        logger.warning("face detect split_face dir not exists, create it.")
-    if not os.path.exists(img_file_path_line):
-        os.makedirs(img_file_path_line)
-        logger.warning(f"face detect red_line dir not exists, create it: {img_file_path}.")
-    img_file_name = os.path.join(img_file_path, file_name)
-    img_file_name_line = os.path.join(img_file_path_line, file_name)
-    # 只生成没有的
-    if os.path.exists(img_file_name) or os.path.exists(img_file_name_line):
-        logger.warning(f"{img_file_name} already exists, will skip!")
-        return True
+
     target_size = (200, 200)
 
     # Calculate the dimensions of the faces_image based on the number of faces and target size

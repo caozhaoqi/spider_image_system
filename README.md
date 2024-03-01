@@ -106,6 +106,7 @@ xdg-open https://www.baidu.com
 ```shell
 sudo apt-get update
 sudo apt-get install libgtk2.0-dev pkg-config
+run ./sh/run_face_detect.sh # (on ubuntu os)
 ```
 - Install third-party libraries for project
 ```shell
