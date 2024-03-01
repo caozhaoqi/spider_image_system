@@ -36,10 +36,10 @@ def download_all_zip(url, save_dir):
         save_path = os.path.join(save_dir, "gif_zip")  # 构建保存路径
         if not os.path.exists(save_path):  # 如果目录不存在则创建目录
             os.makedirs(save_path)
-        download_file__thread_obj = threading.Thread(
+        download_file_gif_thread_obj = threading.Thread(
             target=download_file_fun,
             args=(url, os.path.join(save_path, file_name),))
-        download_file__thread_obj.start()
+        download_file_gif_thread_obj.start()
         if constants.download_finish_flag:
             return True
         return False
@@ -246,7 +246,14 @@ def url_zip_all_process(zip_url_txt_list):
         txt_file_name, ext = os.path.splitext(zip_url_detail)
         # 去重
         old_file_name = os.path.join(txt_path, zip_url_detail)
-        new_file_name = os.path.join(txt_path, txt_file_name + "_result" + ext)
+        if "_result" not in txt_file_name:
+            new_file_name = os.path.join(txt_path, txt_file_name + "_result" + ext)
+            logger.warning(f"file: {new_file_name} not exists, create it.")
+
+        else:
+            new_file_name = txt_file_name + ext
+            # logger.warning(f"file: {new_file_name} already exists, not create.")
+        # if not os.path.exists(new_file_name):
         remove_duplicates_from_txt(old_file_name, new_file_name)
         logger.success(f"remove duplicate file success: {zip_url_detail}")
         with open(new_file_name, 'r', encoding='utf-8') as f:
