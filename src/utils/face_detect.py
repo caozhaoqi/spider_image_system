@@ -1,6 +1,8 @@
 import os
 import sys
 
+from log.log_record import log_record
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import os.path
@@ -47,7 +49,7 @@ def face_detect(path, image_path):
     # 只生成没有的
     if os.path.exists(img_file_name) or os.path.exists(img_file_name_line):
         logger.warning(f"{img_file_name} already exists, will skip!")
-        return True
+        return
     try:
         face_xml_path = get_data_file("xml_data/haarcascade_frontalface_default.xml")
         # eye_xml_path = get_data_file('xml_data/haarcascade_eye.xml')
@@ -66,7 +68,7 @@ def face_detect(path, image_path):
 
         # 检测人脸
         faces = face_cascade.detectMultiScale(gray, 1.1, 5)
-
+        # eye_cascade.detectMultiScale(gray, 1.1, 5)
         if len(faces) == 0:
             # logger.warning(f"No faces detected:{image_path}")
             return
@@ -78,6 +80,7 @@ def face_detect(path, image_path):
 
     except Exception as e:
         logger.error(f"An error occurred: {e}")
+        return
 
 
 @logger.catch
@@ -144,4 +147,5 @@ def face_detect_result(path):
 
 
 if __name__ == '__main__':
+    log_record()
     face_detect_result('../run/data/')

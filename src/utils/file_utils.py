@@ -308,14 +308,14 @@ def find_img_result(path):
     folder_name = None
     # 分割路径到各个部分
     os_name = sys.platform
-    parts = None
+    # parts = None
     if os_name == 'win32':
         # Windows系统
         parts = path.split("\\")
 
-    elif os_name == 'darwin':
-        # macOS系统
-        parts = path.split("/")
+    # elif os_name == 'darwin':
+    #     # macOS系统
+    #     parts = path.split("/")
 
     elif os_name.startswith('linux'):
         # Linux系统

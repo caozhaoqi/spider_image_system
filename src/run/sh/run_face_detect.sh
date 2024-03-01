@@ -1,6 +1,6 @@
 #!/bin/bash
 echo 'before start, uninstall opencv-python-headless, install opencv-python.'
-sudo pip uninstall opencv-python-headless
+sudo pip uninstall -y opencv-python-headless
 sudo pip install opencv-python -i https://pypi.tuna.tsinghua.edu.cn/simple
 echo 'success, start operate:'
 # 指定待搜索的文件名
@@ -14,7 +14,7 @@ if [ -n "$found_path" ]; then
     echo "find file path: $found_path"
     python3 "$found_path"
     echo 'execute finished! start uninstall opencv-python, start install opencv-python-headless.'
-    sudo pip uninstall opencv-python
+    sudo pip uninstall -y opencv-python
     sudo pip install opencv-python-headless -i https://pypi.tuna.tsinghua.edu.cn/simple
     echo 'operate finished!'
 else
