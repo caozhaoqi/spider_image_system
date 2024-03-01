@@ -183,6 +183,33 @@ def get_all_folders(directory):
 
 
 @logger.catch
+def contains_special_chars(input_string):
+    """
+
+    :param input_string:
+    :return:
+    """
+    # 使用正则表达式匹配非字母数字字符
+    pattern = r'[^a-zA-Z0-9]'
+    # 检查字符串中是否存在匹配项
+    return bool(re.search(pattern, input_string))
+
+
+@logger.catch
+def replace_special_chars(input_string):
+    """
+
+    :param input_string:
+    :return:
+    """
+    # 使用正则表达式匹配非字母数字字符
+    pattern = r'[^a-zA-Z0-9]'
+    # 使用下划线替换匹配到的特殊符号
+    replaced_string = re.sub(pattern, '_', input_string)
+    return replaced_string
+
+
+@logger.catch
 def convert_and_move_folder(folder_path):
     """
 
@@ -195,31 +222,47 @@ def convert_and_move_folder(folder_path):
         folder_name = os.path.basename(folder)
 
         if contains_chinese(folder_name):
-            # 将文件夹名称转换为拼音
-            pinyin_folder_name = ''.join(lazy_pinyin(folder_name, style=Style.TONE3))
-
-            # base_path = os.path.join(folder_path, folder)
-            # 创建新的拼音文件夹路径
-            pinyin_folder_path = os.path.join(folder_path, pinyin_folder_name)
-
-            # 检查新文件夹是否已存在
-            if os.path.exists(pinyin_folder_path):
-                logger.warning(f"Folder '{pinyin_folder_name}' already exists. Moving content to the existing folder.")
-                # 移动文件夹内容到已存在的文件夹
-                move_content_to_existing_folder(os.path.join(folder_path, folder), pinyin_folder_path)
-            else:
-                # 如果新文件夹不存在，则创建它，并移动文件夹内容到新文件夹
-                os.makedirs(pinyin_folder_path)
-                move_sou_dir = os.path.join(folder_path, folder)
-                for img in os.listdir(move_sou_dir):
-                    src_path = os.path.join(move_sou_dir, img)
-                    shutil.move(src_path, pinyin_folder_path)
-                # if "master" not in folder_name or "images" not in folder_name:
-                logger.success(
-                    f"Folder '{folder_name}' has been converted to '{pinyin_folder_name}' and moved successfully.")
+            pinyin_convert(folder_name, folder_path, folder, True)
+        elif contains_special_chars(folder_name):
+            pinyin_convert(folder_name, folder_path, folder, False)
 
     constants.convert_folder_name_flag = False
     logger.success("all folder convert success!")
+
+
+@logger.catch
+def pinyin_convert(folder_name, folder_path, folder, pinyin_flag):
+    """
+
+    :param pinyin_flag: 是否需要转换中文为拼音
+    :param folder_name:
+    :param folder_path:
+    :param folder:
+    :return:
+    """
+    if pinyin_flag:
+        # 将文件夹名称转换为拼音
+        pinyin_folder_name = ''.join(lazy_pinyin(folder_name, style=Style.TONE3))
+    else:
+        pinyin_folder_name = replace_special_chars(folder_name)
+    # 创建新的拼音文件夹路径
+    pinyin_folder_path = os.path.join(folder_path, pinyin_folder_name)
+
+    # 检查新文件夹是否已存在
+    if os.path.exists(pinyin_folder_path):
+        logger.warning(f"Folder '{pinyin_folder_name}' already exists. Moving content to the existing folder.")
+        # 移动文件夹内容到已存在的文件夹
+        move_content_to_existing_folder(os.path.join(folder_path, folder), pinyin_folder_path)
+    else:
+        # 如果新文件夹不存在，则创建它，并移动文件夹内容到新文件夹
+        os.makedirs(pinyin_folder_path)
+        move_sou_dir = os.path.join(folder_path, folder)
+        for img in os.listdir(move_sou_dir):
+            src_path = os.path.join(move_sou_dir, img)
+            shutil.move(src_path, pinyin_folder_path)
+        # if "master" not in folder_name or "images" not in folder_name:
+        logger.success(
+            f"Folder '{folder_name}' has been converted to '{pinyin_folder_name}' and moved successfully.")
 
 
 @logger.catch
@@ -280,6 +323,7 @@ def find_img_result(path):
 
     else:
         logger.error("unknown error!")
+        return None
 
     # 从后往前遍历，找到第一个包含'_img_result'的文件夹名
     for i in range(len(parts) - 1, -1, -1):

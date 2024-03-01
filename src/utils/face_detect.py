@@ -95,7 +95,7 @@ def save_face(path, img_path, img, faces, gray):
         logger.warning("face detect split_face dir not exists, create it.")
     if not os.path.exists(img_file_path_line):
         os.makedirs(img_file_path_line)
-        logger.warning("face detect red_line dir not exists, create it.")
+        logger.warning(f"face detect red_line dir not exists, create it: {img_file_path}.")
     img_file_name = os.path.join(img_file_path, file_name)
     img_file_name_line = os.path.join(img_file_path_line, file_name)
     # 只生成没有的
