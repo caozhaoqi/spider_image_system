@@ -2,6 +2,7 @@ import os
 import sys
 
 from image.img_switch import find_images, image_exists
+from utils.file_download import send_request
 from utils.file_utils import remove_duplicates_from_txt
 from utils.http_tools import image_url_re
 
@@ -37,7 +38,7 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
         image_exists_flag = image_exists(image_name, now_image_list)
     if not image_exists_flag:
         try:
-            response = requests.get(url, stream=True)
+            response = send_request(url)
             if response.status_code == 200:
                 with open(filename, 'wb') as f:
                     f.write(response.content)

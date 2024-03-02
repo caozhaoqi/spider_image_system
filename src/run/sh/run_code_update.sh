@@ -35,18 +35,19 @@ chmod -R 777 "$folder_name/spider_image_system"
 cd "$folder_name/spider_image_system/src/run" || exit
 
 # 将源文件夹中的数据移动到当前目录
-if [ -d "$src_name/spider_image_system/src/run/data" ]; then
-    mv "./$src_name/spider_image_system/src/run/data" "./$folder_name/spider_image_system/src/run"
-else
-    echo "Data directory not found in source folder: $src_name/spider_image_system/src/run/data"
-    exit 1
-fi
+#if [ -d "$src_name/spider_image_system/src/run/data" ]; then
+mv "$src_name/spider_image_system/src/run/data" "$folder_name/spider_image_system/src/run"
+#else
+echo 'already move to new dir.'
+#    echo "Data directory not found in source folder: $src_name/spider_image_system/src/run/data"
+#    exit 1
+#fi
 
 # 检查移动操作是否成功
-if [ $? -ne 0 ]; then
-    echo "Failed to move data directory."
-    exit 1
-fi
+#if [ $? -ne 0 ]; then
+#    echo "Failed to move data directory."
+#    exit 1
+#fi
 
 # 执行run.sh脚本
 ./sh/run.sh
