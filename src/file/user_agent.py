@@ -43,7 +43,7 @@ def create_agent_init(user_agent_file_path):
     :return:
     """
     with open(user_agent_file_path, 'w', encoding='utf-8') as f:
-        if os.path.exists(ini_path):
+        if not os.path.exists(ini_path):
             os.makedirs(ini_path)
             logger.warning("base config not exists, will create.")
         for agent_detail in user_agents:

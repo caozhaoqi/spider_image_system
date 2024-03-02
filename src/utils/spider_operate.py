@@ -1,6 +1,6 @@
 import os
+import random
 import sys
-
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -80,6 +80,8 @@ for (var i = 0; i < buttons.length; i++) {
 """)
     if button:
         button.click()
+        time.sleep(detail_delta_time)
+        random_action(driver)
         return True
     return False
 
@@ -101,3 +103,40 @@ def slider_page_down(driver):
     actions.send_keys(Keys.PAGE_DOWN).perform()
     time.sleep(detail_delta_time)
     logger.info(f"slider page down! page height {page_height}px")
+    random_action(driver)
+    #
+
+
+@logger.catch
+def random_action(driver):
+    """
+
+    :param driver:
+    :return:
+    """
+    # # 假设 driver 已经初始化
+
+    # 获取页面高度
+    page_height = driver.execute_script("return document.body.scrollHeight")
+
+    # 定义一些随机时间和动作
+    random_delay = random.randint(1, 5)  # 随机延迟1到3秒
+    random_keys = [Keys.END, Keys.PAGE_DOWN, Keys.HOME]  # 可能的按键列表
+    random_key_order = random.sample(random_keys, len(random_keys))  # 随机选择按键顺序
+    random_key_repeats = random.randint(1, 5)  # 每个按键随机重复1到3次
+
+    # 执行随机动作
+    actions = ActionChains(driver)
+    for key in random_key_order:
+        for _ in range(random_key_repeats):
+            actions.send_keys(key).perform()
+            time.sleep(random.random() * random_delay)  # 在每个动作之间添加随机延迟
+
+    # 执行最终的页面滚动和延迟
+    time.sleep(random.random() * random_delay)
+    actions.send_keys(Keys.HOME).perform()
+    actions.send_keys(Keys.PAGE_DOWN).perform()
+    time.sleep(random.random() * random_delay)
+
+    # 记录日志
+    logger.info(f"Random slider page down! page height {page_height}px")
