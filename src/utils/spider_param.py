@@ -1,4 +1,5 @@
 import os
+import random
 import sys
 
 
@@ -18,6 +19,7 @@ from selenium import webdriver
 
 from ui_event.get_url import open_look_all, slider_page_down, filter_not_use
 from utils.http_tools import image_url_re
+from file.user_agent import read_user_agent
 
 
 @logger.catch
@@ -69,6 +71,14 @@ def spider_param_config(key_word):
     options.add_argument("--auto-open-devtools-for-tabs")
     # 接受不安全证书
     options.add_argument("--ignore-certificate-errors")
+    # 模拟不同浏览器访问页面 减少被封风险
+    user_agents = read_user_agent()
+    # 随机添加user-agent
+    cur_user_agents = random.choice(user_agents)
+    # add user-agent
+    options.add_argument(
+        f"user-agent={cur_user_agents}")
+    logger.info(f"current use user-agent: {cur_user_agents}")
     if proxy_flag == 'True':
         options.set_capability("proxy", proxy)
         logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
