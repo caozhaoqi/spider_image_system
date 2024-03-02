@@ -33,7 +33,7 @@ def send_request(url, timeout=20):
     while retries_count < retries.total:
         try:
             # 增加日志记录重试次数和开始时间
-            logger.info(f"Attempting request to {url} (retry {retries_count + 1}/{retries.total})")
+            # logger.info(f"Attempting request to {url} (retry {retries_count + 1}/{retries.total})")
             start_time = time.time()
 
             response = session.get(url, stream=True, timeout=timeout)
@@ -41,8 +41,8 @@ def send_request(url, timeout=20):
             # 检查是否超时
             elapsed_time = time.time() - start_time
             if elapsed_time >= timeout:
-                logger.warning(
-                    f"Request to {url} took too long ({elapsed_time} seconds >= {timeout} seconds) and was cancelled.")
+                # logger.warning( f"Request to {url} took too long ({elapsed_time} seconds >= {timeout} seconds) and
+                # was cancelled.")
                 continue  # 如果实际请求时间超过了设定的超时时间，则继续重试
 
             response.raise_for_status()  # 如果HTTP请求返回了不成功的状态码，将引发HTTPError异常
