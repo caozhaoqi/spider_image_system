@@ -22,9 +22,13 @@ def exists_keyword_finish_txt(keyword):
     exists_keyword_flag = False
     # read download_finish_keyword.txt
     file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
-    with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
-        txt_list = f.readlines()
 
+    try:
+        with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
+            txt_list = f.readlines()
+    except Exception as e:
+        logger.warning(f"unknown error, detail: {e}")
+        return False
     for txt in txt_list:
         if txt_keyword in txt:
             exists_keyword_flag = True

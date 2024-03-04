@@ -20,7 +20,7 @@ from pypinyin import lazy_pinyin, Style
 
 from run import constants
 from run.constants import detail_delta_time, search_delta_time, s1_url, target_url, s2_url, data_path, \
-    spider_images_max_count
+    spider_images_max_count, allow_replace_domain_flag
 
 
 @logger.catch
@@ -83,8 +83,9 @@ def artwork_to_image(key_word_pinyin, driver, url):
                 continue
             driver.execute_script("return arguments[0].src;", image_element)
             image_filename = os.path.basename(image_url)  # 获取图片文件名
-            image_url = image_url.replace(s1_url, target_url)
-            image_url = image_url.replace(s2_url, target_url)
+            if allow_replace_domain_flag:
+                image_url = image_url.replace(s1_url, target_url)
+                image_url = image_url.replace(s2_url, target_url)
             constants.spider_images_current_count += 1
             # 已获取img 数量自增 仅在此统计
             write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)

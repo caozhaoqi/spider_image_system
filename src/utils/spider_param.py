@@ -2,7 +2,6 @@ import os
 import random
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import time
@@ -14,7 +13,7 @@ from selenium.webdriver.common.by import By
 from image.img_switch import find_images, image_exists
 from image.spider_gif_url import spider_gif_images
 from run import constants
-from run.constants import proxy_flag, r18_mode, visit_url, all_show, detail_delta_time
+from run.constants import proxy_flag, r18_mode, visit_url, all_show, detail_delta_time, allow_replace_domain_flag
 from selenium import webdriver
 
 from ui_event.get_url import open_look_all, slider_page_down, filter_not_use
@@ -71,6 +70,8 @@ def spider_param_config(key_word):
     options.add_argument("--auto-open-devtools-for-tabs")
     # 接受不安全证书
     options.add_argument("--ignore-certificate-errors")
+    # 设置日志偏好，禁用所有日志
+    options = disabled_log_browser(options)
     # 模拟不同浏览器访问页面 减少被封风险
     user_agents = read_user_agent()
     if not user_agents:
@@ -95,7 +96,10 @@ def spider_param_config(key_word):
     mode = ''
     if r18_mode == 'True':
         mode = 'mode=r18&'
-        logger.info("current start use r18 mode!")
+        logger.warning("current start use r18 mode!")
+
+    if allow_replace_domain_flag:
+        logger.warning(f"start replace image domain, flag value: {allow_replace_domain_flag}")
 
     cur_page = 1
     if is_keyword_num(driver, key_word):
@@ -177,3 +181,19 @@ def artwork_single_image(key_word_pinyin, driver, url):
             image_url_list.append(image_url)
             logger.debug(f"single pid spider, save: {image_url}.")
     return image_url_list
+
+
+@logger.catch
+def disabled_log_browser(options):
+    """
+
+    """
+    options.logging_prefs = {'performance': 'DISABLED', 'browser': 'DISABLED'}
+    # 尝试减少日志输出的命令行参数
+    options.add_argument("--log-level=3")  # 设置日志级别为最低（0-3），3表示最少日志
+    options.add_argument("--disable-gpu")  # 在无头模式下通常使用
+    options.add_argument("--silent")  # 尝试使Chrome更安静，但此参数可能不被所有版本支持
+
+    # 如果你确定不需要性能日志，也可以尝试禁用它
+    options.add_argument("--disable-performance-logging")
+    return options

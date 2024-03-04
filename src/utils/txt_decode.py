@@ -32,7 +32,7 @@ def convert_txt(input_file_path, output_file_path):
             # if line_num not in corrupt_lines:
             cleaned_file.write(line)
 
-    logger.debug(f"already：cleaned_{output_file_path}")
+    logger.debug(f"already：cleaned: {output_file_path}")
 
 
 @logger.catch

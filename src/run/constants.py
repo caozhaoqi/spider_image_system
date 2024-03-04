@@ -29,6 +29,8 @@ convert_folder_name_flag = False
 online_show_image = False
 # firewall_flag
 firewall_flag = False
+# allow re place image domain
+allow_replace_domain_flag = read_ini_config(ini_file_path, "spider_config", "allow_replace_domain_flag")
 # fire_wall_delay_time
 fire_wall_delay_time = int(read_ini_config(ini_file_path, "spider_config", "fire_wall_delay_time"))
 # download image fail retry times
