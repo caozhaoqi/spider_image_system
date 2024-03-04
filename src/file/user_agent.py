@@ -6,8 +6,8 @@ from loguru import logger
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-ini_path = os.path.join(os.getcwd(), f'./config/')
-agent_file_path = os.path.join(os.getcwd(), f'./config/user-agent.txt')
+ini_path = os.path.join(os.getcwd(), 'config')
+agent_file_path = os.path.join(ini_path, 'user-agent.txt')
 
 user_agents = [
     # 这里可以添加多个常见的User-Agent字符串
@@ -42,7 +42,7 @@ def create_agent_init(user_agent_file_path):
     :param user_agent_file_path:
     :return:
     """
-    with open(user_agent_file_path, 'w', encoding='utf-8') as f:
+    with open(user_agent_file_path, 'w', encoding='utf-8', errors='replace') as f:
         if not os.path.exists(ini_path):
             os.makedirs(ini_path)
             logger.warning("base config not exists, will create.")
@@ -60,6 +60,6 @@ def read_user_agent():
     # user_agents_list = []
     if not os.path.exists(agent_file_path):
         create_agent_init(agent_file_path)
-    with open(agent_file_path, 'r', encoding='utf-8') as f:
+    with open(agent_file_path, 'r', encoding='utf-8', errors='replace') as f:
         user_agents_list = f.readlines()
     return user_agents_list

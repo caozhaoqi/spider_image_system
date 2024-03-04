@@ -22,7 +22,7 @@ def exists_keyword_finish_txt(keyword):
     exists_keyword_flag = False
     # read download_finish_keyword.txt
     file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
-    with open(file_name, 'r', encoding='utf-8') as f:
+    with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
         txt_list = f.readlines()
 
     for txt in txt_list:
@@ -35,7 +35,7 @@ def exists_keyword_finish_txt(keyword):
         filtered_txt_list = [txt for txt in txt_list if txt_keyword not in txt]
 
         # 将新列表写回文件，覆盖原内容
-        with open(file_name, 'w', encoding='utf-8') as f:
+        with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
             f.writelines(filtered_txt_list)
         logger.debug(f"already delete keyword_img: {txt_keyword} download_finish_txt.txt!")
         return True

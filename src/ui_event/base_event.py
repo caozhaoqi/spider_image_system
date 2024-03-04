@@ -11,6 +11,7 @@ from ui_event.log_analyze_dialog import LogAnalyzeHistogram
 from ui_event.sys_info_ui import SystemMonitor
 from utils.face_detect import face_detect_result
 from utils.file_utils import convert_and_move_folder
+from utils.txt_decode import scan_txt_file_all
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -304,6 +305,16 @@ def test_button_event():
     """
     # ...
     # show_message("test", "test info")
+
+
+@logger.catch()
+def encoding_tools_convert():
+    """
+    encoding_tools_convert
+    :return:
+    """
+    scan_txt_file_all(constants.data_path)
+    logger.success("convert point txt finish!")
 
 
 @logger.catch

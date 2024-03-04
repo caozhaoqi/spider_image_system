@@ -48,7 +48,7 @@ def analyze_log_errors(file_path, error_pattern, detail_pattern):
     error_counts = Counter()
     detail_causes = {}
 
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, 'r', encoding='utf-8', errors='replace') as file:
         for line in file:
             if re.search(error_pattern, line):
                 # 匹配到错误行，增加错误计数
