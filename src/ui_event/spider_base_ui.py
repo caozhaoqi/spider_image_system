@@ -3,14 +3,14 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLineEdit, QPushButton, QHBoxLayout, \
-    QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider, QListWidget, QSizePolicy, QListView
+    QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider, QListWidget, QSizePolicy
 from loguru import logger
 
 from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, genshin_impact_view, \
-    star_rail_view, test_button_event, log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert
+    log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert
 
 
 @logger.catch
@@ -21,7 +21,7 @@ def base_menu(self):
     """
     self.menu_bar = QMenuBar()
     self.image_menu = QMenu('图像', self.menu_bar)
-    self.start_spider_action = QAction('开始自动爬取', self.image_menu)
+    self.start_spider_action = QAction('自动爬取', self.image_menu)
     self.start_spider_action.triggered.connect(lambda: auto_start_spider_image(self))
     self.stop_spider_action = QAction('停止爬取', self.image_menu)
     self.stop_spider_action.triggered.connect(lambda: stop_spider_image())
@@ -60,34 +60,34 @@ def base_menu(self):
     # self.video_menu.addAction(self.video_other_action)
 
     self.tools_menu = QMenu('工具', self.menu_bar)
-    self.genshin_impact = QAction('原神工具(等待完善)', self.tools_menu)
-    self.star_rail = QAction('星铁工具(等待开发)', self.tools_menu)
+    self.genshin_impact = QAction('原神工具(内测)', self.tools_menu)
+    # self.star_rail = QAction('星铁工具(等待开发)', self.tools_menu)
     self.log_analyze = QAction('日志分析', self.tools_menu)
     self.folder_name = QAction('名称转换', self.tools_menu)
     self.encoding_tools = QAction('编码转换', self.tools_menu)
-    self.test_button = QAction('测试工具', self.tools_menu)
+    # self.test_button = QAction('测试工具', self.tools_menu)
     self.genshin_impact.triggered.connect(lambda: genshin_impact_view())
-    self.star_rail.triggered.connect(lambda: star_rail_view())
+    # self.star_rail.triggered.connect(lambda: star_rail_view())
     self.log_analyze.triggered.connect(lambda: log_analyze_ui())
     self.folder_name.triggered.connect(lambda: convert_folder_name())
     self.encoding_tools.triggered.connect(lambda: encoding_tools_convert())
-    self.test_button.triggered.connect(lambda: test_button_event())
+    # self.test_button.triggered.connect(lambda: test_button_event())
     self.tools_menu.addAction(self.genshin_impact)
-    self.tools_menu.addAction(self.star_rail)
+    # self.tools_menu.addAction(self.star_rail)
     self.tools_menu.addAction(self.log_analyze)
     self.tools_menu.addAction(self.folder_name)
     self.tools_menu.addAction(self.encoding_tools)
-    self.tools_menu.addAction(self.test_button)
+    # self.tools_menu.addAction(self.test_button)
 
     self.settings_menu = QMenu('设置', self.menu_bar)
     self.edit_settings_action = QAction('编辑配置', self.settings_menu)
     self.edit_settings_action.triggered.connect(lambda: edit_config_msg())
     self.settings_menu.addAction(self.edit_settings_action)
-    self.help_menu = QMenu('帮助', self.menu_bar)
+    self.help_menu = QMenu('帮助信息', self.menu_bar)
     self.help_web = QAction('访问网站', self.help_menu)
     self.help_menu.addAction(self.help_web)
     self.help_web.triggered.connect(lambda: visit_web())
-    self.about_menu = QMenu('关于', self.menu_bar)
+    self.about_menu = QMenu('关于软件', self.menu_bar)
     self.about_msg = QAction('版本信息', self.about_menu)
     self.about_msg.triggered.connect(lambda: about_message_lookup())
     self.about_menu.addAction(self.about_msg)
