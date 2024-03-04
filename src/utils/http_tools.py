@@ -1,6 +1,8 @@
 import os
 import sys
+import urllib
 
+import urllib3.util
 from loguru import logger
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -25,22 +27,24 @@ def is_valid_url(http_url):
 @logger.catch
 def image_url_re(image_url):
     """
-
+    filename = urllib.parse.urlsplit(url).path.split('/')[-1]
+    提取link中的图片name
     :param image_url:
     :return:
     """
     import re
 
-    pattern = r"(?<=/)(\d+_p\d{1}_master\d{4}\.jpg|png|gif)$"
-    match = re.search(pattern, image_url)
-
-    if match:
-        filename = match.group()
-        # logger.info(filename)
-        return filename
+    result_url = image_url.split('/')[-1]
+    if result_url.endswith('.jpg') or result_url.endswith('.png'):
+        return result_url
     else:
-        logger.warning("re No match found image name, return source url name.")
-        return image_url
+        result_url = re.search(r'/([^/?#]+)$', image_url).group(1)
+        if result_url.endswith('.jpg') or result_url.endswith('.png'):
+            return result_url
+        else:
+            logger.warning(f"parser error, return source url:{image_url}")
+            return image_url
+
 
 
 if __name__ == '__main__':

@@ -64,7 +64,7 @@ def artwork_to_image(key_word_pinyin, driver, url):
         constants.firewall_flag = True
         return False
     if open_look_all(driver):
-        logger.success(f"click look all success! pid: {url[-9:]}")  # 116299335
+        logger.success(f"click look all {key_word_pinyin} success! pid: {url[-9:]}")  # 116299335
     # 抓取动图link
     if constants.spider_mode == 'manual':
         # 手动模式滑动页面 自动模式不滑动

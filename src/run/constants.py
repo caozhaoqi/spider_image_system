@@ -31,6 +31,10 @@ online_show_image = False
 firewall_flag = False
 # fire_wall_delay_time
 fire_wall_delay_time = int(read_ini_config(ini_file_path, "spider_config", "fire_wall_delay_time"))
+# download image fail retry times
+download_img_retry_times = int(read_ini_config(ini_file_path, "spider_config", "download_img_retry_times"))
+# retry time out
+download_img_time_out = int(read_ini_config(ini_file_path, "spider_config", "download_img_time_out"))
 # spider mode
 spider_mode = 'manual'
 # process image
@@ -87,6 +91,6 @@ proxy_server_port = int(read_ini_config(ini_file_path, "spider_config", "proxy_s
 search_delta_time = int(read_ini_config(ini_file_path, "spider_config", "search_delta_time"))
 # 详情页等待时间
 detail_delta_time = int(read_ini_config(ini_file_path, "spider_config", "detail_delta_time"))
-sis_server_version = "v1.0.9-alpha.1.240302"
-build_date = "2024-03-02 18:00"
-publish_date = "2024-03-02 18:30"
+sis_server_version = "v1.0.9-alpha.2.240304"
+build_date = "2024-03-04 18:00"
+publish_date = "2024-03-04 18:30"

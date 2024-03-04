@@ -354,6 +354,8 @@ def keyword_times(keyword, cur_page):
     for keyword_con in keyword_list:
         if content in keyword_con:
             same_count += 1
+    if not same_count:
+        return 0
     return same_count
 
 

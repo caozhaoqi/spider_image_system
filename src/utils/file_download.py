@@ -6,8 +6,10 @@ from urllib3.util.retry import Retry
 import time
 
 # 设置重试策略
+from run.constants import download_img_retry_times, download_img_time_out
+
 retries = Retry(
-    total=5,  # 总重试次数
+    total=download_img_retry_times,  # 总重试次数
     backoff_factor=0.5,  # 重试间隔的倍数，逐渐增加
     status_forcelist=[500, 502, 503, 504, 408, 429],  # 遇到这些HTTP状态码时重试
     # method_whitelist=["HEAD", "GET", "OPTIONS"]  # 只对这些方法重试
@@ -22,7 +24,7 @@ session.mount('http://', adapter)
 session.mount('https://', adapter)
 
 
-def send_request(url, timeout=20):
+def send_request(url, timeout=download_img_time_out):
     """
     发送请求并处理重试和错误
     :param url: 请求的URL

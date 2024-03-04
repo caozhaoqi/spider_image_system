@@ -58,8 +58,8 @@ def read_user_agent():
     :return:
     """
     # user_agents_list = []
+    if not os.path.exists(agent_file_path):
+        create_agent_init(agent_file_path)
     with open(agent_file_path, 'r', encoding='utf-8') as f:
-        if not os.path.exists(agent_file_path):
-            create_agent_init(agent_file_path)
         user_agents_list = f.readlines()
     return user_agents_list
