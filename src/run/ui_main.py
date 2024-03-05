@@ -1,6 +1,7 @@
 import os
 import sys
 
+from utils.os_environment_check import detect_installed
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -25,7 +26,7 @@ def ui_paint():
 
 @logger.catch
 def run_main_py():
-    if log_record() and check_version():
+    if log_record() and check_version() and detect_installed():
         ui_paint()
 
 
