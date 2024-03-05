@@ -2,6 +2,8 @@ import os
 import random
 import sys
 
+from selenium.webdriver.chrome.service import Service
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import time
@@ -92,7 +94,16 @@ def spider_param_config(key_word):
         options.set_capability("proxy", proxy)
         logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
 
-    driver = webdriver.Chrome(options=options)
+    if constants.chrome_path != 'None':
+        ser = Service()
+        ser.path = constants.chrome_path
+        # 连接Edge浏览器
+        driver = webdriver.Chrome(service=ser, options=options)
+        logger.warning("user self define chrome driver exe!")
+    else:
+        driver = webdriver.Chrome(options=options)
+        logger.info("use system default web driver!")
+
     mode = ''
     if r18_mode == 'True':
         mode = 'mode=r18&'

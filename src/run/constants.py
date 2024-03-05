@@ -49,6 +49,8 @@ download_video_link_flag = False
 download_gif_zip_flag = False
 # unzip_generate_video_flag
 unzip_generate_video_flag = False
+#
+chrome_path = read_ini_config(ini_file_path, "spider_config", "chrome_path")
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
 # 输出 video 宽度

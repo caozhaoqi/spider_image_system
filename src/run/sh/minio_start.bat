@@ -1,0 +1,1 @@
+minio.exe server  ./ --console-address "0.0.0.0:9000"  --address "0.0.0.0:9001"
