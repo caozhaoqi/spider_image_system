@@ -2,11 +2,6 @@ import minio
 from loguru import logger
 from minio import Minio
 import os
-
-from image.img_switch import folder_path, show_filter_image
-
-
-# from minio.error import ResponseError
 from run import constants
 
 
@@ -88,8 +83,11 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
             # 对象不存在
             # print("对象不存在")
             if s3_e.code == 'NoSuchKey':
-                client.fput_object(bucket_name, remote_file_path, file)
-                logger.success(f"Uploaded: {remote_file_path}")
+                try:
+                    client.fput_object(bucket_name, remote_file_path, file)
+                    logger.success(f"Uploaded: {remote_file_path}")
+                except Exception as e:
+                    logger.error(f"unknown error, detail: {e}")
             else:
                 # 处理其他可能的异常
                 logger.error("unknown error! detail:", s3_e)

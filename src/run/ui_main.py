@@ -1,8 +1,6 @@
 import os
 import sys
 
-from utils.os_environment_check import detect_installed
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from PyQt5.QtWidgets import QApplication
