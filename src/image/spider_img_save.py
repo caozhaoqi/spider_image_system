@@ -5,6 +5,7 @@ from image.img_switch import find_images, image_exists
 from utils.file_download import send_request
 from utils.file_utils import remove_duplicates_from_txt
 from utils.http_tools import image_url_re
+from utils.minio_file import upload_image
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -139,6 +140,9 @@ def download_img_txt(self):
             logger.warning("unknown error! detail: " + str(e))
         cdds_index += 1
         #     记录已下载完成txt
+        if constants.upload_minio_image_Flag == 'True':
+            logger.debug("already start upload image, will start upload!")
+            upload_image(constants.data_path)
         if not constants.stop_download_image_flag:
             # 非当前停止txt记录
             record_download_finish_txt(cdds_path)

@@ -2,13 +2,13 @@
 exe execute os environment
 """
 import os
-import platform
-import subprocess
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from loguru import logger
 from selenium import webdriver
 
-# 定义下载和安装函数，这些函数将根据平台进行调整
 from selenium.webdriver.chrome.service import Service
 
 from run import constants
@@ -27,24 +27,11 @@ def detect_installed():
     if not is_chromedriver_installed():
         logger.error("you hasn't install selenium for chrome explore or chrome webdriver, please visit website "
                      "download.")
-        logger.warning("visit: https://googlechromelabs.github.io/chrome-for-testing/#stable")
+        logger.warning("please visit web url: https://googlechromelabs.github.io/chrome-for-testing/#stable select "
+                       "correct version to download, finish config download webdriver.exe path to chrome_path from "
+                       "./config/config.ini file.")
         return False
-    # logger.info("detect finish.")
     return True
-
-
-# 检测selenium和chromedriver是否已安装的函数
-# @logger.catch
-# def is_selenium_installed():
-#     """
-#
-#     :return:
-#     """
-#     try:
-#         import selenium  # 尝试导入selenium库
-#         return True
-#     except ImportError:
-#         return False
 
 
 @logger.catch
@@ -76,6 +63,6 @@ def is_chromedriver_installed():
         logger.error("Error message:", str(e))
         return False
 
-
-if __name__ == '__main__':
-    detect_installed()
+#
+# if __name__ == '__main__':
+#     detect_installed()

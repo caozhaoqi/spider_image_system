@@ -90,7 +90,8 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "fire_wall_delay_time", "300")
     conf.set("spider_config", "download_img_retry_times", "2")
     conf.set("spider_config", "download_img_time_out", "10")
-    conf.set("spider_config", "chrome_path", 'None')
+    conf.set("spider_config", "chrome_path", "None")
+    conf.set("spider_config", "upload_minio_image_Flag", "False")
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
     logger.info("config write finished, read test, current use visit url: " + conf.get("spider_config", "visit_url"))
@@ -167,7 +168,7 @@ def check_ini_config():
         conf.set("spider_config", "download_img_retry_times", "2")
         conf.set("spider_config", "download_img_time_out", "10")
         conf.set("spider_config", "chrome_path", 'None')
-
+        conf.set("spider_config", "upload_minio_image_Flag", "False")
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
         logger.info("config write finished, read test: " + conf.get("spider_config", "visit_url"))
