@@ -5,6 +5,7 @@
 - issue bug修复
 - chrome driver path 自定义
 - os selenium spider 环境检测
+- upload image and log to minio server
 
 ## v1.0.9-alpha.2.240304
 ### 2024/3/4

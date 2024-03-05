@@ -1,9 +1,33 @@
+import minio
 from loguru import logger
 from minio import Minio
-# from minio.error import
 import os
 
-from image.img_switch import image_files
+from image.img_switch import folder_path, show_filter_image
+
+
+# from minio.error import ResponseError
+
+@logger.catch
+def find_upload_file(directory):
+    """
+    find image from current dir data and log
+    :param directory:
+    :return:
+    """
+    image_files_lists = []
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        logger.info("dir not exists, create dir: " + str(directory))
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if "img_url" in root or "according_pid_download_image" in root:
+                if file.endswith('.jpg') or file.endswith('.png') or file.endswith('.log'):
+                    image_files_lists.append(os.path.join(root, file))
+    return image_files_lists
+
+
+image_files_upload = show_filter_image(find_upload_file(folder_path))
 
 
 @logger.catch
@@ -33,23 +57,23 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
         logger.error(f"Error: {err}")
         return False
 
-        # 遍历文件夹中的图片文件
-        # for root, dirs, files in os.walk(local_folder_path):
-    for file in image_files:
-        # if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.log')):
-        # local_file_path = file
+    for file in image_files_upload:
 
-        # 将本地文件路径转换为使用正斜杠的路径，并确保它是相对于local_folder_path的
         relative_path = os.path.relpath(file, local_folder_path)
-        # 将反斜杠替换为正斜杠
         remote_file_path = os.path.join(bucket_name, relative_path).replace('\\', '/')
-        # 上传文件到MinIO
         try:
-            client.fput_object(bucket_name, remote_file_path, file)
-            logger.success(f"Uploaded: {file} to {remote_file_path}")
-        except Exception as err:
-            logger.error(f"Error uploading {file}: {err}")
-            return False
+            client.stat_object(bucket_name, remote_file_path)
+            logger.warning(f"already exists, will skip: {remote_file_path}")
+        except minio.error.S3Error as s3_e:
+            # 对象不存在
+            # print("对象不存在")
+            if s3_e.code == 'NoSuchKey':
+                client.fput_object(bucket_name, remote_file_path, file)
+                logger.success(f"Uploaded: {remote_file_path}")
+            else:
+                # 处理其他可能的异常
+                logger.error("unknown error! detail:", s3_e)
+                return False
     return True
 
 

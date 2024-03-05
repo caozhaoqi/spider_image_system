@@ -71,6 +71,8 @@ zoom_out_scale = float(read_ini_config(ini_file_path, "spider_config", "zoom_out
 sis_log_level = read_ini_config(ini_file_path, "spider_config", "sis_log_level")
 # 数据存储路径
 data_path = os.path.realpath('./data')
+# 基础路径
+basic_path = os.path.realpath('./')
 # online img list
 online_img_list = scan_img_txt(data_path)
 # online cur show img index
