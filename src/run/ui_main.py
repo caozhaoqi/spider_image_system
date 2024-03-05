@@ -26,7 +26,7 @@ def ui_paint():
 
 @logger.catch
 def run_main_py():
-    if log_record() and check_version() and detect_installed():
+    if log_record() and check_version():
         ui_paint()
 
 

@@ -11,6 +11,7 @@ from ui_event.log_analyze_dialog import LogAnalyzeHistogram
 from ui_event.sys_info_ui import SystemMonitor
 from utils.face_detect import face_detect_result
 from utils.file_utils import convert_and_move_folder
+from utils.os_environment_check import detect_installed
 from utils.txt_decode import scan_txt_file_all
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -315,6 +316,19 @@ def encoding_tools_convert():
     """
     scan_txt_file_all(constants.data_path)
     logger.success("convert point txt finish!")
+
+
+@logger.catch
+def detect_installed_flag():
+    """
+
+    :return:
+    """
+    if detect_installed():
+        logger.success("installed all driver!")
+    else:
+        logger.error("you need install webdriver.exe, please lookup log url download exe.")
+    logger.info("detect finish!")
 
 
 @logger.catch
