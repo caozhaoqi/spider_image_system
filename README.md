@@ -121,3 +121,8 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-contrib-python
 Pyinstaller main_test.spec #使用spec文件打包exe
 ```
 
+- solve not run on HECS(HuaWei ECS) from huawei cloud
+```shell
+#see
+https://neucrack.com/p/407
+```

@@ -137,7 +137,7 @@ def check_images(self, image_path):
                         logger.warning(f"Image {filename} size small, move small images folder.")
                         small_image_lists.append(filepath)
                 except Exception as e:
-                    logger.error(f"Can't open {filename}, detail :{e}, move error_images folder.")
+                    logger.warning(f"Can't open {filename}, detail :{e}, move error_images folder.")
                     error_image_lists.append(filepath)
     for error_images in error_image_lists:
         try:
@@ -167,9 +167,8 @@ def check_images(self, image_path):
         except Exception as e:
             logger.error(f"unknown error, detail: {e}")
             f.close()
-    self.success_tips()
-    logger.info("scan end, error and small image write file, images move error_images and small_images folder, "
-                "please read txt or folder lookup.")
+    # self.success_tips()
+    logger.success("scan end, images moved error_images and small_images folder!")
 
 
 @logger.catch
@@ -233,7 +232,7 @@ def img_category_images(self, image_path):
         except Exception as e:
             logger.error(f"unknown error, detail: {e}")
     logger.success("img category success!")
-    self.success_tips()
+    # self.success_tips()
 
 
 @logger.catch

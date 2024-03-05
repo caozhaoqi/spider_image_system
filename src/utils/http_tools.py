@@ -39,12 +39,11 @@ def image_url_re(image_url):
         return result_url
     else:
         result_url = re.search(r'/([^/?#]+)$', image_url).group(1)
-        if result_url.endswith('.jpg') or result_url.endswith('.png'):
+        if result_url.endswith('.jpg') or result_url.endswith('.png') or result_url.endswith('.gif'):
             return result_url
         else:
             logger.warning(f"parser error, return source url:{image_url}")
             return image_url
-
 
 
 if __name__ == '__main__':
