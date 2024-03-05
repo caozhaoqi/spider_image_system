@@ -7,6 +7,8 @@ from image.img_switch import folder_path, show_filter_image
 
 
 # from minio.error import ResponseError
+from run import constants
+
 
 @logger.catch
 def find_upload_file(directory):
@@ -21,13 +23,31 @@ def find_upload_file(directory):
         logger.info("dir not exists, create dir: " + str(directory))
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if "img_url" in root or "according_pid_download_image" in root:
+            if "img_url" in root or "according_pid_download_image" in root or "log_dir" in root:
                 if file.endswith('.jpg') or file.endswith('.png') or file.endswith('.log'):
                     image_files_lists.append(os.path.join(root, file))
     return image_files_lists
 
 
-image_files_upload = show_filter_image(find_upload_file(folder_path))
+@logger.catch
+def show_filter_image_log(images_list):
+    """
+    过滤过小图片不显示到首页
+    :param images_list:
+    :return:
+    """
+    filter_result_images = []
+    for filter_image in images_list:
+        filter_path, filter_name = os.path.split(filter_image)
+        if "square" in filter_name or "custom" in filter_name or "square" in filter_path or "custom" in filter_path \
+                or "error_images" in filter_path or "small_images" in filter_path:
+            continue
+        else:
+            filter_result_images.append(filter_image)
+    return filter_result_images
+
+
+image_files_upload = show_filter_image_log(find_upload_file(constants.basic_path))
 
 
 @logger.catch
@@ -63,7 +83,7 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
         remote_file_path = os.path.join(bucket_name, relative_path).replace('\\', '/')
         try:
             client.stat_object(bucket_name, remote_file_path)
-            logger.warning(f"already exists, will skip: {remote_file_path}")
+            # logger.warning(f"already exists, will skip: {remote_file_path}")
         except minio.error.S3Error as s3_e:
             # 对象不存在
             # print("对象不存在")
