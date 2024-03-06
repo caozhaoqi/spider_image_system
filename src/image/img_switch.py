@@ -151,7 +151,7 @@ def check_images(self, image_path):
                     f.write(error_images + "\n")
                     shutil.move(error_images, image_path + "/error_images/" + file_name)
         except Exception as e:
-            logger.error(f"unknown error, detail: {e}")
+            logger.warning(f"unknown error, detail: {e}")
             f.close()
     for small_image in small_image_lists:
         try:
@@ -165,7 +165,7 @@ def check_images(self, image_path):
                     f.write(small_image + "\n")
                     shutil.move(small_image, image_path + "/small_images/" + file_name)
         except Exception as e:
-            logger.error(f"unknown error, detail: {e}")
+            logger.warning(f"unknown error, detail: {e}")
             f.close()
     # self.success_tips()
     logger.success("scan end, images moved error_images and small_images folder!")
@@ -230,7 +230,7 @@ def img_category_images(self, image_path):
             shutil.move(master_image, dir_path + "/master/" + file_name)
             f.close()
         except Exception as e:
-            logger.error(f"unknown error, detail: {e}")
+            logger.warning(f"unknown error, detail: {e}")
     logger.success("img category success!")
     # self.success_tips()
 
