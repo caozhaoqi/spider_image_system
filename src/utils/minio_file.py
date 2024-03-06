@@ -42,7 +42,6 @@ def show_filter_image_log(images_list):
     return filter_result_images
 
 
-image_files_upload = show_filter_image_log(find_upload_file(constants.basic_path))
 
 
 @logger.catch
@@ -71,6 +70,8 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
     except Exception as err:
         logger.error(f"Error: {err}")
         return False
+
+    image_files_upload = show_filter_image_log(find_upload_file(constants.basic_path))
 
     for file in image_files_upload:
 
