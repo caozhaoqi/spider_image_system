@@ -2,6 +2,7 @@ import os
 import sys
 
 from image.img_switch import find_images, image_exists
+from ui_event.base_event import remove_error_image, img_category_button
 from utils.file_download import send_request
 from utils.file_utils import remove_duplicates_from_txt
 from utils.http_tools import image_url_re
@@ -122,8 +123,7 @@ def download_img_txt(self):
         constants.stop_download_image_flag = True
         return False
     for cdds_path in cdds:
-        download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
-        continue_download_flag = read_end_download_image()
+        download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, continue_download_flag = read_end_download_image()
         if constants.stop_download_image_flag:
             break
         try:
@@ -139,16 +139,17 @@ def download_img_txt(self):
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
         cdds_index += 1
-        process_image(self)
-        if constants.upload_minio_image_Flag == 'True' and not constants.category_image_flag and not constants.check_images_flag:
-            logger.debug("will start upload image and log!")
-            upload_image(constants.basic_path)
+        process_image(self, cdds_path)
         if not constants.stop_download_image_flag:
             # 非当前停止txt记录
             #     记录已下载完成txt
             record_download_finish_txt(cdds_path)
+        if constants.upload_minio_image_Flag == 'True' and not constants.category_image_flag and not constants.check_images_flag:
+            logger.debug("will start upload image and log!")
+            upload_image(constants.basic_path)
     logger.success("downloaded all image!")
     self.success_tips()
+    constants.stop_download_image_flag = True
     return True
 
 
@@ -190,9 +191,10 @@ def remove_repeat_content(cdds_path):
 
 
 @logger.catch
-def process_image(self):
+def process_image(self, cdds_path):
     """
 
+    :param cdds_path:
     :param self:
     :return:
     """
@@ -200,8 +202,8 @@ def process_image(self):
     logger.debug("start remove error image!")
     # constants.before_image_process_flag = True
     constants.check_images_flag = True
-    self.remove_error_image_click()
+    remove_error_image(self)
     logger.debug("start category image!")
     constants.category_image_flag = True
-    self.img_category_button_click()
-    logger.success("image basic process finished.")
+    img_category_button(self)
+    logger.success(f"image basic process finished. cdds name: {cdds_path}")

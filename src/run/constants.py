@@ -50,8 +50,12 @@ online_img_list = scan_img_txt(data_path)
 cur_show_img_index = 0
 # 抓取总图片数目 实时统计
 spider_images_current_count = 0
+# remove error image
 check_images_flag = False
+# split image category
 category_image_flag = False
+# single process image
+single_flag = False
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))

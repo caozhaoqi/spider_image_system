@@ -2,7 +2,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
@@ -23,7 +22,7 @@ from image.img_switch import show_filter_image, folder_path, find_images, show_n
     img_category_images
 from image.spider_img_save import download_img_txt
 from image.video_process import play_video_process, process_images_thread
-from ui_event.base_event import scan_populate_mp4_list
+from ui_event.base_event import scan_populate_mp4_list, remove_error_image, img_category_button
 from ui_event.get_url import spider_artworks_url
 from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint, tab_ui_tab
 
@@ -182,11 +181,10 @@ class UIMainWindows(QMainWindow):
         下载指定txt中url对应images
         :return:
         """
-        logger.info("start scan images... ")
-        scan_image_thread_obj = threading.Thread(
-            target=check_images,
-            args=(self, constants.data_path))
-        scan_image_thread_obj.start()
+        # logger.info("start scan images click... ")
+        constants.single_flag = True
+        remove_error_image(self)
+
         pass
 
     def img_category_button_click(self):
@@ -194,11 +192,8 @@ class UIMainWindows(QMainWindow):
         图片分类
         :return:
         """
-        logger.info('start img category...')
-        img_category_thread_obj = threading.Thread(
-            target=img_category_images,
-            args=(self, constants.data_path))
-        img_category_thread_obj.start()
+        constants.single_flag = True
+        img_category_button(self)
 
     # @logger.catch
     def success_tips(self):

@@ -4,6 +4,7 @@ import sys
 from selenium.common import StaleElementReferenceException
 
 from file.file_process import get_image_keyword
+from image.img_switch import check_images, img_category_images
 from ui_event.auto_image_explore import AutoImageDialog
 from ui_event.gi_dialog_ui import GICharacterDialog
 from ui_event.image_dialog import ImageDialog
@@ -365,3 +366,31 @@ def convert_folder_name():
         logger.error("converting folder_name please wait.")
     # convert_and_move_folder(constants.data_path)
     ...
+
+
+@logger.catch
+def remove_error_image(self):
+    """
+        下载指定txt中url对应images
+
+    :param self:
+    :return:
+    """
+    logger.info("start scan images... ")
+    scan_image_thread_obj = threading.Thread(
+        target=check_images,
+        args=(self, constants.data_path))
+    scan_image_thread_obj.start()
+
+
+@logger.catch
+def img_category_button(self):
+    """
+    图片分类
+    :return:
+    """
+    logger.info('start img category...')
+    img_category_thread_obj = threading.Thread(
+        target=img_category_images,
+        args=(self, constants.data_path))
+    img_category_thread_obj.start()
