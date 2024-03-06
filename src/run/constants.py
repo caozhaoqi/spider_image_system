@@ -50,6 +50,8 @@ online_img_list = scan_img_txt(data_path)
 cur_show_img_index = 0
 # 抓取总图片数目 实时统计
 spider_images_current_count = 0
+check_images_flag = False
+category_image_flag = False
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
@@ -107,5 +109,5 @@ download_img_retry_times = int(read_ini_config(ini_file_path, "automatic_config"
 # retry time out
 download_img_time_out = int(read_ini_config(ini_file_path, "automatic_config", "download_img_time_out"))
 sis_server_version = "v1.0.9-beta.1.240306"
-build_date = "2024-03-05 18:00"
-publish_date = "2024-03-05 18:30"
+build_date = "2024-03-06 18:00"
+publish_date = "2024-03-06 18:30"

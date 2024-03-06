@@ -123,7 +123,7 @@ def download_img_txt(self):
         return False
     for cdds_path in cdds:
         download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
-            continue_download_flag = read_end_download_image()
+        continue_download_flag = read_end_download_image()
         if constants.stop_download_image_flag:
             break
         try:
@@ -139,13 +139,8 @@ def download_img_txt(self):
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
         cdds_index += 1
-        #  处理错误图片 分类图片
-        logger.debug("start remove error image!")
-        self.remove_error_image_click()
-        logger.debug("start category image!")
-        self.img_category_button_click()
-        logger.success("image basic process finished.")
-        if constants.upload_minio_image_Flag == 'True':
+        process_image(self)
+        if constants.upload_minio_image_Flag == 'True' and not constants.category_image_flag and not constants.check_images_flag:
             logger.debug("will start upload image and log!")
             upload_image(constants.basic_path)
         if not constants.stop_download_image_flag:
@@ -192,3 +187,21 @@ def remove_repeat_content(cdds_path):
     remove_duplicates_from_txt(cdds_path,
                                new_file_name)
     return new_file_name
+
+
+@logger.catch
+def process_image(self):
+    """
+
+    :param self:
+    :return:
+    """
+    #  处理错误图片 分类图片
+    logger.debug("start remove error image!")
+    # constants.before_image_process_flag = True
+    constants.check_images_flag = True
+    self.remove_error_image_click()
+    logger.debug("start category image!")
+    constants.category_image_flag = True
+    self.img_category_button_click()
+    logger.success("image basic process finished.")
