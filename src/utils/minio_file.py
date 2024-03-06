@@ -90,7 +90,7 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
                     logger.error(f"unknown error, detail: {e}")
             else:
                 # 处理其他可能的异常
-                logger.error("unknown error! detail:", s3_e)
+                logger.error("unknown error, detail:", s3_e)
                 return False
     return True
 

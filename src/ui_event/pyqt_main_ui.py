@@ -177,7 +177,7 @@ class UIMainWindows(QMainWindow):
             logger.debug('Selected folder:' + self.edt_input_file_text_3_str)
         self.edt_input_file_text_3.setText(self.edt_input_file_text_3_str)
 
-    def download_file_thread_3(self):
+    def remove_error_image_click(self):
         """
         下载指定txt中url对应images
         :return:

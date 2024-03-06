@@ -327,7 +327,7 @@ def tab_3_ui_paint(self):
     self.setCentralWidget(self.tab_widget)
 
     self.btn_input_file_3.clicked.connect(self.input_keyword_process_3)
-    self.un_normal_img_button.clicked.connect(self.download_file_thread_3)
+    self.un_normal_img_button.clicked.connect(self.remove_error_image_click)
     self.img_category_button.clicked.connect(self.img_category_button_click)
     self.download_gif_zip.clicked.connect(self.download_gif_zip_click)
     self.unzip_generate_video.clicked.connect(self.unzip_generate_video_click)

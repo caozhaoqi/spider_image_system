@@ -139,12 +139,18 @@ def download_img_txt(self):
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
         cdds_index += 1
-        #     记录已下载完成txt
+        #  处理错误图片 分类图片
+        logger.debug("start remove error image!")
+        self.remove_error_image_click()
+        logger.debug("start category image!")
+        self.img_category_button_click()
+        logger.success("image basic process finished.")
         if constants.upload_minio_image_Flag == 'True':
-            logger.debug("already start upload image, will start upload!")
+            logger.debug("will start upload image and log!")
             upload_image(constants.basic_path)
         if not constants.stop_download_image_flag:
             # 非当前停止txt记录
+            #     记录已下载完成txt
             record_download_finish_txt(cdds_path)
     logger.success("downloaded all image!")
     self.success_tips()
