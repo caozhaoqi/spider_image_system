@@ -42,8 +42,6 @@ def show_filter_image_log(images_list):
     return filter_result_images
 
 
-
-
 @logger.catch
 def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, local_folder_path):
     """

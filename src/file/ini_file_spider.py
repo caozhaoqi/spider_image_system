@@ -34,6 +34,13 @@ def spider_config():
     entity.output_video_height = read_ini_config(ini_file_path, "spider_config", "output_video_height")
     entity.proxy_server_ip = read_ini_config(ini_file_path, "spider_config", "proxy_server_ip")
     entity.proxy_server_port = read_ini_config(ini_file_path, "spider_config", "proxy_server_port")
+
+    entity.minio_config_id = read_ini_config(ini_file_path, "minio_config_selected", 'minio_config_id')
+    entity.minio_server_ip = read_ini_config(ini_file_path, "minio_config_selected", 'minio_server_ip')
+    entity.minio_server_port = read_ini_config(ini_file_path, "minio_config_selected", 'minio_server_port')
+    entity.minio_account = read_ini_config(ini_file_path, "minio_config_selected", 'minio_account')
+    entity.minio_password = read_ini_config(ini_file_path, "minio_config_selected", 'minio_password')
+    entity.enable = read_ini_config(ini_file_path, "minio_config_selected", 'enable')
     return entity
 
 
@@ -71,7 +78,6 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "r18_mode", str(minio_config.r18_mode))
     conf.set("spider_config", "all_show", str(minio_config.all_show))
     conf.set("spider_config", "proxy_flag", str(minio_config.proxy_flag))
-    conf.set("spider_config", "allow_replace_domain_flag", 'True')
     conf.set("spider_config", "search_delta_time", str(minio_config.search_delta_time))
     conf.set("spider_config", "detail_delta_time", str(minio_config.detail_delta_time))
     conf.set("spider_config", "sis_log_level", minio_config.sis_log_level)
@@ -81,17 +87,29 @@ def write_minio_config_to_file(minio_config):
     conf.set("spider_config", "output_video_height", str(minio_config.output_video_height))
     conf.set("spider_config", "proxy_server_ip", minio_config.proxy_server_ip)
     conf.set("spider_config", "proxy_server_port", str(minio_config.proxy_server_port))
-    conf.set("spider_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
-                                                 "square,custom,_50.gif,data:image/png,no_profile.png")
-    conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
-                                                  "_50.gif,data:image/png,no_profile.png")
-    conf.set("spider_config", "zoom_out_scale", "0.9")
-    conf.set("spider_config", "zoom_in_scale", "1.1")
-    conf.set("spider_config", "fire_wall_delay_time", "300")
-    conf.set("spider_config", "download_img_retry_times", "2")
-    conf.set("spider_config", "download_img_time_out", "10")
-    conf.set("spider_config", "chrome_path", "None")
-    conf.set("spider_config", "upload_minio_image_Flag", "False")
+
+    conf.add_section("automatic_config")
+    conf.set("automatic_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
+                                                    "square,custom,_50.gif,data:image/png,no_profile.png")
+    conf.set("automatic_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
+                                                     "50.gif,data:image/png,no_profile.png")
+    conf.set("automatic_config", "zoom_out_scale", "0.9")
+    conf.set("automatic_config", "zoom_in_scale", "1.1")
+    conf.set("automatic_config", "fire_wall_delay_time", "300")
+    conf.set("automatic_config", "download_img_retry_times", "2")
+    conf.set("automatic_config", "download_img_time_out", "10")
+    conf.set("automatic_config", "chrome_path", "None")
+    conf.set("automatic_config", "upload_minio_image_Flag", "False")
+    conf.set("automatic_config", "allow_replace_domain_flag", 'True')
+
+    conf.add_section("minio_config_selected")
+    conf.set("minio_config_selected", "minio_config_id", "1")
+    conf.set("minio_config_selected", "minio_server_ip", "121.36.66.145")  # 写入配置参数
+    conf.set("minio_config_selected", "minio_server_port", "9000")
+    conf.set("minio_config_selected", "minio_account", "minioadmin")
+    conf.set("minio_config_selected", "minio_password", "minioadmin")
+    conf.set("minio_config_selected", "mark_msg", "minio_config['mark_msg']")
+    conf.set("minio_config_selected", "enable", '1')
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
     logger.info("config write finished, read test, current use visit url: " + conf.get("spider_config", "visit_url"))
@@ -148,7 +166,6 @@ def check_ini_config():
         conf.set("spider_config", "r18_mode", 'True')
         conf.set("spider_config", "all_show", 'False')
         conf.set("spider_config", "proxy_flag", 'False')
-        conf.set("spider_config", "allow_replace_domain_flag", 'True')
         conf.set("spider_config", "search_delta_time", '5')
         conf.set("spider_config", "detail_delta_time", '2')
         conf.set("spider_config", "sis_log_level", 'DEBUG')
@@ -158,17 +175,29 @@ def check_ini_config():
         conf.set("spider_config", "output_video_height", "1440")
         conf.set("spider_config", "proxy_server_ip", "192.168.199.26")
         conf.set("spider_config", "proxy_server_port", "8080")
-        conf.set("spider_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
-                                                     "square,custom,_50.gif,data:image/png,no_profile.png", )
-        conf.set("spider_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
-                                                      "_50.gif,data:image/png,no_profile.png")
-        conf.set("spider_config", "zoom_out_scale", "0.9")
-        conf.set("spider_config", "zoom_in_scale", "1.1")
-        conf.set("spider_config", "fire_wall_delay_time", "90")
-        conf.set("spider_config", "download_img_retry_times", "2")
-        conf.set("spider_config", "download_img_time_out", "10")
-        conf.set("spider_config", "chrome_path", 'None')
-        conf.set("spider_config", "upload_minio_image_Flag", "False")
+
+        conf.add_section("automatic_config")
+        conf.set("automatic_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
+                                                        "square,custom,_50.gif,data:image/png,no_profile.png")
+        conf.set("automatic_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
+                                                         "50.gif,data:image/png,no_profile.png")
+        conf.set("automatic_config", "zoom_out_scale", "0.9")
+        conf.set("automatic_config", "zoom_in_scale", "1.1")
+        conf.set("automatic_config", "fire_wall_delay_time", "300")
+        conf.set("automatic_config", "download_img_retry_times", "2")
+        conf.set("automatic_config", "download_img_time_out", "10")
+        conf.set("automatic_config", "chrome_path", "None")
+        conf.set("automatic_config", "upload_minio_image_Flag", "False")
+        conf.set("automatic_config", "allow_replace_domain_flag", 'True')
+
+        conf.add_section("minio_config_selected")
+        conf.set("minio_config_selected", "minio_config_id", "1")
+        conf.set("minio_config_selected", "minio_server_ip", "121.36.66.145")  # 写入配置参数
+        conf.set("minio_config_selected", "minio_server_port", "9000")
+        conf.set("minio_config_selected", "minio_account", "minioadmin")
+        conf.set("minio_config_selected", "minio_password", "minioadmin")
+        conf.set("minio_config_selected", "mark_msg", "minio_config['mark_msg']")
+        conf.set("minio_config_selected", "enable", '1')
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
         logger.info("config write finished, read test: " + conf.get("spider_config", "visit_url"))

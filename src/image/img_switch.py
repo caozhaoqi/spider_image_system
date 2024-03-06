@@ -207,7 +207,7 @@ def img_category_images(self, image_path):
                 f.write(square_image + "\n")
             shutil.move(square_image, dir_path + "/square/" + file_name)
         except Exception as e:
-            logger.error(f"unknown error, detail: {e}")
+            logger.warning(f"unknown error, detail: {e}")
             f.close()
     for custom_image in custom_image_lists:
         dir_path, file_name = os.path.split(custom_image)
@@ -219,7 +219,7 @@ def img_category_images(self, image_path):
             shutil.move(custom_image, dir_path + "/custom/" + file_name)
             f.close()
         except Exception as e:
-            logger.error(f"unknown error, detail: {e}")
+            logger.warning(f"unknown error, detail: {e}")
     for master_image in master_image_lists:
         dir_path, file_name = os.path.split(master_image)
         if not os.path.exists(dir_path + "/master/"):
