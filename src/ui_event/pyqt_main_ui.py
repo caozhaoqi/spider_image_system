@@ -181,7 +181,9 @@ class UIMainWindows(QMainWindow):
         下载指定txt中url对应images
         :return:
         """
-        # logger.info("start scan images click... ")
+        if constants.single_flag:
+            self.error_tips()
+            return
         constants.single_flag = True
         remove_error_image(self)
 
@@ -192,6 +194,9 @@ class UIMainWindows(QMainWindow):
         图片分类
         :return:
         """
+        if constants.single_flag:
+            self.error_tips()
+            return
         constants.single_flag = True
         img_category_button(self)
 

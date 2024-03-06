@@ -364,8 +364,6 @@ def convert_folder_name():
         logger.info("start convert folder_name!")
     else:
         logger.error("converting folder_name please wait.")
-    # convert_and_move_folder(constants.data_path)
-    ...
 
 
 @logger.catch

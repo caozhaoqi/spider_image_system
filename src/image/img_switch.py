@@ -201,8 +201,8 @@ def img_category_images(self, image_path):
                 master_image_lists.append(filename)
             elif "custom" in filename:
                 custom_image_lists.append(filename)
-            else:
-                logger.warning("unknown category image: " + str(filename))
+            # else:
+                # logger.warning("unknown category image: " + str(filename))
     for square_image in square_image_lists:
         dir_path, file_name = os.path.split(square_image)
         if not os.path.exists(dir_path + "/square/"):
