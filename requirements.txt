@@ -9,8 +9,7 @@ urllib3~=2.1.0
 pillow~=10.2.0
 selenium~=4.16.0
 requests~=2.31.0
+minio~=7.2.5
 PyQt5~=5.15.10
 opencv-python~=4.9.0.80
 pyqtchart
-chardet~=5.2.0
-minio~=7.2.5
