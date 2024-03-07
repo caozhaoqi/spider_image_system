@@ -112,6 +112,6 @@ fire_wall_delay_time = int(read_ini_config(ini_file_path, "automatic_config", "f
 download_img_retry_times = int(read_ini_config(ini_file_path, "automatic_config", "download_img_retry_times"))
 # retry time out
 download_img_time_out = int(read_ini_config(ini_file_path, "automatic_config", "download_img_time_out"))
-sis_server_version = "v1.0.9-beta.1.240306"
-build_date = "2024-03-06 18:00"
-publish_date = "2024-03-06 18:30"
+sis_server_version = "v1.0.9-beta.2.240307"
+build_date = "2024-03-07 18:00"
+publish_date = "2024-03-07 18:30"

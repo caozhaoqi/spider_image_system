@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.0.9-beta.2.240307
+### 2024/3/7
+- issue bug修复
+
 ## v1.0.9-beta.1.240306
 ### 2024/3/6
 - issue bug修复
