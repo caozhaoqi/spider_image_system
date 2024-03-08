@@ -1,7 +1,7 @@
 import os
 import sys
 
-from image.spider_img_save import download_image
+# from image.spider_img_save import download_image
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -393,22 +393,22 @@ def img_category_button(self):
     img_category_thread_obj.start()
 
 
-@logger.catch
-def download_re_error_image():
-    """
-
-    :return:
-    """
-    # error_image_list = []
-    path = os.path.join(constants.data_path, "download_fail_image.txt")
-    with open(path, 'r', encoding='utf-8', errors='replace') as f:
-        error_image_list = f.readlines()
-    if not error_image_list:
-        return False
-    for index, error_image in enumerate(error_image_list):
-        e_path, error_image_name = os.path.split(error_image)
-        new_file_name = os.path.join(os.path.join(constants.data_path, "error_image"), error_image_name)
-        if not os.path.exists(new_file_name):
-            logger.warning("dir not exists, will create!")
-            os.makedirs(new_file_name)
-        download_image(error_image.strip(), new_file_name, 1, index)
+# @logger.catch
+# def download_re_error_image():
+#     """
+#
+#     :return:
+#     """
+#     # error_image_list = []
+#     path = os.path.join(constants.data_path, "download_fail_image.txt")
+#     with open(path, 'r', encoding='utf-8', errors='replace') as f:
+#         error_image_list = f.readlines()
+#     if not error_image_list:
+#         return False
+#     for index, error_image in enumerate(error_image_list):
+#         e_path, error_image_name = os.path.split(error_image)
+#         new_file_name = os.path.join(os.path.join(constants.data_path, "error_image"), error_image_name)
+#         if not os.path.exists(new_file_name):
+#             logger.warning("dir not exists, will create!")
+#             os.makedirs(new_file_name)
+#         download_image(error_image.strip(), new_file_name, 1, index)
