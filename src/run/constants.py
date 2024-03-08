@@ -114,7 +114,7 @@ download_img_time_out = int(read_ini_config(ini_file_path, "automatic_config", "
 #
 minio_config_id = read_ini_config(ini_file_path, "minio_config_selected", "minio_config_id")
 minio_server_ip = read_ini_config(ini_file_path, "minio_config_selected", "minio_server_ip")
-minio_server_port = read_ini_config(ini_file_path, "minio_config_selected", "minio_account")
+minio_server_port = read_ini_config(ini_file_path, "minio_config_selected", "minio_server_port")
 minio_account = read_ini_config(ini_file_path, "minio_config_selected", "minio_account")
 minio_password = read_ini_config(ini_file_path, "minio_config_selected", "minio_password")
 mark_msg = read_ini_config(ini_file_path, "minio_config_selected", "mark_msg")
