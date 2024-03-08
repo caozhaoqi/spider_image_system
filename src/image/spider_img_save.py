@@ -1,8 +1,9 @@
 import os
 import sys
+import threading
 
-from image.img_switch import find_images, image_exists
-from ui_event.base_event import remove_error_image, img_category_button
+from image.fail_image import process_error_image
+from image.img_switch import find_images, image_exists, img_category_images, check_images
 from utils.file_download import send_request
 from utils.file_utils import remove_duplicates_from_txt
 from utils.http_tools import image_url_re
@@ -212,3 +213,59 @@ def process_image(self, cdds_path):
     constants.category_image_flag = True
     img_category_button(self)
     logger.success(f"image basic process finished. cdds name: {cdds_path}")
+
+
+@logger.catch
+def download_re_error_image():
+    """
+
+    :return:
+    """
+    # error_image_list = []
+    path = os.path.join(constants.data_path, "download_fail_image.txt")
+    with open(path, 'r', encoding='utf-8', errors='replace') as f:
+        error_image_list = f.readlines()
+    if not error_image_list:
+        logger.warning("download image fail txt no content!")
+        return False
+    # 处理list 摒弃原始url，换回或者，换新domain
+    error_image_list = process_error_image(error_image_list)
+    logger.success("replace domain success, will re download!")
+    for index, error_image in enumerate(error_image_list):
+        error_image_name = image_url_re(error_image.strip())
+        new_file_path = os.path.join(os.path.join(constants.data_path, "img_url"), "re_download")
+        if not os.path.exists(new_file_path):
+            logger.warning("dir not exists, will create!")
+            os.makedirs(new_file_path)
+        new_file_name = os.path.join(new_file_path, error_image_name)
+        download_image(error_image.strip(), new_file_name, 1, len(error_image_list))
+    constants.download_image_re_flag = False
+    logger.success("download all image for re!")
+
+
+@logger.catch
+def remove_error_image(self):
+    """
+        下载指定txt中url对应images
+
+    :param self:
+    :return:
+    """
+    logger.info("start scan images... ")
+    scan_image_thread_obj = threading.Thread(
+        target=check_images,
+        args=(self, constants.data_path))
+    scan_image_thread_obj.start()
+
+
+@logger.catch
+def img_category_button(self):
+    """
+    图片分类
+    :return:
+    """
+    logger.info('start img category...')
+    img_category_thread_obj = threading.Thread(
+        target=img_category_images,
+        args=(self, constants.data_path))
+    img_category_thread_obj.start()

@@ -20,9 +20,9 @@ from run.constants import sis_server_version, zoom_out_scale, zoom_in_scale
 from http_tools.http_request import url_zip_all_process, unzip_generate_gif
 from image.img_switch import show_filter_image, folder_path, find_images, show_next_image, show_image, check_images, \
     img_category_images
-from image.spider_img_save import download_img_txt
+from image.spider_img_save import download_img_txt, remove_error_image, img_category_button
 from image.video_process import play_video_process, process_images_thread
-from ui_event.base_event import scan_populate_mp4_list, remove_error_image, img_category_button
+from ui_event.base_event import scan_populate_mp4_list
 from ui_event.get_url import spider_artworks_url
 from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint, tab_ui_tab
 
@@ -186,8 +186,6 @@ class UIMainWindows(QMainWindow):
             return
         constants.single_flag = True
         remove_error_image(self)
-
-        pass
 
     def img_category_button_click(self):
         """

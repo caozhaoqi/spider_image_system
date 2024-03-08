@@ -1,3 +1,5 @@
+import os
+
 import requests
 from loguru import logger
 from requests.exceptions import ReadTimeout, ChunkedEncodingError, ConnectTimeout, HTTPError
@@ -61,14 +63,4 @@ def send_request(url, timeout=download_img_time_out):
     logger.error(f"Failed to retrieve data from {url} after multiple retries.")
     return None
 
-# # 使用函数发送请求，处理重试和错误
-# url = 'https://example.com/api/data'
-# data = send_request(url)
-#
-# # 处理获取到的数据
-# if data is not None:
-#     logger.info("Data received successfully.")
-#     # 这里可以处理或输出数据，例如：
-#     # print(data.text)
-# else:
-#     logger.error("Failed to receive data after multiple retries.")
+
