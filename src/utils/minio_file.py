@@ -112,6 +112,7 @@ def upload_image(path):
 
     logger.info(f"current use minio server: {ENDPOINT_URL}")
     if upload_images_to_minio(ENDPOINT_URL, ACCESS_KEY, SECRET_KEY, BUCKET_NAME, LOCAL_FOLDER_PATH):
-        logger.success("image and log, upload success!")
+        logger.success("image and log, upload all image success!")
+        constants.uploading_image_flag = False
     else:
         logger.warning("upload error!")

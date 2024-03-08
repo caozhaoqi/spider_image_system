@@ -2,6 +2,7 @@ import os
 import sys
 
 # from image.spider_img_save import download_image
+from utils.minio_file import upload_image
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -393,6 +394,21 @@ def img_category_button(self):
     img_category_thread_obj.start()
 
 
+@logger.catch
+def user_upload_image():
+    """
+
+    :return:
+    """
+    if not constants.uploading_image_flag:
+        constants.uploading_image_flag = True
+        convert_folder_thread_obj = threading.Thread(
+            target=upload_image,
+            args=(constants.basic_path,))
+        convert_folder_thread_obj.start()
+        logger.info("start upload image!")
+    else:
+        logger.error("uploading image, please wait.")
 # @logger.catch
 # def download_re_error_image():
 #     """

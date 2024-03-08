@@ -10,7 +10,8 @@ from loguru import logger
 
 from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, genshin_impact_view, \
-    log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag
+    log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag, \
+    user_upload_image
 
 
 @logger.catch
@@ -33,6 +34,8 @@ def base_menu(self):
     self.auto_all_image_action.triggered.connect(lambda: auto_play_image())
     self.image_face_detect_action = QAction('人脸识别', self.image_menu)
     self.image_face_detect_action.triggered.connect(lambda: face_detect_action())
+    self.user_upload_image_action = QAction("手动上传", self.image_menu)
+    self.user_upload_image_action.triggered.connect(lambda: user_upload_image())
     self.other_spider_action = QAction('其他', self.image_menu)
     self.image_menu.addAction(self.start_spider_action)
     self.image_menu.addAction(self.stop_spider_action)
@@ -40,6 +43,7 @@ def base_menu(self):
     self.image_menu.addAction(self.online_look_action)
     self.image_menu.addAction(self.auto_all_image_action)
     self.image_menu.addAction(self.image_face_detect_action)
+    self.image_menu.addAction(self.user_upload_image_action)
     self.image_menu.addAction(self.other_spider_action)
 
     self.video_menu = QMenu('视频', self.menu_bar)

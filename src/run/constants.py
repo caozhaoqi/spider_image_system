@@ -40,6 +40,8 @@ download_video_link_flag = False
 download_gif_zip_flag = False
 # unzip_generate_video_flag
 unzip_generate_video_flag = False
+# upload image
+uploading_image_flag = False
 # 数据存储路径
 data_path = os.path.realpath('./data')
 # 基础路径
