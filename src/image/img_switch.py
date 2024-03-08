@@ -121,7 +121,7 @@ def check_images(self, image_path):
     :param image_path: 数据路径
     :return:
     """
-    constants.check_images_flag = True
+    # constants.check_images_flag = True
     image_lists = find_images(image_path)
     small_image_lists = []
     error_image_lists = []
@@ -168,7 +168,10 @@ def check_images(self, image_path):
         except Exception as e:
             logger.warning(f"unknown error, detail: {e}")
             f.close()
-    constants.check_images_flag = False
+    if constants.check_images_flag:
+        constants.check_images_flag = False
+        logger.success(f"finished check! flag: {constants.check_images_flag}")
+    # constants.check_images_flag = False
     if constants.single_flag:
         logger.success(
                 f"scan end, flag: {constants.check_images_flag}, images moved error_images and small_images folder!")
@@ -183,7 +186,7 @@ def img_category_images(self, image_path):
     :param image_path:
     :return:
     """
-    constants.category_image_flag = True
+    # constants.category_image_flag = True
     image_lists = find_images(image_path)
     custom_image_lists = []
     square_image_lists = []
@@ -236,7 +239,9 @@ def img_category_images(self, image_path):
             f.close()
         except Exception as e:
             logger.warning(f"unknown error, detail: {e}")
-    constants.category_image_flag = False
+    if constants.category_image_flag:
+        constants.category_image_flag = False
+        logger.success(f"finished category! flag: {constants.category_image_flag}")
     if constants.single_flag:
         logger.success(f"img category success! flag: {constants.category_image_flag}")
         constants.single_flag = False
