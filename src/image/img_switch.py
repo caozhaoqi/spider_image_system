@@ -168,11 +168,11 @@ def check_images(self, image_path):
         except Exception as e:
             logger.warning(f"unknown error, detail: {e}")
             f.close()
+    constants.check_images_flag = False
     if constants.single_flag:
         logger.success(
                 f"scan end, flag: {constants.check_images_flag}, images moved error_images and small_images folder!")
         constants.single_flag = False
-    constants.check_images_flag = False
 
 
 @logger.catch
@@ -236,10 +236,10 @@ def img_category_images(self, image_path):
             f.close()
         except Exception as e:
             logger.warning(f"unknown error, detail: {e}")
+    constants.category_image_flag = False
     if constants.single_flag:
         logger.success(f"img category success! flag: {constants.category_image_flag}")
         constants.single_flag = False
-    constants.category_image_flag = False
 
 
 @logger.catch
