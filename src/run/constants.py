@@ -124,6 +124,6 @@ minio_password = read_ini_config(ini_file_path, "minio_config_selected", "minio_
 mark_msg = read_ini_config(ini_file_path, "minio_config_selected", "mark_msg")
 enable = read_ini_config(ini_file_path, "minio_config_selected", "enable")
 
-sis_server_version = "v1.0.9-beta.2.240307"
-build_date = "2024-03-07 18:00"
-publish_date = "2024-03-07 18:30"
+sis_server_version = "v1.0.9.240308"
+build_date = "2024-03-08 18:00"
+publish_date = "2024-03-08 18:30"

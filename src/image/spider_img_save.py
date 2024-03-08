@@ -221,25 +221,28 @@ def download_re_error_image():
 
     :return:
     """
-    # error_image_list = []
-    path = os.path.join(constants.data_path, "download_fail_image.txt")
-    with open(path, 'r', encoding='utf-8', errors='replace') as f:
-        error_image_list = f.readlines()
-    if not error_image_list:
-        logger.warning("download image fail txt no content!")
-        return False
-    # 处理list 摒弃原始url，换回或者，换新domain
-    error_image_list = process_error_image(error_image_list)
-    logger.success("replace domain success, will re download!")
-    for index, error_image in enumerate(error_image_list):
-        error_image_name = image_url_re(error_image.strip())
-        new_file_path = os.path.join(os.path.join(constants.data_path, "img_url"), "re_download")
-        if not os.path.exists(new_file_path):
-            logger.warning("dir not exists, will create!")
-            os.makedirs(new_file_path)
-        new_file_name = os.path.join(new_file_path, error_image_name)
-        download_image(error_image.strip(), new_file_name, 1, len(error_image_list))
-    constants.download_image_re_flag = False
+    try:
+        # error_image_list = []
+        path = os.path.join(constants.data_path, "download_fail_image.txt")
+        with open(path, 'r', encoding='utf-8', errors='replace') as f:
+            error_image_list = f.readlines()
+        if not error_image_list:
+            logger.warning("download image fail txt no content!")
+            return False
+        # 处理list 摒弃原始url，换回或者，换新domain
+        error_image_list = process_error_image(error_image_list)
+        logger.success("replace domain success, will re download!")
+        for index, error_image in enumerate(error_image_list):
+            error_image_name = image_url_re(error_image.strip())
+            new_file_path = os.path.join(os.path.join(constants.data_path, "img_url"), "re_download")
+            if not os.path.exists(new_file_path):
+                logger.warning("dir not exists, will create!")
+                os.makedirs(new_file_path)
+            new_file_name = os.path.join(new_file_path, error_image_name)
+            download_image(error_image.strip(), new_file_name, 1, len(error_image_list))
+        constants.download_image_re_flag = False
+    except Exception as e:
+        logger.warning(f"unknown error, detail: {e}")
     logger.success("download all image for re!")
 
 
