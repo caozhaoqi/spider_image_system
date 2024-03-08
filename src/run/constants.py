@@ -66,7 +66,6 @@ output_video_height = int(read_ini_config(ini_file_path, "spider_config", "outpu
 # 抓取图片最大值
 spider_images_max_count = int(read_ini_config(ini_file_path, "spider_config", "spider_images_max_count"))
 
-
 # log level
 sis_log_level = read_ini_config(ini_file_path, "spider_config", "sis_log_level")
 
@@ -112,6 +111,15 @@ fire_wall_delay_time = int(read_ini_config(ini_file_path, "automatic_config", "f
 download_img_retry_times = int(read_ini_config(ini_file_path, "automatic_config", "download_img_retry_times"))
 # retry time out
 download_img_time_out = int(read_ini_config(ini_file_path, "automatic_config", "download_img_time_out"))
+#
+minio_config_id = read_ini_config(ini_file_path, "minio_config_selected", "minio_config_id")
+minio_server_ip = read_ini_config(ini_file_path, "minio_config_selected", "minio_server_ip")
+minio_server_port = int(read_ini_config(ini_file_path, "minio_config_selected", "minio_account"))
+minio_account = read_ini_config(ini_file_path, "minio_config_selected", "minio_account")
+minio_password = read_ini_config(ini_file_path, "minio_config_selected", "minio_password")
+mark_msg = read_ini_config(ini_file_path, "minio_config_selected", "mark_msg")
+enable = int(read_ini_config(ini_file_path, "minio_config_selected", "enable"))
+
 sis_server_version = "v1.0.9-beta.2.240307"
 build_date = "2024-03-07 18:00"
 publish_date = "2024-03-07 18:30"

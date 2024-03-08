@@ -102,11 +102,11 @@ def upload_image(path):
     :return:
     """
     # 请替换以下值为你自己的MinIO配置和本地文件夹路径
-    minio_server_ip = '121.36.66.145'
-    minio_server_port = 9001
+    minio_server_ip = constants.minio_server_ip
+    minio_server_port = constants.minio_server_port
     ENDPOINT_URL = str(minio_server_ip) + ':' + str(minio_server_port)
-    ACCESS_KEY = "minioadmin"
-    SECRET_KEY = "minioadmin"
+    ACCESS_KEY = constants.minio_account
+    SECRET_KEY = constants.minio_password
     BUCKET_NAME = "dataupload"
     LOCAL_FOLDER_PATH = path
 

@@ -110,6 +110,7 @@ def write_error_image(txt_path, image_path):
     :param image_path:
     :return:
     """
+    txt_path = os.path.join(txt_path,"download_fail_image.txt")
     with open(txt_path, 'a', encoding='utf-8', errors='replace') as f:
         f.write(image_path + "\n")
     return True

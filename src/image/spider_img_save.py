@@ -10,15 +10,13 @@ from utils.minio_file import upload_image
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import requests
-
 from loguru import logger
 from urllib3.exceptions import ProtocolError
 
 from run import constants
 from run.constants import data_path
 from file.file_process import count_lines, read_end_download_image, save_download_end, update_download_continue_flag, \
-    record_download_finish_txt, exists_txt_from_finish
+    record_download_finish_txt, exists_txt_from_finish, write_error_image
 
 
 @logger.catch
@@ -47,17 +45,21 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
                 logger.debug(f"Image saved as {filename}, cur images index: {cur_download_images_index}"
                              f", cur txt images download count: {cur_txt_image_count}")
             else:
+                write_error_image(constants.data_path, url)
                 logger.error(
                     f"Error! Failed to download image from {url}, cur images index: {cur_download_images_index}, cur "
                     f"txt images download count: {cur_txt_image_count}, " + "detail: " + str(response.content))
         except ConnectionError as ce:
+            write_error_image(constants.data_path, url)
             logger.error(f"error, connect point url error, cur images index: {cur_download_images_index}, cur txt "
                          f"images download count: {cur_txt_image_count}, detail: " + str(ce))
         except ProtocolError as pe:
+            write_error_image(constants.data_path, url)
             logger.error(f"error, Remote end closed connection without response, cur images index: "
                          f"{cur_download_images_index}, cur txt images download count: {cur_txt_image_count}, detail: "
                          + str(pe))
         except Exception as e:
+            write_error_image(constants.data_path, url)
             logger.error(f"error, unknown error, cur images index: {cur_download_images_index}, cur txt images "
                          f"download count: {cur_txt_image_count}, detail: " + str(e))
 

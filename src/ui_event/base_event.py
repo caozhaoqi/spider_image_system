@@ -1,7 +1,17 @@
 import os
 import sys
 
+from image.spider_img_save import download_image
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from selenium.common import StaleElementReferenceException
+import threading
+import time
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtWidgets import QListWidgetItem
+from loguru import logger
 
 from file.file_process import get_image_keyword
 from image.img_switch import check_images, img_category_images
@@ -14,21 +24,10 @@ from utils.face_detect import face_detect_result
 from utils.file_utils import convert_and_move_folder
 from utils.os_environment_check import detect_installed
 from utils.txt_decode import scan_txt_file_all
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-import threading
-import time
-
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QListWidgetItem
-from loguru import logger
 from run.constants import fire_wall_delay_time
 from ui_event.about_dialog_ui import InformationDialog
 from ui_event.dialog_ui import Dialog
 from ui_event.get_url import spider_artworks_url
-
 from run import constants
 from utils.time_utils import time_to_utc
 
@@ -392,3 +391,24 @@ def img_category_button(self):
         target=img_category_images,
         args=(self, constants.data_path))
     img_category_thread_obj.start()
+
+
+@logger.catch
+def download_re_error_image():
+    """
+
+    :return:
+    """
+    # error_image_list = []
+    path = os.path.join(constants.data_path, "download_fail_image.txt")
+    with open(path, 'r', encoding='utf-8', errors='replace') as f:
+        error_image_list = f.readlines()
+    if not error_image_list:
+        return False
+    for index, error_image in enumerate(error_image_list):
+        e_path, error_image_name = os.path.split(error_image)
+        new_file_name = os.path.join(os.path.join(constants.data_path, "error_image"), error_image_name)
+        if not os.path.exists(new_file_name):
+            logger.warning("dir not exists, will create!")
+            os.makedirs(new_file_name)
+        download_image(error_image.strip(), new_file_name, 1, index)
