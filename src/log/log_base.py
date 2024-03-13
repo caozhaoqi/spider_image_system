@@ -7,9 +7,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import time
 
+from run import constants
+
 # -----------------------系统调试------------------------------------
 DEBUG = True
 # -----------------------日志-----------------------------------------
-LOG_DIR = os.path.join(os.path.join(os.getcwd(), 'log_dir'), f'sis_{time.strftime("%Y-%m-%d")}.log')
+LOG_DIR = os.path.join(os.path.join(os.getcwd(), 'log_dir'),
+                       f'sis_{constants.sis_server_version}_{time.strftime("%Y-%m-%d")}.log')
 LOG_FORMAT = '<level>{level: <8}</level>  <green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> - <cyan>{name}</cyan>:<cyan>{' \
              'function}</cyan> - <level>{message}</level> '

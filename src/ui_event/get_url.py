@@ -75,7 +75,7 @@ def artwork_to_image(key_word_pinyin, driver, url):
     image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
     for image_element in image_elements:
         image_url = image_element.get_attribute("src")
-        if filter_not_use(image_url):
+        if filter_not_use(image_url) or not image_url:
             continue
         else:
             result = filter_exists_images(key_word_pinyin, image_url, "_img")
