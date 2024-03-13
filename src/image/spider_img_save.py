@@ -239,7 +239,7 @@ def download_re_error_image():
                 logger.warning("dir not exists, will create!")
                 os.makedirs(new_file_path)
             new_file_name = os.path.join(new_file_path, error_image_name)
-            download_image(error_image.strip(), new_file_name, 1, len(error_image_list))
+            download_image(error_image.strip(), new_file_name, len(error_image_list), index)
         constants.download_image_re_flag = False
     except Exception as e:
         logger.warning(f"unknown error, detail: {e}")
