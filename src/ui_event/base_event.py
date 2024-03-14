@@ -168,7 +168,7 @@ def auto_spider_img_thread(self):
         constants.stop_spider_url_flag = False
         txt_index += 1
         for spider_image_keyword_item in spider_img_keyword_detail:
-            logger.debug("cur spider kew word: " + str(spider_image_keyword_item))
+            logger.debug("cur spider kew word: " + str(spider_image_keyword_item.strip()))
             try:
                 spider_artworks_url(self, spider_image_keyword_item.strip())
             except StaleElementReferenceException as sere:
@@ -176,7 +176,7 @@ def auto_spider_img_thread(self):
             except Exception as e:
                 logger.error(f"unknown error, detail: {e}")
             if constants.stop_spider_url_flag:
-                logger.warning(f"auto spider img stop! will exit, final spider keyword: {spider_image_keyword_item}!")
+                logger.warning(f"auto spider img stop! will exit, final spider keyword: {spider_image_keyword_item.strip()}!")
                 break
             if constants.firewall_flag:
                 logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time:"

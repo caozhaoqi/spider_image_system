@@ -88,7 +88,7 @@ def spider_param_config(key_word):
         ]
         logger.warning(f"not user-agent, use default user-agent: {user_agents[0]}")
     # 随机添加user-agent
-    cur_user_agents = random.choice(user_agents)
+    cur_user_agents = random.choice(user_agents).strip()
     # add user-agent
     if cur_user_agents:
         options.add_argument(
