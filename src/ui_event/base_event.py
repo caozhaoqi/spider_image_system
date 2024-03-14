@@ -14,7 +14,6 @@ from PyQt5.QtWidgets import QListWidgetItem
 from loguru import logger
 from utils.minio_file import upload_image
 from file.file_process import get_image_keyword
-from image.img_switch import check_images, img_category_images
 from ui_event.auto_image_explore import AutoImageDialog
 from ui_event.gi_dialog_ui import GICharacterDialog
 from ui_event.image_dialog import ImageDialog
@@ -143,7 +142,6 @@ def auto_start_spider_image(self):
         target=auto_spider_img_thread,
         args=(self,))
     spider_thread_obj.start()
-    logger.info("auto spider img thread starting...")
 
 
 @logger.catch
@@ -157,6 +155,7 @@ def auto_spider_img_thread(self):
     if not constants.stop_spider_url_flag:
         logger.error("already spider img, please stop here before operate!")
         return False
+    logger.info("auto spider img thread starting...")
     spider_image_keyword, txt_file_list = get_image_keyword()
     if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
         logger.warning("auto spider image null, will exit!")
@@ -197,8 +196,9 @@ def stop_download_image():
     stop download image
     :return:
     """
-    if not constants.stop_download_image_flag:
+    if not constants.stop_download_image_flag or not constants.download_image_re_flag:
         constants.stop_download_image_flag = True
+        constants.download_image_re_flag = False
         logger.warning("flag stop_download_mage_flag set true!")
     else:
         logger.warning("download image already stop or not download image!")

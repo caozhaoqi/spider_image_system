@@ -74,6 +74,10 @@ def spider_param_config(key_word):
     options.add_argument("--ignore-certificate-errors")
     # 设置日志偏好，禁用所有日志
     options = disabled_log_browser(options)
+    # 去除 “Chrome正受到自动化测试软件的控制”
+    options.add_experimental_option('excludeSwitches', ['enable-automation'])
+    # 添加浏览器特征
+    options.add_argument("--disable-blink-features=AutomationControlled")
     # 模拟不同浏览器访问页面 减少被封风险
     user_agents = read_user_agent()
     if not user_agents:
