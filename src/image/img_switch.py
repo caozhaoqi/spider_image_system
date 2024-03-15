@@ -151,9 +151,9 @@ def check_images(self, image_path):
                 else:
                     f.write(error_images + "\n")
                     shutil.move(error_images, image_path + "/error_images/" + file_name)
+                    f.close()
         except Exception as e:
             logger.warning(f"unknown error, detail: {e}")
-            f.close()
     for small_image in small_image_lists:
         try:
             with open(image_path + '/small_image_txt.txt', 'a', encoding='utf-8', errors='replace') as f:
@@ -165,9 +165,9 @@ def check_images(self, image_path):
                 else:
                     f.write(small_image + "\n")
                     shutil.move(small_image, image_path + "/small_images/" + file_name)
+                    f.close()
         except Exception as e:
             logger.warning(f"unknown error, detail: {e}")
-            f.close()
     if constants.check_images_flag:
         constants.check_images_flag = False
         logger.success(f"finished check! flag: {constants.check_images_flag}")
@@ -214,9 +214,10 @@ def img_category_images(self, image_path):
             with open(dir_path + '/square_image_txt.txt', 'a', encoding='utf-8', errors='replace') as f:
                 f.write(square_image + "\n")
             shutil.move(square_image, dir_path + "/square/" + file_name)
+            f.close()
         except Exception as e:
             # logger.warning(f"unknown error, detail: {e}")
-            f.close()
+            ...
     for custom_image in custom_image_lists:
         dir_path, file_name = os.path.split(custom_image)
         if not os.path.exists(dir_path + "/custom/"):
@@ -236,9 +237,10 @@ def img_category_images(self, image_path):
             with open(dir_path + '/master_image_txt.txt', 'a', encoding='utf-8', errors='replace') as f:
                 f.write(master_image + "\n")
             shutil.move(master_image, dir_path + "/master/" + file_name)
+            f.close()
         except Exception as e:
             # logger.warning(f"unknown error, detail: {e}")
-            f.close()
+            ...
 
     if constants.category_image_flag:
         constants.category_image_flag = False
