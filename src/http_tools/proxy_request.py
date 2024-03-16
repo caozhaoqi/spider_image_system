@@ -28,12 +28,18 @@ def get_proxy_item():
 
     :return:
     """
-    ret = get_proxy(constants.proxy_website)
-    if ret:
-        if ret['check_count'] > 1000:
-            return ret['proxy']
+    while True:
+        ret = get_proxy(constants.proxy_website)
+        if ret:
+            if ret['check_count'] > 1000:
+                logger.success(f"cur proxy msg: {ret}")
+                ret = ret['proxy']
+                break
+            else:
+                logger.warning(f"check count < 1000, skip: {ret}")
+                continue
         else:
-            logger.warning(f"check count < 1000, skip: {ret}")
-    else:
-        logger.error("get proxy error, proxy result null!")
-        return None
+            logger.error("no proxy use, please modify config.ini file proxy_flag = False!")
+            ret = None
+            break
+    return ret

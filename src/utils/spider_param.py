@@ -63,19 +63,6 @@ def spider_param_config(key_word):
         "proxyAutoconfigUrl": ""
     }
 
-    if constants.proxy_mode == 'auto':
-        logger.info("cur spider use proxy is auto.")
-        proxy_item = get_proxy_item()
-        logger.debug(f"use proxy: {proxy_item}")
-        proxy = {
-            "proxyType": "manual",
-            "httpProxy": "http://" + proxy_item,  # 代理服务器地址和端口
-            "ftpProxy": "ftp://" + proxy_item,
-            "sslProxy": "https://" + proxy_item,
-            "noProxy": "",
-            "proxyAutoconfigUrl": ""
-        }
-
     options = webdriver.ChromeOptions()
     if constants.spider_mode == 'auto':
         options.add_argument('--headless')
@@ -110,6 +97,18 @@ def spider_param_config(key_word):
             f"user-agent={cur_user_agents}")
         logger.info(f"current use user-agent: {cur_user_agents}")
     if proxy_flag == 'True':
+        if constants.proxy_mode == 'auto':
+            logger.info("cur spider use proxy is auto.")
+            proxy_item = get_proxy_item()
+            logger.debug(f"use proxy: {proxy_item}")
+            proxy = {
+                "proxyType": "manual",
+                "httpProxy": "http://" + proxy_item,  # 代理服务器地址和端口
+                "ftpProxy": "ftp://" + proxy_item,
+                "sslProxy": "https://" + proxy_item,
+                "noProxy": "",
+                "proxyAutoconfigUrl": ""
+            }
         # options.set_capability("proxy", proxy)
         options.add_argument("--proxy-server={}".format(proxy["httpProxy"]))
         logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
