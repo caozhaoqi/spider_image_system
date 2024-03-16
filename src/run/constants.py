@@ -60,6 +60,11 @@ check_images_flag = False
 category_image_flag = False
 # single process image
 single_flag = False
+# sqlite table name
+sqlite_table_name = "proxy_detail"
+# proxy website
+proxy_website = 'http://demo.spiderpy.cn/get/'
+proxy_mode = 'auto'
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
@@ -126,4 +131,4 @@ enable = read_ini_config(ini_file_path, "minio_config_selected", "enable")
 
 sis_server_version = "v1.1.0-beta.2.240315"
 build_date = "2024-03-15 18:00"
-publish_date = "2024-03-15 18:30"
+publish_date = "2024-03-16 18:30"

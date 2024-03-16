@@ -58,7 +58,10 @@ def artwork_to_image(key_word_pinyin, driver, url):
     :param url:
     :return:
     """
-    driver.get(url)
+    try:
+        driver.get(url)
+    except Exception as e:
+        logger.warning(f"unknown error: {e}")
     if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
         logger.warning("error! will exit: cur visit domain blocked.")
         constants.firewall_flag = True
@@ -118,8 +121,12 @@ def spider_artworks_url(self, key_word):
             break
         url_detail = url_process_page(url, current_page=cur_page)
         logger.info("current use url: " + str(url_detail))
-        driver.get(url_detail)
-        time.sleep(search_delta_time)
+        try:
+            driver.get(url_detail)
+            time.sleep(search_delta_time)
+        except Exception as e:
+            logger.warning(f"unknown error: {e}")
+            continue
         if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
             logger.warning("error! will exit: cur visit domain blocked.")
             constants.firewall_flag = True

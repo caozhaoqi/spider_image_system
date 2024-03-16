@@ -4,6 +4,8 @@ import sys
 
 from selenium.webdriver.chrome.service import Service
 
+from http_tools.proxy_request import get_proxy_item
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import time
@@ -54,12 +56,25 @@ def spider_param_config(key_word):
     """
     proxy = {
         "proxyType": "manual",
-        "httpProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口
-        "ftpProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
-        "sslProxy": "http_tools://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
+        "httpProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口
+        "ftpProxy": "ftp://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
+        "sslProxy": "https://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
         "noProxy": "",
         "proxyAutoconfigUrl": ""
     }
+
+    if constants.proxy_mode == 'auto':
+        logger.info("cur spider use proxy is auto.")
+        proxy_item = get_proxy_item()
+        logger.debug(f"use proxy: {proxy_item}")
+        proxy = {
+            "proxyType": "manual",
+            "httpProxy": "http://" + proxy_item,  # 代理服务器地址和端口
+            "ftpProxy": "ftp://" + proxy_item,
+            "sslProxy": "https://" + proxy_item,
+            "noProxy": "",
+            "proxyAutoconfigUrl": ""
+        }
 
     options = webdriver.ChromeOptions()
     if constants.spider_mode == 'auto':
@@ -95,7 +110,8 @@ def spider_param_config(key_word):
             f"user-agent={cur_user_agents}")
         logger.info(f"current use user-agent: {cur_user_agents}")
     if proxy_flag == 'True':
-        options.set_capability("proxy", proxy)
+        # options.set_capability("proxy", proxy)
+        options.add_argument("--proxy-server={}".format(proxy["httpProxy"]))
         logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
 
     if constants.chrome_path != 'None':
@@ -172,7 +188,10 @@ def artwork_single_image(key_word_pinyin, driver, url):
     :return:
     """
     image_url_list = []
-    driver.get(url)
+    try:
+        driver.get(url)
+    except Exception as e:
+        logger.warning(f"unknown error: {e}")
     if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
         logger.warning("error! will exit: cur visit domain blocked.")
         constants.firewall_flag = True
