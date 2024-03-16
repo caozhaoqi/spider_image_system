@@ -23,6 +23,16 @@ def get_proxy(url, ):
 
 
 @logger.catch
+def valid_proxy_ip(ret):
+    """
+
+    :param ret:
+    :return:
+    """
+    pass
+
+
+@logger.catch
 def get_proxy_item():
     """
 
@@ -31,9 +41,10 @@ def get_proxy_item():
     while True:
         ret = get_proxy(constants.proxy_website)
         if ret:
-            if ret['check_count'] > 1000:
+            if ret['check_count'] > 10:
                 logger.success(f"cur proxy msg: {ret}")
                 ret = ret['proxy']
+                # valid_proxy_ip(ret)
                 break
             else:
                 logger.warning(f"check count < 1000, skip: {ret}")

@@ -62,9 +62,6 @@ category_image_flag = False
 single_flag = False
 # sqlite table name
 sqlite_table_name = "proxy_detail"
-# proxy website
-proxy_website = 'http://demo.spiderpy.cn/get/'
-proxy_mode = 'auto'
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
@@ -92,6 +89,10 @@ r18_mode = read_ini_config(ini_file_path, "spider_config", "r18_mode")
 all_show = read_ini_config(ini_file_path, "spider_config", "all_show")
 # proxy config
 proxy_flag = read_ini_config(ini_file_path, "spider_config", "proxy_flag")
+# proxy website
+proxy_website = read_ini_config(ini_file_path, "spider_config", "proxy_website")
+# proxy mode
+proxy_mode = read_ini_config(ini_file_path, "spider_config", "proxy_mode")
 # 代理服务器地址
 proxy_server_ip = read_ini_config(ini_file_path, "spider_config", "proxy_server_ip")
 # 代理服务器端口

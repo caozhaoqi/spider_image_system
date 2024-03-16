@@ -98,7 +98,7 @@ def spider_param_config(key_word):
         logger.info(f"current use user-agent: {cur_user_agents}")
     if proxy_flag == 'True':
         if constants.proxy_mode == 'auto':
-            logger.info("cur spider use proxy is auto.")
+            logger.info("cur spider use proxy is auto select proxy model.")
             proxy_item = get_proxy_item()
             logger.debug(f"use proxy: {proxy_item}")
             proxy = {
