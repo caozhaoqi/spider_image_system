@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
+import sys
 
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
     拥有代理功能的爬虫request
 
@@ -38,8 +42,9 @@ def get_proxy_item():
 
     :return:
     """
+    get_proxy_api = constants.proxy_website + '/get'
     while True:
-        ret = get_proxy(constants.proxy_website)
+        ret = get_proxy(get_proxy_api)
         if ret:
             if ret['check_count'] > 10:
                 logger.success(f"cur proxy msg: {ret}")
@@ -50,7 +55,7 @@ def get_proxy_item():
                 logger.warning(f"check count < 1000, skip: {ret}")
                 continue
         else:
-            logger.error("no proxy use, please modify config.ini file proxy_flag = False!")
+            logger.error("no proxy use, please modify config.ini file proxy_flag = False or check proxy server status!")
             ret = None
             break
     return ret

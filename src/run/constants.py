@@ -132,4 +132,4 @@ enable = read_ini_config(ini_file_path, "minio_config_selected", "enable")
 
 sis_server_version = "v1.1.0-beta.2.240315"
 build_date = "2024-03-15 18:00"
-publish_date = "2024-03-16 18:30"
+publish_date = "2024-03-18 18:30"
