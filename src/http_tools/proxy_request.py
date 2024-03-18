@@ -22,8 +22,8 @@ def get_proxy(url, ):
     :param url:
     :return:
     """
-    response = requests.get(url).json()
-    return response
+    response = requests.get(url)
+    return response.text
 
 
 @logger.catch
@@ -46,14 +46,15 @@ def get_proxy_item():
     while True:
         ret = get_proxy(get_proxy_api)
         if ret:
-            if ret['check_count'] > 10:
-                logger.success(f"cur proxy msg: {ret}")
-                ret = ret['proxy']
-                # valid_proxy_ip(ret)
-                break
-            else:
-                logger.warning(f"check count < 1000, skip: {ret}")
-                continue
+            logger.info(f"get proxy host and port: {ret}")
+            # if ret['check_count'] > 10:
+            #     logger.success(f"cur proxy msg: {ret}")
+            #     ret = ret['proxy']
+            #     # valid_proxy_ip(ret)
+            break
+            # else:
+            #     logger.warning(f"check count < 1000, skip: {ret}")
+            #     continue
         else:
             logger.error("no proxy use, please modify config.ini file proxy_flag = False or check proxy server status!")
             ret = None
