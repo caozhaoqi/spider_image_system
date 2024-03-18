@@ -22,8 +22,12 @@ def get_proxy(url, ):
     :param url:
     :return:
     """
-    response = requests.get(url)
-    return response.text
+    try:
+        response = requests.get(url)
+    except Exception as e:
+        response = None
+        logger.error(f"unknown error: {e}")
+    return response
 
 
 @logger.catch
@@ -49,7 +53,7 @@ def get_proxy_item():
             logger.info(f"get proxy host and port: {ret}")
             # if ret['check_count'] > 10:
             #     logger.success(f"cur proxy msg: {ret}")
-            #     ret = ret['proxy']
+            ret = ret.text
             #     # valid_proxy_ip(ret)
             break
             # else:
