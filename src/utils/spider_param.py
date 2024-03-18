@@ -100,6 +100,9 @@ def spider_param_config(key_word):
         if constants.proxy_mode == 'auto':
             logger.info("cur spider use proxy is auto select proxy model.")
             proxy_item = get_proxy_item()
+            if not proxy_item:
+                logger.error("proxy_item None, will quit spider image!")
+                return None, None, None
             logger.debug(f"use proxy: {proxy_item}")
             proxy = {
                 "proxyType": "manual",
