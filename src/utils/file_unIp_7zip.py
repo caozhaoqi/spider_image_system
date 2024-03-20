@@ -17,15 +17,14 @@ def extract_xz_to_7z(seven_zip_path, xz_file_path, temp_7z_file_path):
     :param temp_7z_file_path:
     :return:
     """
-    # 使用7z命令将.xz文件解压为.7z文件
-    cmd = [seven_zip_path, 'x', '-y', xz_file_path, '-o' + os.path.dirname(temp_7z_file_path)]
-    subprocess.run(cmd, check=True)
-
-    # # 检查是否成功生成了.7z文件
-    # if os.path.exists(temp_7z_file_path):
-    #     return True
-    # else:
-    #     return False
+    try:
+        # 使用7z命令将.xz文件解压为.7z文件
+        cmd = [seven_zip_path, 'x', '-y', xz_file_path, '-o' + os.path.dirname(temp_7z_file_path)]
+        subprocess.run(cmd, check=True)
+        return True
+    except Exception as e:
+        logger.error(f"unknown error, please check config! detail: {e}")
+        return False
 
 
 @logger.catch
@@ -38,15 +37,19 @@ def extract_7z(seven_zip_path, password, archive_path, output_path):
     :param output_path:
     :return:
     """
-
-    # 使用7z命令并提供密码来解压.7z文件
-    if password:
-        # 如果密码非空，使用-p参数提供密码
-        cmd = [seven_zip_path, 'x', '-y', '-p' + password, archive_path, '-o' + output_path]
-    else:
-        # 如果密码为空，则不使用-p参数
-        cmd = [seven_zip_path, 'x', '-y', archive_path, '-o' + output_path]
-    subprocess.run(cmd, check=True)
+    try:
+        # 使用7z命令并提供密码来解压.7z文件
+        if password:
+            # 如果密码非空，使用-p参数提供密码
+            cmd = [seven_zip_path, 'x', '-y', '-p' + password, archive_path, '-o' + output_path]
+        else:
+            # 如果密码为空，则不使用-p参数
+            cmd = [seven_zip_path, 'x', '-y', archive_path, '-o' + output_path]
+        subprocess.run(cmd, check=True)
+        return True
+    except Exception as e:
+        logger.error(f"unknown error, please check config! detail: {e}")
+        return False
 
 
 @logger.catch
@@ -82,6 +85,7 @@ def unzip_file(dir_path):
         logger.warning(f"{dir_path} no xz content!")
         constants.unzip_file_flag = False
         return False
+
     logger.debug(f"start unzip .xz to 7zp length: {len(file_list)}: ")
     for file in file_list:
         if file.endswith('.7z.xz'):
@@ -103,6 +107,7 @@ def unzip_file(dir_path):
         logger.warning(f"{dir_path} no 7z content!")
         constants.unzip_file_flag = False
         return False
+
     for file_7z in file_list:
         if file_7z.endswith('.7z'):
             # 提取文件名和目录
@@ -120,6 +125,7 @@ def unzip_file(dir_path):
             else:
                 logger.warning(f".mp4 存在：{file_7z} skip!")
                 continue
+
     logger.success("unzip all file success!")
     constants.unzip_file_flag = False
     return True

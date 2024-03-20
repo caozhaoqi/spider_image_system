@@ -31,16 +31,6 @@ def get_proxy(url, ):
 
 
 @logger.catch
-def valid_proxy_ip(ret):
-    """
-
-    :param ret:
-    :return:
-    """
-    pass
-
-
-@logger.catch
 def get_proxy_item():
     """
 
@@ -59,6 +49,10 @@ def get_proxy_item():
             # else:
             #     logger.warning(f"check count < 1000, skip: {ret}")
             #     continue
+        elif "error" in ret:
+            logger.error(f"unknown error: detail: {ret}")
+            ret = None
+            break
         else:
             logger.error("no proxy use, please modify config.ini file proxy_flag = False or check proxy server status!")
             ret = None
