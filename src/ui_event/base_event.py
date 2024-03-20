@@ -411,6 +411,6 @@ def unzip_file_method():
             target=unzip_file,
             args=(constants.data_path,))
         unzip_file_threading_obj.start()
-        logger.info("start unzip file!")
+        logger.info(f"start unzip file! path: {constants.data_path}")
     else:
         logger.error("unzip ing file, please wait.")

@@ -50,6 +50,21 @@ def extract_7z(seven_zip_path, password, archive_path, output_path):
 
 
 @logger.catch
+def scan_file_zip(dir_path):
+    """
+
+    :param dir_path:
+    :return:
+    """
+    file_zip_list = []
+    for root, dirs, files in os.walk(dir_path):
+        for file in files:
+            if file.endswith('.7z') or file.endswith('.7z.xz'):
+                file_zip_list.append(os.path.join(root, file))
+    return file_zip_list
+
+
+@logger.catch
 def unzip_file(dir_path):
     """
 
@@ -62,8 +77,13 @@ def unzip_file(dir_path):
     PASSWORD = constants.PASSWORD  # 替换为实际的密码
 
     # 遍历当前目录下的所有.7z.xz文件
-    logger.debug("start unzip .xz to 7zp: ")
-    for file in os.listdir(dir_path):
+    file_list = scan_file_zip(dir_path)
+    if not file_list:
+        logger.warning(f"{dir_path} no xz content!")
+        constants.unzip_file_flag = False
+        return False
+    logger.debug(f"start unzip .xz to 7zp length: {len(file_list)}: ")
+    for file in file_list:
         if file.endswith('.7z.xz'):
             # 提取文件名和目录
             filename = os.path.splitext(file)[0]
@@ -77,8 +97,13 @@ def unzip_file(dir_path):
                 logger.warning(f".7z 存在：{file} skip!")
                 continue
 
-    logger.debug("start unzip .7z to mp4: ")
-    for file_7z in os.listdir(dir_path):
+    # f7zp_list = os.listdir(dir_path)
+    logger.debug(f"start unzip .7z to mp4 length {len(file_list)}: ")
+    if not file_list:
+        logger.warning(f"{dir_path} no 7z content!")
+        constants.unzip_file_flag = False
+        return False
+    for file_7z in file_list:
         if file_7z.endswith('.7z'):
             # 提取文件名和目录
             filename = os.path.splitext(file_7z)[0]

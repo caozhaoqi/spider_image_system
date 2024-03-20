@@ -115,7 +115,7 @@ def write_minio_config_to_file(minio_config):
 
     conf.add_section("unzip_config")
     conf.set("unzip_config", "SEVEN_ZIP_PATH", "C:/Program Files/7-Zip/7z.exe")
-    conf.set("unzip_config", "PASSWORD", "1024")
+    conf.set("unzip_config", "PASSWORD", "1204")
 
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
@@ -210,7 +210,7 @@ def check_ini_config():
 
         conf.add_section("unzip_config")
         conf.set("unzip_config", "SEVEN_ZIP_PATH", "C:/Program Files/7-Zip/7z.exe")
-        conf.set("unzip_config", "PASSWORD", "1024")
+        conf.set("unzip_config", "PASSWORD", "1204")
 
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
