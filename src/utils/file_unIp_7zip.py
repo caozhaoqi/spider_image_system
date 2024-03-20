@@ -109,10 +109,14 @@ def unzip_file(dir_path):
             filename = os.path.splitext(file_7z)[0]
             temp_7z_file_path = os.path.join(dir_path, filename + '.7z')
             mp4_file_path = os.path.join(dir_path, filename + '.mp4')
+            unzip_file_path = os.path.join(os.path.dirname(mp4_file_path), 'unzip_video')
+            if not os.path.exists(unzip_file_path):
+                logger.warning(f"unzip file path not exists, will create it: {unzip_file_path}")
+                os.makedirs(unzip_file_path)
             # 解压.xz文件为.7z文件
             if not os.path.exists(mp4_file_path):
                 # 解压.7z文件（如果需要密码的话）
-                extract_7z(SEVEN_ZIP_PATH, PASSWORD, temp_7z_file_path, dir_path)
+                extract_7z(SEVEN_ZIP_PATH, PASSWORD, temp_7z_file_path, unzip_file_path)
             else:
                 logger.warning(f".mp4 存在：{file_7z} skip!")
                 continue
