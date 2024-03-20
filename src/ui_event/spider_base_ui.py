@@ -11,7 +11,7 @@ from loguru import logger
 from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, genshin_impact_view, \
     log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag, \
-    user_upload_image, user_download_image
+    user_upload_image, user_download_image, unzip_file_method
 
 
 @logger.catch
@@ -69,21 +69,21 @@ def base_menu(self):
     self.folder_name = QAction('名称转换', self.tools_menu)
     self.encoding_tools = QAction('编码转换', self.tools_menu)
     self.test_driver = QAction('驱动检测', self.tools_menu)
-    # self.test_button = QAction('测试工具', self.tools_menu)
+    self.unzip_file = QAction('解压文件', self.tools_menu)
     self.genshin_impact.triggered.connect(lambda: genshin_impact_view())
     # self.star_rail.triggered.connect(lambda: star_rail_view())
     self.log_analyze.triggered.connect(lambda: log_analyze_ui())
     self.folder_name.triggered.connect(lambda: convert_folder_name())
     self.encoding_tools.triggered.connect(lambda: encoding_tools_convert())
     self.test_driver.triggered.connect(lambda:  detect_installed_flag())
-    # self.test_button.triggered.connect(lambda: test_button_event())
+    self.unzip_file.triggered.connect(lambda: unzip_file_method())
     self.tools_menu.addAction(self.genshin_impact)
     # self.tools_menu.addAction(self.star_rail)
     self.tools_menu.addAction(self.log_analyze)
     self.tools_menu.addAction(self.folder_name)
     self.tools_menu.addAction(self.encoding_tools)
     self.tools_menu.addAction(self.test_driver)
-    # self.tools_menu.addAction(self.test_button)
+    self.tools_menu.addAction(self.unzip_file)
 
     self.settings_menu = QMenu('设置', self.menu_bar)
     self.edit_settings_action = QAction('编辑配置', self.settings_menu)

@@ -44,6 +44,8 @@ unzip_generate_video_flag = False
 uploading_image_flag = False
 # download image
 download_image_re_flag = False
+# unzip file
+unzip_file_flag = False
 # 数据存储路径
 data_path = os.path.realpath('./data')
 # 基础路径
@@ -130,6 +132,9 @@ minio_password = read_ini_config(ini_file_path, "minio_config_selected", "minio_
 mark_msg = read_ini_config(ini_file_path, "minio_config_selected", "mark_msg")
 enable = read_ini_config(ini_file_path, "minio_config_selected", "enable")
 
-sis_server_version = "v1.1.0-beta.2.240315"
-build_date = "2024-03-15 18:00"
-publish_date = "2024-03-18 18:30"
+SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH")
+PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
+
+sis_server_version = "v1.1.0.240320"
+build_date = "2024-03-20 18:00"
+publish_date = "2024-03-20 18:30"

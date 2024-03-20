@@ -2,6 +2,7 @@ import os
 import sys
 
 from image.spider_img_save import download_re_error_image
+from utils.file_unIp_7zip import unzip_file
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -176,7 +177,8 @@ def auto_spider_img_thread(self):
             except Exception as e:
                 logger.error(f"unknown error, detail: {e}")
             if constants.stop_spider_url_flag:
-                logger.warning(f"auto spider img stop! will exit, final spider keyword: {spider_image_keyword_item.strip()}!")
+                logger.warning(
+                    f"auto spider img stop! will exit, final spider keyword: {spider_image_keyword_item.strip()}!")
                 break
             if constants.firewall_flag:
                 logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time:"
@@ -398,3 +400,17 @@ def user_download_image():
         logger.info("start re error download image!")
     else:
         logger.error("downloading error image, please wait.")
+
+
+@logger.catch
+def unzip_file_method():
+    # unzip_file(constants.data_path)
+    if not constants.unzip_file_flag:
+        constants.unzip_file_flag = True
+        unzip_file_threading_obj = threading.Thread(
+            target=unzip_file,
+            args=(constants.data_path,))
+        unzip_file_threading_obj.start()
+        logger.info("start unzip file!")
+    else:
+        logger.error("unzip ing file, please wait.")
