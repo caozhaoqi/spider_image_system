@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from loguru import logger
 import subprocess
+
 from run import constants
 
 
@@ -17,7 +18,7 @@ def extract_xz_to_7z(seven_zip_path, xz_file_path, temp_7z_file_path):
     :return:
     """
     # 使用7z命令将.xz文件解压为.7z文件
-    cmd = [seven_zip_path, 'x', xz_file_path, '-o' + os.path.dirname(temp_7z_file_path)]
+    cmd = [seven_zip_path, 'x', '-y', xz_file_path, '-o' + os.path.dirname(temp_7z_file_path)]
     subprocess.run(cmd, check=True)
 
     # # 检查是否成功生成了.7z文件
@@ -41,10 +42,10 @@ def extract_7z(seven_zip_path, password, archive_path, output_path):
     # 使用7z命令并提供密码来解压.7z文件
     if password:
         # 如果密码非空，使用-p参数提供密码
-        cmd = [seven_zip_path, 'x', '-p' + password, archive_path, '-o' + output_path]
+        cmd = [seven_zip_path, 'x', '-y', '-p' + password, archive_path, '-o' + output_path]
     else:
         # 如果密码为空，则不使用-p参数
-        cmd = [seven_zip_path, 'x', archive_path, '-o' + output_path]
+        cmd = [seven_zip_path, 'x', '-y', archive_path, '-o' + output_path]
     subprocess.run(cmd, check=True)
 
 
@@ -90,7 +91,8 @@ def unzip_file(dir_path):
             else:
                 logger.warning(f".mp4 存在：{file_7z} skip!")
                 continue
-
+    logger.success("unzip all file success!")
+    constants.unzip_file_flag = False
     return True
 
 
