@@ -23,9 +23,10 @@ def log_record():
     """
     # 日志配置与捕获
     logging.getLogger().handlers = [InterceptHandler()]
+    # 创建一个RotatingFileHandler，设置日志文件大小为1MB，备份数量为5
     logger.configure(
         handlers=[{"sink": sys.stdout, "level": sis_log_level, "format": format_record}])
-    logger.add(LOG_DIR, encoding='utf-8', rotation="00:00")
+    logger.add(LOG_DIR, encoding='utf-8', rotation="00:00",  retention="30 days", compression="zip", )
     logger.debug('SIS log file started record, current log file: ' + LOG_DIR)
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
     return True

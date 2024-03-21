@@ -4,6 +4,7 @@
 ### 2024/3/22
 - re解析bug修复
 - add programmer quit method
+- add log zip and log save date to log files
 
 ## v1.1.0.240320
 ### 2024/3/20

@@ -389,10 +389,13 @@ class UIMainWindows(QMainWindow):
             logger.success("success download file thread start")
 
     def closeEvent(self, event):
+        """
+
+        :param event:
+        :return:
+        """
         # 在这里处理窗口关闭事件
-        logger.warning("exe main ui will close ...")
+        logger.warning("Exe main ui will closing...")
         exit_save_data()
-        # 你可以选择接受或忽略关闭事件
-        # event.accept()  # 允许窗口关闭
-        # event.ignore()  # 取消窗口关闭
-        # 在这个例子中，我们不进行任何操作，因此事件将按照默认行为处理
+
+
