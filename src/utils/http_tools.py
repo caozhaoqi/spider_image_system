@@ -38,11 +38,18 @@ def image_url_re(image_url):
     if result_url.endswith('.jpg') or result_url.endswith('.png'):
         return result_url
     else:
-        result_url = re.search(r'/([^/?#]+)$', image_url).group(1)
-        if result_url.endswith('.jpg') or result_url.endswith('.png') or result_url.endswith('.gif'):
-            return result_url
-        else:
-            logger.warning(f"parser error, return source url:{image_url}")
+        try:
+            result_url = re.search(r'/([^/?#]+)$', image_url).group(1)
+            if result_url.endswith('.jpg') or result_url.endswith('.png') or result_url.endswith('.gif'):
+                return result_url
+            else:
+                logger.warning(f"parser error, return source url:{image_url}")
+                return image_url
+        except AttributeError as ae:
+            logger.error(f"image url is unsplit, source url:{image_url}, please check config.ini config and add item!")
+            return image_url
+        except Exception as e:
+            logger.error(f"unknown error, please check log. source url: {image_url}")
             return image_url
 
 
