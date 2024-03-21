@@ -1,6 +1,8 @@
 import os
 import sys
 
+from ui_event.base_event import exit_save_data
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from PyQt5.QtWidgets import QApplication
@@ -20,6 +22,17 @@ def ui_paint():
     w = UIMainWindows()
     w.show()
     app.exec_()
+    app.lastWindowClosed.connect(on_last_window_closed)
+
+
+@logger.catch
+def on_last_window_closed():
+    """
+
+    :return:
+    """
+    logger.warning("console will quit!")
+    exit_save_data()
 
 
 @logger.catch

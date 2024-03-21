@@ -3,6 +3,7 @@
 ## v1.1.1-beta.1.240322
 ### 2024/3/22
 - re解析bug修复
+- add programmer quit method
 
 ## v1.1.0.240320
 ### 2024/3/20

@@ -50,7 +50,6 @@ def is_keyword_num(driver, key_word):
 def spider_param_config(key_word):
     """
     spider param config
-    :param webdriver:
     :param key_word:
     :return:
     """

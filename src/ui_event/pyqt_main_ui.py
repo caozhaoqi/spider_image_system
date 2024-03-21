@@ -22,7 +22,7 @@ from image.img_switch import show_filter_image, folder_path, find_images, show_n
     img_category_images
 from image.spider_img_save import download_img_txt, remove_error_image, img_category_button
 from image.video_process import play_video_process, process_images_thread
-from ui_event.base_event import scan_populate_mp4_list
+from ui_event.base_event import scan_populate_mp4_list, exit_save_data
 from ui_event.get_url import spider_artworks_url
 from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint, tab_ui_tab
 
@@ -387,3 +387,12 @@ class UIMainWindows(QMainWindow):
             constants.download_video_link_flag = True
             self.start_download_file_link_thread.start()
             logger.success("success download file thread start")
+
+    def closeEvent(self, event):
+        # 在这里处理窗口关闭事件
+        logger.warning("exe main ui will close ...")
+        exit_save_data()
+        # 你可以选择接受或忽略关闭事件
+        # event.accept()  # 允许窗口关闭
+        # event.ignore()  # 取消窗口关闭
+        # 在这个例子中，我们不进行任何操作，因此事件将按照默认行为处理

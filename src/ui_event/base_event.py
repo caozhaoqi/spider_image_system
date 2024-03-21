@@ -414,3 +414,18 @@ def unzip_file_method():
         logger.info(f"start unzip file! path: {constants.data_path}")
     else:
         logger.error("unzip ing file, please wait.")
+
+
+@logger.catch
+def exit_save_data():
+    """
+
+    :return:
+    """
+
+    # elif not constants.stop_spider_url_flag:
+    #     # 保存抓取进度 当有抓取任务时
+    logger.warning("-------------------------------------------------------------")
+    logger.warning(f"-----sis-{constants.sis_server_version} exe will quit!-----------------")
+    logger.warning("-------------------------------------------------------------")
+
