@@ -5,6 +5,7 @@
 - re解析bug修复
 - add programmer quit method
 - add log zip and log save date to log files
+- add incognito explore mode
 
 ## v1.1.0.240320
 ### 2024/3/20

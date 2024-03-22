@@ -79,6 +79,8 @@ def spider_param_config(key_word):
     options.add_experimental_option('excludeSwitches', ['enable-automation'])
     # 添加浏览器特征
     options.add_argument("--disable-blink-features=AutomationControlled")
+    # 无痕模式 减少被追踪风险
+    options.add_argument("--incognito")  # 启动无痕模式
     # 模拟不同浏览器访问页面 减少被封风险
     user_agents = read_user_agent()
     if not user_agents:
