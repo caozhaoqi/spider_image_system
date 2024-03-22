@@ -4,6 +4,8 @@ idna==3.6
 pypinyin~=0.50.0
 loguru~=0.7.2
 numpy~=1.26.3
+uvicorn~=0.22.0
+fastapi~=0.97.0
 pyinstaller
 urllib3~=2.1.0
 pillow~=10.2.0
@@ -11,5 +13,5 @@ selenium~=4.16.0
 requests~=2.31.0
 minio~=7.2.5
 PyQt5~=5.15.10
-opencv-python~=4.9.0.80
 pyqtchart
+opencv-python~=4.9.0.80

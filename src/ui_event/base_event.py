@@ -128,8 +128,10 @@ def stop_spider_image():
     if not constants.stop_spider_url_flag:
         constants.stop_spider_url_flag = True
         logger.warning("flag stop_spider_url_flag set true!")
+        return True
     else:
         logger.warning("spider url already stop!")
+        return False
 
 
 @logger.catch
@@ -202,8 +204,10 @@ def stop_download_image():
         constants.stop_download_image_flag = True
         constants.download_image_re_flag = False
         logger.warning("flag stop_download_mage_flag set true!")
+        return True
     else:
         logger.warning("download image already stop or not download image!")
+        return False
 
 
 @logger.catch
@@ -346,8 +350,10 @@ def face_detect_action():
             args=(constants.data_path,))
         face_detect_thread_obj.start()
         logger.info("start detect face!")
+        return True
     else:
         logger.error("detect face ing, please wait.")
+        return False
 
 
 @logger.catch
@@ -380,8 +386,10 @@ def user_upload_image():
             args=(constants.basic_path,))
         upload_image_thread_obj.start()
         logger.info("start upload image!")
+        return True
     else:
         logger.error("uploading image, please wait.")
+        return False
 
 
 @logger.catch

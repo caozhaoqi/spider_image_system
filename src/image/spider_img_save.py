@@ -154,7 +154,10 @@ def download_img_txt(self):
             logger.warning(f"not start upload image, {constants.upload_minio_image_Flag},"
                            f" not {constants.category_image_flag}, not {constants.check_images_flag}")
     logger.success("downloaded all image!")
-    self.success_tips()
+    if self:
+        self.success_tips()
+    else:
+        logger.success("downloaded image operate success finished!")
     constants.stop_download_image_flag = True
     return True
 

@@ -79,7 +79,7 @@ def find_value(target_value, data_list):
     """
     for item in data_list:
         if item == target_value:
-            logger.warning("item exists will skip, pid: " + target_value[-9:])
+            logger.warning("item exists will skip, pid: " + target_value[-9:].strip())
             return True
     return False
 

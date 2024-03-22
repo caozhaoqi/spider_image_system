@@ -41,17 +41,7 @@ def get_proxy_item():
         ret = get_proxy(get_proxy_api)
         if ret:
             logger.info(f"get proxy host and port: {ret}")
-            # if ret['check_count'] > 10:
-            #     logger.success(f"cur proxy msg: {ret}")
             ret = ret.text
-            #     # valid_proxy_ip(ret)
-            break
-            # else:
-            #     logger.warning(f"check count < 1000, skip: {ret}")
-            #     continue
-        elif "error" in ret:
-            logger.error(f"unknown error: detail: {ret}")
-            ret = None
             break
         else:
             logger.error("no proxy use, please modify config.ini file proxy_flag = False or check proxy server status!")

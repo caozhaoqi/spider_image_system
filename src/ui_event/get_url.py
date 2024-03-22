@@ -156,7 +156,10 @@ def spider_artworks_url(self, key_word):
         else:
             logger.warning("skip spider loop!")
             break
-    self.success_tips()
+    if self:
+        self.success_tips()
+    else:
+        logger.success("spider image operate success finished!")
     if constants.spider_mode == 'manual':
         constants.stop_spider_url_flag = True
     logger.warning("google chrome will exit! ")

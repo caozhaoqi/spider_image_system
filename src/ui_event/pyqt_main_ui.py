@@ -204,27 +204,14 @@ class UIMainWindows(QMainWindow):
         success tips
         :return:
         """
-        # show_message("sis-info:完成", "完成！")
         logger.success('show success tips.')
-        # success_tips_thread = threading.Thread(
-        #     target=show_message,
-        #     args=("完成", "完成！",))
-        # success_tips_thread.start()
-        # show_msg_alert("完成", "完成！")
 
-    # @logger.catch
     def error_tips(self):
         """
         error tips
         :return:
         """
-        # show_message("sis-error:错误", "请等待当前操作完成！")
         logger.error('show error tips.')
-        # error_tips_thread = threading.Thread(
-        #     target=show_msg_alert,
-        #     args=(self, "错误", "请等待当前操作完成！",))
-        # error_tips_thread.start()
-        # show_msg_alert("完成", "完成！")
 
     # @logger.catch
     def download_file_thread(self):
@@ -397,5 +384,3 @@ class UIMainWindows(QMainWindow):
         # 在这里处理窗口关闭事件
         logger.warning("Exe main ui will closing...")
         exit_save_data()
-
-
