@@ -9,7 +9,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # 检查默认配置项
 check_ini_config()
 
+# web port
 app_port = 33333
+# web_start_flag
+web_flag_start = False
 # spider image url 图片抓取进程是否停止工作
 stop_spider_url_flag = True
 # download_image_flag

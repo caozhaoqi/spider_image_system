@@ -1,15 +1,6 @@
 import os
 import sys
 
-from log.log_record import check_version
-
-root_path = os.getcwd()
-print(root_path)
-sys.path.append(root_path)
-# 导入OS模块
-import os
-import sys
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import logging
@@ -24,8 +15,9 @@ from loguru import logger
 from src.log.log_base import LOG_DIR
 from src.log.log_config import InterceptHandler, format_record
 from src.router.router import api_router
-from run.constants import app_port, publish_date, build_date, sis_server_version
+from run.constants import app_port, sis_server_version, web_flag_start
 from fastapi.openapi.docs import get_swagger_ui_html
+from log.log_record import check_version
 
 
 @logger.catch
@@ -51,7 +43,7 @@ def init_app():
     :return:
     """
     # fast api app 启动项配置与启动
-    app = FastAPI(title="Spider Image System", version= sis_server_version,
+    app = FastAPI(title="Spider Image System", version=sis_server_version,
                   description="API version", debug=True)
     # 路由引入
     app.include_router(router=api_router, prefix="/api/v1.0.1")
@@ -68,10 +60,18 @@ def init_app():
 app = init_app()
 
 
-def main(*args):
-    check_version()
-    uvicorn.run(app='sis_main_process:app', host='0.0.0.0', port=app_port, reload=False)
+def api_main():
+    """
+
+    :return:
+    """
+    if not web_flag_start:
+        check_version()
+        uvicorn.run(app='sis_main_process:app', host='0.0.0.0', port=app_port, reload=False)
+        logger.success("web api starting!")
+    else:
+        logger.error("web api already start!")
 
 
 if __name__ == "__main__":
-    main()
+    api_main()

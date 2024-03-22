@@ -1,9 +1,6 @@
 import os
 import sys
 
-from image.spider_img_save import download_re_error_image
-from utils.file_unIp_7zip import unzip_file
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from selenium.common import StaleElementReferenceException
@@ -24,12 +21,15 @@ from utils.face_detect import face_detect_result
 from utils.file_utils import convert_and_move_folder
 from utils.os_environment_check import detect_installed
 from utils.txt_decode import scan_txt_file_all
-from run.constants import fire_wall_delay_time
+from run.constants import fire_wall_delay_time, web_flag_start, app_port
 from ui_event.about_dialog_ui import InformationDialog
 from ui_event.dialog_ui import Dialog
 from ui_event.get_url import spider_artworks_url
 from run import constants
 from utils.time_utils import time_to_utc
+import uvicorn
+from image.spider_img_save import download_re_error_image
+from utils.file_unIp_7zip import unzip_file
 
 
 @logger.catch
@@ -437,3 +437,27 @@ def exit_save_data():
     logger.warning(f"-----sis-{constants.sis_server_version} exe will quit!-----------------")
     logger.warning("-------------------------------------------------------------")
 
+
+@logger.catch
+def api_main_method_web():
+    """
+
+    :return:
+    """
+    if not web_flag_start:
+        uvicorn.run(app='sis_main_process:app', host='0.0.0.0', port=app_port, reload=False)
+    else:
+        logger.error("web api already start!")
+
+
+@logger.catch
+def api_main_method():
+    """
+
+    :return:
+    """
+    api_main_threading_obj = threading.Thread(
+        target=api_main_method_web,
+        args=())
+    api_main_threading_obj.start()
+    logger.success("api main thread starting!")
