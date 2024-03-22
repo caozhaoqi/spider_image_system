@@ -60,6 +60,7 @@ def init_app():
 app = init_app()
 
 
+@logger.catch
 def api_main():
     """
 

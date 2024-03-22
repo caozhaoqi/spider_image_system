@@ -53,14 +53,14 @@ def send_request(url, timeout=download_img_time_out):
             return response
         except (ReadTimeout, ChunkedEncodingError, ConnectTimeout, HTTPError) as e:
             # 如果是超时、分块编码错误或其他HTTP错误，记录错误并决定是否重试
-            logger.error(f"Request to {url} failed with an error: {e}")
+            # logger.error(f"Request to {url} failed with an error: {e}")
 
             # 增加重试延迟
             time.sleep(retries.backoff_factor * (2 ** retries_count))
             retries_count += 1
 
     # 如果所有重试都失败了，返回None
-    logger.error(f"Failed to retrieve data from {url} after multiple retries.")
+    # logger.error(f"Failed to retrieve data from {url} after multiple retries.")
     return None
 
 

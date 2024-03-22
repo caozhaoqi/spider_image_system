@@ -9,4 +9,4 @@ from view import log_process
 
 api_router = APIRouter()
 # 模块路由配置
-api_router.include_router(log_process.router, prefix="/sis", tags=['minio操作'])
+api_router.include_router(log_process.router, prefix="/sis", tags=['sis api 操作'])
