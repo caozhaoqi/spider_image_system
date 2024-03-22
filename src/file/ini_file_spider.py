@@ -92,9 +92,9 @@ def write_minio_config_to_file(minio_config):
 
     conf.add_section("automatic_config")
     conf.set("automatic_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
-                                                    "square,custom,_50.gif,data:image/png,no_profile.png,icon")
+                                                    "square,custom,_50.gif,data:image/png,no_profile.png,common")
     conf.set("automatic_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
-                                                     "50.gif,data:image/png,no_profile.png,icon")
+                                                     "50.gif,data:image/png,no_profile.png,common")
     conf.set("automatic_config", "zoom_out_scale", "0.9")
     conf.set("automatic_config", "zoom_in_scale", "1.1")
     conf.set("automatic_config", "fire_wall_delay_time", "300")
@@ -187,9 +187,9 @@ def check_ini_config():
 
         conf.add_section("automatic_config")
         conf.set("automatic_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
-                                                        "square,custom,_50.gif,data:image/png,no_profile.png,icon")
+                                                        "square,custom,_50.gif,data:image/png,no_profile.png,common")
         conf.set("automatic_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
-                                                         "50.gif,data:image/png,no_profile.png,icon")
+                                                         "50.gif,data:image/png,no_profile.png,common")
         conf.set("automatic_config", "zoom_out_scale", "0.9")
         conf.set("automatic_config", "zoom_in_scale", "1.1")
         conf.set("automatic_config", "fire_wall_delay_time", "300")
