@@ -1,6 +1,7 @@
 import os
 import sys
 
+from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 
 from file.file_process import record_end_spider_image_keyword, record_finish_keyword, \
@@ -97,6 +98,18 @@ def artwork_to_image(key_word_pinyin, driver, url):
 
 
 @logger.catch
+def clear_cache_refresh(driver):
+    """
+
+    :param driver:
+    :return:
+    """
+    # 刷新页面，减少缓存
+    driver.refresh()
+    logger.info("clear cache finished!")
+
+
+@logger.catch
 def spider_artworks_url(self, key_word):
     """
      spider image from point url.
@@ -164,6 +177,7 @@ def spider_artworks_url(self, key_word):
         constants.stop_spider_url_flag = True
     logger.warning("google chrome will exit! ")
     record_end_spider_image_keyword(cur_page=cur_page, key_word=key_word)
+    clear_cache_refresh(driver)
     driver.quit()
 
 

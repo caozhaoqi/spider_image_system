@@ -63,27 +63,7 @@ def spider_param_config(key_word):
     }
 
     options = webdriver.ChromeOptions()
-    if constants.spider_mode == 'auto':
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        logger.warning("current spider mode: auto spider image mode!")
-
-    # open dev tools
-    options.add_argument("--auto-open-devtools-for-tabs")
-    # 接受不安全证书
-    options.add_argument("--ignore-certificate-errors")
-    # 设置日志偏好，禁用所有日志
-    options = disabled_log_browser(options)
-    # 去除 “Chrome正受到自动化测试软件的控制”
-    options.add_experimental_option('excludeSwitches', ['enable-automation'])
-    # 添加浏览器特征
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    random_boolean = random.choice([True, False])
-    if random_boolean:
-        # 无痕模式 减少被追踪风险
-        options.add_argument("--incognito")  # 启动无痕模式
-        logger.info("cur enable incognito mode spider image!")
+    options = chrome_options(options)
     # 模拟不同浏览器访问页面 减少被封风险
     user_agents = read_user_agent()
     if not user_agents:
@@ -147,6 +127,45 @@ def spider_param_config(key_word):
         # self define url by config file
         url = all_show
     return driver, url, cur_page
+
+
+@logger.catch
+def chrome_options(options):
+    """
+
+    :param options:
+    :return:
+    """
+    if constants.spider_mode == 'auto':
+        options.add_argument('--headless')
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-javascript")
+        options.add_argument("--disable-plugins")
+        options.add_argument('--disable-extensions')
+        options.add_argument('--disable-java')
+        options.add_argument('--mute-audio')
+        options.add_argument('--single-process')
+        options.add_argument("--disable-software-rasterizer")
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        logger.warning("current spider mode: auto spider image mode!")
+    # open dev tools
+    options.add_argument("--auto-open-devtools-for-tabs")
+    # 接受不安全证书
+    options.add_argument("--ignore-certificate-errors")
+    # 设置日志偏好，禁用所有日志
+    options = disabled_log_browser(options)
+    # 去除 “Chrome正受到自动化测试软件的控制”
+    options.add_experimental_option('excludeSwitches', ['enable-automation'])
+    # 添加浏览器特征
+    options.add_argument("--disable-blink-features")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    random_boolean = random.choice([True, False])
+    if random_boolean:
+        # 无痕模式 减少被追踪风险
+        options.add_argument("--incognito")  # 启动无痕模式
+        logger.info("cur enable incognito mode spider image!")
+    return options
 
 
 @logger.catch
