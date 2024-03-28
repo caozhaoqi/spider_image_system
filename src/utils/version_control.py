@@ -1,8 +1,12 @@
-import re
+# 导入OS模块
+import os
+import sys
 
+# 把当前文件所在文件夹的父文件夹路径加入到PYTHONPATH
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import re
 import requests
 from loguru import logger
-
 import run.constants
 
 

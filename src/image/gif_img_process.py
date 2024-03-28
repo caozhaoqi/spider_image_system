@@ -5,10 +5,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from loguru import logger
 
-"""
-gif process
-"""
-
 
 @logger.catch
 def read_gif_url(zip_txt_path, url_list):

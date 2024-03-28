@@ -7,18 +7,15 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from requests import get
-
 from os import path, mkdir, getcwd, chdir, getenv
 from sys import exit, stdout, stderr
 from typing import Dict, List
-
 from loguru import logger
 from concurrent.futures import ThreadPoolExecutor
 from platform import system
 from hashlib import sha256
 from shutil import move
 from time import perf_counter
-
 from utils.http_utils import is_valid_url
 
 NEW_LINE: str = "\n" if system() != "Windows" else "\r\n"

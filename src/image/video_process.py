@@ -5,7 +5,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import cv2
 from loguru import logger
-
 from run import constants
 from run.constants import output_video_fps, output_video_height, output_video_width
 from utils.time_utils import id_generate_time
@@ -184,9 +183,9 @@ def process_images_thread(self):
     :param self:
     :return:
     """
-    #  step 1> 处理不同尺寸照片，将其尺寸一直化
+    #  step <1> 处理不同尺寸照片，将其尺寸一直化
     result = convert_image(constants.data_path, constants.data_path + "/img_result")
-    #  step 2> 根据处理后的图像，尝试生成视频
+    #  step <2> 根据处理后的图像，尝试生成视频
     if result:
         process_ret = generate_video_from_images(constants.data_path + "/img_result", constants.data_path + "/video/")
         if process_ret:

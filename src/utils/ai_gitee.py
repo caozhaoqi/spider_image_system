@@ -1,13 +1,13 @@
 import os
 import sys
 
-from run import constants
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import requests
 from loguru import logger
 from ui_event.get_url import spider_artworks_url
+from run import constants
 
 API_URL = "https://ai.gitee.com/api/inference-api/models/hf-models/resnet-50"
 headers = {

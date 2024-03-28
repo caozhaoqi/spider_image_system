@@ -6,7 +6,6 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import time
-
 from run import constants
 
 # -----------------------系统调试------------------------------------

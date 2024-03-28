@@ -15,7 +15,6 @@ from loguru import logger
 from selenium.common import NoSuchWindowException
 import time
 from pypinyin import lazy_pinyin, Style
-
 from run import constants
 from run.constants import detail_delta_time, search_delta_time, s1_url, target_url, s2_url, data_path, \
     spider_images_max_count, allow_replace_domain_flag

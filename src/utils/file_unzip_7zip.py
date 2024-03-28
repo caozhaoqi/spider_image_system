@@ -128,7 +128,3 @@ def unzip_file(dir_path):
     logger.success("unzip all file success!")
     constants.unzip_file_flag = False
     return True
-
-
-if __name__ == '__main__':
-    unzip_file(r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\utils\data')

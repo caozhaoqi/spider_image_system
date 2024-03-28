@@ -34,7 +34,7 @@ def log_record():
 @logger.catch
 def check_version_update():
     """
-    check webdriver update
+    check sis version update
     :return:
     """
     lasted_version = run.constants.sis_server_version

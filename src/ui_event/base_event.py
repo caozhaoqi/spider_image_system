@@ -28,7 +28,7 @@ from ui_event.get_url import spider_artworks_url
 from run import constants
 from utils.time_utils import time_to_utc
 from image.spider_img_save import download_re_error_image
-from utils.file_unIp_7zip import unzip_file
+from utils.file_unzip_7zip import unzip_file
 
 
 @logger.catch
@@ -411,7 +411,10 @@ def user_download_image():
 
 @logger.catch
 def unzip_file_method():
-    # unzip_file(constants.data_path)
+    """
+
+    :return:
+    """
     if not constants.unzip_file_flag:
         constants.unzip_file_flag = True
         unzip_file_threading_obj = threading.Thread(
@@ -429,34 +432,7 @@ def exit_save_data():
 
     :return:
     """
-
-    # elif not constants.stop_spider_url_flag:
     #     # 保存抓取进度 当有抓取任务时
     logger.warning("-------------------------------------------------------------")
     logger.warning(f"-----sis-{constants.sis_server_version} exe will quit!-----------------")
     logger.warning("-------------------------------------------------------------")
-
-
-# @logger.catch
-# def api_main_method_web():
-#     """
-#
-#     :return:
-#     """
-#     if not web_flag_start:
-#         uvicorn.run(app='sis_main_process:app', host='0.0.0.0', port=app_port, reload=False)
-#     else:
-#         logger.error("web api already start!")
-#
-#
-# @logger.catch
-# def api_main_method():
-#     """
-#
-#     :return:
-#     """
-#     api_main_threading_obj = threading.Thread(
-#         target=api_main_method_web,
-#         args=())
-#     api_main_threading_obj.start()
-#     logger.success("api main thread starting!")

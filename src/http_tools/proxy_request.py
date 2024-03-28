@@ -5,12 +5,7 @@ import sys
 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-"""
-    拥有代理功能的爬虫request
-
-"""
 from loguru import logger
-
 import requests
 from run import constants
 
