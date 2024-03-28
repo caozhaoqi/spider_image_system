@@ -1,27 +1,21 @@
 import os
-import random
 import sys
 
-from selenium.webdriver.chrome.service import Service
-
-from http_tools.proxy_request import get_proxy_item
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+import random
 import time
-
+from selenium.webdriver.chrome.service import Service
+from http_tools.proxy_request import get_proxy_item
 import requests
 from loguru import logger
 from selenium.webdriver.common.by import By
-
 from image.img_switch import find_images, image_exists
 from image.spider_gif_url import spider_gif_images
 from run import constants
 from run.constants import proxy_flag, r18_mode, visit_url, all_show, detail_delta_time, allow_replace_domain_flag
 from selenium import webdriver
-
 from ui_event.get_url import open_look_all, slider_page_down, filter_not_use
-from utils.http_tools import image_url_re
+from utils.http_utils import image_url_re
 from file.user_agent import read_user_agent
 
 

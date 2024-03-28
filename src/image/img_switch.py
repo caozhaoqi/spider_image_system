@@ -1,7 +1,6 @@
 import os
 import sys
 
-from run import constants
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -10,8 +9,11 @@ from PyQt5.QtGui import QPixmap
 from loguru import logger
 from PIL import Image
 import os
+from run import constants
 from run.constants import data_path
 
+
+# data path image
 folder_path = os.path.realpath(os.path.join(os.getcwd(), data_path))
 
 
@@ -174,7 +176,7 @@ def check_images(self, image_path):
     # constants.check_images_flag = False
     if constants.single_flag:
         logger.success(
-                f"scan end, flag: {constants.check_images_flag}, images moved error_images and small_images folder!")
+            f"scan end, flag: {constants.check_images_flag}, images moved error_images and small_images folder!")
         constants.single_flag = False
 
 
@@ -205,7 +207,7 @@ def img_category_images(self, image_path):
             elif "custom" in filename:
                 custom_image_lists.append(filename)
             # else:
-                # logger.warning("unknown category image: " + str(filename))
+            # logger.warning("unknown category image: " + str(filename))
     for square_image in square_image_lists:
         dir_path, file_name = os.path.split(square_image)
         if not os.path.exists(dir_path + "/square/"):

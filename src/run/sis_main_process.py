@@ -5,10 +5,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import logging
 import sys
-
-__author__ = 'czq'
-__date__ = '2024-3-25 12:21'
-
 import uvicorn
 from fastapi import FastAPI, applications
 from loguru import logger

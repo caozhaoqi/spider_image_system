@@ -7,7 +7,6 @@ from loguru import logger
 from run import constants
 from image.gif_img_process import read_gif_url
 
-
 @logger.catch
 def spider_gif_images(keyword, chrome_driver):
     """
@@ -27,8 +26,6 @@ def spider_gif_images(keyword, chrome_driver):
     if not os.path.exists(txt_path_name):
         os.makedirs(txt_path_name)
     if len(api_urls) == 0:
-        # no gif not out log
-        # logger.warning("no zip gif images data!")
         return False
     if read_gif_url(txt_path_name + "/" + keyword + "_zip.txt", api_urls):
         return True

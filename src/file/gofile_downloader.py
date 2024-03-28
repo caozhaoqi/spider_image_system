@@ -4,10 +4,9 @@ from __future__ import annotations
 import os
 import sys
 
-from requests import get
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from requests import get
 
 from os import path, mkdir, getcwd, chdir, getenv
 from sys import exit, stdout, stderr
@@ -20,7 +19,7 @@ from hashlib import sha256
 from shutil import move
 from time import perf_counter
 
-from utils.http_tools import is_valid_url
+from utils.http_utils import is_valid_url
 
 NEW_LINE: str = "\n" if system() != "Windows" else "\r\n"
 

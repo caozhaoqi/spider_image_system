@@ -7,9 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import logging
 import platform
 import sys
-
 from loguru import logger
-
 from run.constants import sis_log_level, build_date, sis_server_version, publish_date
 from log.log_base import LOG_DIR
 from log.log_config import InterceptHandler, format_record

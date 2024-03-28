@@ -1,8 +1,5 @@
 import os
 import sys
-import urllib
-
-import urllib3.util
 from loguru import logger
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

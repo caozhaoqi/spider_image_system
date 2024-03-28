@@ -5,9 +5,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import json
-
 from loguru import logger
-
 from run import constants
 from utils.log_analyis import log_analyze_data_output
 

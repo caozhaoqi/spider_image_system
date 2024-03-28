@@ -1,9 +1,12 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import codecs
 import os
 
 from loguru import logger
-
-from run import constants
 
 
 @logger.catch
@@ -66,15 +69,3 @@ def scan_txt(path):
             if file.endswith('spider_finished_keyword.txt') or file.endswith('download_finished_txt.txt'):
                 img_txt_files.append(os.path.join(root, file))
     return img_txt_files
-    # if __name__ == '__main__':
-
-
-if __name__ == '__main__':
-    scan_txt_file_all(constants.data_path)
-# file_path = r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\utils\spider_finished_keyword.txt'
-# # file_path_front, file_name = os.path.split(file_path)
-# # file_name_front, file_ext = os.path.splitext(file_name)
-# # output_file_path = os.path.join(file_path_front, file_name_front + "_utf8.txt")
-# convert_txt(file_path, file_path)
-# mixed_content_file(file_path)
-# txt_decode_convert(file_path)

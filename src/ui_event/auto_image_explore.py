@@ -1,14 +1,11 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import cProfile
-
 from PyQt5.QtCore import QTimer
 from loguru import logger
-
 from image.img_switch import show_filter_image, find_images, folder_path
 from run import constants
 from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, QApplication

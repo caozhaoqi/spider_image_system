@@ -1,18 +1,16 @@
 import os
 import sys
-import time
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import os.path
-
 import cv2
 import numpy as np
 from loguru import logger
-
 from image.img_switch import find_images
 from run import constants
 from utils.file_utils import get_data_file, find_img_result
+import time
 
 
 @logger.catch

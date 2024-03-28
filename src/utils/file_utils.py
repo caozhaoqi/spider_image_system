@@ -5,12 +5,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
 import sys
-
 from loguru import logger
-
 from run import constants
 from run.constants import data_path
-from utils.http_tools import image_url_re
+from utils.http_utils import image_url_re
 import shutil
 from pypinyin import lazy_pinyin, Style
 

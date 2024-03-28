@@ -4,7 +4,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import sys
-from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel, QLineEdit, QFormLayout
+from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLineEdit, QFormLayout
 
 
 class SRCharacterDialog(QDialog):

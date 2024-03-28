@@ -1,13 +1,12 @@
 import os
+import sys
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import requests
-from loguru import logger
 from requests.exceptions import ReadTimeout, ChunkedEncodingError, ConnectTimeout, HTTPError
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import time
-
-# 设置重试策略
 from run.constants import download_img_retry_times, download_img_time_out
 
 retries = Retry(

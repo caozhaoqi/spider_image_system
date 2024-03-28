@@ -5,11 +5,9 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import time
-
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QDialog
 from loguru import logger
-
 from run import constants
 from utils.sys_info import look_sys_info, network_usage
 

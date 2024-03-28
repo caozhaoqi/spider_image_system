@@ -1,7 +1,6 @@
 import os
 import sys
 
-from run import constants
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -9,7 +8,7 @@ import sys
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QLabel, QFileDialog, QComboBox, QMessageBox, \
     QCheckBox, QHBoxLayout, QWidget
 from loguru import logger
-
+from run import constants
 from file.ini_file_spider import write_minio_config_to_file
 from run.constants import visit_url, s2_url, s1_url, target_url, spider_images_max_count, sis_log_level, r18_mode, \
     all_show, proxy_flag, proxy_server_ip, proxy_server_port, search_delta_time, detail_delta_time, output_video_fps, \

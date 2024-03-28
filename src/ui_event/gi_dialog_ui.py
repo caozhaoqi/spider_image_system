@@ -5,7 +5,6 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QPushButton, QHBoxLayout
 from loguru import logger
-
 from run import constants
 from utils.genshin_impact_cal import get_result_str
 

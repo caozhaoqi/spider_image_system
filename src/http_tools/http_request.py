@@ -6,19 +6,15 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from file.file_process import scan_directory_zip
 from utils.file_utils import remove_duplicates_from_txt
-
 import threading
 import urllib.request
-
 import cv2
 import zipfile
 import os
 import urllib.request
 import time
-
 from loguru import logger
 from requests import HTTPError, Timeout, TooManyRedirects
-
 from run import constants
 from run.constants import output_video_fps
 

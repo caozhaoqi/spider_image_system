@@ -1,10 +1,8 @@
 import os
 import sys
-
-from PyQt5.QtGui import QFont, QIcon
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout, QPushButton
 
 

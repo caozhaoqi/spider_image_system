@@ -27,7 +27,6 @@ from ui_event.dialog_ui import Dialog
 from ui_event.get_url import spider_artworks_url
 from run import constants
 from utils.time_utils import time_to_utc
-import uvicorn
 from image.spider_img_save import download_re_error_image
 from utils.file_unIp_7zip import unzip_file
 

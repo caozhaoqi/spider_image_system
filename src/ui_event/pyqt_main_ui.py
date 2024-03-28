@@ -6,20 +6,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
 import threading
-
 import cv2
 from PyQt5.QtCore import Qt, QEvent, QPoint
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QMainWindow, QFileDialog
 from loguru import logger
-
 from file.file_process import scan_directory_zip_txt
 from file.gofile_downloader import start_download_file_link
 from run import constants
 from run.constants import sis_server_version, zoom_out_scale, zoom_in_scale
 from http_tools.http_request import url_zip_all_process, unzip_generate_gif
-from image.img_switch import show_filter_image, folder_path, find_images, show_next_image, show_image, check_images, \
-    img_category_images
+from image.img_switch import show_filter_image, folder_path, find_images, show_image
 from image.spider_img_save import download_img_txt, remove_error_image, img_category_button
 from image.video_process import play_video_process, process_images_thread
 from ui_event.base_event import scan_populate_mp4_list, exit_save_data

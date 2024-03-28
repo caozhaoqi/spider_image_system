@@ -1,16 +1,15 @@
-import json
 import os
 import sys
-import time
-
-from model.ImageModel import ImageModel
-from model.SpiderKeywordModel import SpiderKeyWordModel
-from run import constants
-from utils.http_tools import image_url_re
-from utils.time_utils import time_to_utc
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import json
+import time
+from model.ImageModel import ImageModel
+from model.SpiderKeywordModel import SpiderKeyWordModel
+from run import constants
+from utils.http_utils import image_url_re
+from utils.time_utils import time_to_utc
 import os
 from loguru import logger
 
@@ -76,33 +75,6 @@ def count_lines(filename):
 
 
 @logger.catch
-def scan_img_txt(path):
-    """
-    sacn img txt from point path
-    :param path:
-    :return:
-    """
-
-    # txt
-    img_txt_files = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith('_img.txt') or file.endswith('_img_result.txt'):
-                img_txt_files.append(os.path.join(root, file))
-    # single txt
-    img_list_set = []
-    for img_txt in img_txt_files:
-        with open(img_txt, 'r', encoding='utf-8', errors='replace') as f:
-            img_list_set.append(f.readlines())
-    # img
-    img_list = []
-    for img in img_list_set:
-        for img_detail in img:
-            img_list.append(img_detail)
-    return list(set(img_list))
-
-
-@logger.catch
 def write_error_image(txt_path, image_path):
     """
     写入下载错误图片数据至txt
@@ -110,7 +82,7 @@ def write_error_image(txt_path, image_path):
     :param image_path:
     :return:
     """
-    txt_path = os.path.join(txt_path,"download_fail_image.txt")
+    txt_path = os.path.join(txt_path, "download_fail_image.txt")
     with open(txt_path, 'a', encoding='utf-8', errors='replace') as f:
         f.write(image_path + "\n")
     return True

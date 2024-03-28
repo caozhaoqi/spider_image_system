@@ -1,14 +1,13 @@
 import os
 import sys
-from datetime import timedelta
-
-from loguru import logger
-from minio import Minio
-
-from file.ini_file_spider import spider_config
-from model.Case import Case
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from datetime import timedelta
+from loguru import logger
+from minio import Minio
+from file.ini_file_spider import spider_config
+from model.Case import Case
 
 
 class MinioMana:
@@ -73,4 +72,3 @@ class MinioMana:
         case.path = url
 
         return case
-

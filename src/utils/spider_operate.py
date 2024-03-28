@@ -1,14 +1,12 @@
 import os
-import random
 import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import time
-
+import random
 from loguru import logger
 from selenium.webdriver import ActionChains, Keys
-
 from run import constants
 from run.constants import detail_delta_time
 

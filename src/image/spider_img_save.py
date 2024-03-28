@@ -1,19 +1,17 @@
 import os
 import sys
-import threading
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from image.fail_image import process_error_image
 from image.img_switch import find_images, image_exists, img_category_images, check_images
 from utils.file_download import send_request
 from utils.file_utils import remove_duplicates_from_txt
-from utils.http_tools import image_url_re
+from utils.http_utils import image_url_re
 from utils.minio_file import upload_image
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+import threading
 from loguru import logger
 from urllib3.exceptions import ProtocolError
-
 from run import constants
 from run.constants import data_path
 from file.file_process import count_lines, read_end_download_image, save_download_end, update_download_continue_flag, \

@@ -1,13 +1,10 @@
 import os
 import sys
-
-from loguru import logger
-
-from run import constants
-from run.constants import sis_server_version, publish_date, build_date
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from loguru import logger
+from run import constants
+from run.constants import sis_server_version, publish_date, build_date
 from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton
 
 

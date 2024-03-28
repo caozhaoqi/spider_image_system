@@ -1,18 +1,15 @@
 import os
 import sys
 
-from selenium.webdriver import Keys
-from selenium.webdriver.common.by import By
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from selenium.webdriver.common.by import By
 from file.file_process import record_end_spider_image_keyword, record_finish_keyword, \
     exists_image_keyword, keyword_times
 from utils.file_utils import filter_exists_images, url_list_save, write_url_txt
 from utils.keyword_utils import exists_keyword_finish_txt
 from utils.spider_operate import filter_not_use_url, slider_page_down, url_process_page, open_look_all, filter_not_use
 from utils.spider_param import spider_param_config
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from image.spider_gif_url import spider_gif_images
 from loguru import logger
 from selenium.common import NoSuchWindowException
@@ -140,8 +137,9 @@ def spider_artworks_url(self, key_word):
         except Exception as e:
             logger.warning(f"unknown error: {e}, will skip spider!")
             break
-        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
-            logger.warning("error! will exit: cur visit domain blocked.")
+        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】' or driver.title == constants.visit_url:
+            logger.warning(
+                f"error! will exit: cur visit domain blocked, or visit url: {constants.visit_url} not visit!")
             constants.firewall_flag = True
             break
         logger.debug("start load href save url to txt.")

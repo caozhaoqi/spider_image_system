@@ -5,10 +5,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import cProfile
 import threading
-
 import requests
 from loguru import logger
-
 from run import constants
 from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, QApplication
 from PyQt5.QtGui import QPixmap, QImage

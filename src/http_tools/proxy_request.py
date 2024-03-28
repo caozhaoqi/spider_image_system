@@ -16,7 +16,7 @@ from run import constants
 
 
 @logger.catch
-def get_proxy(url, ):
+def get_proxy(url):
     """
     proxy
     :param url:

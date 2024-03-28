@@ -6,7 +6,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from loguru import logger
 from pypinyin import lazy_pinyin, Style
-
 from run import constants
 
 

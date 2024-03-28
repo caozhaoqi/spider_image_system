@@ -3,12 +3,12 @@ import os
 import sys
 
 # 把当前文件所在文件夹的父文件夹路径加入到PYTHONPATH
-from log.log_base import LOG_FORMAT
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pprint import pformat
 import logging
 from loguru import logger
+from log.log_base import LOG_FORMAT
 
 
 class InterceptHandler(logging.Handler):

@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QDialog, QHBoxLayout
 from PyQt5.QtChart import QChart, QChartView, QBarSeries, QBarSet, QBarCategoryAxis, QValueAxis, QPieSeries
 from PyQt5.QtGui import QPainter
 from loguru import logger
-
 from run import constants
 from utils.log_analyis import  log_analyze_data_output_new
 

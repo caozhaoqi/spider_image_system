@@ -37,7 +37,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='sis_v1.1.1-beta.2.240326',
+    name='sis_v1.1.1.240328',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

@@ -1,13 +1,11 @@
 import os
 import sys
 
-from ui_event.base_event import exit_save_data
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from PyQt5.QtWidgets import QApplication
 from loguru import logger
-
+from ui_event.base_event import exit_save_data
 from log.log_record import log_record, check_version
 from ui_event.pyqt_main_ui import UIMainWindows
 

@@ -1,10 +1,10 @@
 import os
 import sys
 
-from file.file_process import scan_img_txt
-from file.ini_file_spider import check_ini_config, read_ini_config, ini_file_path
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from file.ini_file_spider import check_ini_config, read_ini_config, ini_file_path
+from image.image_scan import scan_img_txt
 
 # 检查默认配置项
 check_ini_config()
@@ -139,6 +139,6 @@ enable = read_ini_config(ini_file_path, "minio_config_selected", "enable")
 SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH")
 PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
-sis_server_version = "v1.1.1-beta.2.240326"
-build_date = "2024-03-27 18:00"
-publish_date = "2024-03-26 18:30"
+sis_server_version = "v1.1.1.240328"
+build_date = "2024-03-28 18:00"
+publish_date = "2024-03-29 18:30"
