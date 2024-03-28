@@ -107,10 +107,10 @@ def spider_param_config(key_word):
     mode = ''
     if r18_mode == 'True':
         mode = 'mode=r18&'
-        logger.warning("current start use r18 mode!")
+        logger.debug("current start use r18 mode!")
 
     if allow_replace_domain_flag:
-        logger.warning(f"start replace image domain, flag value: {allow_replace_domain_flag}")
+        logger.debug(f"start replace image domain, flag value: {allow_replace_domain_flag}")
 
     cur_page = 1
     if is_keyword_num(driver, key_word):
@@ -142,7 +142,7 @@ def chrome_options(options):
         options.add_argument("--disable-software-rasterizer")
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        logger.warning("current spider mode: auto spider image mode!")
+        logger.debug("current spider mode: auto spider image mode!")
     # open dev tools
     options.add_argument("--auto-open-devtools-for-tabs")
     # 接受不安全证书

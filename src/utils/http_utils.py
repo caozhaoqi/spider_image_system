@@ -48,8 +48,3 @@ def image_url_re(image_url):
         except Exception as e:
             logger.error(f"unknown error, please check log. source url: {image_url}")
             return image_url
-
-
-if __name__ == '__main__':
-    url = "https://pixiv.srpr.cc/img-master/img/2024/01/29/15/41/31/115584905_p1_master1200.jpg"
-    image_url_re(url)

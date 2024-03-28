@@ -137,7 +137,8 @@ def spider_artworks_url(self, key_word):
         except Exception as e:
             logger.warning(f"unknown error: {e}, will skip spider!")
             break
-        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】' or driver.title == constants.visit_url:
+        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】' or driver.title == constants.visit_url\
+                or driver.title == '请稍候…' or driver.title == '':
             logger.warning(
                 f"error! will exit: cur visit domain blocked, or visit url: {constants.visit_url} not visit!")
             constants.firewall_flag = True
@@ -173,7 +174,7 @@ def spider_artworks_url(self, key_word):
         logger.success("spider image operate success finished!")
     if constants.spider_mode == 'manual':
         constants.stop_spider_url_flag = True
-    logger.warning("google chrome will exit! ")
+    logger.warning(f"google chrome will exit! chrome title: {driver.title} ")
     record_end_spider_image_keyword(cur_page=cur_page, key_word=key_word)
     clear_cache_refresh(driver)
     driver.quit()
@@ -219,7 +220,7 @@ def load_href_save(driver, key_word):
             logger.success("save url and remove duplicates content success!")
             return 1
         elif len(image_urls_list) == len(image_urls_exists_list):
-            logger.warning("cur page image already save, will spider next page!")
+            logger.warning(f"cur page image already save, will spider next page! chrome title: {driver.title}")
             return 2
         else:
             return 3
