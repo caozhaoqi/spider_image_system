@@ -4,6 +4,8 @@
 ### 2024/3/29
 - 代码结构更新
 - 优化防ban功能，增加log以追溯原因
+- add vcs and auto update
+- update video generate print process
 
 ## v1.1.1-beta.2.240326
 ### 2024/3/27

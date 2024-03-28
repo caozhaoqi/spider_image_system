@@ -70,9 +70,9 @@ def generate_video_from_images(images_input_path, video_out_path):
             resized_image = cv2.resize(image, (width, height))  # 将图像的宽度和高度设置为适合MPEG-4的尺寸
             if image is not None:
                 video.write(resized_image)
-            if percent_cur % 100 == 0:
+            if percent_cur % 10 == 0:
                 logger.info(f"export process to export_index / image_size_len: {export_index} / {image_size_len} * "
-                            f"100%100: {percent_cur}%")
+                            f"100%10: {percent_cur}%")
     finally:
         video.release()
     return video_name
