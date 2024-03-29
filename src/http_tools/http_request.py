@@ -164,7 +164,7 @@ def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
         return False
     video = cv2.VideoWriter(video_name, fourcc, int(output_video_fps), (width, height))  # 设置视频帧率、输出视频大小
     if not video.isOpened():
-        logger.debug("无法打开视频文件写入器")
+        logger.debug("can't open video writer!")
         return False
 
     try:
@@ -180,10 +180,7 @@ def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
             resized_image = cv2.resize(image, (width, height))  # 将图像的宽度和高度设置为适合MPEG-4的尺寸
             if image is not None:
                 video.write(resized_image)
-            # if percent_cur / 10:
-            #     logger.info(f"export process to export_index / image_size_len：{export_index} / {image_size_len} * "
-            #                 f"100 /10 {percent_cur}%")
-    finally:  # 确保视频资源被释放，无论是否有异常发生
+    finally:
         video.release()
     return video_name
 
@@ -248,8 +245,7 @@ def url_zip_all_process(zip_url_txt_list):
 
         else:
             new_file_name = txt_file_name + ext
-            # logger.warning(f"file: {new_file_name} already exists, not create.")
-        # if not os.path.exists(new_file_name):
+
         remove_duplicates_from_txt(old_file_name, new_file_name)
         logger.success(f"remove duplicate file success: {zip_url_detail}")
         with open(new_file_name, 'r', encoding='utf-8', errors='replace') as f:

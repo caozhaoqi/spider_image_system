@@ -13,6 +13,11 @@ from log.log_base import LOG_FORMAT
 
 class InterceptHandler(logging.Handler):
     def emit(self, record):
+        """
+
+        :param record:
+        :return:
+        """
         # Get corresponding Loguru level if it exists
         try:
             level = logger.level(record.levelname).name

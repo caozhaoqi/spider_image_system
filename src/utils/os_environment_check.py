@@ -22,10 +22,10 @@ def detect_installed():
 
     # 检查并安装selenium和chromedriver
     if not is_chromedriver_installed():
-        logger.error("you hasn't install selenium for chrome explore or chrome webdriver, please visit website "
-                     "download.")
-        logger.warning("please visit web url: https://googlechromelabs.github.io/chrome-for-testing/#stable select "
-                       "correct version to download, finish config download webdriver.exe path to chrome_path from "
+        logger.error("you hasn't install selenium for chrome explore or chrome webdriver, please visit follow website "
+                     "download:")
+        logger.warning("url: https://googlechromelabs.github.io/chrome-for-testing/#stable select correct version to"
+                       " download, finish config download webdriver.exe path to chrome_path from "
                        "./config/config.ini file.")
         return False
     return True

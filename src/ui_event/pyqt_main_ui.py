@@ -31,6 +31,9 @@ class UIMainWindows(QMainWindow):
 
     # @logger.catch
     def __init__(self):
+        """
+
+        """
         QWidget.__init__(self)
         self.edt_input_file_text_3_str = None
         self.edt_input_file_text_3 = None
@@ -247,6 +250,10 @@ class UIMainWindows(QMainWindow):
         play_video_process(self)
 
     def pause_video(self):
+        """
+
+        :return:
+        """
         if cv2.getTrackbarPos('Position', 'Video') > 0:
             cv2.setTrackbarPos('Position', 'Video', 0)
         else:

@@ -41,7 +41,7 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
             if response.status_code == 200:
                 with open(filename, 'wb') as f:
                     f.write(response.content)
-                logger.debug(f"Image s aved as {filename}, cur images index: {cur_download_images_index}"
+                logger.debug(f"Image saved as {filename}, cur images index: {cur_download_images_index}"
                              f", cur txt images download count: {cur_txt_image_count}")
             else:
                 write_error_image(constants.data_path, url, filename)
