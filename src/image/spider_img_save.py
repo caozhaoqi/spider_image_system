@@ -44,21 +44,21 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
                 logger.debug(f"Image saved as {filename}, cur images index: {cur_download_images_index}"
                              f", cur txt images download count: {cur_txt_image_count}")
             else:
-                write_error_image(constants.data_path, url)
+                write_error_image(constants.data_path, url, filename)
                 logger.error(
                     f"Error! Failed to download image from {url}, cur images index: {cur_download_images_index}, cur "
                     f"txt images download count: {cur_txt_image_count}, " + "detail: " + str(response.content))
         except ConnectionError as ce:
-            write_error_image(constants.data_path, url)
+            write_error_image(constants.data_path, url, filename)
             logger.error(f"error, connect point url error, cur images index: {cur_download_images_index}, cur txt "
                          f"images download count: {cur_txt_image_count}, detail: " + str(ce))
         except ProtocolError as pe:
-            write_error_image(constants.data_path, url)
+            write_error_image(constants.data_path, url, filename)
             logger.error(f"error, Remote end closed connection without response, cur images index: "
                          f"{cur_download_images_index}, cur txt images download count: {cur_txt_image_count}, detail: "
                          + str(pe))
         except Exception as e:
-            write_error_image(constants.data_path, url)
+            write_error_image(constants.data_path, url, filename)
             logger.error(f"error, unknown error, cur images index: {cur_download_images_index}, cur txt images "
                          f"download count: {cur_txt_image_count}, detail: " + str(e))
 
@@ -232,10 +232,16 @@ def download_re_error_image():
             return False
         # 处理list 摒弃原始url，换回或者，换新domain
         error_image_list = process_error_image(error_image_list)
-        logger.success("replace domain success, will re download!")
+        logger.success("replace domain success, will retry download!")
         for index, error_image in enumerate(error_image_list):
-            error_image_name = image_url_re(error_image.strip())
+            split_result = image_url_re(error_image.strip()).split(',')
+            error_image_name = split_result[0]
+            keyword = split_result[1]
+            if keyword == '':
+                keyword = 'unknown_keyword'
             new_file_path = os.path.join(os.path.join(constants.data_path, "img_url"), "re_download")
+            new_file_path = os.path.join(new_file_path, keyword+"_img_result")
+            new_file_path = os.path.join(new_file_path, "images")
             if not os.path.exists(new_file_path):
                 logger.warning("dir not exists, will create!")
                 os.makedirs(new_file_path)

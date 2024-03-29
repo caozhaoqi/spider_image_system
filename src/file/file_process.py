@@ -8,7 +8,7 @@ import time
 from model.ImageModel import ImageModel
 from model.SpiderKeywordModel import SpiderKeyWordModel
 from run import constants
-from utils.http_utils import image_url_re
+from utils.http_utils import image_url_re, match_img_result
 from utils.time_utils import time_to_utc
 import os
 from loguru import logger
@@ -75,16 +75,18 @@ def count_lines(filename):
 
 
 @logger.catch
-def write_error_image(txt_path, image_path):
+def write_error_image(txt_path, image_path, filename):
     """
     写入下载错误图片数据至txt
+    :param filename: anbai_img_result 区分错误文件夹
     :param txt_path:
     :param image_path:
     :return:
     """
+    keyword = match_img_result(filename)
     txt_path = os.path.join(txt_path, "download_fail_image.txt")
     with open(txt_path, 'a', encoding='utf-8', errors='replace') as f:
-        f.write(image_path + "\n")
+        f.write(image_path + "," + keyword + "\n")
     return True
 
 

@@ -6,6 +6,7 @@
 - 优化防ban功能，增加log以追溯原因
 - add vcs and auto update
 - update video generate print process
+- update re download save path
 
 ## v1.1.1-beta.2.240326
 ### 2024/3/27

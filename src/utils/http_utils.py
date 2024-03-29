@@ -47,3 +47,25 @@ def image_url_re(image_url):
         except Exception as e:
             logger.error(f"unknown error, please check log. source url: {image_url}")
             return image_url
+
+
+@logger.catch
+def match_img_result(file_name):
+    """
+
+    :param file_name:
+    :return:
+    """
+    # 正则表达式模式
+    pattern = r'img_url\/(.*?)_img_result'
+
+    # 查找所有匹配项
+    matches = re.findall(pattern, file_name)
+    if not matches:
+        logger.warning("not match download error image keyword!")
+        return ''
+    # 打印结果
+    for match in matches:
+        # print(match)
+        return match
+    return ''

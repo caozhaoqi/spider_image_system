@@ -106,7 +106,8 @@ def download_new_version(version):
     @:param version
     :return:
     """
-    url = ''
+    url = 'https://gitee.com/caozhaoqi/spider_image_system/releases/download/' + version + '/sis_' + version \
+          + '.exe'
     save_path = run.constants.basic_path
     # 发送GET请求到指定的URL
     response = requests.get(url, stream=True)
@@ -123,5 +124,3 @@ def download_new_version(version):
     else:
         logger.error(f"请求失败，状态码：{response.status_code}")
         return False
-
-
