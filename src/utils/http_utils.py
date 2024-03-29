@@ -57,15 +57,20 @@ def match_img_result(file_name):
     :return:
     """
     # 正则表达式模式
-    pattern = r'img_url\/(.*?)_img_result'
-
+    # pattern = r'.*img_url\\\\.*?_img_result'
+    pattern = r'.*?\\([^_]+)_img_result'
     # 查找所有匹配项
     matches = re.findall(pattern, file_name)
     if not matches:
-        logger.warning("not match download error image keyword!")
+        logger.warning(f"not match download error image keyword: {file_name}!")
         return ''
     # 打印结果
     for match in matches:
         # print(match)
         return match
     return ''
+
+
+if __name__ == '__main__':
+    match_img_result(
+        r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\img_url\fei1xie4er3_img_result\images\116852048_p1_master1200.jpg')

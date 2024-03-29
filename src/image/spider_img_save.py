@@ -234,19 +234,21 @@ def download_re_error_image():
         error_image_list = process_error_image(error_image_list)
         logger.success("replace domain success, will retry download!")
         for index, error_image in enumerate(error_image_list):
-            split_result = image_url_re(error_image.strip()).split(',')
-            error_image_name = split_result[0]
+            split_result = error_image.strip().split(',')
+            error_image_name = image_url_re(split_result[0])
             keyword = split_result[1]
             if keyword == '':
                 keyword = 'unknown_keyword'
+            # r'img_url\/(.*?)_img_result'     pattern = r'.*?\\([^_]+)_img_result'
             new_file_path = os.path.join(os.path.join(constants.data_path, "img_url"), "re_download")
+            new_file_path = os.path.join(new_file_path, "img_url")
             new_file_path = os.path.join(new_file_path, keyword+"_img_result")
             new_file_path = os.path.join(new_file_path, "images")
             if not os.path.exists(new_file_path):
                 logger.warning("dir not exists, will create!")
                 os.makedirs(new_file_path)
             new_file_name = os.path.join(new_file_path, error_image_name)
-            download_image(error_image.strip(), new_file_name, len(error_image_list), index)
+            download_image(split_result[0].strip(), new_file_name, len(error_image_list), index)
         constants.download_image_re_flag = False
     except Exception as e:
         logger.warning(f"unknown error, detail: {e}")
