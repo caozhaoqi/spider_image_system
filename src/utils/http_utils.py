@@ -56,7 +56,7 @@ def match_img_result(file_name):
     :param file_name:
     :return:
     """
-    pattern = r'.*?\\([^_]+)_img_result'
+    pattern = r'.*[\\/]([^_]+)_img_result.*'
     matches = re.findall(pattern, file_name)
     if not matches:
         logger.warning(f"not match download error image keyword: {file_name}!")
