@@ -21,7 +21,6 @@ def scan_directory(path):
     :param path:
     :return:
     """
-
     video_files = []
     for root, dirs, files in os.walk(path):
         for file in files:
@@ -37,7 +36,6 @@ def scan_directory_zip_txt(path):
     :param path:
     :return:
     """
-
     zip_txt_files = []
     for root, dirs, files in os.walk(path):
         for file in files:
@@ -53,7 +51,6 @@ def scan_directory_zip(path):
     :param path:
     :return:
     """
-
     zip_files = []
     for root, dirs, files in os.walk(path):
         for file in files:

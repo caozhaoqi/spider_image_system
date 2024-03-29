@@ -115,7 +115,6 @@ def download_img_txt(self):
     :param self:
     :return:
     """
-
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith("_img.txt")]
     cdds_index = 0
