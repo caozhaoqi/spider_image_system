@@ -7,6 +7,7 @@
 - add vcs and auto update
 - update video generate print process
 - update re download save path
+- update detect chrome webdriver to threading
 
 ## v1.1.1-beta.2.240326
 ### 2024/3/27

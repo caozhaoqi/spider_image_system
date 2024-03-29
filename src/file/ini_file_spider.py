@@ -167,8 +167,8 @@ def check_ini_config():
         logger.info("start generate config ini file: ")
         conf.add_section("spider_config")
         conf.set("spider_config", "visit_url", "sd.vv50.de")
-        conf.set("spider_config", "s1_url", "i.pixivcat.com")
-        conf.set("spider_config", "s2_url", "i.hcyacg.com")
+        conf.set("spider_config", "s1_url", "pixiv.srpr.cc")
+        conf.set("spider_config", "s2_url", "pixiv.888718.xyz")
         conf.set("spider_config", "target_url", "pximg.lolicon.run")  # 写入配置参数
         conf.set("spider_config", "r18_mode", 'True')
         conf.set("spider_config", "all_show", 'False')

@@ -21,7 +21,6 @@ def detect_installed():
     """
 
     # 检查并安装selenium和chromedriver
-    logger.info("start detect current os installed webdriver.")
     if not is_chromedriver_installed():
         logger.error("you hasn't install selenium for chrome explore or chrome webdriver, please visit website "
                      "download.")

@@ -329,11 +329,11 @@ def detect_installed_flag():
 
     :return:
     """
-    if detect_installed():
-        logger.success("installed all driver!")
-    else:
-        logger.error("you need install webdriver.exe, please lookup log url download exe.")
-    logger.info("detect finish!")
+    detect_installed_thread_obj = threading.Thread(
+        target=detect_installed,
+        args=())
+    detect_installed_thread_obj.start()
+    logger.debug("detecting chrome webdriver start!")
 
 
 @logger.catch

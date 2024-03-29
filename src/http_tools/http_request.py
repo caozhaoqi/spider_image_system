@@ -222,7 +222,7 @@ def download_file_fun(url, filename):
         constants.download_finish_flag = True
         return True
     except Exception as e:
-        logger.error(f"Error downloading {filename}: {e}")
+        logger.warning(f"Error downloading {filename}: {e}")
         return False
 
 
