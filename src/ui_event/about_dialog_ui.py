@@ -19,6 +19,15 @@ class InformationDialog(QDialog):
 
         layout = QVBoxLayout()
 
+        desc_label = QLabel('软件介绍(software desc:')
+        layout.addWidget(desc_label)
+
+        desc = "SIS (Spider Image System) is designed as a tool to crawl target websites, implemented using selenium " \
+               "and PyQt5. Its main functions include data capture, data saving, data browsing, data processing, " \
+               "data conversion, data uploading, etc."  # 替换为实际的软件版本
+        desc_label_2 = QLabel(desc)
+        layout.addWidget(desc_label_2)
+
         version_label = QLabel('软件版本(software version):')
         layout.addWidget(version_label)
 
@@ -29,7 +38,7 @@ class InformationDialog(QDialog):
         author_label = QLabel('作者(author):')
         layout.addWidget(author_label)
 
-        author = 'Copyright © 2023 - 2024 Zhaoqi.Cao | Powered by PyQt5'  # 替换为实际的作者姓名
+        author = 'Copyright © 2023 - 2024 Zhaoqi.Cao | Powered by PyQt5(v5.15.10)'  # 替换为实际的作者姓名
         author_label_2 = QLabel(author)
         layout.addWidget(author_label_2)
 

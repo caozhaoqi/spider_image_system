@@ -26,7 +26,7 @@ def log_record():
     logger.configure(
         handlers=[{"sink": sys.stdout, "level": sis_log_level, "format": format_record}])
     logger.add(LOG_DIR, encoding='utf-8', rotation="00:00", retention="30 days", compression="zip")
-    logger.debug('SIS log file started record, current log file: ' + LOG_DIR)
+    logger.debug('SIS log file started record, current log file path: ' + LOG_DIR)
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
     return True
 
@@ -41,7 +41,7 @@ def check_version_update():
     if compare_versions_with_pre_release(run.constants.sis_server_version, lasted_version) != 0:
         logger.info(f"find new version: {lasted_version}, will update software version.")
         if download_new_version(lasted_version):
-            logger.success("new version download success, basic will quit! please run new version software!")
+            logger.success("new version download success, sis will quit! please run new version software!")
         else:
             logger.warning(f"unknown error, will continued run: {run.constants.sis_server_version} version software!")
     else:
