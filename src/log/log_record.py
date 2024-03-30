@@ -65,8 +65,8 @@ def sys_info_select():
     logger.info('CPU type: ' + platform.processor())
     logger.info('pc other info: ' + str(platform.uname()))
     logger.info("end print current system info. ")
-    logger.info("now, start check version update update!")
-    check_version_update()
+    # logger.info("now, start check version update update!")
+    # check_version_update()
 
 
 @logger.catch

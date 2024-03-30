@@ -139,6 +139,6 @@ enable = read_ini_config(ini_file_path, "minio_config_selected", "enable")
 SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH")
 PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
-sis_server_version = "v1.1.1.240328"
-build_date = "2024-03-28 18:00"
-publish_date = "2024-03-29 18:30"
+sis_server_version = "v1.1.2-beta.1.240401"
+build_date = "2024-04-01 18:00"
+publish_date = "2024-04-02 18:30"

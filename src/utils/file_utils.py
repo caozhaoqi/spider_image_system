@@ -253,12 +253,16 @@ def pinyin_convert(folder_name, folder_path, folder, pinyin_flag):
         # 如果新文件夹不存在，则创建它，并移动文件夹内容到新文件夹
         os.makedirs(pinyin_folder_path)
         move_sou_dir = os.path.join(folder_path, folder)
+        if not os.path.exists(move_sou_dir):
+            logger.warning(f"{move_sou_dir} not exists!")
+            return False
         for img in os.listdir(move_sou_dir):
             src_path = os.path.join(move_sou_dir, img)
             shutil.move(src_path, pinyin_folder_path)
         # if "master" not in folder_name or "images" not in folder_name:
         logger.success(
             f"Folder '{folder_name}' has been converted to '{pinyin_folder_name}' and moved successfully.")
+        return True
 
 
 @logger.catch

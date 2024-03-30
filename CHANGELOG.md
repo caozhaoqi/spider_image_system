@@ -1,5 +1,11 @@
 # CHANGELOG
 
+
+## v1.1.2-beta.1.240401
+### 2024/4/1
+- fix bug for folder convert
+
+
 ## v1.1.1.240328
 ### 2024/3/29
 - 代码结构更新
