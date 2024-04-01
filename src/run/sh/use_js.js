@@ -16,3 +16,6 @@ export click_all;
 
 // get page height
 return document.body.scrollHeight
+
+//spider_gif_images
+return window.performance.getEntriesByType('resource')

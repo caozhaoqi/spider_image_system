@@ -13,7 +13,6 @@ from loguru import logger
 from utils.minio_file import upload_image
 from file.file_process import get_image_keyword
 from ui_event.auto_image_explore import AutoImageDialog
-from ui_event.gi_dialog_ui import GICharacterDialog
 from ui_event.image_dialog import ImageDialog
 from ui_event.log_analyze_dialog import LogAnalyzeHistogram
 from ui_event.sys_info_ui import SystemMonitor
@@ -258,32 +257,6 @@ def performance_monitor():
         monitor.exec_()
     else:
         logger.warning("performance_monitor already show!")
-
-
-@logger.catch
-def genshin_impact_view():
-    """
-    genshin impact tools view
-    :return:
-    """
-    if not constants.genshin_impact_view_visible:
-        dialog_gi = GICharacterDialog()
-        dialog_gi.showMaximized()
-        dialog_gi.show()
-        logger.info("show genshin impact show!")
-        constants.genshin_impact_view_visible = True
-        dialog_gi.exec_()
-    else:
-        logger.warning("genshin_impact_view already show!")
-
-
-@logger.catch
-def star_rail_view():
-    """
-    star rail view tools
-    :return:
-    """
-    ...
 
 
 @logger.catch

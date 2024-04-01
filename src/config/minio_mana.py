@@ -3,11 +3,9 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from datetime import timedelta
 from loguru import logger
 from minio import Minio
 from file.ini_file_spider import spider_config
-from model.Case import Case
 
 
 class MinioMana:
@@ -60,15 +58,3 @@ class MinioMana:
                 result.object_name, result.etag, result.version_id,
             ))
 
-    def get_object_presigned_url(self, bucket, object_name):
-        case = Case()
-        url = self.mc.get_presigned_url(
-            "GET",
-            bucket,
-            object_name,
-            expires=timedelta(days=1), )
-        case.id = object_name
-        case.name = object_name
-        case.path = url
-
-        return case

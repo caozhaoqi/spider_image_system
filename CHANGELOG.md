@@ -5,6 +5,7 @@
 ### 2024/4/1
 - fix bug for folder convert
 - add auto-detect Chrome version to download webdriver
+- remove un use code 
 
 
 ## v1.1.1.240328

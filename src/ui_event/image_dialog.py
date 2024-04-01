@@ -3,12 +3,11 @@ import sys
 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import cProfile
 import threading
 import requests
 from loguru import logger
 from run import constants
-from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, QApplication
+from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea
 from PyQt5.QtGui import QPixmap, QImage
 
 
@@ -50,9 +49,7 @@ class ImageDialog(QDialog):
         if len(constants.online_img_list) <= 0:
             logger.warning("cur data dir no image!")
         else:
-            #     load index page show image
             self.show_image_view_threading(constants.online_img_list[0])
-            # logger.debug("index image show!")
 
     def show_previous_image(self):
         """
@@ -133,24 +130,7 @@ class ImageDialog(QDialog):
         :param event:
         :return:
         """
-        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
         logger.debug('ImageDialog Dialog is closing!')
         constants.online_look_image_visible = False
-        # 调用基类的 closeEvent 方法以确保对话框正常关闭
         super(ImageDialog, self).closeEvent(event)
 
-
-# @logger.catch
-# def show_image_viewer():
-#     """
-#     show image to tool
-#     :return:
-#     """
-#     dialog = ImageDialog()
-#     dialog.showMaximized()
-#     dialog.show()
-#     dialog.exec_()
-
-
-if __name__ == '__main__':
-    cProfile.run('show_image_viewer()')

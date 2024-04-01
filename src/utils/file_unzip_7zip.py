@@ -73,10 +73,9 @@ def unzip_file(dir_path):
     :param dir_path: 目录
     :return:
     """
-    # 7-Zip的安装路径，确保这是您电脑上7-Zip的实际安装路径
     SEVEN_ZIP_PATH = constants.SEVEN_ZIP_PATH
-    # 解压密码（如果有的话）
-    PASSWORD = constants.PASSWORD  # 替换为实际的密码
+
+    PASSWORD = constants.PASSWORD
 
     # 遍历当前目录下的所有.7z.xz文件
     file_list = scan_file_zip(dir_path)

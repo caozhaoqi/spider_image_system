@@ -56,8 +56,3 @@ def show_message(message_type, message_content):
     dialog_mg = MessageDialog(message_type, message_content)
     dialog_mg.show()
     dialog_mg.exec_()
-
-
-if __name__ == '__main__':
-    # cProfile.run('main()')
-    show_message("成功", "已完成！")

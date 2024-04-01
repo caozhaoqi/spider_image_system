@@ -63,8 +63,6 @@ class UIMainWindows(QMainWindow):
         self.lastMousePos = None
         self.scaleFactor = 1.0
         self.label.installEventFilter(self)
-        # default not show image click button show
-        # show_next_image(self)
         self.showMaximized()
 
     def jump_point_image_click(self):
@@ -385,6 +383,5 @@ class UIMainWindows(QMainWindow):
         :param event:
         :return:
         """
-        # 在这里处理窗口关闭事件
         logger.warning("Exe main ui will closing...")
         exit_save_data()

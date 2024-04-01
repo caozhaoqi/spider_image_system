@@ -17,7 +17,6 @@ def convert_txt(input_file_path, output_file_path):
     :return:
     """
     read_lines = []
-    # 尝试使用UTF-8编码打开文件
     try:
         with codecs.open(input_file_path, 'r', encoding='gbk', errors='replace') as file:
             read_lines = file.readlines()
@@ -50,7 +49,6 @@ def scan_txt_file_all(path):
         file_name_front, file_ext = os.path.splitext(file_name)
         output_file_path = os.path.join(file_path_front, file_name_front + "_utf8.txt")
         convert_txt(txt, output_file_path)
-    # logger.info('convert finish.')
 
 
 @logger.catch

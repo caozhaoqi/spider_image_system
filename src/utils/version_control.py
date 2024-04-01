@@ -59,8 +59,8 @@ def compare_versions_with_pre_release(version1, version2):
          0 if version1 == version2
          1 if version1 > version2
     """
-    # 使用正则表达式匹配主要版本和预发布标签
-    pattern = r'^v?(\d+(\.\d+)*)(.*?)$'  # 添加了 'v?' 来可选地匹配 'v' 前缀
+
+    pattern = r'^v?(\d+(\.\d+)*)(.*?)$'
 
     match1 = re.match(pattern, version1)
     match2 = re.match(pattern, version2)
@@ -73,26 +73,20 @@ def compare_versions_with_pre_release(version1, version2):
         logger.warning(f"版本号 {version2} 匹配失败")
         return None
 
-    # 提取主要版本号和预发布标签
     main_version1 = match1.group(1)
     pre_release1 = match1.group(3)
     main_version2 = match2.group(1)
     pre_release2 = match2.group(3)
 
-    # 如果两个版本都没有预发布标签，则只比较主要版本号
     if not pre_release1 and not pre_release2:
         return compare_versions(main_version1, main_version2)
 
-    # 如果只有一个版本有预发布标签，则没有预发布标签的版本更高
     if not pre_release1:
         return 1
     if not pre_release2:
         return -1
 
-    # 如果主要版本号相同，则比较预发布标签
     if main_version1 == main_version2:
-        # 这里简单地将预发布标签按照字母顺序进行比较
-        # 如果需要更复杂的比较逻辑，可以根据需要进行修改
         return pre_release1 < pre_release2 - 1
 
     # 比较主要版本号
@@ -109,14 +103,12 @@ def download_new_version(version):
     url = 'https://gitee.com/caozhaoqi/spider_image_system/releases/download/' + version + '/sis_' + version \
           + '.exe'
     save_path = run.constants.basic_path
-    # 发送GET请求到指定的URL
+
     response = requests.get(url, stream=True)
 
-    # 检查请求是否成功
     if response.status_code == 200:
-        # 打开一个文件用于保存数据
         with open(save_path, 'wb') as file:
-            # 从响应中读取数据并写入文件
+
             for chunk in response.iter_content(chunk_size=1024):
                 file.write(chunk)
         logger.success(f"new version download finished: {save_path}")

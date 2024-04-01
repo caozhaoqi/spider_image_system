@@ -63,7 +63,7 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
         endpoint_url,
         access_key=access_key,
         secret_key=secret_key,
-        secure=False  # 如果你使用的是HTTPS，请将其更改为True
+        secure=False
     )
 
     # 确保bucket存在
@@ -84,8 +84,6 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
             client.stat_object(bucket_name, remote_file_path)
             # logger.warning(f"already exists, will skip: {remote_file_path}")
         except minio.error.S3Error as s3_e:
-            # 对象不存在
-            # print("对象不存在")
             if s3_e.code == 'NoSuchKey':
                 try:
                     client.fput_object(bucket_name, remote_file_path, file)
@@ -106,7 +104,6 @@ def upload_image(path):
     :param path:
     :return:
     """
-    # 请替换以下值为你自己的MinIO配置和本地文件夹路径
     minio_server_ip = constants.minio_server_ip
     minio_server_port = constants.minio_server_port
     ENDPOINT_URL = str(minio_server_ip) + ':' + str(minio_server_port)

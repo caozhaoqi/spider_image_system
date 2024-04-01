@@ -7,6 +7,7 @@ from loguru import logger
 from run import constants
 from image.gif_img_process import read_gif_url
 
+
 @logger.catch
 def spider_gif_images(keyword, chrome_driver):
     """

@@ -163,7 +163,3 @@ def face_detect_result(path):
 
     constants.face_detect_flag = False
 
-
-if __name__ == '__main__':
-    # log_record()
-    face_detect_result('../run/data/')

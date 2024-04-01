@@ -35,8 +35,6 @@ def send_request(url, timeout=download_img_time_out):
     retries_count = 0
     while retries_count < retries.total:
         try:
-            # 增加日志记录重试次数和开始时间
-            # logger.info(f"Attempting request to {url} (retry {retries_count + 1}/{retries.total})")
             start_time = time.time()
 
             response = session.get(url, stream=True, timeout=timeout)
@@ -44,22 +42,14 @@ def send_request(url, timeout=download_img_time_out):
             # 检查是否超时
             elapsed_time = time.time() - start_time
             if elapsed_time >= timeout:
-                # logger.warning( f"Request to {url} took too long ({elapsed_time} seconds >= {timeout} seconds) and
-                # was cancelled.")
                 continue  # 如果实际请求时间超过了设定的超时时间，则继续重试
 
             response.raise_for_status()  # 如果HTTP请求返回了不成功的状态码，将引发HTTPError异常
             return response
         except (ReadTimeout, ChunkedEncodingError, ConnectTimeout, HTTPError) as e:
-            # 如果是超时、分块编码错误或其他HTTP错误，记录错误并决定是否重试
-            # logger.error(f"Request to {url} failed with an error: {e}")
-
-            # 增加重试延迟
             time.sleep(retries.backoff_factor * (2 ** retries_count))
             retries_count += 1
 
-    # 如果所有重试都失败了，返回None
-    # logger.error(f"Failed to retrieve data from {url} after multiple retries.")
     return None
 
 

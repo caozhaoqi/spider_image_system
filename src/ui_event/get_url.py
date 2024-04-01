@@ -37,7 +37,6 @@ def save_img_url(driver, key_word):
             for line in f:
                 url = line.strip()
                 if url and not constants.stop_spider_url_flag:
-                    # 允许继续抓取url
                     if not artwork_to_image(key_word_pinyin, driver, url):
                         break
                 else:

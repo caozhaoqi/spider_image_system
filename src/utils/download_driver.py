@@ -1,3 +1,9 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import subprocess
 from loguru import logger
 import re
 import stat, zipfile, os, psutil
