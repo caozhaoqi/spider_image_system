@@ -4,6 +4,7 @@
 ## v1.1.2-beta.1.240401
 ### 2024/4/1
 - fix bug for folder convert
+- add auto-detect Chrome version to download webdriver
 
 
 ## v1.1.1.240328
