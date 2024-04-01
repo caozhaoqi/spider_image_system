@@ -1,11 +1,15 @@
 import os
 import sys
+
+import PyQt5.Qt
+from PyQt5.QtCore import QtInfoMsg
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from loguru import logger
 from run import constants
 from run.constants import sis_server_version, publish_date, build_date
-from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QPlainTextEdit, QTextEdit
 
 
 class InformationDialog(QDialog):
@@ -19,12 +23,10 @@ class InformationDialog(QDialog):
 
         layout = QVBoxLayout()
 
-        desc_label = QLabel('软件介绍(software desc:')
+        desc_label = QLabel('软件介绍(software desc):')
         layout.addWidget(desc_label)
 
-        desc = "SIS (Spider Image System) is designed as a tool to crawl target websites, implemented using selenium " \
-               "and PyQt5. Its main functions include data capture, data saving, data browsing, data processing, " \
-               "data conversion, data uploading, etc."  # 替换为实际的软件版本
+        desc = "SIS is designed as a tool to crawl target websites."  # 替换为实际的软件版本
         desc_label_2 = QLabel(desc)
         layout.addWidget(desc_label_2)
 
