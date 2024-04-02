@@ -41,7 +41,7 @@ class SystemMonitor(QDialog):
         self.init_ui()
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update_data)
-        self.timer.start(500)
+        self.timer.start(2000)
 
     def init_ui(self):
         """
