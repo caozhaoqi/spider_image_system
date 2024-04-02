@@ -19,15 +19,25 @@ stop_spider_url_flag = True
 stop_download_image_flag = True
 # dialog show
 edit_config_msg_visible = False
+# about
 about_message_lookup_visible = False
+# explore image
 online_look_image_visible = False
+# auto play image
 auto_play_image_visible = False
+# auto play flag
 start_auto_play_flag = False
+# per monitor
 performance_monitor_visible = False
-genshin_impact_view_visible = False
+# gi view
+# genshin_impact_view_visible = False
+# log ana
 log_analyze_visible = False
+# face detect
 face_detect_flag = False
+# txt convert
 convert_folder_name_flag = False
+# online explore image
 online_show_image = False
 # firewall_flag
 firewall_flag = False
@@ -66,8 +76,8 @@ check_images_flag = False
 category_image_flag = False
 # single process image
 single_flag = False
-# sqlite table name
-sqlite_table_name = "proxy_detail"
+# # sqlite table name
+# sqlite_table_name = "proxy_detail"
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
@@ -127,16 +137,23 @@ fire_wall_delay_time = int(read_ini_config(ini_file_path, "automatic_config", "f
 download_img_retry_times = int(read_ini_config(ini_file_path, "automatic_config", "download_img_retry_times"))
 # retry time out
 download_img_time_out = int(read_ini_config(ini_file_path, "automatic_config", "download_img_time_out"))
-#
+# minio config id
 minio_config_id = read_ini_config(ini_file_path, "minio_config_selected", "minio_config_id")
+# minio server ip address
 minio_server_ip = read_ini_config(ini_file_path, "minio_config_selected", "minio_server_ip")
+# minio server port
 minio_server_port = read_ini_config(ini_file_path, "minio_config_selected", "minio_server_port")
+# login in minio server account
 minio_account = read_ini_config(ini_file_path, "minio_config_selected", "minio_account")
+# login minio server password
 minio_password = read_ini_config(ini_file_path, "minio_config_selected", "minio_password")
+# mark msg
 mark_msg = read_ini_config(ini_file_path, "minio_config_selected", "mark_msg")
+# enable minio config
 enable = read_ini_config(ini_file_path, "minio_config_selected", "enable")
-
+# seven zip path
 SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH")
+# unzip zip file password
 PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
 sis_server_version = "v1.1.2-beta.1.240401"
