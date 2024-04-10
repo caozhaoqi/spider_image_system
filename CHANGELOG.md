@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.1.2-beta.2.240410
+### 2024/4/10
+- captain valid 
+- add nuitka package
+- fix empty file upload warning
 
 ## v1.1.2-beta.1.240401
 ### 2024/4/1

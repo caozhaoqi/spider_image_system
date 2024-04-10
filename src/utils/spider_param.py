@@ -66,7 +66,7 @@ def spider_param_config(key_word):
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 '
             'Safari/537.36 '
         ]
-        logger.warning(f"not user-agent, use default user-agent: {user_agents[0]}")
+        logger.warning(f"not found user-agent, use default user-agent: {user_agents[0]}")
     # 随机添加user-agent
     cur_user_agents = random.choice(user_agents).strip()
     # add user-agent

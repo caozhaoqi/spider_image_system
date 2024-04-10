@@ -123,7 +123,7 @@ def spider_artworks_url(self, key_word):
         key_word_flag, last_page = exists_image_keyword(key_word)
         if key_word_flag:
             cur_page = int(last_page) + 1
-            logger.warning(f"last already spider: {key_word} and page: {last_page}, next page: {cur_page}")
+            logger.warning(f"last already spider: {key_word.strip()} and page: {last_page}, next page: {cur_page}")
         if constants.stop_spider_url_flag:
             logger.warning("stop spider url, get url spider artwork url.")
             break
@@ -135,12 +135,16 @@ def spider_artworks_url(self, key_word):
         except Exception as e:
             logger.warning(f"unknown error: {e}, will skip spider!")
             break
-        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】' or driver.title == constants.visit_url\
-                or driver.title == '请稍候…' or driver.title == '':
+        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】' or driver.title == constants.visit_url \
+                or driver.title == '':
             logger.warning(
                 f"error! will exit: cur visit domain blocked, or visit url: {constants.visit_url} not visit!")
             constants.firewall_flag = True
             break
+        elif driver.title == '请稍候…':
+            # robots.txt
+            logger.warning(f"captain valid ing... {driver}")
+            # time.sleep(search_delta_time)
         logger.debug("start load href save url to txt.")
         load_save_flag = load_href_save(driver, key_word)
         if load_save_flag == 1:

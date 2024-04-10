@@ -102,7 +102,6 @@ def slider_page_down(driver):
     time.sleep(detail_delta_time)
     logger.info(f"slider page down! page height {page_height}px")
     random_action(driver)
-    #
 
 
 @logger.catch

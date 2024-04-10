@@ -76,6 +76,9 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
 
     image_files_upload = show_filter_image_log(find_upload_file(constants.basic_path))
 
+    if not image_files_upload:
+        logger.warning(f"path:{local_folder_path} no file!")
+        return False
     for file in image_files_upload:
 
         relative_path = os.path.relpath(file, local_folder_path)
@@ -111,7 +114,6 @@ def upload_image(path):
     SECRET_KEY = constants.minio_password
     BUCKET_NAME = "dataupload"
     LOCAL_FOLDER_PATH = path
-
     logger.info(f"current use minio server: {ENDPOINT_URL}")
     if upload_images_to_minio(ENDPOINT_URL, ACCESS_KEY, SECRET_KEY, BUCKET_NAME, LOCAL_FOLDER_PATH):
         logger.success("image and log, upload all image success!")

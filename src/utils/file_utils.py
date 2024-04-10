@@ -11,7 +11,7 @@ from run.constants import data_path
 from utils.http_utils import image_url_re
 import shutil
 from pypinyin import lazy_pinyin, Style
-
+import run
 
 @logger.catch
 def write_url_txt(path, file_name, url):
@@ -157,7 +157,10 @@ def get_data_file(filename):
     """
     if getattr(sys, 'frozen', False):
         # 如果程序是“冷冻的”，即打包后的 exe
-        basedir = sys._MEIPASS
+        if run.__compiled__:
+            basedir = os.getcwd()
+        else:
+            basedir = sys._MEIPASS
     else:
         # 如果程序是直接运行的，即没有打包
         basedir = os.path.dirname(__file__)

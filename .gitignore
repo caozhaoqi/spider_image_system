@@ -5,3 +5,5 @@ src/run/build/
 src/run/dist/
 src/run/data/
 src/run/log_dir/
+src/out/
+src/nuitka-crash-report.xml

@@ -15,4 +15,5 @@ requests~=2.31.0
 minio~=7.2.5
 PyQt5~=5.15.10
 pyqtchart
+Nuitka
 opencv-python~=4.9.0.80
