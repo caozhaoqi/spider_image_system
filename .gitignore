@@ -7,3 +7,6 @@ src/run/data/
 src/run/log_dir/
 src/out/
 src/nuitka-crash-report.xml
+src/dist
+src/sis.egg-info
+src/build

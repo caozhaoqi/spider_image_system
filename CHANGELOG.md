@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.1.2.240412
+### 2024/4/12
+- setuptools打包
+- nsis打包
+
 ## v1.1.2-beta.2.240410
 ### 2024/4/10
 - captain valid 
