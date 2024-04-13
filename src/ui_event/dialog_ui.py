@@ -249,7 +249,7 @@ def save_data(self):
     sis_log_level_txt = self.comboBox_sis_log_level.currentText()
     output_video_fps_txt = self.output_video_fps_line.text()
     output_video_width_txt = self.output_video_width_line.text()
-    output_video_height_txt = self.keyword_edt.text()
+    output_video_height_txt = self.output_video_height_line.text()
     proxy_server_ip_txt = self.s1_proxy_server_ip_line.text()
     proxy_server_port_txt = self.s1_proxy_server_port_line.text()
     if self.checkBox_r18.isChecked():
