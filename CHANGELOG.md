@@ -1,9 +1,10 @@
 # CHANGELOG
 
-## v1.1.2.240412
-### 2024/4/12
+## v1.1.2.240415
+### 2024/4/15
 - setuptools打包
 - nsis打包
+- add keyword to spider_img_keyword.txt on hasn't keyword 
 
 ## v1.1.2-beta.2.240410
 ### 2024/4/10

@@ -76,6 +76,8 @@ check_images_flag = False
 category_image_flag = False
 # single process image
 single_flag = False
+# keyword add finish flag
+add_keyword_finish_flag = False
 # # sqlite table name
 # sqlite_table_name = "proxy_detail"
 
@@ -156,6 +158,6 @@ SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH"
 # unzip zip file password
 PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
-sis_server_version = "v1.1.2.240412"
-build_date = "2024-04-12 18:00"
-publish_date = "2024-04-12 18:30"
+sis_server_version = "v1.1.2.240415"
+build_date = "2024-04-15 18:00"
+publish_date = "2024-04-16 18:30"

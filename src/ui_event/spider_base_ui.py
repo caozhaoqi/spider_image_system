@@ -10,7 +10,7 @@ from loguru import logger
 from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, \
     log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag, \
-    user_upload_image, user_download_image, unzip_file_method
+    user_upload_image, user_download_image, unzip_file_method, add_keyword_alert
 
 
 @logger.catch
@@ -23,6 +23,8 @@ def base_menu(self):
     self.image_menu = QMenu('图像', self.menu_bar)
     self.start_spider_action = QAction('自动爬取', self.image_menu)
     self.start_spider_action.triggered.connect(lambda: auto_start_spider_image(self))
+    self.add_keyword_action = QAction('关键字', self.image_menu)
+    self.add_keyword_action.triggered.connect(lambda: add_keyword_alert())
     self.stop_spider_action = QAction('停止爬取', self.image_menu)
     self.stop_spider_action.triggered.connect(lambda: stop_spider_image())
     self.stop_download_action = QAction('停止下载', self.image_menu)
@@ -38,6 +40,7 @@ def base_menu(self):
     self.user_download_re_action = QAction("重新下载", self.image_menu)
     self.user_download_re_action.triggered.connect(lambda: user_download_image())
     self.image_menu.addAction(self.start_spider_action)
+    self.image_menu.addAction(self.add_keyword_action)
     self.image_menu.addAction(self.stop_spider_action)
     self.image_menu.addAction(self.stop_download_action)
     self.image_menu.addAction(self.online_look_action)

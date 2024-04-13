@@ -1,6 +1,8 @@
 import os
 import sys
 
+from ui_event.keyword_dialog import KeywordDialog
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from selenium.common import StaleElementReferenceException
@@ -146,6 +148,18 @@ def auto_start_spider_image(self):
 
 
 @logger.catch
+def add_keyword_alert():
+    """
+
+    :return:
+    """
+    dialog = KeywordDialog()
+    logger.info("keyword msg dialog show visible.")
+    # dialog.show()
+    dialog.exec_()
+
+
+@logger.catch
 def auto_spider_img_thread(self):
     """
     auto spider img thread
@@ -159,7 +173,7 @@ def auto_spider_img_thread(self):
     logger.info("auto spider img thread starting...")
     spider_image_keyword, txt_file_list = get_image_keyword()
     if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
-        logger.warning("auto spider image null, will exit!")
+        logger.warning("auto spider image null, please add keyword!")
         return False
     constants.spider_mode = 'auto'
     txt_index = 0

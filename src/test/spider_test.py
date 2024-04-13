@@ -43,9 +43,4 @@ def auto_detect():
 
 
 if __name__ == '__main__':
-    # img_list = find_images(r"C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data")
-    # for img in img_list:
-    #     output = query(
-    #         img)
-    #     logger.info(img + ": " + output)
     auto_detect()
