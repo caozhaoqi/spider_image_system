@@ -1,0 +1,20 @@
+# info
+- 1.spider pid url.(exists skip) 
+- 2.pid url get image url.(exists skip)
+- 3.according url download image.(exists skip) finished write to txt, start skip finished txt
+- 4.cur method: delete finish.txt re download.
+- 5.other method: 
+
+# publish method
+## first (in src dir)
+```shell
+python -m nuitka --mingw64 --standalone --follow-import-to=config,file,http_tools,image,log,model,router,run,ui_event,utils,view --output-dir=out --plugin-enable=pyqt5 --windows-icon-from-ico=./run/favicon.ico --show-progress ./run/ui_main.py
+#link
+https://caozhaoqi.github.io/2024/04/09/nuitka-publish-python/
+```
+## second(in src dir)
+```shell
+# VNISEdit 可视化 打包发布
+#link :
+https://caozhaoqi.github.io/2024/04/10/setup-tools-python/
+```
