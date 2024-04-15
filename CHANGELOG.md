@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.3-beta.1.240418
+### 2024/4/18
+- 1.add default admin start exe for nsis
+
 ## v1.1.2.240415
 ### 2024/4/15
 - setuptools打包

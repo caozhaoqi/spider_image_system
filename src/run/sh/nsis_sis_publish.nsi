@@ -5,7 +5,7 @@
 !define PRODUCT_VERSION "1.1.2"
 !define PRODUCT_PUBLISHER "Zhaoqi.Cao"
 !define PRODUCT_WEB_SITE "http://caozhaoqi.github.io"
-!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\selenium-manager.exe"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ui_main.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
@@ -51,6 +51,7 @@ var ICONS_GROUP
 
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "Japanese"
 !insertmacro MUI_LANGUAGE "SimpChinese"
 
 ; MUI end ------
@@ -243,11 +244,17 @@ Section "Main" SEC01
   File "..\..\out\ui_main.dist\_ssl.pyd"
   File "..\..\out\ui_main.dist\_uuid.pyd"
 
+;针对当前用户有效
+  WriteRegStr HKCU "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\ui_main.exe" "RUNASADMIN"
+
+;针对所有用户有效
+  WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\ui_main.exe" "RUNASADMIN"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "TestAddKey" "$INSTDIR\ui_main.exe"
 ; Shortcuts
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Spider_Image_System.lnk" "$INSTDIR\selenium\webdriver\common\windows\selenium-manager.exe"
-  CreateShortCut "$DESKTOP\Spider_Image_System.lnk" "$INSTDIR\selenium\webdriver\common\windows\selenium-manager.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Spider_Image_System.lnk" "$INSTDIR\ui_main.exe"
+  CreateShortCut "$DESKTOP\Spider_Image_System.lnk" "$INSTDIR\ui_main.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
@@ -261,7 +268,7 @@ SectionEnd
 
 Section -Post
   WriteUninstaller "$INSTDIR\uninst.exe"
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\selenium\webdriver\common\windows\selenium-manager.exe"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\ui_main.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\selenium\webdriver\common\windows\selenium-manager.exe"
@@ -469,5 +476,6 @@ Section Uninstall
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "TestAddKey"
   SetAutoClose true
 SectionEnd
