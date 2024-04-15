@@ -63,7 +63,7 @@ def base_menu(self):
     self.performance_menu.addAction(self.look_performance)
 
     self.tools_menu = QMenu('工具', self.menu_bar)
-    self.img_ana = QMenu('图片分析', self.tools_menu)
+    self.img_ana = QAction('图片分析', self.tools_menu)
     self.log_analyze = QAction('日志分析', self.tools_menu)
     self.folder_name = QAction('名称转换', self.tools_menu)
     self.encoding_tools = QAction('编码转换', self.tools_menu)
@@ -75,7 +75,7 @@ def base_menu(self):
     self.encoding_tools.triggered.connect(lambda: encoding_tools_convert())
     self.test_driver.triggered.connect(lambda: detect_installed_flag())
     self.unzip_file_menu.triggered.connect(lambda: unzip_file_method())
-    self.tools_menu.addMenu(self.img_ana)
+    self.tools_menu.addAction(self.img_ana)
     self.tools_menu.addAction(self.log_analyze)
     self.tools_menu.addAction(self.folder_name)
     self.tools_menu.addAction(self.encoding_tools)

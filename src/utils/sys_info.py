@@ -32,6 +32,10 @@ def get_cpu_usage():
 
 @logger.catch
 def get_cpu_usage_percentage():
+    """
+
+    :return:
+    """
     process = psutil.Process(os.getpid())
     if process.status() == psutil.STATUS_ZOMBIE or process.status() == psutil.STATUS_DEAD:
         logger.warning("Process is not running.")
@@ -74,6 +78,11 @@ def network_usage():
 
 @logger.catch
 def get_network_io_speed(process_name):
+    """
+
+    :param process_name:
+    :return:
+    """
     # 找到与给定名称匹配的进程
     for proc in psutil.process_iter(['pid', 'name']):
         if proc.info['name'] == process_name:
@@ -101,8 +110,8 @@ def get_network_io_speed(process_name):
 
     return recv_speed, send_speed
 
-
-if __name__ == '__main__':
-    send_speed, recv_speed = get_network_io_speed("cmd.exe")
-    print(f"Upload Speed: {send_speed} Bytes/s")
-    print(f"Download Speed: {recv_speed} Bytes/s")
+#
+# if __name__ == '__main__':
+#     send_speed, recv_speed = get_network_io_speed("cmd.exe")
+#     print(f"Upload Speed: {send_speed} Bytes/s")
+#     print(f"Download Speed: {recv_speed} Bytes/s")

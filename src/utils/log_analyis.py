@@ -160,7 +160,7 @@ def log_data_analyze():
 @logger.catch
 def log_analyze_data_output():
     """
-    log andlyze data analyze
+    log analyze data analyze
     :return:
     """
     data = log_data_analyze()
