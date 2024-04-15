@@ -62,7 +62,7 @@ class Dialog(QDialog):
 
         :return:
         """
-        self.setWindowTitle('编辑工具配置')
+        self.setWindowTitle('编辑工具配置(Edit tools config)')
         self.setFixedSize(800, 800)
         # 创建输入框和标签
         self.visit_url_label = QLabel('访问网站 URL(visit_url):')
@@ -77,10 +77,10 @@ class Dialog(QDialog):
         self.target_url_label = QLabel('目标图片服务器URL(target_url):')
         self.target_url_line = QLineEdit(target_url)
 
-        self.spider_image_max_count_label = QLabel('抓取图片最大值:')
+        self.spider_image_max_count_label = QLabel('抓取图片最大值(spider_img_max):')
         self.spider_image_max_count_line = QLineEdit(str(spider_images_max_count))
 
-        self.sis_log_level_label = QLabel("日志级别")
+        self.sis_log_level_label = QLabel("日志级别(log_level)")
         self.comboBox_sis_log_level = QComboBox()
         self.comboBox_sis_log_level.addItem("INFO")
         self.comboBox_sis_log_level.addItem("DEBUG")
@@ -123,18 +123,18 @@ class Dialog(QDialog):
         self.detail_delta_time_label = QLabel('详情延迟时间(s):')
         self.detail_delta_time_line = QLineEdit(str(detail_delta_time))
 
-        self.output_video_fps_label = QLabel('输出视频帧率(fps/s):')
+        self.output_video_fps_label = QLabel('输出视频帧率(fps):')
         self.output_video_fps_line = QLineEdit(str(output_video_fps))
 
         self.output_video_width_label = QLabel('输出视频宽度(16:9):')
         self.output_video_width_line = QLineEdit(str(output_video_width))
 
-        self.output_video_height_label = QLabel('输出视频高度(16:0):')
+        self.output_video_height_label = QLabel('输出视频高度(16:9):')
         self.output_video_height_line = QLineEdit(str(output_video_height))
 
         # 创建保存和取消按钮
-        save_button = QPushButton('保存')
-        cancel_button = QPushButton('取消')
+        save_button = QPushButton('保存(save)')
+        cancel_button = QPushButton('取消(cancel)')
 
         # 布局设置
         layout = QVBoxLayout()

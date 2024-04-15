@@ -13,6 +13,7 @@ import shutil
 from pypinyin import lazy_pinyin, Style
 import run
 
+
 @logger.catch
 def write_url_txt(path, file_name, url):
     """

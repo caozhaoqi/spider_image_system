@@ -5,6 +5,7 @@
 - setuptools打包
 - nsis打包
 - add keyword to spider_img_keyword.txt on hasn't keyword 
+- add img category analyze
 
 ## v1.1.2-beta.2.240410
 ### 2024/4/10

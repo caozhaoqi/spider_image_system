@@ -1,8 +1,6 @@
 import os
 import sys
 
-from ui_event.keyword_dialog import KeywordDialog
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from selenium.common import StaleElementReferenceException
@@ -30,6 +28,8 @@ from run import constants
 from utils.time_utils import time_to_utc
 from image.spider_img_save import download_re_error_image
 from utils.file_unzip_7zip import unzip_file
+from ui_event.img_analyze_dialog import ImgAnalyzeHistogram
+from ui_event.keyword_dialog import KeywordDialog
 
 
 @logger.catch
@@ -423,3 +423,16 @@ def exit_save_data():
     logger.warning("-------------------------------------------------------------")
     logger.warning(f"-----sis-{constants.sis_server_version} exe will quit!-----------------")
     logger.warning("-------------------------------------------------------------")
+
+
+@logger.catch
+def img_category_ana():
+    if not constants.img_analyze_visible:
+        dialog_img = ImgAnalyzeHistogram()
+        dialog_img.showMaximized()
+        dialog_img.show()
+        logger.info("img anal dialog show!")
+        constants.img_analyze_visible = True
+        dialog_img.exec_()
+    else:
+        logger.warning("genshin_impact_view already show!")

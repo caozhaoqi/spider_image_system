@@ -33,6 +33,8 @@ performance_monitor_visible = False
 # genshin_impact_view_visible = False
 # log ana
 log_analyze_visible = False
+# img ana
+img_analyze_visible = False
 # face detect
 face_detect_flag = False
 # txt convert
