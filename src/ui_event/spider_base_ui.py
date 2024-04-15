@@ -73,7 +73,7 @@ def base_menu(self):
     self.log_analyze.triggered.connect(lambda: log_analyze_ui())
     self.folder_name.triggered.connect(lambda: convert_folder_name())
     self.encoding_tools.triggered.connect(lambda: encoding_tools_convert())
-    self.test_driver.triggered.connect(lambda:  detect_installed_flag())
+    self.test_driver.triggered.connect(lambda: detect_installed_flag())
     self.unzip_file_menu.triggered.connect(lambda: unzip_file_method())
     self.tools_menu.addMenu(self.img_ana)
     self.tools_menu.addAction(self.log_analyze)
@@ -161,6 +161,7 @@ def tab_1_ui_paint(self):
     self.jump_point_image.clicked.connect(self.jump_point_image_click)
     self.btn_zoom_in.clicked.connect(self.zoom_in_method)
     self.btn_zoom_out.clicked.connect(self.zoom_out_method)
+    self.btn_open_data.clicked.connect(self.open_data_dir)
     return True
 
 
@@ -272,6 +273,9 @@ def search_item_paint(self):
     h_layout = QHBoxLayout()
 
     h_layout.addStretch()
+    self.btn_open_data = QPushButton('打开数据目录', self)
+    h_layout.addWidget(self.btn_open_data)
+
     self.btn_zoom_in = QPushButton('放大', self)
     h_layout.addWidget(self.btn_zoom_in)
 

@@ -12,7 +12,7 @@ from selenium.webdriver.chrome.service import Service
 from run import constants
 import zipfile
 import requests
-from utils.download_driver import get_chrome_version_from_executable
+from utils.download_driver import get_chrome_version_from_executable, AutoDownloadChromeDrive
 
 
 @logger.catch
@@ -21,10 +21,10 @@ def auto_download_webdriver():
 
     :return:
     """
-    # chrome = AutoDownloadChromeDrive()
-    # chrome.start()
-    logger.warning(
-        "Because exe more larger(>100MB), so cancel AutoDownloadChromeDrive, please manual download webdriver!")
+    chrome = AutoDownloadChromeDrive()
+    chrome.start()
+    # logger.warning(
+    #     "Because exe more larger(>100MB), so cancel AutoDownloadChromeDrive, please manual download webdriver!")
 
 
 @logger.catch

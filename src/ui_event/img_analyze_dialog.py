@@ -173,5 +173,5 @@ class ImgAnalyzeHistogram(QDialog):
         :return:
         """
         logger.debug('Img Category Dialog is closing!')
-        constants.log_analyze_visible = False
+        constants.img_analyze_visible = False
         super(ImgAnalyzeHistogram, self).closeEvent(event)

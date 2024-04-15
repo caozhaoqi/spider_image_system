@@ -385,3 +385,19 @@ class UIMainWindows(QMainWindow):
         """
         logger.warning("Exe main ui will closing...")
         exit_save_data()
+
+    def open_data_dir(self):
+        """
+        open sys data dir
+        :return:
+        """
+        try:
+            if os.name == 'nt':  # Windows
+                os.startfile(constants.data_path)
+            else:
+                import subprocess
+                subprocess.Popen(['xdg-open', constants.data_path])
+
+            logger.success(f"open data path: {constants.data_path} success!")
+        except Exception as e:
+            logger.error(f"open data path: {constants.data_path} fail, detail: {e}")

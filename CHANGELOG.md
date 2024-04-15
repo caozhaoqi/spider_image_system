@@ -6,6 +6,8 @@
 - nsis打包
 - add keyword to spider_img_keyword.txt on hasn't keyword 
 - add img category analyze
+- enable auto download driver and explore
+- add quick open data path button
 
 ## v1.1.2-beta.2.240410
 ### 2024/4/10
