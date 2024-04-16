@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import random
 import time
@@ -63,39 +62,68 @@ def is_keyword_num(driver, key_word):
     keyword_cat = key_word_list[1]
     key_word = keyword_content
     if keyword_cat == 'pid':
-        logger.info("input keyword is num, start process.")
-        url = "https://" + visit_url + "/artworks/" + key_word
-        image_list = artwork_single_image(key_word, driver, url)
-        if not image_list:
-            logger.warning("pid spider image no image.")
-            return False
-        else:
-            logger.success("spider success, start download.")
-            for image_url in image_list:
-                download_single_image(key_word, image_url)
-        return True
+        return spider_pid_image(driver, key_word)
     elif keyword_cat == 'users':
-        logger.info("input keyword is users, start process")
-        while True:
-            cur_page = 1
-            url = "https://" + visit_url + "/users/" + key_word + "/artworks?p=" + str(cur_page)
-            driver.get(url)
-            time.sleep(search_delta_time)
-            logger.info(f"cur spider users artwork cur_page: {cur_page}")
-            artwork_list = user_save_artwork(driver)
-            if not artwork_list or driver.title == constants.ban_content:
-                logger.warning(f"users: {keyword_cat}, spider image no artwork or ban content:{driver.title}, skip loop")
-                break
-            for artwork_url in artwork_list:
-                image_list = artwork_single_image(key_word, driver, artwork_url)
-                if not image_list:
-                    logger.warning(f"users: {keyword_cat}, spider image:{artwork_url}, no image.")
-                    continue
-                else:
-                    logger.success("spider success, start download.")
-                    for image_url in image_list:
-                        download_single_image(key_word, image_url)
-            cur_page += 1
+        spider_users_images(driver, key_word, keyword_cat)
+        return True
+
+
+@logger.catch
+def spider_users_images(driver, key_word, keyword_cat):
+    """
+
+    :param driver:
+    :param key_word:
+    :param keyword_cat:
+    :return:
+    """
+    logger.info("input keyword is users, start process")
+    while True:
+        cur_page = 1
+        url = "https://" + visit_url + "/users/" + key_word + "/artworks?p=" + str(cur_page)
+        driver.get(url)
+        time.sleep(search_delta_time)
+        logger.info(f"cur spider users artwork cur_page: {cur_page}")
+        artwork_list = user_save_artwork(driver)
+        if constants.stop_spider_url_flag:
+            logger.warning("stop spider url, get users url spider artwork url.")
+            break
+        if not artwork_list or driver.title == constants.ban_content or driver.title == constants.visit_url \
+                or driver.title == '':
+            logger.warning(
+                f"users: {keyword_cat}, spider image no artwork or ban content:{driver.title}, skip loop")
+            constants.firewall_flag = True
+            break
+        for artwork_url in artwork_list:
+            image_list = artwork_single_image(key_word, driver, artwork_url)
+            if not image_list:
+                logger.warning(f"users: {keyword_cat}, spider image:{artwork_url}, no image.")
+                continue
+            else:
+                logger.success("spider success, start download.")
+                for image_url in image_list:
+                    download_single_image(key_word, image_url)
+        cur_page += 1
+
+
+@logger.catch
+def spider_pid_image(driver, key_word):
+    """
+
+    :param driver:
+    :param key_word:
+    :return:
+    """
+    logger.info("input keyword is num, start process.")
+    url = "https://" + visit_url + "/artworks/" + key_word
+    image_list = artwork_single_image(key_word, driver, url)
+    if not image_list:
+        logger.warning("pid spider image no image.")
+        return False
+    else:
+        logger.success("spider success, start download.")
+        for image_url in image_list:
+            download_single_image(key_word, image_url)
     return True
 
 
