@@ -64,8 +64,7 @@ def is_keyword_num(driver, key_word):
     if keyword_cat == 'pid':
         return spider_pid_image(driver, key_word)
     elif keyword_cat == 'users':
-        spider_users_images(driver, key_word, keyword_cat)
-        return True
+        return spider_users_images(driver, key_word, keyword_cat)
 
 
 @logger.catch
@@ -104,6 +103,8 @@ def spider_users_images(driver, key_word, keyword_cat):
                 for image_url in image_list:
                     download_single_image(key_word, image_url)
         cur_page += 1
+    logger.info("spider users end.")
+    return True
 
 
 @logger.catch

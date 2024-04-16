@@ -151,6 +151,10 @@ class AutoDownloadChromeDrive(object):
 
 @logger.catch
 def get_chrome_version_from_executable():
+    """
+
+    :return:
+    """
     try:
         file_path = r"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
 

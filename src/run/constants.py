@@ -133,6 +133,8 @@ zoom_in_scale = float(read_ini_config(ini_file_path, "automatic_config", "zoom_i
 zoom_out_scale = float(read_ini_config(ini_file_path, "automatic_config", "zoom_out_scale"))
 # chrome path
 chrome_path = read_ini_config(ini_file_path, "automatic_config", "chrome_path")
+
+chrome_version = read_ini_config(ini_file_path, "automatic_config", "chrome_version")
 # upload_minio_image_Flag
 upload_minio_image_Flag = read_ini_config(ini_file_path, "automatic_config", "upload_minio_image_Flag")
 # allow re place image domain

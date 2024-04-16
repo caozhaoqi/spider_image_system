@@ -4,7 +4,7 @@
 2. Replace domain -> save url to txt.
 3. According to url download image from txt content.
 4. Spider gif image generate video.
-5. Download gofile file.
+5. Download gofile file
 ## Execute method
 1. Run sis_v1.0.x.exe(windows platform).
 2. Run ./src/run/sh/run.bat(windows platform).

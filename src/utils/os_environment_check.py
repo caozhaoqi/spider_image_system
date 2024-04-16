@@ -34,7 +34,7 @@ def auto_download_chrome():
     :return:
     """
     dest_path = constants.basic_path + "/chrome.exe"  # 对于Windows系统
-    url = search_chrome_download_link('123.0.6312.58')
+    url = search_chrome_download_link(constants.chrome_version)
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         with open(dest_path, 'wb') as file:
