@@ -12,11 +12,38 @@ from selenium.webdriver.common.by import By
 from image.img_switch import find_images, image_exists
 from image.spider_gif_url import spider_gif_images
 from run import constants
-from run.constants import proxy_flag, r18_mode, visit_url, all_show, detail_delta_time, allow_replace_domain_flag
+from run.constants import proxy_flag, r18_mode, visit_url, all_show, detail_delta_time, allow_replace_domain_flag, \
+    search_delta_time
 from selenium import webdriver
 from ui_event.get_url import open_look_all, slider_page_down, filter_not_use
 from utils.http_utils import image_url_re
 from file.user_agent import read_user_agent
+
+
+@logger.catch
+def user_save_artwork(driver, url):
+    """
+
+    :param url: users url
+    :param driver:
+    :return:
+    """
+    artwork_urls_list = []
+    try:
+        driver.get(url)
+        time.sleep(search_delta_time)
+        image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
+        for image_element in image_elements:
+            if not constants.stop_spider_url_flag:
+                image_url = image_element.get_attribute("href")
+                if image_url is None:
+                    break
+                driver.execute_script("return arguments[0].href;", image_element)
+                artwork_urls_list.append(image_url)
+        return artwork_urls_list
+    except Exception as un_e:
+        logger.error("Error, unknown error, detail:" + str(un_e))
+        return None
 
 
 @logger.catch
@@ -27,16 +54,41 @@ def is_keyword_num(driver, key_word):
     :param key_word:
     :return:
     """
-    if key_word.isdigit():
+    if "," not in key_word:
+        logger.warning("you input keyword not contain , spilt keyword.")
+        return False
+    key_word_list = key_word.split(',')
+    keyword_content = key_word_list[0]
+    keyword_cat = keyword_content[1]
+
+    if keyword_cat == 'pid':
         logger.info("input keyword is num, start process.")
         url = "https://" + visit_url + "/artworks/" + key_word
         image_list = artwork_single_image(key_word, driver, url)
         if not image_list:
-            return True
+            logger.warning("pid spider image no image.")
+            return False
         else:
             logger.success("spider success, start download.")
             for image_url in image_list:
                 download_single_image(key_word, image_url)
+        return True
+    elif keyword_cat == 'users':
+        logger.info("input keyword is users, start process")
+        url = "https://" + visit_url + "/users/" + key_word
+        artwork_list = user_save_artwork(driver, url)
+        if not artwork_list:
+            logger.warning(f"users: {keyword_cat}, spider image no artwork.")
+            return False
+        for artwork_url in artwork_list:
+            image_list = artwork_single_image(key_word, driver, artwork_url)
+            if not image_list:
+                logger.warning(f"users: {keyword_cat}, spider image:{artwork_url}, no image.")
+                continue
+            else:
+                logger.success("spider success, start download.")
+                for image_url in image_list:
+                    download_single_image(key_word, image_url)
         return True
 
 

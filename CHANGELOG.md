@@ -2,7 +2,8 @@
 
 ## v1.1.3-beta.1.240418
 ### 2024/4/18
-- 1.add default admin start exe for nsis
+- add default admin start exe for nsis
+- add user img save for pix
 
 ## v1.1.2.240415
 ### 2024/4/15
