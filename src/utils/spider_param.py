@@ -299,8 +299,9 @@ def artwork_single_image(key_word_pinyin, driver, url):
         driver.get(url)
     except Exception as e:
         logger.warning(f"unknown error: {e}")
-    if driver.title == constants.ban_content:
-        logger.warning("error! will exit: cur visit domain blocked.")
+    if driver.title == constants.ban_content or driver.title == constants.visit_url \
+            or driver.title == '':
+        logger.warning(f"error! will exit: cur visit domain blocked, title: {driver.title}")
         constants.firewall_flag = True
         return False
     if open_look_all(driver):
