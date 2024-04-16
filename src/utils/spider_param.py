@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import random
 import time
@@ -18,26 +19,26 @@ from selenium import webdriver
 from ui_event.get_url import open_look_all, slider_page_down, filter_not_use
 from utils.http_utils import image_url_re
 from file.user_agent import read_user_agent
+from utils.spider_operate import filter_not_use_url, artwork_filter
 
 
 @logger.catch
-def user_save_artwork(driver, url):
+def user_save_artwork(driver):
     """
 
-    :param url: users url
     :param driver:
     :return:
     """
     artwork_urls_list = []
     try:
-        driver.get(url)
-        time.sleep(search_delta_time)
         image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
         for image_element in image_elements:
             if not constants.stop_spider_url_flag:
                 image_url = image_element.get_attribute("href")
                 if image_url is None:
                     break
+                if filter_not_use_url(image_url) or artwork_filter(image_url):
+                    continue
                 driver.execute_script("return arguments[0].href;", image_element)
                 artwork_urls_list.append(image_url)
         return artwork_urls_list
@@ -55,12 +56,12 @@ def is_keyword_num(driver, key_word):
     :return:
     """
     if "," not in key_word:
-        logger.warning("you input keyword not contain , spilt keyword.")
+        logger.warning(f"you input keyword not contain ',' in spilt keyword: {key_word}.")
         return False
     key_word_list = key_word.split(',')
     keyword_content = key_word_list[0]
-    keyword_cat = keyword_content[1]
-
+    keyword_cat = key_word_list[1]
+    key_word = keyword_content
     if keyword_cat == 'pid':
         logger.info("input keyword is num, start process.")
         url = "https://" + visit_url + "/artworks/" + key_word
@@ -75,21 +76,27 @@ def is_keyword_num(driver, key_word):
         return True
     elif keyword_cat == 'users':
         logger.info("input keyword is users, start process")
-        url = "https://" + visit_url + "/users/" + key_word
-        artwork_list = user_save_artwork(driver, url)
-        if not artwork_list:
-            logger.warning(f"users: {keyword_cat}, spider image no artwork.")
-            return False
-        for artwork_url in artwork_list:
-            image_list = artwork_single_image(key_word, driver, artwork_url)
-            if not image_list:
-                logger.warning(f"users: {keyword_cat}, spider image:{artwork_url}, no image.")
-                continue
-            else:
-                logger.success("spider success, start download.")
-                for image_url in image_list:
-                    download_single_image(key_word, image_url)
-        return True
+        while True:
+            cur_page = 1
+            url = "https://" + visit_url + "/users/" + key_word + "/artworks?p=" + str(cur_page)
+            driver.get(url)
+            time.sleep(search_delta_time)
+            logger.info(f"cur spider users artwork cur_page: {cur_page}")
+            artwork_list = user_save_artwork(driver)
+            if not artwork_list or driver.title == constants.ban_content:
+                logger.warning(f"users: {keyword_cat}, spider image no artwork or ban content:{driver.title}, skip loop")
+                break
+            for artwork_url in artwork_list:
+                image_list = artwork_single_image(key_word, driver, artwork_url)
+                if not image_list:
+                    logger.warning(f"users: {keyword_cat}, spider image:{artwork_url}, no image.")
+                    continue
+                else:
+                    logger.success("spider success, start download.")
+                    for image_url in image_list:
+                        download_single_image(key_word, image_url)
+            cur_page += 1
+    return True
 
 
 @logger.catch
@@ -263,7 +270,7 @@ def artwork_single_image(key_word_pinyin, driver, url):
         driver.get(url)
     except Exception as e:
         logger.warning(f"unknown error: {e}")
-    if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
+    if driver.title == constants.ban_content:
         logger.warning("error! will exit: cur visit domain blocked.")
         constants.firewall_flag = True
         return False

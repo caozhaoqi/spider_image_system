@@ -58,7 +58,7 @@ def artwork_to_image(key_word_pinyin, driver, url):
         driver.get(url)
     except Exception as e:
         logger.warning(f"unknown error: {e}")
-    if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】':
+    if driver.title == constants.ban_content:
         logger.warning("error! will exit: cur visit domain blocked.")
         constants.firewall_flag = True
         return False
@@ -135,7 +135,7 @@ def spider_artworks_url(self, key_word):
         except Exception as e:
             logger.warning(f"unknown error: {e}, will skip spider!")
             break
-        if driver.title == '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】' or driver.title == constants.visit_url \
+        if driver.title == constants.ban_content or driver.title == constants.visit_url \
                 or driver.title == '':
             logger.warning(
                 f"error! will exit: cur visit domain blocked, or visit url: {constants.visit_url} not visit!")

@@ -47,6 +47,21 @@ def filter_not_use_url(image_url):
 
 
 @logger.catch
+def artwork_filter(url):
+    """
+    artwork url filter for users image spider
+    :param url: spider url
+    :return: compare result
+    """
+    parts = url.split("/artworks/")
+    if len(parts) > 1:
+        content_after_artworks = parts[1]
+        if content_after_artworks.isdigit():
+            return False
+    return True
+
+
+@logger.catch
 def url_process_page(url, current_page):
     """
     split page from point url

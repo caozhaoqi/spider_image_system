@@ -18,7 +18,12 @@
 1. selenium.
 2. loguru.
 3. requests.
-4. Other(Read requirements.txt).
+4. opencv.
+5. fastapi.
+6. nuitka.
+7. uvicorn.
+8. minio.
+9. Other(Read requirements.txt).
 ## Folder
 1. ./data/href_url/ artwork url folder.
 2. ./data/img_url/ img url txt folder.
@@ -42,10 +47,12 @@
 4. Auto spider image(Done).
 5. System performance monitor(Done).
 6. Online show image(Done).
-7. Gif and image process(Done).
+7. Gif and image process download(Done).
 8. Face detect from downloaded image folder(Done).
-9. Other small tools(Done).
-10. Other...(to be continued...)
+9. pid and users image spider and download(Done)
+10. Image analyze tools(Done).
+11. Other small tools(log,decode,convert,unzip,All Done).
+12. Other...(to be continued...)
 - bugs 1 : 在类方法中不能使用@logger.catch注解方法，会出现以下错误：
 ```shell
 > File "C:\Users\Administrator\PycharmProjects\calmcar_sf_server\src\test\gui\ui_main.py", line 130, in ui_paint

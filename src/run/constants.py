@@ -82,6 +82,8 @@ single_flag = False
 add_keyword_finish_flag = False
 # # sqlite table name
 # sqlite_table_name = "proxy_detail"
+# ban content
+ban_content = '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
