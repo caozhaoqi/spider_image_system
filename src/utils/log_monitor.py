@@ -4,17 +4,19 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from loguru import logger
-
+import re
+from datetime import datetime
 import glob
 import os
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from run import constants
+import threading
 
 # 定义日志文件路径模式
-LOG_FILE_PATTERN = 'log-*.log'
-LOG_DIR = constants.basic_path + "log_dir/"  # 日志文件所在的目录
+LOG_FILE_PATTERN = 'sis_v*.log'
+LOG_DIR = os.path.join(constants.basic_path, "log_dir")  # 日志文件所在的目录
 
 
 # 找到最新日期的日志文件
@@ -34,6 +36,60 @@ def find_latest_log_file(pattern, directory):
 
 
 # 定义一个事件处理器类，用于监控文件变化
+@logger.catch
+def get_log_cur_time(log_file_path):
+    """
+
+    :param log_file_path:
+    :return:
+    """
+    # 指定日志文件路径
+    # log_file_path = 'path/to/your/logfile.log'
+
+    # 打开日志文件并读取最后一行
+    last_timestamp = time.time()
+    try:
+        with open(log_file_path, 'r', encoding='utf-8', errors='replace') as log_file:
+            lines = log_file.readlines()
+            if lines:
+                last_line = lines[-1]  # 最后一行
+            else:
+                logger.debug("日志文件为空。")
+                last_line = None
+    except FileNotFoundError:
+        logger.warning(f"文件 {log_file_path} 未找到。")
+        last_line = None
+
+    # 如果最后一行存在，则提取时间戳
+    if last_line:
+        # 假设时间戳格式为 "YYYY-MM-DD HH:MM:SS.sss"
+        timestamp_pattern = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}'
+        match = re.search(timestamp_pattern, last_line)
+
+        if match:
+            last_timestamp = match.group()
+            # 将字符串转换为datetime对象
+            last_log_time = datetime.strptime(last_timestamp, "%Y-%m-%d %H:%M:%S.%f")
+
+            # 将datetime对象转换为时间戳（毫秒）
+            timestamp = last_log_time.timestamp() * 1000  # 得到毫秒数
+
+            # 如果需要更高的精度（微秒），可以加上微秒部分
+            # 注意：这里假设datetime对象中的微秒部分是我们需要的
+            microseconds = last_log_time.microsecond / 1000000  # 微秒转为秒的小数部分
+
+            # 加上微秒部分到时间戳
+            timestamp += microseconds
+            last_timestamp = timestamp
+            # logger.warning(f"最后一行日志的时间戳是: {last_timestamp}")
+        else:
+            logger.warning("在最后一行日志中未找到时间戳。")
+    else:
+        logger.warning("无法读取最后一行日志。")
+
+    return last_timestamp
+
+
 class LogFileHandler(FileSystemEventHandler):
     """
 
@@ -62,15 +118,18 @@ class LogFileHandler(FileSystemEventHandler):
         :param timeout:
         :return:
         """
+        self.last_modified = get_log_cur_time(self.log_file)
         if time.time() - self.last_modified > timeout:
+            # if time.time() - time.time() > timeout:  # test
             constants.log_no_output_flag = True
             logger.warning(f"警告：文件 {self.log_file} 已超过 {timeout // 60} 分钟没有输出。")
 
 
 @logger.catch
-def log_mon_war():
+def log_mon_war(spider_thread_obj):
     """
 
+    :param spider_thread_obj:
     :return:
     """
     logger.info("log monitor start...")
@@ -96,7 +155,13 @@ def log_mon_war():
         while True:
             # 定期检查是否超时
             handler.check_for_timeout(TIMEOUT)
-
+            if constants.log_no_output_flag:
+                # 在某个时候，您可能想要暂停线程
+                spider_thread_obj.pause()
+                spider_thread_obj.resume()
+                logger.warning(
+                    f"log no output, spider threading status: {spider_thread_obj.is_running()}, re start spider ing...")
+                constants.log_no_output_flag = False
             # 休眠一段时间再检查
             time.sleep(TIMEOUT)  # 每分钟检查一次
 
@@ -115,3 +180,7 @@ def log_mon_war():
         observer.stop()
 
     observer.join()
+
+#
+# if __name__ == '__main__':
+#     logger.debug(time.time())
