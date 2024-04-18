@@ -30,7 +30,8 @@ from image.spider_img_save import download_re_error_image
 from utils.file_unzip_7zip import unzip_file
 from ui_event.img_analyze_dialog import ImgAnalyzeHistogram
 from ui_event.keyword_dialog import KeywordDialog
-from utils.log_montior import log_mon_war
+from utils.log_monitor import log_mon_war
+from utils.sis_therading import SISThreading
 
 
 @logger.catch
@@ -142,15 +143,21 @@ def auto_start_spider_image(self):
     @:param self.
     :return:
     """
-    spider_thread_obj = threading.Thread(
-        target=auto_spider_img_thread,
-        args=(self,))
+    # spider_thread_obj = threading.Thread(
+    #     target=auto_spider_img_thread,
+    #     args=(self,))
+    # spider_thread_obj.start()
+
+    # 创建SISThreading类的实例并传递参数
+    spider_thread_obj = SISThreading(target=auto_spider_img_thread, args=(self,))
+
+    # 启动线程
     spider_thread_obj.start()
-    log_mon_war()
-    if constants.log_no_output_flag:
-        spider_thread_obj.start()
-        logger.warning("log no output re start spider ing...")
-        constants.log_no_output_flag = False
+
+    log_mon_war_thread_obj = threading.Thread(
+        target=log_mon_war,
+        args=(spider_thread_obj,))
+    log_mon_war_thread_obj.start()
 
 
 @logger.catch

@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import psutil
@@ -68,7 +67,7 @@ def check_cpu_usage():
     """
     global last_cpu_usage, CPU_THRESHOLD
     cpu_percent = psutil.cpu_percent(interval=1)
-    if cpu_percent > CPU_THRESHOLD:
+    if cpu_percent / 100 > CPU_THRESHOLD:
         logger.error("Warning: CPU usage is above {}%. Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
     last_cpu_usage = cpu_percent
 

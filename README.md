@@ -49,7 +49,7 @@
 6. Online show image(Done).
 7. Gif and image process download(Done).
 8. Face detect from downloaded image folder(Done).
-9. pid and users image spider and download(Done)
+9. pid and users image spider and download(Done).
 10. Image analyze tools(Done).
 11. system monitor(Done).
 12. timer restart spider(Done).

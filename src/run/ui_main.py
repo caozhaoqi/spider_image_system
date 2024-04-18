@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from PyQt5.QtWidgets import QApplication
@@ -10,6 +9,7 @@ from ui_event.base_event import exit_save_data
 from log.log_record import log_record, check_version
 from ui_event.pyqt_main_ui import UIMainWindows
 from utils.sytem_monitor import sys_mon
+import threading
 
 
 @logger.catch
@@ -25,7 +25,6 @@ def ui_paint():
 
     w = UIMainWindows()
     w.show()
-    sys_mon()
     app.exec_()
 
 
@@ -40,8 +39,21 @@ def on_last_window_closed():
 
 
 @logger.catch
+def start_sys_mon():
+    """
+
+    :return:
+    """
+    sys_mon_thread_obj = threading.Thread(
+        target=sys_mon,
+        args=())
+    sys_mon_thread_obj.start()
+    return True
+
+
+@logger.catch
 def run_main_py():
-    if log_record() and check_version():
+    if log_record() and check_version() and start_sys_mon():
         ui_paint()
 
 
