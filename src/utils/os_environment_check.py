@@ -35,6 +35,9 @@ def auto_download_chrome():
     """
     dest_path = constants.basic_path + "/chrome.exe"  # 对于Windows系统
     url = search_chrome_download_link(constants.chrome_version)
+    if not url:
+        logger.error("not search chrome version! end execute follow operate.")
+        return False
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         with open(dest_path, 'wb') as file:

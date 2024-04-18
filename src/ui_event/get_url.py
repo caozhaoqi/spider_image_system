@@ -73,22 +73,26 @@ def artwork_to_image(key_word_pinyin, driver, url):
     # logger.success("gif url txt save success!")
     image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
     for image_element in image_elements:
-        image_url = image_element.get_attribute("src")
-        if filter_not_use(image_url) or not image_url:
-            continue
-        else:
-            result = filter_exists_images(key_word_pinyin, image_url, "_img")
-            if result:
+        try:
+            image_url = image_element.get_attribute("src")
+            if filter_not_use(image_url) or not image_url:
                 continue
-            driver.execute_script("return arguments[0].src;", image_element)
-            image_filename = os.path.basename(image_url)  # 获取图片文件名
-            if allow_replace_domain_flag:
-                image_url = image_url.replace(s1_url, target_url)
-                image_url = image_url.replace(s2_url, target_url)
-            constants.spider_images_current_count += 1
-            # 已获取img 数量自增 仅在此统计
-            write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
-            logger.debug(f"save: {image_filename}, save num: {constants.spider_images_current_count}")
+            else:
+                result = filter_exists_images(key_word_pinyin, image_url, "_img")
+                if result:
+                    continue
+                driver.execute_script("return arguments[0].src;", image_element)
+                image_filename = os.path.basename(image_url)  # 获取图片文件名
+                if allow_replace_domain_flag:
+                    image_url = image_url.replace(s1_url, target_url)
+                    image_url = image_url.replace(s2_url, target_url)
+                constants.spider_images_current_count += 1
+                # 已获取img 数量自增 仅在此统计
+                write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
+                logger.debug(f"save: {image_filename}, save num: {constants.spider_images_current_count}")
+        except Exception as e:
+            logger.warning(f"unknown error, will skip cur loop, execute next loop detail: {e}")
+            continue
     return True
 
 

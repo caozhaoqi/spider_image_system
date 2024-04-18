@@ -182,15 +182,18 @@ def spider_param_config(key_word):
         options.add_argument("--proxy-server={}".format(proxy["httpProxy"]))
         logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
 
-    if constants.chrome_path != 'None':
-        ser = Service()
-        ser.path = constants.chrome_path
-        # 连接Edge浏览器
-        driver = webdriver.Chrome(service=ser, options=options)
-        logger.warning("user self define chrome driver exe!")
-    else:
-        driver = webdriver.Chrome(options=options)
-        logger.info("use system default web driver!")
+    try:
+        if constants.chrome_path != 'None':
+            ser = Service()
+            ser.path = constants.chrome_path
+            # 连接Edge浏览器
+            driver = webdriver.Chrome(service=ser, options=options)
+            logger.debug("user self define chrome driver exe!")
+        else:
+            driver = webdriver.Chrome(options=options)
+            logger.info("use system default web driver!")
+    except Exception as e:
+        logger.warning(f"unknown error, detail:{e}.")
 
     mode = ''
     if r18_mode == 'True':
