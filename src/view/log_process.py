@@ -2,6 +2,7 @@
 import os
 import sys
 
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import threading
 from typing import Union
@@ -13,6 +14,7 @@ from run import constants
 from ui_event.base_event import auto_spider_img_thread, stop_spider_image, stop_download_image, user_upload_image, \
     face_detect_action
 from ui_event.get_url import spider_artworks_url
+from utils.log_montior import log_mon_war
 
 router = APIRouter()
 
@@ -54,6 +56,11 @@ def spider_all_keyword():
         target=auto_spider_img_thread,
         args=(None,))
     spider_thread_obj.start()
+    log_mon_war()
+    if constants.log_no_output_flag:
+        spider_thread_obj.start()
+        logger.warning("log no output re start spider ing...")
+        constants.log_no_output_flag = False
     if not constants.stop_spider_url_flag:
         return JsonResponse.error("already spider img, please stop here before operate!")
     else:

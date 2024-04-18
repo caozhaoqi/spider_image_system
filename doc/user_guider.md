@@ -18,3 +18,8 @@ https://caozhaoqi.github.io/2024/04/09/nuitka-publish-python/
 #link :
 https://caozhaoqi.github.io/2024/04/10/setup-tools-python/
 ```
+
+## TODO
+
+- 1. add 定时启动抓取下载image
+- 2. add 系统资源（内存，存储）检测

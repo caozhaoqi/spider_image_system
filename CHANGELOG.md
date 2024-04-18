@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.1.3-beta.2.240423
+### 2024/4/23
+- add 定时启动抓取下载image
+- add system monitor
+
 ## v1.1.3-beta.1.240418
 ### 2024/4/18
 - add default admin start exe for nsis

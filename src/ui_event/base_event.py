@@ -30,6 +30,7 @@ from image.spider_img_save import download_re_error_image
 from utils.file_unzip_7zip import unzip_file
 from ui_event.img_analyze_dialog import ImgAnalyzeHistogram
 from ui_event.keyword_dialog import KeywordDialog
+from utils.log_montior import log_mon_war
 
 
 @logger.catch
@@ -145,6 +146,11 @@ def auto_start_spider_image(self):
         target=auto_spider_img_thread,
         args=(self,))
     spider_thread_obj.start()
+    log_mon_war()
+    if constants.log_no_output_flag:
+        spider_thread_obj.start()
+        logger.warning("log no output re start spider ing...")
+        constants.log_no_output_flag = False
 
 
 @logger.catch
@@ -171,6 +177,9 @@ def auto_spider_img_thread(self):
         logger.error("already spider img, please stop here before operate!")
         return False
     logger.info("auto spider img thread starting...")
+    # detect spider work status
+    if constants.log_no_output_flag and not constants.stop_spider_url_flag:
+        constants.stop_spider_url_flag = False
     spider_image_keyword, txt_file_list = get_image_keyword()
     if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
         logger.warning("auto spider image null, please add keyword!")

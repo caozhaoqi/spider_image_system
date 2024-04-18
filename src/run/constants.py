@@ -84,6 +84,8 @@ add_keyword_finish_flag = False
 # sqlite_table_name = "proxy_detail"
 # ban content
 ban_content = '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'
+# no putput
+log_no_output_flag = False
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
@@ -145,6 +147,8 @@ fire_wall_delay_time = int(read_ini_config(ini_file_path, "automatic_config", "f
 download_img_retry_times = int(read_ini_config(ini_file_path, "automatic_config", "download_img_retry_times"))
 # retry time out
 download_img_time_out = int(read_ini_config(ini_file_path, "automatic_config", "download_img_time_out"))
+# detect time out
+detect_timeout_auto = int(read_ini_config(ini_file_path, "automatic_config", "detect_timeout_auto"))
 # minio config id
 minio_config_id = read_ini_config(ini_file_path, "minio_config_selected", "minio_config_id")
 # minio server ip address
@@ -164,6 +168,6 @@ SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH"
 # unzip zip file password
 PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
-sis_server_version = "v1.1.3-beta.1.240418"
-build_date = "2024-04-18 18:00"
-publish_date = "2024-04-19 18:30"
+sis_server_version = "v1.1.3-beta.2.240423"
+build_date = "2024-04-23 18:00"
+publish_date = "2024-04-24 18:30"

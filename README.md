@@ -51,8 +51,10 @@
 8. Face detect from downloaded image folder(Done).
 9. pid and users image spider and download(Done)
 10. Image analyze tools(Done).
-11. Other small tools(log,decode,convert,unzip,All Done).
-12. Other...(to be continued...)
+11. system monitor(Done).
+12. timer restart spider(Done).
+13. Other small tools(log,decode,convert,unzip,All Done).
+14. Other...(to be continued...)
 - bugs 1 : 在类方法中不能使用@logger.catch注解方法，会出现以下错误：
 ```shell
 > File "C:\Users\Administrator\PycharmProjects\calmcar_sf_server\src\test\gui\ui_main.py", line 130, in ui_paint
