@@ -57,7 +57,7 @@ var ICONS_GROUP
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Setup.exe"
+OutFile "SIS_v1.1.3.beta.1.240418_Setup.exe"
 InstallDir "$PROGRAMFILES\Spider_Image_System"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show

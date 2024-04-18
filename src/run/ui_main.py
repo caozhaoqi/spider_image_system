@@ -17,10 +17,8 @@ def ui_paint():
     :return:
     """
     app = QApplication(sys.argv)
-    # 设置QApplication的属性，确保当最后一个窗口关闭时应用程序也退出
     app.setQuitOnLastWindowClosed(True)
 
-    # 连接lastWindowClosed信号到on_last_window_closed槽
     app.lastWindowClosed.connect(on_last_window_closed)
 
     w = UIMainWindows()
