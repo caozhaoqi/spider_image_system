@@ -60,7 +60,13 @@ def spider_all_keyword():
     # spider_thread_obj.start()
 
     # 创建SISThreading类的实例并传递参数
+    # read txt file spider keyword
+    if not constants.stop_spider_url_flag:
+        logger.error("already spider img, please stop here before operate!")
+        return False
     spider_thread_obj = SISThreading(target=auto_spider_img_thread, args=(None,))
+
+    constants.stop_spider_url_flag = False
 
     # 启动线程
     spider_thread_obj.start()

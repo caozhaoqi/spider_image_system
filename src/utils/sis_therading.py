@@ -1,12 +1,14 @@
 import os
 import sys
 
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import threading
 import time
 
 from loguru import logger
+from run import constants
 
 
 class SISThreading(threading.Thread):
@@ -36,6 +38,9 @@ class SISThreading(threading.Thread):
         :return:
         """
         while self.__running.is_set():
+            if constants.stop_spider_url_flag:
+                logger.warning("stop spider url in threading run.")
+                break
             logger.info("thread is running!")
             self.__flag.wait()  # 为True时立即返回, 为False时阻塞直到self.__flag为True后返回
             # logger.debug("run = ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))

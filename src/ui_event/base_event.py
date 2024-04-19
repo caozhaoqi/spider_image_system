@@ -148,8 +148,15 @@ def auto_start_spider_image(self):
     #     args=(self,))
     # spider_thread_obj.start()
 
+    # read txt file spider keyword
+    if not constants.stop_spider_url_flag:
+        logger.error("already spider img, please stop here before operate!")
+        return False
+
     # 创建SISThreading类的实例并传递参数
     spider_thread_obj = SISThreading(target=auto_spider_img_thread, args=(self,))
+
+    constants.stop_spider_url_flag = False
 
     # 启动线程
     spider_thread_obj.start()
@@ -179,10 +186,6 @@ def auto_spider_img_thread(self):
     @:param self.
     :return:
     """
-    # read txt file spider keyword
-    if not constants.stop_spider_url_flag:
-        logger.error("already spider img, please stop here before operate!")
-        return False
     logger.info("auto spider img thread starting...")
     # detect spider work status
     if constants.log_no_output_flag and not constants.stop_spider_url_flag:
