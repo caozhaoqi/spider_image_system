@@ -1,9 +1,10 @@
 # CHANGELOG
 
-## v1.1.3-beta.2.240423
-### 2024/4/23
+## v1.1.3-beta.2.240419
+### 2024/4/19
 - add 定时启动抓取下载image
 - add system monitor
+- fix bugs
 
 ## v1.1.3-beta.1.240418
 ### 2024/4/18

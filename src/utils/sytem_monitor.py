@@ -94,6 +94,67 @@ def check_network_usage():
 
 
 @logger.catch
+def check_top_processes():
+    """
+    检查系统中CPU、内存和网络I/O占用率最高的前10个进程的详情。
+    """
+    # 获取所有进程，并计算CPU和内存占用率
+    processes = psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent'])
+    # 对进程按CPU占用率进行排序
+    sorted_processes = sorted(processes, key=lambda p: p.info['cpu_percent'], reverse=True)
+
+    # 初始化一个空的列表来存储前10个进程的详情
+    top_processes = []
+
+    # 遍历进程，收集前10个的详细信息
+    for process in sorted_processes:
+        try:
+            # 获取进程的PID和名称
+            pid = process.info['pid']
+            name = process.info['name']
+
+            cpu_percent = process.cpu_percent()
+            # 获取进程的CPU和内存占用率
+            memory_info = process.memory_info()
+            memory_percent = memory_info.rss / (1024 * 1024)
+
+            # 尝试获取网络I/O统计信息
+            try:
+                net_io_counters = process.io_counters()
+
+                send_bytes = net_io_counters.write_bytes / 1024 / 1024
+                receive_bytes = net_io_counters.read_bytes / 1024 / 1024
+                # 注意：这里提供的是总的网络I/O，不是实时的带宽占用
+                net_io = send_bytes + receive_bytes
+            except AttributeError:
+                net_io = 0  # 如果无法获取，则设为0
+
+            # 将进程详情添加到列表中
+            top_processes.append({
+                'PID': pid,
+                'Name': name,
+                'CPU Usage': cpu_percent,
+                'Memory Usage': memory_percent,
+                'Network IO': net_io
+            })
+
+            # 只收集前10个进程的信息
+            if len(top_processes) >= 10:
+                break
+
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            # 进程可能已经结束，或者我们没有权限访问它
+            continue
+    logger.warning("-----------------start output system resources msg---------------------------------")
+    for proc in top_processes:
+        logger.info(proc)
+    logger.warning("-----------------end output system resources msg------------------------------------")
+    return True
+
+
+# 示例使用
+
+@logger.catch
 def sys_mon():
     """
 
@@ -107,5 +168,15 @@ def sys_mon():
         # 检查网络带宽
         check_network_usage()
 
+        check_memory_usage()
+
+        check_disk_usage()
+
+        check_top_processes()
+
         # 等待一段时间再次检查（例如，每秒检查一次）
         time.sleep(constants.detect_timeout_auto * 5)
+
+#
+# if __name__ == '__main__':
+#     check_top_processes()
