@@ -11,9 +11,9 @@ from loguru import logger
 # 设置资源使用的警告阈值
 from run import constants
 
-MEMORY_THRESHOLD = 0.8  # 内存使用阈值（90%）
+MEMORY_THRESHOLD = 0.95  # 内存使用阈值（90%）
 CPU_THRESHOLD = 0.96  # CPU使用阈值（90%）
-NETWORK_THRESHOLD = 10 * 1024 * 1024  # 网络带宽阈值（1MB/s）
+NETWORK_THRESHOLD = 5 * 1024 * 1024  # 网络带宽阈值（1MB/s）
 DISK_USAGE_THRESHOLD = 0.99  # 设置存储使用警告阈值（例如，90% 使用率）
 
 # 上次检查的资源使用情况
@@ -52,7 +52,7 @@ def check_memory_usage():
     global last_memory_usage, MEMORY_THRESHOLD
     memory = psutil.virtual_memory()
     memory_percent = memory.percent
-    if memory_percent > MEMORY_THRESHOLD:
+    if memory_percent / 100 > MEMORY_THRESHOLD:
         logger.error(
             "Warning: Memory usage is above {}%. Current usage: {}%".format(MEMORY_THRESHOLD * 100, memory_percent))
     last_memory_usage = memory_percent

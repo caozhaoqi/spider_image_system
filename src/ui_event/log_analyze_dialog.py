@@ -33,7 +33,7 @@ class LogAnalyzeHistogram(QDialog):
         self.min_value = None
         self.axis_x = None
         self.axis_y = None
-        self.group_size = 10
+        self.group_size = 5
         self.series = None
         self.current_group = 0
         self.log_data = None
