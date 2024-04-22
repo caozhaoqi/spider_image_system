@@ -142,6 +142,8 @@ class ImgAnalyzeHistogram(QDialog):
                 update_list_item.append(self.log_item[i])
                 self.series.append(set_)
 
+        self.axis_x.clear()
+
         self.axis_x.append(update_list_item)
         if update_list_count:
             self.min_value = min(update_list_count) if update_list_count else 0  # 获取最小值

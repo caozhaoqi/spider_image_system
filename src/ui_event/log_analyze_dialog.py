@@ -143,7 +143,10 @@ class LogAnalyzeHistogram(QDialog):
                 update_list_item.append(self.log_item[i])
                 self.series.append(set_)
 
+        self.axis_x.clear()
+
         self.axis_x.append(update_list_item)
+
         if update_list_count:
             self.min_value = min(update_list_count) if update_list_count else 0  # 获取最小值
             self.max_value = max(update_list_count)  # 获取最大值
@@ -160,6 +163,10 @@ class LogAnalyzeHistogram(QDialog):
             self.series_pie.append(data_content, update_list_count[index])
 
         total = sum(slice.value() for slice in self.series_pie.slices())
+
+        for pie_slice in self.series_pie.slices():
+            pie_slice.setLabel("")
+
         for index, pie_slice in enumerate(self.series_pie.slices()):
             percentage = (pie_slice.value() / total) * 100
             pie_slice.setLabel(f"{update_list_item[index][0:6]}:{percentage:.1f}%")

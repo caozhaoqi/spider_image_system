@@ -59,8 +59,8 @@ def match_img_result(file_name):
     pattern = r'.*[\\/]([^_]+)_img_result.*'
     matches = re.findall(pattern, file_name)
     if not matches:
-        logger.warning(f"not match download error image keyword: {file_name}!")
-        return ''
+        # logger.warning(f"not match download error image keyword: {file_name}!")
+        return "unknown"
     for match in matches:
         return match
-    return ''
+    return "unknown"
