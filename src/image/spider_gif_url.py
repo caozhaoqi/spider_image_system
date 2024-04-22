@@ -17,17 +17,21 @@ def spider_gif_images(keyword, chrome_driver):
     :return:
     """
     api_urls = []
-    requests = chrome_driver.execute_script("return window.performance.getEntriesByType('resource')")
-    for request in requests:
-        if request['initiatorType'] == 'fetch' and "img-zip-ugoira" in request['name']:
-            api_urls.append(request['name'])
-            logger.success(f"found gif url: {request['name'][-27:]}")  # 116320185_ugoira600x600.zip
-            break
-    txt_path_name = os.path.join(constants.data_path, "href_url")
-    if not os.path.exists(txt_path_name):
-        os.makedirs(txt_path_name)
-    if len(api_urls) == 0:
+    try:
+        requests = chrome_driver.execute_script("return window.performance.getEntriesByType('resource')")
+        for request in requests:
+            if request['initiatorType'] == 'fetch' and "img-zip-ugoira" in request['name']:
+                api_urls.append(request['name'])
+                logger.success(f"found gif url: {request['name'][-27:]}")  # 116320185_ugoira600x600.zip
+                break
+        txt_path_name = os.path.join(constants.data_path, "href_url")
+        if not os.path.exists(txt_path_name):
+            os.makedirs(txt_path_name)
+        if len(api_urls) == 0:
+            return False
+        if read_gif_url(txt_path_name + "/" + keyword + "_zip.txt", api_urls):
+            return True
+    except Exception as e:
+        logger.warning(f"unknown error, detail: {e}")
         return False
-    if read_gif_url(txt_path_name + "/" + keyword + "_zip.txt", api_urls):
-        return True
     return False

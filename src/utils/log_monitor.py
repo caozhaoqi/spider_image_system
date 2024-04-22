@@ -68,24 +68,17 @@ def get_log_cur_time(log_file_path):
 
         if match:
             last_timestamp = match.group()
-            # 将字符串转换为datetime对象
             last_log_time = datetime.strptime(last_timestamp, "%Y-%m-%d %H:%M:%S.%f")
 
-            # 将datetime对象转换为时间戳（毫秒）
-            timestamp = last_log_time.timestamp() * 1000  # 得到毫秒数
+            timestamp = last_log_time.timestamp()
 
-            # 如果需要更高的精度（微秒），可以加上微秒部分
-            # 注意：这里假设datetime对象中的微秒部分是我们需要的
-            microseconds = last_log_time.microsecond / 1000000  # 微秒转为秒的小数部分
-
-            # 加上微秒部分到时间戳
-            timestamp += microseconds
-            last_timestamp = timestamp
-            # logger.warning(f"最后一行日志的时间戳是: {last_timestamp}")
+            timestamp_float = float(timestamp)
+            last_timestamp = timestamp_float
+            logger.success(f"时间戳已匹配， file:{log_file_path}, 最后一行日志的时间戳是: {last_timestamp}")
         else:
-            logger.warning("在最后一行日志中未找到时间戳。")
+            logger.warning(f"在日志:{log_file_path}, 最后一行日志中未找到时间戳。")
     else:
-        logger.warning("无法读取最后一行日志。")
+        logger.warning(f"无法读取:{log_file_path}, 最后一行日志。")
 
     return last_timestamp
 
@@ -119,7 +112,8 @@ class LogFileHandler(FileSystemEventHandler):
         :return:
         """
         self.last_modified = get_log_cur_time(self.log_file)
-        if time.time() - self.last_modified > timeout:
+        cur_time = time.time()
+        if cur_time - self.last_modified > timeout:
             # if time.time() - time.time() > timeout:  # test
             constants.log_no_output_flag = True
             logger.warning(f"警告：文件 {self.log_file} 已超过 {timeout // 60} 分钟没有输出。")

@@ -70,30 +70,43 @@ def artwork_to_image(key_word_pinyin, driver, url):
         slider_page_down(driver)
     time.sleep(detail_delta_time)
     spider_gif_images(key_word_pinyin, driver)
-    # logger.success("gif url txt save success!")
-    image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
-    for image_element in image_elements:
-        try:
-            image_url = image_element.get_attribute("src")
-            if filter_not_use(image_url) or not image_url:
-                continue
-            else:
-                result = filter_exists_images(key_word_pinyin, image_url, "_img")
-                if result:
-                    continue
-                driver.execute_script("return arguments[0].src;", image_element)
-                image_filename = os.path.basename(image_url)  # 获取图片文件名
-                if allow_replace_domain_flag:
-                    image_url = image_url.replace(s1_url, target_url)
-                    image_url = image_url.replace(s2_url, target_url)
-                constants.spider_images_current_count += 1
-                # 已获取img 数量自增 仅在此统计
-                write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
-                logger.debug(f"save: {image_filename}, save num: {constants.spider_images_current_count}")
-        except Exception as e:
-            logger.warning(f"unknown error, will skip cur loop, execute next loop detail: {e}")
-            continue
+    save_img_element(driver, key_word_pinyin)
     return True
+
+
+@logger.catch
+def save_img_element(driver, key_word_pinyin):
+    """
+
+    :param driver:
+    :param key_word_pinyin:
+    :return:
+    """
+    try:
+        image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
+        for image_element in image_elements:
+            try:
+                image_url = image_element.get_attribute("src")
+                if filter_not_use(image_url) or not image_url:
+                    continue
+                else:
+                    result = filter_exists_images(key_word_pinyin, image_url, "_img")
+                    if result:
+                        continue
+                    driver.execute_script("return arguments[0].src;", image_element)
+                    image_filename = os.path.basename(image_url)  # 获取图片文件名
+                    if allow_replace_domain_flag:
+                        image_url = image_url.replace(s1_url, target_url)
+                        image_url = image_url.replace(s2_url, target_url)
+                    constants.spider_images_current_count += 1
+                    # 已获取img 数量自增 仅在此统计
+                    write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
+                    logger.debug(f"save: {image_filename}, save num: {constants.spider_images_current_count}")
+            except Exception as e:
+                logger.warning(f"unknown error, will skip cur loop, execute next loop detail: {e}")
+                continue
+    except Exception as e:
+        logger.warning(f"unknown error, detail: {e}")
 
 
 @logger.catch
@@ -127,7 +140,8 @@ def spider_artworks_url(self, key_word):
         key_word_flag, last_page = exists_image_keyword(key_word)
         if key_word_flag:
             cur_page = int(last_page) + 1
-            logger.warning(f"last already spider: {key_word.strip()} and page: {last_page}, next page: {cur_page}")
+            logger.warning(
+                f"last already spider: {key_word.strip()} and page: {last_page.strip()}, next page: {cur_page}")
         if constants.stop_spider_url_flag:
             logger.warning("stop spider url, get url spider artwork url.")
             break
@@ -136,20 +150,16 @@ def spider_artworks_url(self, key_word):
         try:
             driver.get(url_detail)
             time.sleep(search_delta_time)
+            if driver.title == constants.ban_content or driver.title == constants.visit_url \
+                    or driver.title == '' or driver.title == '请稍候…':
+                logger.warning(
+                    f"error! will exit: cur visit domain blocked, or visit url: {constants.visit_url} not visit!")
+                constants.firewall_flag = True
+                break
+            logger.debug("start load href save url to txt.")
         except Exception as e:
             logger.warning(f"unknown error: {e}, will skip spider!")
             break
-        if driver.title == constants.ban_content or driver.title == constants.visit_url \
-                or driver.title == '':
-            logger.warning(
-                f"error! will exit: cur visit domain blocked, or visit url: {constants.visit_url} not visit!")
-            constants.firewall_flag = True
-            break
-        elif driver.title == '请稍候…':
-            # robots.txt
-            logger.warning(f"captain valid ing... {driver}")
-            # time.sleep(search_delta_time)
-        logger.debug("start load href save url to txt.")
         load_save_flag = load_href_save(driver, key_word)
         if load_save_flag == 1:
             try:
@@ -180,7 +190,10 @@ def spider_artworks_url(self, key_word):
         logger.success("spider image operate success finished!")
     if constants.spider_mode == 'manual':
         constants.stop_spider_url_flag = True
-    logger.warning(f"google chrome will exit! chrome title: {driver.title} ")
+    try:
+        logger.warning(f"google chrome will exit! chrome title: {driver.title} ")
+    except Exception as e:
+        logger.warning(f"google chrome will exit! unknown error: {e}")
     record_end_spider_image_keyword(cur_page=cur_page, key_word=key_word)
     clear_cache_refresh(driver)
     driver.quit()
