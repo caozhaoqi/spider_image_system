@@ -74,11 +74,11 @@ def get_log_cur_time(log_file_path):
 
             timestamp_float = float(timestamp)
             last_timestamp = timestamp_float
-            logger.success(f"时间戳已匹配， file:{log_file_path}, 最后一行日志的时间戳是: {last_timestamp}")
+            # logger.success(f"时间戳已匹配, file: {log_file_path}, 最后一行日志的时间戳是: {last_log_time}")
         else:
-            logger.warning(f"在日志:{log_file_path}, 最后一行日志中未找到时间戳。")
+            logger.warning(f"在日志: {log_file_path}, 最后一行日志中未找到时间戳。")
     else:
-        logger.warning(f"无法读取:{log_file_path}, 最后一行日志。")
+        logger.warning(f"无法读取: {log_file_path}, 最后一行日志。")
 
     return last_timestamp
 

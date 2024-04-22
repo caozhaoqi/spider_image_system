@@ -56,12 +56,12 @@ def artwork_to_image(key_word_pinyin, driver, url):
     """
     try:
         driver.get(url)
+        if driver.title == constants.ban_content:
+            logger.warning("error! will exit: cur visit domain blocked.")
+            constants.firewall_flag = True
+            return False
     except Exception as e:
-        logger.warning(f"unknown error: {e}")
-    if driver.title == constants.ban_content:
-        logger.warning("error! will exit: cur visit domain blocked.")
-        constants.firewall_flag = True
-        return False
+        logger.warning(f"unknown error: type: {type(e).__name__}")
     if open_look_all(driver):
         logger.success(f"click look all {key_word_pinyin} success! pid: {url[-9:]}")  # 116299335
     # 抓取动图link
@@ -106,7 +106,7 @@ def save_img_element(driver, key_word_pinyin):
                 logger.warning(f"unknown error, will skip cur loop, execute next loop detail: {e}")
                 continue
     except Exception as e:
-        logger.warning(f"unknown error, detail: {e}")
+        logger.warning(f"unknown error,  type: {type(e).__name__}")
 
 
 @logger.catch
@@ -117,8 +117,11 @@ def clear_cache_refresh(driver):
     :return:
     """
     # 刷新页面，减少缓存
-    driver.refresh()
-    logger.info("clear cache finished!")
+    try:
+        driver.refresh()
+        logger.info("clear cache finished!")
+    except Exception as e:
+        logger.warning(f"unknown error, type: {type(e).__name__}")
 
 
 @logger.catch
@@ -158,7 +161,7 @@ def spider_artworks_url(self, key_word):
                 break
             logger.debug("start load href save url to txt.")
         except Exception as e:
-            logger.warning(f"unknown error: {e}, will skip spider!")
+            logger.warning(f"unknown error: type: {type(e).__name__}, will skip spider!")
             break
         load_save_flag = load_href_save(driver, key_word)
         if load_save_flag == 1:

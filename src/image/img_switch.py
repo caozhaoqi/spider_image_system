@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import shutil
@@ -11,7 +10,6 @@ from PIL import Image
 import os
 from run import constants
 from run.constants import data_path
-
 
 # data path image
 folder_path = os.path.realpath(os.path.join(os.getcwd(), data_path))
@@ -140,7 +138,7 @@ def check_images(self, image_path):
                         logger.warning(f"Image {filename} size small, move small images folder.")
                         small_image_lists.append(filepath)
                 except Exception as e:
-                    logger.warning(f"Can't open {filename}, detail :{e}, move error_images folder.")
+                    # logger.warning(f"Can't open {filename}, detail :{e}, move error_images folder.")
                     error_image_lists.append(filepath)
     for error_images in error_image_lists:
         try:
@@ -155,7 +153,8 @@ def check_images(self, image_path):
                     shutil.move(error_images, image_path + "/error_images/" + file_name)
                     f.close()
         except Exception as e:
-            logger.warning(f"unknown error, detail: {e}")
+            # logger.warning(f"unknown error, detail: {e}")
+            ...
     for small_image in small_image_lists:
         try:
             with open(image_path + '/small_image_txt.txt', 'a', encoding='utf-8', errors='replace') as f:
@@ -169,7 +168,8 @@ def check_images(self, image_path):
                     shutil.move(small_image, image_path + "/small_images/" + file_name)
                     f.close()
         except Exception as e:
-            logger.warning(f"unknown error, detail: {e}")
+            # logger.warning(f"unknown error, detail: {e}")
+            ...
     if constants.check_images_flag:
         constants.check_images_flag = False
         logger.success(f"finished check! flag: {constants.check_images_flag}")

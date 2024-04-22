@@ -32,6 +32,6 @@ def spider_gif_images(keyword, chrome_driver):
         if read_gif_url(txt_path_name + "/" + keyword + "_zip.txt", api_urls):
             return True
     except Exception as e:
-        logger.warning(f"unknown error, detail: {e}")
+        logger.warning(f"unknown error, type: {type(e).__name__},")
         return False
     return False

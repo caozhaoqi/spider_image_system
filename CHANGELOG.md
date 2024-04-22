@@ -5,6 +5,7 @@
 - fix chart x label update error
 - fix log monitor time convert error
 - catch exception
+- reduce warning log output
 
 
 ## v1.1.3-beta.2.240419

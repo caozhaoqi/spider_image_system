@@ -194,7 +194,7 @@ def spider_param_config(key_word):
             driver = webdriver.Chrome(options=options)
             logger.info("use system default web driver!")
     except Exception as e:
-        logger.warning(f"unknown error, detail:{e}.")
+        logger.warning(f"unknown error, type: {type(e).__name__}.")
 
     mode = ''
     if r18_mode == 'True':
@@ -301,13 +301,13 @@ def artwork_single_image(key_word_pinyin, driver, url):
     image_url_list = []
     try:
         driver.get(url)
+        if driver.title == constants.ban_content or driver.title == constants.visit_url \
+                or driver.title == '':
+            logger.warning(f"error! will exit: cur visit domain blocked, title: {driver.title}")
+            constants.firewall_flag = True
+            return False
     except Exception as e:
-        logger.warning(f"unknown error: {e}")
-    if driver.title == constants.ban_content or driver.title == constants.visit_url \
-            or driver.title == '':
-        logger.warning(f"error! will exit: cur visit domain blocked, title: {driver.title}")
-        constants.firewall_flag = True
-        return False
+        logger.warning(f"unknown error: type: {type(e).__name__}.")
     if open_look_all(driver):
         logger.success(f"click look all success! pid: {url[-9:]}")
     # 抓取动图link
