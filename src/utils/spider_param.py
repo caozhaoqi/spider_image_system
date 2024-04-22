@@ -135,6 +135,7 @@ def spider_param_config(key_word):
     :param key_word:
     :return:
     """
+    global driver
     proxy = {
         "proxyType": "manual",
         "httpProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口

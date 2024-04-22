@@ -2,7 +2,8 @@
 
 ## v1.1.3.240423
 ### 2024/4/23
-- 1.
+- fix chart x label update error
+- 
 
 
 ## v1.1.3-beta.2.240419
