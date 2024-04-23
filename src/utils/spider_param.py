@@ -47,10 +47,10 @@ def user_save_artwork(driver):
 
 
 @logger.catch
-def is_keyword_num(driver, key_word):
+def is_keyword_num(driver_keyword, key_word):
     """
 
-    :param driver:
+    :param driver_keyword:
     :param key_word:
     :return:
     """
@@ -62,16 +62,16 @@ def is_keyword_num(driver, key_word):
     keyword_cat = key_word_list[1]
     key_word = keyword_content
     if keyword_cat == 'pid':
-        return spider_pid_image(driver, key_word)
+        return spider_pid_image(driver_keyword, key_word)
     elif keyword_cat == 'users':
-        return spider_users_images(driver, key_word, keyword_cat)
+        return spider_users_images(driver_keyword, key_word, keyword_cat)
 
 
 @logger.catch
-def spider_users_images(driver, key_word, keyword_cat):
+def spider_users_images(driver_user, key_word, keyword_cat):
     """
 
-    :param driver:
+    :param driver_user:
     :param key_word:
     :param keyword_cat:
     :return:
@@ -80,21 +80,21 @@ def spider_users_images(driver, key_word, keyword_cat):
     while True:
         cur_page = 1
         url = "https://" + visit_url + "/users/" + key_word + "/artworks?p=" + str(cur_page)
-        driver.get(url)
+        driver_user.get(url)
         time.sleep(search_delta_time)
         logger.info(f"cur spider users artwork cur_page: {cur_page}")
-        artwork_list = user_save_artwork(driver)
+        artwork_list = user_save_artwork(driver_user)
         if constants.stop_spider_url_flag:
             logger.warning("stop spider url, get users url spider artwork url.")
             break
-        if not artwork_list or driver.title == constants.ban_content or driver.title == constants.visit_url \
-                or driver.title == '':
+        if not artwork_list or driver_user.title == constants.ban_content or driver_user.title == constants.visit_url \
+                or driver_user.title == '':
             logger.warning(
-                f"users: {keyword_cat}, spider image no artwork or ban content:{driver.title}, skip loop")
+                f"users: {keyword_cat}, spider image no artwork or ban content:{driver_user.title}, skip loop")
             constants.firewall_flag = True
             break
         for artwork_url in artwork_list:
-            image_list = artwork_single_image(key_word, driver, artwork_url)
+            image_list = artwork_single_image(key_word, driver_user, artwork_url)
             if not image_list:
                 logger.warning(f"users: {keyword_cat}, spider image:{artwork_url}, no image.")
                 continue
@@ -108,16 +108,16 @@ def spider_users_images(driver, key_word, keyword_cat):
 
 
 @logger.catch
-def spider_pid_image(driver, key_word):
+def spider_pid_image(driver_pid, key_word):
     """
 
-    :param driver:
+    :param driver_pid:
     :param key_word:
     :return:
     """
     logger.info("input keyword is num, start process.")
     url = "https://" + visit_url + "/artworks/" + key_word
-    image_list = artwork_single_image(key_word, driver, url)
+    image_list = artwork_single_image(key_word, driver_pid, url)
     if not image_list:
         logger.warning("pid spider image no image.")
         return False
@@ -135,7 +135,7 @@ def spider_param_config(key_word):
     :param key_word:
     :return:
     """
-    global driver
+    driver = None
     proxy = {
         "proxyType": "manual",
         "httpProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口

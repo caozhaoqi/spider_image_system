@@ -12,7 +12,6 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from run import constants
-import threading
 
 # 定义日志文件路径模式
 LOG_FILE_PATTERN = 'sis_v*.log'
@@ -128,7 +127,7 @@ def log_mon_war(spider_thread_obj):
     """
     logger.info("log monitor start...")
     # 设置无输出超时时间（例如，5分钟）
-    global handler
+    handler = None
     TIMEOUT = constants.detect_timeout_auto
 
     # 初始化最新日志文件路径
@@ -163,7 +162,10 @@ def log_mon_war(spider_thread_obj):
             new_latest_log_file = find_latest_log_file(LOG_FILE_PATTERN, LOG_DIR)
             if new_latest_log_file != latest_log_file:
                 # 停止对旧文件的监控
-                observer.unschedule(handler)
+                try:
+                    observer.unschedule(handler)
+                except KeyError:
+                    logger.warning("Failed to unschedule the LogFileHandler. It might not be scheduled.")
                 # 更新日志文件路径
                 latest_log_file = new_latest_log_file
                 # 重新安排对新文件的监控
