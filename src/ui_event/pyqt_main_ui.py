@@ -413,6 +413,6 @@ class UIMainWindows(QMainWindow):
         open_data_path_method()
         self.open_data_path_thread = threading.Thread(
             target=open_data_path_method,
-            args=(self,))
+            args=())
         self.open_data_path_thread.start()
         logger.success("success download file thread start")

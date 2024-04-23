@@ -106,10 +106,10 @@ def save_img_element(driver, key_word_pinyin):
                     write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
                     logger.debug(f"save: {image_filename}, save num: {constants.spider_images_current_count}")
             except Exception as e:
-                logger.warning(f"unknown error, will skip cur loop, execute next loop detail: {e}")
+                logger.warning(f"unknown error, will skip cur loop, execute next loop detail:type: {type(e).__name__}")
                 continue
     except Exception as e:
-        logger.warning(f"unknown error,  type: {type(e).__name__}")
+        logger.warning(f"unknown error, type: {type(e).__name__}")
 
 
 @logger.catch
