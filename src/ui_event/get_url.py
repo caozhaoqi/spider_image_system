@@ -250,5 +250,5 @@ def load_href_save(driver, key_word):
         else:
             return 3
     except Exception as un_e:
-        logger.error("Error, unknown error, detail:" + str(un_e))
+        logger.warning(f"unknown error, type: {type(un_e).__name__}.")
         return 0

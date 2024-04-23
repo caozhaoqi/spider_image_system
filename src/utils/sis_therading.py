@@ -46,7 +46,7 @@ class SISThreading(threading.Thread):
             # logger.debug("run = ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
             # 调用目标函数并传递参数
             self.target(*self.args, **self.kwargs)
-            time.sleep(1)
+            time.sleep(constants.search_delta_time)
 
     def pause(self):
         """
