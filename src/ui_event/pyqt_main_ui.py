@@ -27,6 +27,24 @@ current_image_index = 0
 image_files = show_filter_image(find_images(folder_path))
 
 
+@logger.catch
+def open_data_path_method():
+    """
+
+    :return:
+    """
+    try:
+        if os.name == 'nt':  # Windows
+            os.startfile(constants.data_path)
+        else:
+            import subprocess
+            subprocess.Popen(['xdg-open', constants.data_path])
+
+        logger.success(f"open data path: {constants.data_path} success!")
+    except Exception as e:
+        logger.error(f"open data path: {constants.data_path} fail, detail: {e}")
+
+
 class UIMainWindows(QMainWindow):
 
     # @logger.catch
@@ -35,6 +53,7 @@ class UIMainWindows(QMainWindow):
 
         """
         QWidget.__init__(self)
+        self.open_data_path_thread = None
         self.edt_input_file_text_3_str = None
         self.edt_input_file_text_3 = None
         self.start_download_file_link_thread = None
@@ -391,13 +410,9 @@ class UIMainWindows(QMainWindow):
         open sys data dir
         :return:
         """
-        try:
-            if os.name == 'nt':  # Windows
-                os.startfile(constants.data_path)
-            else:
-                import subprocess
-                subprocess.Popen(['xdg-open', constants.data_path])
-
-            logger.success(f"open data path: {constants.data_path} success!")
-        except Exception as e:
-            logger.error(f"open data path: {constants.data_path} fail, detail: {e}")
+        open_data_path_method()
+        self.open_data_path_thread = threading.Thread(
+            target=open_data_path_method,
+            args=(self,))
+        self.open_data_path_thread.start()
+        logger.success("success download file thread start")
