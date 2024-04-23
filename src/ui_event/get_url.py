@@ -68,9 +68,12 @@ def artwork_to_image(key_word_pinyin, driver, url):
     if constants.spider_mode == 'manual':
         # 手动模式滑动页面 自动模式不滑动
         slider_page_down(driver)
-    time.sleep(detail_delta_time)
-    spider_gif_images(key_word_pinyin, driver)
-    save_img_element(driver, key_word_pinyin)
+    try:
+        driver.implicitly_wait(detail_delta_time)
+        spider_gif_images(key_word_pinyin, driver)
+        save_img_element(driver, key_word_pinyin)
+    except Exception as e:
+        logger.warning(f"unknown error, type: {type(e).__name__}")
     return True
 
 
@@ -152,7 +155,7 @@ def spider_artworks_url(self, key_word):
         logger.info("current use url: " + str(url_detail))
         try:
             driver.get(url_detail)
-            time.sleep(search_delta_time)
+            driver.implicitly_wait(search_delta_time)
             if driver.title == constants.ban_content or driver.title == constants.visit_url \
                     or driver.title == '' or driver.title == '请稍候…':
                 logger.warning(

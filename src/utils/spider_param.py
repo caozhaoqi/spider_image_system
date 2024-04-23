@@ -81,7 +81,7 @@ def spider_users_images(driver_user, key_word, keyword_cat):
         cur_page = 1
         url = "https://" + visit_url + "/users/" + key_word + "/artworks?p=" + str(cur_page)
         driver_user.get(url)
-        time.sleep(search_delta_time)
+        driver_user.implicitly_wait(search_delta_time)
         logger.info(f"cur spider users artwork cur_page: {cur_page}")
         artwork_list = user_save_artwork(driver_user)
         if constants.stop_spider_url_flag:
@@ -314,7 +314,6 @@ def artwork_single_image(key_word_pinyin, driver, url):
     if constants.spider_mode == 'manual':
         # 手动模式滑动页面 自动模式不滑动
         slider_page_down(driver)
-    time.sleep(detail_delta_time)
     spider_gif_images(key_word_pinyin, driver)
     # logger.success("gif url txt save success!")
     image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
