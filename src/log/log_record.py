@@ -82,5 +82,5 @@ def check_version():
     logger.info("--------------------------------------------------------------------")
     logger.info("current version publish time: " + publish_date)
     logger.info("---------------end print SIS version info---------------------------")
-    sys_info_select()
+    # sys_info_select()
     return True
