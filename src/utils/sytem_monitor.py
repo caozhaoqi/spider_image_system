@@ -80,9 +80,9 @@ def reduce_cpu_usage():
     """
     try:
         if get_cur_os() == "win32":
-            os.system('taskkill /im chrome.exe /F')
-            os.system('taskkill /im chromedriver.exe /F')
-            os.system('taskkill /im webdriver.exe /F')
+            kill_process_win('taskkill /im chrome.exe /F')
+            kill_process_win('taskkill /im chromedriver.exe /F')
+            kill_process_win('taskkill /im webdriver.exe /F')
             logger.success("reduce cpu usage success on win32 system!")
         else:
             kill_process_linux('chrome')
@@ -90,6 +90,33 @@ def reduce_cpu_usage():
             kill_process_linux('webdriver')
     except Exception as e:
         logger.warning(f"reduce cpu usage fail, detail: {e}")
+
+
+@logger.catch
+def kill_process_win(command):
+    """
+    
+    :param command:
+    :return:
+    """
+
+    import subprocess
+
+    # command = "taskkill /im chrome.exe /F"
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+
+    # 输出命令的结果
+    logger.debug("Standard Output:")
+    logger.debug(stdout.decode('utf-8'))
+
+    logger.debug("Standard Error:")
+    logger.warning(stderr.decode('utf-8'))
+
+    # 获取退出状态码
+    return_code = process.returncode
+    logger.debug("Return Code:", return_code)
+    return True
 
 
 @logger.catch
@@ -106,7 +133,7 @@ def kill_process_linux(process_name):
             os.system('kill -9 ' + pid)
             logger.success(f"Killed {process_name} with PID {pid} on linux system!")
         # else:
-        # print(f"{process_name} is not running.")
+        # logger.debug(f"{process_name} is not running.")
     except Exception as e:
         logger.warning(f"Error killing {process_name}: {e} on linux system!")
 
