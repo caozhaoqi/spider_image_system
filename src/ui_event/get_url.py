@@ -108,6 +108,10 @@ def save_img_element(driver, key_word_pinyin):
                     logger.debug(f"save: {image_filename}, save num: {constants.spider_images_current_count}")
             except Exception as e:
                 logger.warning(f"unknown error, will skip cur loop, execute next loop detail, type: {type(e).__name__}")
+                # driver.quit()
+                if type(e).__name__ == "WebDriverException":
+                    logger.error("WebDriverException, loop will quit!")
+                    break
                 continue
     except Exception as e:
         logger.warning(f"unknown error, type: {type(e).__name__}")

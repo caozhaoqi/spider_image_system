@@ -99,7 +99,8 @@ def open_look_all(driver):
             random_action(driver)
             return True
     except Exception as e:
-        logger.warning(f"unknown error, type: {type(e).__name__}")
+        logger.warning(f"unknown error, drive will quit! type: {type(e).__name__}")
+        driver.quit()
     return False
 
 
