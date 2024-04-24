@@ -5,14 +5,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import psutil
 import time
-
 from loguru import logger
-
-# 设置资源使用的警告阈值
 from run import constants
+from utils.sys_info import get_cur_os
+import subprocess
 
-MEMORY_THRESHOLD = 0.95  # 内存使用阈值（90%）
-CPU_THRESHOLD = 0.96  # CPU使用阈值（90%）
+MEMORY_THRESHOLD = 0.99  # 内存使用阈值（90%）
+CPU_THRESHOLD = 0.99  # CPU使用阈值（90%）
 NETWORK_THRESHOLD = 5 * 1024 * 1024  # 网络带宽阈值（1MB/s）
 DISK_USAGE_THRESHOLD = 0.99  # 设置存储使用警告阈值（例如，90% 使用率）
 
@@ -69,7 +68,47 @@ def check_cpu_usage():
     cpu_percent = psutil.cpu_percent(interval=1)
     if cpu_percent / 100 > CPU_THRESHOLD:
         logger.error("Warning: CPU usage is above {}%. Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
+        reduce_cpu_usage()
     last_cpu_usage = cpu_percent
+
+
+@logger.catch
+def reduce_cpu_usage():
+    """
+
+    :return:
+    """
+    try:
+        if get_cur_os() == "win32":
+            os.system('taskkill /im chrome.exe /F')
+            os.system('taskkill /im chromedriver.exe /F')
+            os.system('taskkill /im webdriver.exe /F')
+            logger.success("reduce cpu usage success on win32 system!")
+        else:
+            kill_process_linux('chrome')
+            kill_process_linux('chromedriver')
+            kill_process_linux('webdriver')
+    except Exception as e:
+        logger.warning(f"reduce cpu usage fail, detail: {e}")
+
+
+@logger.catch
+def kill_process_linux(process_name):
+    """
+
+    :param process_name:
+    :return:
+    """
+    try:
+        pid = subprocess.check_output(['pgrep', '-f', process_name]).decode('utf-8').strip()
+        if pid:
+            # 结束进程
+            os.system('kill -9 ' + pid)
+            logger.success(f"Killed {process_name} with PID {pid} on linux system!")
+        # else:
+        # print(f"{process_name} is not running.")
+    except Exception as e:
+        logger.warning(f"Error killing {process_name}: {e} on linux system!")
 
 
 # 检查网络带宽的函数

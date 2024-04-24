@@ -246,6 +246,8 @@ def chrome_options(options):
     # 添加浏览器特征
     options.add_argument("--disable-blink-features")
     options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument('--disable-application-cache')  # 禁用应用程序缓存
+    options.add_argument('--disable-cache')  # 禁用浏览器缓存
     random_boolean = random.choice([True, False])
     if random_boolean:
         # 无痕模式 减少被追踪风险

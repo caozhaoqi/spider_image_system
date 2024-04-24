@@ -2,7 +2,9 @@
 
 ## v1.1.4-beta.1.240425
 ### 2024/4/25
-- 
+- update clear cache method
+- add method reduce_cpu_usage
+- add chrome options disable cache
 
 
 ## v1.1.3.240423

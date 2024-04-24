@@ -18,6 +18,7 @@ from pypinyin import lazy_pinyin, Style
 from run import constants
 from run.constants import detail_delta_time, search_delta_time, s1_url, target_url, s2_url, data_path, \
     spider_images_max_count, allow_replace_domain_flag
+from selenium.webdriver import ActionChains, Keys
 
 
 @logger.catch
@@ -106,7 +107,7 @@ def save_img_element(driver, key_word_pinyin):
                     write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
                     logger.debug(f"save: {image_filename}, save num: {constants.spider_images_current_count}")
             except Exception as e:
-                logger.warning(f"unknown error, will skip cur loop, execute next loop detail:type: {type(e).__name__}")
+                logger.warning(f"unknown error, will skip cur loop, execute next loop detail, type: {type(e).__name__}")
                 continue
     except Exception as e:
         logger.warning(f"unknown error, type: {type(e).__name__}")
@@ -122,7 +123,34 @@ def clear_cache_refresh(driver):
     # 刷新页面，减少缓存
     try:
         driver.refresh()
+        # 设置隐式等待
+        driver.implicitly_wait(constants.detail_delta_time)
+
+        driver.execute_script("window.open('');")
+        driver.implicitly_wait(constants.detail_delta_time)
+
+        driver.switch_to.window(driver.window_handles[-1])
+        driver.implicitly_wait(constants.detail_delta_time)
+
+        driver.get('chrome://settings/clearBrowserData')  # for old chromedriver versions use cleardriverData
+        driver.implicitly_wait(constants.detail_delta_time)
+
+        actions = ActionChains(driver)
+        actions.send_keys(Keys.TAB * 3 + Keys.DOWN * 3)  # send right combination
+        actions.perform()
+        driver.implicitly_wait(constants.detail_delta_time)
+
+        actions = ActionChains(driver)
+        actions.send_keys(Keys.TAB * 4 + Keys.ENTER)  # confirm
+        actions.perform()
+        driver.implicitly_wait(constants.detail_delta_time)
+
+        # wait some time to finish
+        driver.close()  # close this tab
+        driver.switch_to.window(driver.window_handles[0])  # switch back
+
         logger.info("clear cache finished!")
+
     except Exception as e:
         logger.warning(f"unknown error, type: {type(e).__name__}")
 

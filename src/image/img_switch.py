@@ -135,7 +135,7 @@ def check_images(self, image_path):
                     image = Image.open(filepath)
                     width, height = image.size
                     if width <= 250 and height <= 250:  # 图片尺寸小于250*250
-                        logger.warning(f"Image {filename} size small, move small images folder.")
+                        # logger.warning(f"Image {filename} size small, move small images folder.")
                         small_image_lists.append(filepath)
                 except Exception as e:
                     # logger.warning(f"Can't open {filename}, detail :{e}, move error_images folder.")

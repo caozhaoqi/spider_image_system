@@ -110,6 +110,19 @@ def get_network_io_speed(process_name):
 
     return recv_speed, send_speed
 
+
+@logger.catch
+def get_cur_os():
+    """
+
+    :return:
+    """
+    os_name = sys.platform
+    if os_name == 'win32':
+        return os_name
+
+    elif os_name.startswith('linux'):
+        return "linux"
 #
 # if __name__ == '__main__':
 #     send_speed, recv_speed = get_network_io_speed("cmd.exe")
