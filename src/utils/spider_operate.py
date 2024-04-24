@@ -82,16 +82,17 @@ def open_look_all(driver):
     """
     """
     """
-    button = driver.execute_script("""
-var buttons = document.getElementsByTagName('button');
-for (var i = 0; i < buttons.length; i++) {
-  var button = buttons[i];
-  if (button.textContent.includes('查看全部') || button.textContent.includes('阅读作品')) {
-    return button;
-  }
-}
-""")
+
     try:
+        button = driver.execute_script("""
+        var buttons = document.getElementsByTagName('button');
+        for (var i = 0; i < buttons.length; i++) {
+          var button = buttons[i];
+          if (button.textContent.includes('查看全部') || button.textContent.includes('阅读作品')) {
+            return button;
+          }
+        }
+        """)
         if button:
             button.click()
             driver.implicitly_wait(detail_delta_time)

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.1.4-beta.1.240425
+### 2024/4/25
+- 
+
+
 ## v1.1.3.240423
 ### 2024/4/23
 - fix chart x label update error

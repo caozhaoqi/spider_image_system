@@ -199,7 +199,7 @@ def spider_artworks_url(self, key_word):
     try:
         logger.warning(f"google chrome will exit! chrome title: {driver.title} ")
     except Exception as e:
-        logger.warning(f"google chrome will exit! unknown error: {e}")
+        logger.warning(f"google chrome will exit! unknown error, type: {type(e).__name__},")
     record_end_spider_image_keyword(cur_page=cur_page, key_word=key_word)
     clear_cache_refresh(driver)
     driver.quit()
