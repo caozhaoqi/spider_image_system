@@ -21,6 +21,9 @@ last_cpu_usage = 0
 last_disk_usage = 0
 last_network_usage = 0
 
+# 只收集前20个进程的信息
+process_count = 20
+
 
 # 检查系统盘存储使用情况的函数
 @logger.catch
@@ -102,16 +105,19 @@ def kill_process_win(command):
 
     import subprocess
 
-    # command = "taskkill /im chrome.exe /F"
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
+    try:
 
-    # 输出命令的结果
-    logger.debug("Standard Output:")
-    logger.debug(stdout.decode('utf-8'))
+        logger.debug("Standard Output:" + stdout.decode('utf-8'))
 
-    logger.debug("Standard Error:")
-    logger.warning(stderr.decode('utf-8'))
+        logger.warning("Standard Error:" + stderr.decode('utf-8'))
+
+    except UnicodeDecodeError as ude:
+
+        logger.debug("Standard Output:" + stdout.decode('gbk'))
+
+        logger.warning("Standard Error:" + stderr.decode('gbk'))
 
     # 获取退出状态码
     return_code = process.returncode
@@ -204,8 +210,7 @@ def check_top_processes():
                 'Network IO': net_io
             })
 
-            # 只收集前10个进程的信息
-            if len(top_processes) >= 10:
+            if len(top_processes) >= process_count:
                 break
 
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
@@ -227,6 +232,7 @@ def sys_mon():
     :return:
     """
     logger.info("system monitor start...")
+
     while True:
         # 检查CPU使用率
         check_cpu_usage()
@@ -241,8 +247,10 @@ def sys_mon():
         check_top_processes()
 
         # 等待一段时间再次检查（例如，每秒检查一次）
-        time.sleep(constants.detect_timeout_auto * 5)
+        time.sleep(constants.detect_timeout_auto)
 
+        logger.info(f"cur sys res detect time: {constants.detect_timeout_auto} s.")
+#
 #
 # if __name__ == '__main__':
-#     check_top_processes()
+#     kill_process_win("tasklist")
