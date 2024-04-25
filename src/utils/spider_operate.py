@@ -101,6 +101,7 @@ def open_look_all(driver):
     except Exception as e:
         logger.warning(f"unknown error, MaxRetryError!!! detail: {e}")
         # driver.quit()
+        return False
     return False
 
 

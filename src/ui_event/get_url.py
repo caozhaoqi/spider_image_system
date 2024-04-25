@@ -63,6 +63,7 @@ def artwork_to_image(key_word_pinyin, driver, url):
             return False
     except Exception as e:
         logger.warning(f"unknown error: type: {type(e).__name__}")
+        return False
     if open_look_all(driver):
         logger.success(f"click look all {key_word_pinyin} success! pid: {url[-9:]}")  # 116299335
     # 抓取动图link
@@ -75,6 +76,7 @@ def artwork_to_image(key_word_pinyin, driver, url):
         save_img_element(driver, key_word_pinyin)
     except Exception as e:
         logger.warning(f"unknown error, type: {type(e).__name__}")
+        return False
     return True
 
 

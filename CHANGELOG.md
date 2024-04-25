@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.4-beta.2.240428
+### 2024/4/28
+- fix autoplay image stop flag set error
+
 ## v1.1.4-beta.1.240425
 ### 2024/4/25
 - update clear cache method
@@ -10,14 +14,12 @@
 - update on_last_window_closed method
 - fix unknown error, drive will quit! type: MaxRetryError
 
-
 ## v1.1.3.240423
 ### 2024/4/23
 - fix chart x label update error
 - fix log monitor time convert error
 - catch exception
 - reduce warning log output
-
 
 ## v1.1.3-beta.2.240419
 ### 2024/4/19
@@ -51,7 +53,6 @@
 - add auto-detect Chrome version to download webdriver
 - remove un use code 
 
-
 ## v1.1.1.240328
 ### 2024/3/29
 - 代码结构更新
@@ -65,7 +66,6 @@
 ### 2024/3/27
 - 爬虫随机启用无痕模式
 - selenium chrome内存占用优化
-
 
 ## v1.1.1-beta.1.240322
 ### 2024/3/22
@@ -151,25 +151,21 @@
 - 单个pid image抓取
 - 代码逻辑梳理
 
-
 ## v1.0.7
 ### 2024/2/23
 - issue bug修复
 - 下载功能完善
 - 爬虫功能添加断点保存，断点爬取恢复
 
-
 ## v1.0.7-beta.2
 ### 2024/2/22
 - txt img 空行bug修复
 - 添加日志分析
 
-
 ## v1.0.7-beta
 ### 2024/2/21
 - 已知bug修复(见issue)
 - log输出精确
-
 
 ## v1.0.7_alpha
 ### 2024/2/20
@@ -189,7 +185,6 @@
 - 下载调度优化
 - 性能分析功能添加
 
-
 ## v1.0.5
 ### 2024/2/4
 - 代码优化
@@ -205,7 +200,6 @@
 ### 2024/2/2
 - 自动抓取img线程添加 
 - 已知bug修复，详见issue
-
 
 ## v1.0.4_beta
 ### 2024/2/1

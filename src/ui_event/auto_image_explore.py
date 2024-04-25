@@ -110,5 +110,6 @@ class AutoImageDialog(QDialog):
         """
         logger.debug('AutoImageDialog Dialog is closing!')
         constants.auto_play_image_visible = False
+        constants.start_auto_play_flag = False
         super(AutoImageDialog, self).closeEvent(event)
 
