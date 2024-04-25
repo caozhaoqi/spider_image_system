@@ -8,6 +8,7 @@
 - fix bugs: UnicodeDecodeError
 - fix bugs: unknown error, type: SessionNotCreatedException
 - update on_last_window_closed method
+- fix unknown error, drive will quit! type: MaxRetryError
 
 
 ## v1.1.3.240423
