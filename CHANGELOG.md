@@ -5,6 +5,9 @@
 - update clear cache method
 - add method reduce_cpu_usage
 - add chrome options disable cache
+- fix bugs: UnicodeDecodeError
+- fix bugs: unknown error, type: SessionNotCreatedException
+- update on_last_window_closed method
 
 
 ## v1.1.3.240423

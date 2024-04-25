@@ -26,7 +26,7 @@ def log_record():
     logger.configure(
         handlers=[{"sink": sys.stdout, "level": sis_log_level, "format": format_record}])
     logger.add(LOG_DIR, encoding='utf-8', rotation="00:00", retention="30 days", compression="zip")
-    logger.debug('SIS log file started record, current log file path: ' + LOG_DIR)
+    logger.debug('current SIS log file path: ' + LOG_DIR)
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
     return True
 
@@ -75,12 +75,12 @@ def check_version():
     print sis version msg
     :return:
     """
-    logger.info("-------------start print SIS version info---------------------------")
+    # logger.info("-------------start print SIS version info---------------------------")
     logger.info("system started, current SIS version: " + sis_server_version)
-    logger.info("--------------------------------------------------------------------")
-    logger.info("current version build time: " + build_date)
-    logger.info("--------------------------------------------------------------------")
-    logger.info("current version publish time: " + publish_date)
-    logger.info("---------------end print SIS version info---------------------------")
+    # logger.info("--------------------------------------------------------------------")
+    # logger.info("current version build time: " + build_date)
+    # logger.info("--------------------------------------------------------------------")
+    # logger.info("current version publish time: " + publish_date)
+    # logger.info("---------------end print SIS version info---------------------------")
     # sys_info_select()
     return True

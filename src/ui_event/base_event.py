@@ -32,6 +32,8 @@ from ui_event.img_analyze_dialog import ImgAnalyzeHistogram
 from ui_event.keyword_dialog import KeywordDialog
 from utils.log_monitor import log_mon_war
 from utils.sis_therading import SISThreading
+from utils.sys_info import get_cur_os
+from utils.sytem_monitor import kill_process_linux, kill_process_win, reduce_cpu_usage
 
 
 @logger.catch
@@ -442,6 +444,23 @@ def exit_save_data():
     logger.warning("-------------------------------------------------------------")
     logger.warning(f"-----sis-{constants.sis_server_version} exe will quit!-----------------")
     logger.warning("-------------------------------------------------------------")
+
+
+@logger.catch
+def kill_other_close():
+    """
+
+    :return:
+    """
+    try:
+        if get_cur_os() == "win32":
+            reduce_cpu_usage()
+            kill_process_win('taskkill /im ui_main.exe /F')
+        else:
+            kill_process_linux('ui_main')
+        logger.warning("kill other process success!")
+    except Exception as e:
+        logger.error(f"clear other process fail, detail: {e}")
 
 
 @logger.catch

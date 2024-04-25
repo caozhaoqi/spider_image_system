@@ -22,7 +22,7 @@ last_disk_usage = 0
 last_network_usage = 0
 
 # 只收集前20个进程的信息
-process_count = 20
+process_count = 5
 
 
 # 检查系统盘存储使用情况的函数
@@ -71,7 +71,8 @@ def check_cpu_usage():
     cpu_percent = psutil.cpu_percent(interval=1)
     if cpu_percent / 100 > CPU_THRESHOLD:
         logger.error("Warning: CPU usage is above {}%. Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
-        reduce_cpu_usage()
+        if reduce_cpu_usage():
+            logger.success("reduce cpu usage success on win32 system!")
     last_cpu_usage = cpu_percent
 
 
@@ -86,13 +87,14 @@ def reduce_cpu_usage():
             kill_process_win('taskkill /im chrome.exe /F')
             kill_process_win('taskkill /im chromedriver.exe /F')
             kill_process_win('taskkill /im webdriver.exe /F')
-            logger.success("reduce cpu usage success on win32 system!")
         else:
             kill_process_linux('chrome')
             kill_process_linux('chromedriver')
             kill_process_linux('webdriver')
+        return True
     except Exception as e:
         logger.warning(f"reduce cpu usage fail, detail: {e}")
+        return False
 
 
 @logger.catch
@@ -108,20 +110,12 @@ def kill_process_win(command):
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     try:
-
-        logger.debug("Standard Output:" + stdout.decode('utf-8'))
-
-        logger.warning("Standard Error:" + stderr.decode('utf-8'))
-
-    except UnicodeDecodeError as ude:
-
-        logger.debug("Standard Output:" + stdout.decode('gbk'))
-
-        logger.warning("Standard Error:" + stderr.decode('gbk'))
-
-    # 获取退出状态码
-    return_code = process.returncode
-    logger.debug("Return Code:", return_code)
+        if stdout.decode('gbk') == "":
+            logger.warning("Standard Error: " + stderr.decode('gbk').strip())
+            return
+        logger.debug("Standard Output: " + stdout.decode('gbk').strip())
+    except Exception as e:
+        logger.warning("Standard Error: " + stderr.decode('gbk').strip())
     return True
 
 
@@ -233,6 +227,8 @@ def sys_mon():
     """
     logger.info("system monitor start...")
 
+    logger.info(f"cur sys res detect time: {constants.detect_timeout_auto} s.")
+
     while True:
         # 检查CPU使用率
         check_cpu_usage()
@@ -249,7 +245,6 @@ def sys_mon():
         # 等待一段时间再次检查（例如，每秒检查一次）
         time.sleep(constants.detect_timeout_auto)
 
-        logger.info(f"cur sys res detect time: {constants.detect_timeout_auto} s.")
 #
 #
 # if __name__ == '__main__':

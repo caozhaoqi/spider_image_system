@@ -97,7 +97,7 @@ def write_minio_config_to_file(minio_config):
                                                      "50.gif,data:image/png,no_profile.png,common")
     conf.set("automatic_config", "zoom_out_scale", "0.9")
     conf.set("automatic_config", "zoom_in_scale", "1.1")
-    conf.set("automatic_config", "fire_wall_delay_time", "300")
+    conf.set("automatic_config", "fire_wall_delay_time", "60")
     conf.set("automatic_config", "download_img_retry_times", "2")
     conf.set("automatic_config", "download_img_time_out", "10")
     conf.set("automatic_config", "detect_timeout_auto", "300")
@@ -156,17 +156,17 @@ def check_ini_config():
     :return:
     """
     iniPath = os.path.realpath(os.path.join("config", "config.ini"))
-    logger.info("generate file path: " + iniPath)
+    # logger.info("detect config file, path: " + iniPath)
     conf = configparser.ConfigParser()
     if os.path.exists(iniPath):
-        conf.read(iniPath, 'utf-8')
+        return True
     else:
-        logger.warning("Not Found config ini file, creating ini file....")
+        # logger.warning("Not Found config ini file, creating ini file....")
         if not os.path.exists(".\\config"):
             os.makedirs(".\\config")
             logger.debug("dir not exists, creating dir")
         conf.read(iniPath, 'utf-8')
-        logger.info("start generate config ini file: ")
+        # logger.info("start generate config ini file: ")
         conf.add_section("spider_config")
         conf.set("spider_config", "visit_url", "sd.vv50.de")
         conf.set("spider_config", "s1_url", "pixiv.srpr.cc")
@@ -177,7 +177,7 @@ def check_ini_config():
         conf.set("spider_config", "proxy_flag", 'False')
         conf.set("spider_config", "proxy_website", 'http://demo.spiderpy.cn')
         conf.set("spider_config", "proxy_mode", 'auto')
-        conf.set("spider_config", "search_delta_time", '5')
+        conf.set("spider_config", "search_delta_time", '3')
         conf.set("spider_config", "detail_delta_time", '2')
         conf.set("spider_config", "sis_log_level", 'DEBUG')
         conf.set("spider_config", "spider_images_max_count", '1000')
@@ -194,7 +194,7 @@ def check_ini_config():
                                                          "50.gif,data:image/png,no_profile.png,common")
         conf.set("automatic_config", "zoom_out_scale", "0.9")
         conf.set("automatic_config", "zoom_in_scale", "1.1")
-        conf.set("automatic_config", "fire_wall_delay_time", "300")
+        conf.set("automatic_config", "fire_wall_delay_time", "60")
         conf.set("automatic_config", "download_img_retry_times", "2")
         conf.set("automatic_config", "download_img_time_out", "10")
         conf.set("automatic_config", "detect_timeout_auto", "300")
@@ -218,4 +218,5 @@ def check_ini_config():
 
         conf.write(open(iniPath, 'a+', encoding="utf-8"))
         conf.read(iniPath, 'utf-8')
-        logger.info("config write finished, read test: " + conf.get("spider_config", "visit_url"))
+        # logger.info("config write finished, read test: " + conf.get("spider_config", "visit_url"))
+        return True

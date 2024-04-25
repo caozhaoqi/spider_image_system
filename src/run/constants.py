@@ -29,8 +29,6 @@ auto_play_image_visible = False
 start_auto_play_flag = False
 # per monitor
 performance_monitor_visible = False
-# gi view
-# genshin_impact_view_visible = False
 # log ana
 log_analyze_visible = False
 # img ana
@@ -80,8 +78,6 @@ category_image_flag = False
 single_flag = False
 # keyword add finish flag
 add_keyword_finish_flag = False
-# # sqlite table name
-# sqlite_table_name = "proxy_detail"
 # ban content
 ban_content = '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'
 # no putput
