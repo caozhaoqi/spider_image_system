@@ -84,9 +84,11 @@ def reduce_cpu_usage():
     """
     try:
         if get_cur_os() == "win32":
-            kill_process_win('taskkill /im chrome.exe /F')
-            kill_process_win('taskkill /im chromedriver.exe /F')
-            kill_process_win('taskkill /im webdriver.exe /F')
+            if not kill_process_win('taskkill /im chrome.exe /F'):
+                logger.warning("start force kill chrome.exe process.")
+                kill_process_win("taskkill /im chrome.exe /F /T")
+            # kill_process_win('taskkill /im chromedriver.exe /F')
+            # kill_process_win('taskkill /im webdriver.exe /F')
         else:
             kill_process_linux('chrome')
             kill_process_linux('chromedriver')
@@ -112,10 +114,11 @@ def kill_process_win(command):
     try:
         if stdout.decode('gbk') == "":
             logger.warning("Standard Error: " + stderr.decode('gbk').strip())
-            return
+            return False
         logger.debug("Standard Output: " + stdout.decode('gbk').strip())
     except Exception as e:
         logger.warning("Standard Error: " + stderr.decode('gbk').strip())
+        return False
     return True
 
 

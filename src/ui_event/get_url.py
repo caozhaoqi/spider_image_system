@@ -173,7 +173,7 @@ def spider_artworks_url(self, key_word):
         logger.info("spider single image end, not execute follow operate!")
         return True
     elif driver is None:
-        logger.warning("driver get error, will continue keyword.")
+        logger.warning("driver get error, will continue next keyword.")
         return False
     # 处理 当抓取关键词存在于download_finish_txt.txt中,删除该关键词，以方便下次下载
     exists_keyword_finish_txt(key_word)
