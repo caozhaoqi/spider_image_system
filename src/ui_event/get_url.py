@@ -169,6 +169,7 @@ def spider_artworks_url(self, key_word):
     :parameter key_word 关键字
     :return:
     """
+    driver_start_time = time.time()
     driver, url, cur_page = spider_param_config(key_word)
     if driver is None and url is None and cur_page is None:
         constants.stop_spider_url_flag = True
@@ -192,6 +193,8 @@ def spider_artworks_url(self, key_word):
         logger.info("current use url: " + str(url_detail))
         try:
             driver.get(url_detail)
+            driver_finish_star_time = time.time()
+            logger.info(f"selenium start chrome cost time: {driver_finish_star_time - driver_start_time}")
             driver.implicitly_wait(search_delta_time)
             if driver.title == constants.ban_content or driver.title == constants.visit_url \
                     or driver.title == '' or driver.title == '请稍候…':

@@ -3,6 +3,8 @@
 ## v1.1.4-beta.2.240428
 ### 2024/4/28
 - fix autoplay image stop flag set error
+- update selenium page_load_strategy to none
+- print selenium start time
 
 ## v1.1.4-beta.1.240425
 ### 2024/4/25
