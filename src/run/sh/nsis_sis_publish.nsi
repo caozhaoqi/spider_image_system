@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Spider_Image_System"
-!define PRODUCT_VERSION "v1.1.4-beta.2.240428"
+!define PRODUCT_VERSION "1.1.4-beta.2.240428"
 !define PRODUCT_PUBLISHER "Zhaoqi.Cao"
 !define PRODUCT_WEB_SITE "https://caozhaoqi.github.io"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ui_main.exe"

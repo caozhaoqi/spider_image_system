@@ -10,10 +10,10 @@ from run import constants
 from utils.sys_info import get_cur_os
 import subprocess
 
-MEMORY_THRESHOLD = 0.99  # 内存使用阈值（90%）
-CPU_THRESHOLD = 0.99  # CPU使用阈值（90%）
+MEMORY_THRESHOLD = 0.90  # 内存使用阈值（90%）
+CPU_THRESHOLD = 0.90  # CPU使用阈值（90%）
 NETWORK_THRESHOLD = 5 * 1024 * 1024  # 网络带宽阈值（1MB/s）
-DISK_USAGE_THRESHOLD = 0.99  # 设置存储使用警告阈值（例如，90% 使用率）
+DISK_USAGE_THRESHOLD = 0.90  # 设置存储使用警告阈值（例如，90% 使用率）
 
 # 上次检查的资源使用情况
 last_memory_usage = 0
