@@ -20,12 +20,11 @@ from utils.face_detect import face_detect_result
 from utils.file_utils import convert_and_move_folder
 from utils.os_environment_check import detect_installed
 from utils.txt_decode import scan_txt_file_all
-from run.constants import fire_wall_delay_time
 from ui_event.about_dialog_ui import InformationDialog
 from ui_event.dialog_ui import Dialog
 from ui_event.get_url import spider_artworks_url
 from run import constants
-from utils.time_utils import time_to_utc
+from utils.time_utils import time_to_utc, random_fw_time
 from image.spider_img_save import download_re_error_image
 from utils.file_unzip_7zip import unzip_file
 from ui_event.img_analyze_dialog import ImgAnalyzeHistogram
@@ -215,9 +214,10 @@ def auto_spider_img_thread(self):
                 logger.warning(
                     f"auto spider img stop! will exit, final spider keyword: {spider_image_keyword_item.strip()}!")
                 break
+            fire_wall_delay_time = random_fw_time(constants.fire_wall_delay_time)
             if constants.firewall_flag:
-                logger.warning(f"block {constants.visit_url} domain, will retry! cur retry time:"
-                               f" {float(fire_wall_delay_time / 60)} minutes.")
+                logger.warning(f"block {constants.visit_url} domain, will retry! cur random retry time:"
+                               f" {float(fire_wall_delay_time)} seconds.")
                 # 设置重试时间
                 time.sleep(fire_wall_delay_time)
                 continue

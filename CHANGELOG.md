@@ -5,6 +5,7 @@
 - fix autoplay image stop flag set error
 - update selenium page_load_strategy to none
 - print selenium start time
+- update block time generate method
 
 ## v1.1.4-beta.1.240425
 ### 2024/4/25

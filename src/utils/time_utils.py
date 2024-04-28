@@ -31,3 +31,14 @@ def time_to_utc(time_str):
     mtime = time.localtime(time_str)
     formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", mtime)
     return formatted_time
+
+
+@logger.catch
+def random_fw_time(fire_wall_time):
+    """
+
+    :param fire_wall_time:
+    :return:
+    """
+    random_delay = random.randint(1, fire_wall_time)
+    return random_delay
