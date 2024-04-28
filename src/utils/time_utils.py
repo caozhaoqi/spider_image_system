@@ -42,3 +42,23 @@ def random_fw_time(fire_wall_time):
     """
     random_delay = random.randint(1, fire_wall_time)
     return random_delay
+
+
+@logger.catch
+def sys_sleep_time(driver, sleep_time, img_flag):
+    """
+
+    :param driver:
+    :param img_flag:
+    :param sleep_time:
+    :return:
+    """
+    try:
+        if img_flag:
+            time.sleep(sleep_time)
+        else:
+            driver.implicitly_wait(sleep_time)
+    except Exception as e:
+        logger.warning(f"sys_sleep_time unknown error, detail: {e} ")
+        return False
+    return True

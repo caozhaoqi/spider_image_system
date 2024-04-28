@@ -55,7 +55,7 @@ def is_keyword_num(driver_keyword, key_word):
     :return:
     """
     if "," not in key_word:
-        logger.warning(f"you input keyword not contain ',' in spilt keyword: {key_word}.")
+        # logger.warning(f"you input keyword not contain ',' in spilt keyword: {key_word}.")
         return False
     key_word_list = key_word.split(',')
     keyword_content = key_word_list[0]

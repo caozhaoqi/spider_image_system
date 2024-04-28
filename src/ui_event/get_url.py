@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from selenium.webdriver.common.by import By
@@ -19,6 +20,7 @@ from run import constants
 from run.constants import detail_delta_time, search_delta_time, s1_url, target_url, s2_url, data_path, \
     spider_images_max_count, allow_replace_domain_flag
 from selenium.webdriver import ActionChains, Keys
+from utils.time_utils import sys_sleep_time
 
 
 @logger.catch
@@ -71,9 +73,12 @@ def artwork_to_image(key_word_pinyin, driver, url):
         # 手动模式滑动页面 自动模式不滑动
         slider_page_down(driver)
     try:
-        driver.implicitly_wait(detail_delta_time)
+        # driver.implicitly_wait(detail_delta_time)
+        sys_sleep_time(driver, detail_delta_time, True)
         spider_gif_images(key_word_pinyin, driver)
+        logger.info(f"------start spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
         save_img_element(driver, key_word_pinyin)
+        # logger.info(f"------end spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
     except Exception as e:
         logger.warning(f"unknown error, type: {type(e).__name__}")
         return False
@@ -130,26 +135,32 @@ def clear_cache_refresh(driver):
     try:
         driver.refresh()
         # 设置隐式等待
-        driver.implicitly_wait(constants.detail_delta_time)
+        # driver.implicitly_wait(constants.detail_delta_time)
+        sys_sleep_time(driver, constants.detail_delta_time, False)
 
         driver.execute_script("window.open('');")
-        driver.implicitly_wait(constants.detail_delta_time)
+        # driver.implicitly_wait(constants.detail_delta_time)
+        sys_sleep_time(driver, constants.detail_delta_time, False)
 
         driver.switch_to.window(driver.window_handles[-1])
-        driver.implicitly_wait(constants.detail_delta_time)
+        # driver.implicitly_wait(constants.detail_delta_time)
+        sys_sleep_time(driver, constants.detail_delta_time, False)
 
         driver.get('chrome://settings/clearBrowserData')  # for old chromedriver versions use cleardriverData
-        driver.implicitly_wait(constants.detail_delta_time)
+        # driver.implicitly_wait(constants.detail_delta_time)
+        sys_sleep_time(driver, constants.detail_delta_time, False)
 
         actions = ActionChains(driver)
         actions.send_keys(Keys.TAB * 3 + Keys.DOWN * 3)  # send right combination
         actions.perform()
-        driver.implicitly_wait(constants.detail_delta_time)
+        # driver.implicitly_wait(constants.detail_delta_time)
+        sys_sleep_time(driver, constants.detail_delta_time, False)
 
         actions = ActionChains(driver)
         actions.send_keys(Keys.TAB * 4 + Keys.ENTER)  # confirm
         actions.perform()
-        driver.implicitly_wait(constants.detail_delta_time)
+        # driver.implicitly_wait(constants.detail_delta_time)
+        sys_sleep_time(driver, constants.detail_delta_time, False)
 
         # wait some time to finish
         driver.close()  # close this tab
@@ -194,8 +205,9 @@ def spider_artworks_url(self, key_word):
         try:
             driver.get(url_detail)
             driver_finish_star_time = time.time()
-            logger.info(f"selenium start chrome cost time: {driver_finish_star_time - driver_start_time}")
-            driver.implicitly_wait(search_delta_time)
+            logger.info(f"keyword: {key_word}, start chrome cost : {driver_finish_star_time - driver_start_time} s")
+            # driver.implicitly_wait(search_delta_time)
+            sys_sleep_time(driver,search_delta_time, True)
             if driver.title == constants.ban_content or driver.title == constants.visit_url \
                     or driver.title == '' or driver.title == '请稍候…':
                 logger.warning(

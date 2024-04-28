@@ -1,14 +1,15 @@
 import os
 import sys
 
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import time
 import random
 from loguru import logger
 from selenium.webdriver import ActionChains, Keys
 from run import constants
 from run.constants import detail_delta_time
+from utils.time_utils import sys_sleep_time
 
 
 @logger.catch
@@ -95,7 +96,8 @@ def open_look_all(driver):
         """)
         if button:
             button.click()
-            driver.implicitly_wait(detail_delta_time)
+            # driver.implicitly_wait(detail_delta_time)
+            sys_sleep_time(driver, constants.detail_delta_time, False)
             random_action(driver)
             return True
     except Exception as e:
@@ -116,15 +118,24 @@ def slider_page_down(driver):
         page_height = driver.execute_script("return document.body.scrollHeight")
 
         actions = ActionChains(driver)
+
         actions.send_keys(Keys.END).perform()
         actions.send_keys(Keys.PAGE_DOWN).perform()
-        driver.implicitly_wait(detail_delta_time)
+
+        sys_sleep_time(driver, constants.detail_delta_time, False)
+        # driver.implicitly_wait(detail_delta_time)
+
         actions.send_keys(Keys.HOME).perform()
         actions.send_keys(Keys.PAGE_DOWN).perform()
-        driver.implicitly_wait(detail_delta_time)
+
+        sys_sleep_time(driver, constants.detail_delta_time, False)
+        # driver.implicitly_wait(detail_delta_time)
+
         logger.info(f"slider page down! page height {page_height}px")
         random_action(driver)
-        driver.implicitly_wait(detail_delta_time)
+
+        sys_sleep_time(driver, constants.detail_delta_time, False)
+        # driver.implicitly_wait(detail_delta_time)
     except Exception as e:
         logger.warning(f"unknown error, type: {type(e).__name__}")
 
@@ -152,14 +163,16 @@ def random_action(driver):
         for key in random_key_order:
             for _ in range(random_key_repeats):
                 actions.send_keys(key).perform()
-                driver.implicitly_wait(random.random() * random_delay)  # 在每个动作之间添加随机延迟
+                # driver.implicitly_wait(random.random() * random_delay)  # 在每个动作之间添加随机延迟
+                sys_sleep_time(driver, random.random() * random_delay, False)
 
         # 执行最终的页面滚动和延迟
-        driver.implicitly_wait(random.random() * random_delay)
+        # driver.implicitly_wait(random.random() * random_delay)
+        sys_sleep_time(driver, random.random() * random_delay, False)
         actions.send_keys(Keys.HOME).perform()
         actions.send_keys(Keys.PAGE_DOWN).perform()
-        driver.implicitly_wait(random.random() * random_delay)
-
+        # driver.implicitly_wait(random.random() * random_delay)
+        sys_sleep_time(driver, random.random() * random_delay, False)
         # 记录日志
         logger.info(f"Random slider page down! page height {page_height}px")
     except Exception as e:
