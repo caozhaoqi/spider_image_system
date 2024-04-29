@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.4.240430
+### 2024/4/30
+- update start spider pid log location
+
 ## v1.1.4-beta.2.240428
 ### 2024/4/28
 - fix autoplay image stop flag set error

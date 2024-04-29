@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from selenium.webdriver.common.by import By
@@ -40,6 +39,7 @@ def save_img_url(driver, key_word):
             for line in f:
                 url = line.strip()
                 if url and not constants.stop_spider_url_flag:
+                    logger.info(f"------start spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
                     if not artwork_to_image(key_word_pinyin, driver, url):
                         break
                 else:
@@ -76,7 +76,6 @@ def artwork_to_image(key_word_pinyin, driver, url):
         # driver.implicitly_wait(detail_delta_time)
         sys_sleep_time(driver, detail_delta_time, True)
         spider_gif_images(key_word_pinyin, driver)
-        logger.info(f"------start spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
         save_img_element(driver, key_word_pinyin)
         # logger.info(f"------end spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
     except Exception as e:
@@ -99,10 +98,12 @@ def save_img_element(driver, key_word_pinyin):
             try:
                 image_url = image_element.get_attribute("src")
                 if filter_not_use(image_url) or not image_url:
+                    # logger.warning(f"no image src and image not match or all exists in {key_word_pinyin}!")
                     continue
                 else:
                     result = filter_exists_images(key_word_pinyin, image_url, "_img")
                     if result:
+                        logger.warning(f"image src already exists: {key_word_pinyin}!")
                         continue
                     driver.execute_script("return arguments[0].src;", image_element)
                     image_filename = os.path.basename(image_url)  # 获取图片文件名
@@ -205,9 +206,9 @@ def spider_artworks_url(self, key_word):
         try:
             driver.get(url_detail)
             driver_finish_star_time = time.time()
-            logger.info(f"keyword: {key_word}, start chrome cost : {driver_finish_star_time - driver_start_time} s")
+            logger.info(f"keyword: {key_word}, start chrome cost: {driver_finish_star_time - driver_start_time} s")
             # driver.implicitly_wait(search_delta_time)
-            sys_sleep_time(driver,search_delta_time, True)
+            sys_sleep_time(driver, search_delta_time, True)
             if driver.title == constants.ban_content or driver.title == constants.visit_url \
                     or driver.title == '' or driver.title == '请稍候…':
                 logger.warning(

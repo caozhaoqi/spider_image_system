@@ -286,6 +286,11 @@ def search_item_paint(self):
 
 @logger.catch
 def search_item_paint_tab2(self):
+    """
+
+    :param self:
+    :return:
+    """
     self.grid_layout_video = QGridLayout()
     self.setLayout(self.grid_layout_video)
 
