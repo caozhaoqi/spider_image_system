@@ -3,6 +3,8 @@
 ## v1.1.4.240430
 ### 2024/4/30
 - update start spider pid log location
+- update kill_other_close method
+- fix bugs
 
 ## v1.1.4-beta.2.240428
 ### 2024/4/28

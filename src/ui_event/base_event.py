@@ -118,8 +118,8 @@ def scan_populate_mp4_list(self):
                 self.listWidget_4.addItem(file_path_item)
                 self.listWidget_5.addItem(file_format_item)
                 self.listWidget_6.addItem(author_item)
-                i += 1
-    logger.info("scan video result, length: " + str(i))
+                # i += 1
+    # logger.info("scan video result, length: " + str(i))
 
 
 @logger.catch
@@ -454,11 +454,11 @@ def kill_other_close():
     """
     try:
         if get_cur_os() == "win32":
-            if reduce_cpu_usage():
-                kill_process_win('taskkill /im ui_main.exe /F /T')
+            reduce_cpu_usage()
+            logger.success("kill other process success!")
+            kill_process_win('taskkill /im ui_main.exe /F /T')
         else:
             kill_process_linux('ui_main')
-        logger.warning("kill other process success!")
     except Exception as e:
         logger.error(f"clear other process fail, detail: {e}")
 

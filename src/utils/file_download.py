@@ -8,6 +8,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import time
 from run.constants import download_img_retry_times, download_img_time_out
+from loguru import logger
 
 retries = Retry(
     total=download_img_retry_times,  # 总重试次数
@@ -25,6 +26,7 @@ session.mount('http://', adapter)
 session.mount('https://', adapter)
 
 
+@logger.catch
 def send_request(url, timeout=download_img_time_out):
     """
     发送请求并处理重试和错误
@@ -32,24 +34,30 @@ def send_request(url, timeout=download_img_time_out):
     :param timeout: 超时时间（秒）
     :return: 响应对象或None
     """
-    retries_count = 0
-    while retries_count < retries.total:
-        try:
-            start_time = time.time()
+    try:
+        # urllib3.disable_warnings()
+        retries_count = 0
+        while retries_count < retries.total:
+            try:
+                start_time = time.time()
 
-            response = session.get(url, stream=True, timeout=timeout)
+                response = session.get(url, stream=True, timeout=timeout)
 
-            # 检查是否超时
-            elapsed_time = time.time() - start_time
-            if elapsed_time >= timeout:
-                continue  # 如果实际请求时间超过了设定的超时时间，则继续重试
+                # 检查是否超时
+                elapsed_time = time.time() - start_time
+                if elapsed_time >= timeout:
+                    continue  # 如果实际请求时间超过了设定的超时时间，则继续重试
 
-            response.raise_for_status()  # 如果HTTP请求返回了不成功的状态码，将引发HTTPError异常
-            return response
-        except (ReadTimeout, ChunkedEncodingError, ConnectTimeout, HTTPError) as e:
-            time.sleep(retries.backoff_factor * (2 ** retries_count))
-            retries_count += 1
-
+                response.raise_for_status()  # 如果HTTP请求返回了不成功的状态码，将引发HTTPError异常
+                return response
+            except (ReadTimeout, ChunkedEncodingError, ConnectTimeout, HTTPError) as e:
+                time.sleep(retries.backoff_factor * (2 ** retries_count))
+                retries_count += 1
+            except Exception as e:
+                time.sleep(retries.backoff_factor * (2 ** retries_count))
+                retries_count += 1
+                # continue
+    except Exception as e:
+        # logger.warning(e)
+        ...
     return None
-
-
