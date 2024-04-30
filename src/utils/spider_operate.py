@@ -8,7 +8,6 @@ import random
 from loguru import logger
 from selenium.webdriver import ActionChains, Keys
 from run import constants
-from run.constants import detail_delta_time
 from utils.time_utils import sys_sleep_time
 
 

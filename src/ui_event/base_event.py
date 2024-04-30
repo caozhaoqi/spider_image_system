@@ -454,8 +454,8 @@ def kill_other_close():
     """
     try:
         if get_cur_os() == "win32":
-            reduce_cpu_usage()
-            kill_process_win('taskkill /im ui_main.exe /F')
+            if reduce_cpu_usage():
+                kill_process_win('taskkill /im ui_main.exe /F /T')
         else:
             kill_process_linux('ui_main')
         logger.warning("kill other process success!")
