@@ -9,7 +9,9 @@ from urllib3.util.retry import Retry
 import time
 from run.constants import download_img_retry_times, download_img_time_out
 from loguru import logger
+import urllib3
 
+urllib3.disable_warnings()
 retries = Retry(
     total=download_img_retry_times,  # 总重试次数
     backoff_factor=0.5,  # 重试间隔的倍数，逐渐增加
@@ -35,7 +37,6 @@ def send_request(url, timeout=download_img_time_out):
     :return: 响应对象或None
     """
     try:
-        # urllib3.disable_warnings()
         retries_count = 0
         while retries_count < retries.total:
             try:

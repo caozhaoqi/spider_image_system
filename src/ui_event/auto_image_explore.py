@@ -83,11 +83,14 @@ class AutoImageDialog(QDialog):
         """
         Show the next image in the list.
         """
-        if self.current_image_index >= 0 and self.image_files != []:
-            self.current_image_index = (self.current_image_index + 1) % len(self.image_files)
-            self.show_image_view(self.current_image_index)
-        else:
-            logger.warning("no image in cur dir!")
+        try:
+            if self.current_image_index >= 0 and self.image_files != []:
+                self.current_image_index = (self.current_image_index + 1) % len(self.image_files)
+                self.show_image_view(self.current_image_index)
+            else:
+                logger.warning("no image in cur dir!")
+        except Exception as e:
+            logger.error(f"unknown error, auto_image_explore.py, detail: {e}")
 
     def show_image_view(self, image_path):
         """
@@ -111,5 +114,6 @@ class AutoImageDialog(QDialog):
         logger.debug('AutoImageDialog Dialog is closing!')
         constants.auto_play_image_visible = False
         constants.start_auto_play_flag = False
+        self.stop_timer()
+        logger.info("autoplay dialog closed, timer stop!")
         super(AutoImageDialog, self).closeEvent(event)
-

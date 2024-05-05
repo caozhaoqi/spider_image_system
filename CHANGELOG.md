@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.1.5-beta.1.240508
+### 2024/5/8
+- catch exception for auto_image_explore.
+- fix open auto_image_explore and download image autoplay close error.
+
+
 ## v1.1.4.240430
 ### 2024/4/30
 - update start spider pid log location
