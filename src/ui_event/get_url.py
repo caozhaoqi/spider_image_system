@@ -44,7 +44,8 @@ def save_img_url(self, driver, key_word, cur_page):
                     logger.info(f"------start spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
                     if self:
                         self.spider_progress_show_label.setText(f"抓取关键字: {key_word}, 页码: {cur_page},"
-                                                                f" 抓取图片名: {url[-9:]} ")
+                                                                f" 抓取图片名: {url[-9:]},"
+                                                                f" 已抓取数目: {constants.spider_images_current_count} ")
                     if not artwork_to_image(key_word_pinyin, driver, url):
                         break
                 else:
@@ -208,7 +209,8 @@ def spider_artworks_url(self, key_word):
             break
         url_detail = url_process_page(url, current_page=cur_page)
         if self:
-            self.spider_progress_show_label.setText(f"抓取关键字: {key_word}, 页码: {cur_page}")
+            self.spider_progress_show_label.setText(f"抓取关键字: {key_word}, 页码: {cur_page},"
+                                                    f" 已抓取数目: {constants.spider_images_current_count}")
         logger.info("current use url: " + str(url_detail))
         try:
             driver.get(url_detail)
