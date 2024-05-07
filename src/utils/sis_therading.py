@@ -77,12 +77,3 @@ class SISThreading(threading.Thread):
         """检查线程是否正在运行"""
         return self.__running.is_set()
 
-
-# a = Job()
-# a.start()
-# time.sleep(3)
-# a.pause()
-# time.sleep(5)
-# a.resume()
-# time.sleep(2)
-# a.stop()

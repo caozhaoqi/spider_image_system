@@ -4,7 +4,10 @@
 ### 2024/5/8
 - catch exception for auto_image_explore.
 - fix open auto_image_explore and download image autoplay close error.
+- GUI显示抓取进度
+- GUI显示下载进度
 
+[//]: # (- GUI提示抓取，下载完成dialog)
 
 ## v1.1.4.240430
 ### 2024/4/30

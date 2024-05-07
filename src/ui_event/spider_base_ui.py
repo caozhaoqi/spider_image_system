@@ -162,6 +162,7 @@ def tab_1_ui_paint(self):
     self.btn_zoom_in.clicked.connect(self.zoom_in_method)
     self.btn_zoom_out.clicked.connect(self.zoom_out_method)
     self.btn_open_data.clicked.connect(self.open_data_dir)
+    self.btn_show_log.clicked.connect(self.show_log_output)
     return True
 
 
@@ -270,9 +271,44 @@ def search_item_paint(self):
     self.jump_point_image = QPushButton("跳转搜索")
     self.grid_layout.addWidget(self.jump_point_image, 2, 2)
 
+    h_layout_spider = QHBoxLayout()
+
+    h_layout_spider.addStretch()
+
+    self.spider_mode_label = QLabel('抓取模式: ', self)
+    h_layout_spider.addWidget(self.spider_mode_label)
+
+    self.spider_mode_show_label = QLabel('自动模式 ', self)
+    h_layout_spider.addWidget(self.spider_mode_show_label)
+
+    self.spider_progress_label = QLabel('抓取进度: ', self)
+    h_layout_spider.addWidget(self.spider_progress_label)
+
+    self.spider_progress_show_label = QLabel('0/0 ', self)
+    h_layout_spider.addWidget(self.spider_progress_show_label)
+
+    self.grid_layout.addLayout(h_layout_spider, 3, 1, 1, 3)
+
+    h_layout_download = QHBoxLayout()
+
+    h_layout_download.addStretch()
+
+    self.download_img_label = QLabel('下载进度: ', self)
+    h_layout_download.addWidget(self.download_img_label)
+
+    self.download_show_label = QLabel('0/0 ', self)
+    h_layout_download.addWidget(self.download_show_label)
+
+    self.grid_layout.addLayout(h_layout_download, 4, 1, 1, 3)
+
     h_layout = QHBoxLayout()
 
     h_layout.addStretch()
+
+    self.btn_show_log = QPushButton('显示日志输出', self)
+    h_layout.addWidget(self.btn_show_log)
+
+    # h_layout.addStretch()
     self.btn_open_data = QPushButton('打开数据目录', self)
     h_layout.addWidget(self.btn_open_data)
 
@@ -281,7 +317,7 @@ def search_item_paint(self):
 
     self.btn_zoom_out = QPushButton('缩小', self)
     h_layout.addWidget(self.btn_zoom_out)
-    self.grid_layout.addLayout(h_layout, 3, 1, 1, 3)
+    self.grid_layout.addLayout(h_layout, 5, 1, 1, 3)
 
 
 @logger.catch

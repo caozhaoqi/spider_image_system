@@ -116,7 +116,7 @@ class ImageDialog(QDialog):
                 self.label.resize(pixmap.width(), pixmap.height())
                 self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
                     constants.online_img_list)))
-                logger.success(f"loading image: {image_path[-27:]} success!")
+                logger.success(f"loading image: {image_path[-27:].strip()} success!")
                 constants.online_show_image = True
             else:
                 logger.warning(f"error, Invalid image format! response content: {response}")

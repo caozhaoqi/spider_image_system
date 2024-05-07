@@ -62,7 +62,8 @@ class UIMainWindows(QMainWindow):
         self.pixmap_image_tab1 = None
         self.images_convert_thread = None
         self.show_page_label = None
-        self.setWindowTitle(u"Spider Image System (Version: " + sis_server_version + ")")
+        self.spider_mode_show_label = None
+        self.setWindowTitle(u"Spider Image System " + sis_server_version + ")")
         icon = QIcon()
         icon.addPixmap(
             QPixmap("../run/favicon.ico"), QIcon.Normal, QIcon.Off)
@@ -83,6 +84,8 @@ class UIMainWindows(QMainWindow):
         self.scaleFactor = 1.0
         self.label.installEventFilter(self)
         self.showMaximized()
+        # init ui show
+        self.spider_mode_show_label.setText(constants.spider_mode)
 
     def jump_point_image_click(self):
         """
@@ -416,3 +419,12 @@ class UIMainWindows(QMainWindow):
             args=())
         self.open_data_path_thread.start()
         logger.success("success open data path start")
+
+    def show_log_output(self):
+        """
+
+        :return:
+        """
+
+        ...
+

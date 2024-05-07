@@ -60,6 +60,7 @@ uploading_image_flag = False
 download_image_re_flag = False
 # unzip file
 unzip_file_flag = False
+
 # 数据存储路径
 data_path = os.path.realpath('./data')
 # 基础路径
@@ -70,6 +71,7 @@ online_img_list = scan_img_txt(data_path)
 cur_show_img_index = 0
 # 抓取总图片数目 实时统计
 spider_images_current_count = 0
+
 # remove error image
 check_images_flag = False
 # split image category

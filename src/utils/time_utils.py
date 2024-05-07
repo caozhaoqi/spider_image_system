@@ -62,3 +62,12 @@ def sys_sleep_time(driver, sleep_time, img_flag):
         logger.warning(f"sys_sleep_time unknown error, detail: {e} ")
         return False
     return True
+
+
+@logger.catch
+def get_cur_time():
+    """
+    get cur time for utc Asia/Shanghai
+    :return:
+    """
+    return time_to_utc(time.time())

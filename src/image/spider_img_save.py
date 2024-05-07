@@ -7,7 +7,7 @@ from image.fail_image import process_error_image
 from image.img_switch import find_images, image_exists, img_category_images, check_images
 from utils.file_download import send_request
 from utils.file_utils import remove_duplicates_from_txt
-from utils.http_utils import image_url_re
+from utils.http_utils import image_url_re, match_img_result
 from utils.minio_file import upload_image
 import threading
 from loguru import logger
@@ -64,9 +64,10 @@ def download_image(url, filename, cur_txt_image_count, cur_download_images_index
 
 
 @logger.catch
-def download_images_from_file(file_path, cdds_index, final_download_url, continue_download_flag):
+def download_images_from_file(self, file_path, cdds_index, final_download_url, continue_download_flag):
     """
     save image to point url from website download image
+    :param self:
     :param continue_download_flag: is continued download
     :param final_download_url: final download image url
     :param cdds_index: txt index
@@ -105,6 +106,9 @@ def download_images_from_file(file_path, cdds_index, final_download_url, continu
                     os.makedirs(save_img_url)
                 filename = os.path.join(os.path.join(name, "images"), f"{os.path.basename(url)}")
                 cur_download_images_index += 1
+                if self:
+                    self.download_show_label.setText(f"关键词: {match_img_result(name)}, 已下载数目: {cur_download_images_index},"
+                                                     f" 下载图片名: {image_url_re(url)}")
                 download_image(url, filename, cur_txt_image_count, index)
 
 
@@ -125,6 +129,8 @@ def download_img_txt(self):
     for cdds_path in cdds:
         download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, continue_download_flag = read_end_download_image()
         if constants.stop_download_image_flag:
+            # download image stop
+            self.download_show_label.setText("0/0")
             break
         try:
             if not exists_txt_from_finish(cdds_path):
@@ -135,7 +141,7 @@ def download_img_txt(self):
                     logger.warning(f"last download txt file name: {cdds_path}! image name: {final_download_url}")
 
                 new_file_name = remove_repeat_content(cdds_path)
-                download_images_from_file(new_file_name, cdds_index, final_download_url, continue_download_flag)
+                download_images_from_file(self, new_file_name, cdds_index, final_download_url, continue_download_flag)
         except Exception as e:
             logger.warning("unknown error! detail: " + str(e))
         cdds_index += 1

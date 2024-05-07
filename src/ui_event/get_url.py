@@ -23,9 +23,11 @@ from utils.time_utils import sys_sleep_time
 
 
 @logger.catch
-def save_img_url(driver, key_word):
+def save_img_url(self, driver, key_word, cur_page):
     """
     save img from txt load artwork href
+    :param cur_page:
+    :param self:
     :param driver:
     :param key_word:
     :return:
@@ -40,6 +42,9 @@ def save_img_url(driver, key_word):
                 url = line.strip()
                 if url and not constants.stop_spider_url_flag:
                     logger.info(f"------start spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
+                    if self:
+                        self.spider_progress_show_label.setText(f"抓取关键字: {key_word}, 页码: {cur_page},"
+                                                                f" 抓取图片名: {url[-9:]} ")
                     if not artwork_to_image(key_word_pinyin, driver, url):
                         break
                 else:
@@ -202,6 +207,8 @@ def spider_artworks_url(self, key_word):
             logger.warning("stop spider url, get url spider artwork url.")
             break
         url_detail = url_process_page(url, current_page=cur_page)
+        if self:
+            self.spider_progress_show_label.setText(f"抓取关键字: {key_word}, 页码: {cur_page}")
         logger.info("current use url: " + str(url_detail))
         try:
             driver.get(url_detail)
@@ -222,7 +229,7 @@ def spider_artworks_url(self, key_word):
         load_save_flag = load_href_save(driver, key_word)
         if load_save_flag == 1:
             try:
-                if not save_img_url(driver, key_word):
+                if not save_img_url(self, driver, key_word, cur_page):
                     break
                 record_finish_keyword(key_word, cur_page)
                 # cur_page += 1
@@ -244,6 +251,8 @@ def spider_artworks_url(self, key_word):
             logger.warning("skip spider loop!")
             break
     if self:
+        # stop spider image
+        self.spider_progress_show_label.setText("0/0")
         self.success_tips()
     else:
         logger.success("spider image operate success finished!")
