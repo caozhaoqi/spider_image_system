@@ -11,6 +11,7 @@ from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, \
     log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag, \
     user_upload_image, user_download_image, unzip_file_method, add_keyword_alert, img_category_ana
+from ui_event.log_show_dialog import show_log_output_method
 
 
 @logger.catch

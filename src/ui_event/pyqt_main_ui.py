@@ -22,6 +22,7 @@ from image.video_process import play_video_process, process_images_thread
 from ui_event.base_event import scan_populate_mp4_list, exit_save_data
 from ui_event.get_url import spider_artworks_url
 from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint, tab_ui_tab
+from ui_event.log_show_dialog import show_log_output_method
 
 current_image_index = 0
 image_files = show_filter_image(find_images(folder_path))
@@ -413,7 +414,6 @@ class UIMainWindows(QMainWindow):
         open sys data dir
         :return:
         """
-        open_data_path_method()
         self.open_data_path_thread = threading.Thread(
             target=open_data_path_method,
             args=())
@@ -425,6 +425,4 @@ class UIMainWindows(QMainWindow):
 
         :return:
         """
-
-        ...
-
+        show_log_output_method()

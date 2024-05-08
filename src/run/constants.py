@@ -25,6 +25,8 @@ about_message_lookup_visible = False
 online_look_image_visible = False
 # auto play image
 auto_play_image_visible = False
+# log check
+log_check_visible = False
 # auto play flag
 start_auto_play_flag = False
 # per monitor

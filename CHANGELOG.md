@@ -6,6 +6,7 @@
 - fix open auto_image_explore and download image autoplay close error.
 - GUI显示抓取进度
 - GUI显示下载进度
+- add log_check dialog
 
 [//]: # (- GUI提示抓取，下载完成dialog)
 
