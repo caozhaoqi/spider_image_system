@@ -19,7 +19,7 @@ from run import constants
 from run.constants import detail_delta_time, search_delta_time, s1_url, target_url, s2_url, data_path, \
     spider_images_max_count, allow_replace_domain_flag
 from selenium.webdriver import ActionChains, Keys
-from utils.time_utils import sys_sleep_time
+from utils.time_utils import sys_sleep_time, get_cur_time
 
 
 @logger.catch
@@ -211,6 +211,7 @@ def spider_artworks_url(self, key_word):
         if self:
             self.spider_progress_show_label.setText(f"抓取关键字: {key_word}, 页码: {cur_page},"
                                                     f" 已抓取数目: {constants.spider_images_current_count}")
+            self.sys_status_label.setText(f"{get_cur_time()}: 抓取关键词: {key_word}中(*^▽^*)...")
         logger.info("current use url: " + str(url_detail))
         try:
             driver.get(url_detail)
@@ -255,7 +256,7 @@ def spider_artworks_url(self, key_word):
     if self:
         # stop spider image
         self.spider_progress_show_label.setText("0/0")
-        self.success_tips("图片爬取操作")
+        self.success_tips(f"关键词: {key_word}, 图片爬取操作")
     else:
         logger.success("spider image operate success finished!")
     if constants.spider_mode == 'manual':

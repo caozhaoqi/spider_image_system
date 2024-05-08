@@ -230,7 +230,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         # show_toast_thread("操作完成(*^▽^*)！")
-        self.sys_status_label.setText(f"{get_cur_time}: {operate_name}, 操作完成! (*^▽^*)")
+        self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作完成! (*^▽^*)")
         logger.success('show success tips.')
 
     def error_tips(self, operate_name):
@@ -240,7 +240,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         # show_toast_thread("操作失败o(╥﹏╥)o！")
-        self.sys_status_label.setText(f"{get_cur_time}: {operate_name}, 操作失败! o(╥﹏╥)o")
+        self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o")
         logger.error('show error tips.')
 
     # @logger.catch

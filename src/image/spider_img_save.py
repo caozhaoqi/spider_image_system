@@ -16,6 +16,7 @@ from run import constants
 from run.constants import data_path
 from file.file_process import count_lines, read_end_download_image, save_download_end, update_download_continue_flag, \
     record_download_finish_txt, exists_txt_from_finish, write_error_image
+from utils.time_utils import get_cur_time
 
 
 @logger.catch
@@ -131,6 +132,7 @@ def download_img_txt(self):
         if constants.stop_download_image_flag:
             # download image stop
             self.download_show_label.setText("0/0")
+            self.sys_status_label.setText(f"{get_cur_time()}: 下载图片操作停止(⊙︿⊙)...")
             break
         try:
             if not exists_txt_from_finish(cdds_path):
@@ -158,7 +160,7 @@ def download_img_txt(self):
                            f" not {constants.category_image_flag}, not {constants.check_images_flag}")
     logger.success("downloaded all image!")
     if self:
-        self.success_tips("下载图片操作")
+        self.success_tips("所有下载图片操作")
     else:
         logger.success("downloaded image operate success finished!")
     constants.stop_download_image_flag = True
