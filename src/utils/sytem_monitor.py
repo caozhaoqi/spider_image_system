@@ -57,6 +57,8 @@ def check_memory_usage():
     if memory_percent / 100 > MEMORY_THRESHOLD:
         logger.error(
             "Warning: Memory usage is above {}%. Current usage: {}%".format(MEMORY_THRESHOLD * 100, memory_percent))
+        if reduce_cpu_usage():
+            logger.success("reduce memory usage success on win32 system!")
     last_memory_usage = memory_percent
 
 
