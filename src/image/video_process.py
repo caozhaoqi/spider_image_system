@@ -191,7 +191,7 @@ def process_images_thread(self):
         if process_ret:
             logger.success("out video success! file_name: " + process_ret)
         constants.process_image_flag = False
-        self.success_tips()
+        self.success_tips("图片处理操作")
 
 
 @logger.catch

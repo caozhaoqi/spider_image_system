@@ -158,7 +158,7 @@ def download_img_txt(self):
                            f" not {constants.category_image_flag}, not {constants.check_images_flag}")
     logger.success("downloaded all image!")
     if self:
-        self.success_tips()
+        self.success_tips("下载图片操作")
     else:
         logger.success("downloaded image operate success finished!")
     constants.stop_download_image_flag = True

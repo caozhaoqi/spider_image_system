@@ -2,6 +2,8 @@
 import os
 import sys
 
+from utils.time_utils import get_cur_time
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
@@ -23,6 +25,7 @@ from ui_event.base_event import scan_populate_mp4_list, exit_save_data
 from ui_event.get_url import spider_artworks_url
 from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint, tab_ui_tab
 from ui_event.log_show_dialog import show_log_output_method
+# from ui_event.self_toast import show_toast_thread
 
 current_image_index = 0
 image_files = show_filter_image(find_images(folder_path))
@@ -172,7 +175,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if not constants.stop_spider_url_flag:
-            self.error_tips()
+            self.error_tips("爬取操作")
         else:
             constants.spider_mode = 'manual'
             key_word = self.file_text.text()
@@ -203,7 +206,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if constants.single_flag:
-            self.error_tips()
+            self.error_tips("删除错误图片操作")
             return
         constants.single_flag = True
         remove_error_image(self)
@@ -214,24 +217,30 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if constants.single_flag:
-            self.error_tips()
+            self.error_tips("图片分类操作")
             return
         constants.single_flag = True
         img_category_button(self)
 
     # @logger.catch
-    def success_tips(self):
+    def success_tips(self, operate_name):
         """
         success tips
+        :param operate_name
         :return:
         """
+        # show_toast_thread("操作完成(*^▽^*)！")
+        self.sys_status_label.setText(f"{get_cur_time}: {operate_name}, 操作完成! (*^▽^*)")
         logger.success('show success tips.')
 
-    def error_tips(self):
+    def error_tips(self, operate_name):
         """
         error tips
+        :param operate_name
         :return:
         """
+        # show_toast_thread("操作失败o(╥﹏╥)o！")
+        self.sys_status_label.setText(f"{get_cur_time}: {operate_name}, 操作失败! o(╥﹏╥)o")
         logger.error('show error tips.')
 
     # @logger.catch
@@ -241,7 +250,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if not constants.stop_download_image_flag:
-            self.error_tips()
+            self.error_tips("下载图片操作")
         else:
             spider_thread_obj = threading.Thread(
                 target=download_img_txt,
@@ -261,7 +270,7 @@ class UIMainWindows(QMainWindow):
             logger.info("current position: " + str(position * 1000))
         except Exception as e:
             logger.error("error, detail: " + str(e))
-            self.error_tips()
+            self.error_tips("快进视频操作")
 
     def play_video(self):
         """
@@ -289,7 +298,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if constants.process_image_flag:
-            self.error_tips()
+            self.error_tips("生成视频操作")
         else:
             self.images_convert_thread = threading.Thread(
                 target=process_images_thread,
@@ -356,7 +365,7 @@ class UIMainWindows(QMainWindow):
         """
         if constants.download_gif_zip_flag:
             logger.warning("download_gif_zip ing.")
-            self.error_tips()
+            self.error_tips("下载动态操作")
         else:
             self.download_gif_zip_thread = threading.Thread(
                 target=url_zip_all_process,
@@ -372,7 +381,7 @@ class UIMainWindows(QMainWindow):
         """
         if constants.unzip_generate_video_flag:
             logger.warning("len(zip_url_txt) is null.")
-            self.error_tips()
+            self.error_tips("解压生成gif视频操作")
         else:
             self.unzip_generate_video_thread = threading.Thread(
                 target=unzip_generate_gif,
@@ -388,7 +397,7 @@ class UIMainWindows(QMainWindow):
         """
         if constants.download_video_link_flag:
             logger.warning("already downloading file, please wait！")
-            self.error_tips()
+            self.error_tips("下载gif压缩包操作")
         else:
             logger.info("start download file!")
             link = self.edt_input_file_text_3.text()

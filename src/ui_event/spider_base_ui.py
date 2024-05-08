@@ -306,6 +306,9 @@ def search_item_paint(self):
 
     h_layout.addStretch()
 
+    self.sys_status_label = QLabel('等待操作中... ', self)
+    h_layout.addWidget(self.sys_status_label)
+
     self.btn_show_log = QPushButton('显示日志输出', self)
     h_layout.addWidget(self.btn_show_log)
 

@@ -255,7 +255,7 @@ def spider_artworks_url(self, key_word):
     if self:
         # stop spider image
         self.spider_progress_show_label.setText("0/0")
-        self.success_tips()
+        self.success_tips("图片爬取操作")
     else:
         logger.success("spider image operate success finished!")
     if constants.spider_mode == 'manual':

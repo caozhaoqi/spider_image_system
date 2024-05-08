@@ -7,8 +7,7 @@
 - GUI显示抓取进度
 - GUI显示下载进度
 - add log_check dialog
-
-[//]: # (- GUI提示抓取，下载完成dialog)
+- add self toast GUI提示抓取，下载完成dialog
 
 ## v1.1.4.240430
 ### 2024/4/30
