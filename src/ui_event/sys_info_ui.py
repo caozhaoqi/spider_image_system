@@ -89,47 +89,48 @@ class SystemMonitor(QDialog):
 
         :return:
         """
-        mem_usage, cpu_usage = look_sys_info()
-        send_bytes, receive_bytes = network_usage()
-        current_time = time.time()
+        if constants.performance_monitor_visible:
+            mem_usage, cpu_usage = look_sys_info()
+            send_bytes, receive_bytes = network_usage()
+            current_time = time.time()
 
-        start_time = current_time - constants.fire_wall_delay_time
-        end_time = current_time
+            start_time = current_time - constants.fire_wall_delay_time
+            end_time = current_time
 
-        self.axisX.setRange(start_time, end_time)
+            self.axisX.setRange(start_time, end_time)
 
-        minValue = min(mem_usage, cpu_usage, send_bytes, receive_bytes)
-        maxValue = max(mem_usage, cpu_usage, send_bytes, receive_bytes)
+            minValue = min(mem_usage, cpu_usage, send_bytes, receive_bytes)
+            maxValue = max(mem_usage, cpu_usage, send_bytes, receive_bytes)
 
-        self.axisY.setRange(minValue, maxValue + maxValue / 2)
+            self.axisY.setRange(minValue, maxValue + maxValue / 2)
 
-        min_memory_usage = minValue
-        max_memory_usage = maxValue
+            min_memory_usage = minValue
+            max_memory_usage = maxValue
 
-        current_memory_usage = mem_usage
+            current_memory_usage = mem_usage
 
-        if current_memory_usage > max_memory_usage:
-            max_memory_usage = current_memory_usage
-            self.chart.setAxisRange(QtChart.QValueAxis.YAxis, min_memory_usage, max_memory_usage)
-        elif current_memory_usage < min_memory_usage:
-            min_memory_usage = current_memory_usage
-            self.chart.setAxisRange(QtChart.QValueAxis.YAxis, min_memory_usage, max_memory_usage)
+            if current_memory_usage > max_memory_usage:
+                max_memory_usage = current_memory_usage
+                self.chart.setAxisRange(QtChart.QValueAxis.YAxis, min_memory_usage, max_memory_usage)
+            elif current_memory_usage < min_memory_usage:
+                min_memory_usage = current_memory_usage
+                self.chart.setAxisRange(QtChart.QValueAxis.YAxis, min_memory_usage, max_memory_usage)
 
-        self.memory_series.append(current_time, current_memory_usage)
-        self.memory_series.setName("Memory Usage")
+            self.memory_series.append(current_time, current_memory_usage)
+            self.memory_series.setName("Memory Usage")
 
-        self.cpu_series.append(current_time, cpu_usage)
-        self.cpu_series.setName("CPU Usage")
+            self.cpu_series.append(current_time, cpu_usage)
+            self.cpu_series.setName("CPU Usage")
 
-        self.send_bytes_series.append(current_time, send_bytes)
-        self.send_bytes_series.setName("Sent Bytes")
+            self.send_bytes_series.append(current_time, send_bytes)
+            self.send_bytes_series.setName("Sent Bytes")
 
-        self.receive_bytes_series.append(current_time, receive_bytes)
-        self.receive_bytes_series.setName("Received Bytes")
+            self.receive_bytes_series.append(current_time, receive_bytes)
+            self.receive_bytes_series.setName("Received Bytes")
 
-        self.chart.legend().setVisible(True)
+            self.chart.legend().setVisible(True)
 
-        self.chart_view.update()
+            self.chart_view.update()
 
     def closeEvent(self, event):
         """
@@ -138,5 +139,6 @@ class SystemMonitor(QDialog):
         :return:
         """
         logger.debug('AutoImageDialog Dialog is closing!')
+        self.timer.stop()
         constants.performance_monitor_visible = False
         super(SystemMonitor, self).closeEvent(event)
