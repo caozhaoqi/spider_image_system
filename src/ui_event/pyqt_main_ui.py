@@ -25,6 +25,7 @@ from ui_event.base_event import scan_populate_mp4_list, exit_save_data
 from ui_event.get_url import spider_artworks_url
 from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint, tab_ui_tab
 from ui_event.log_show_dialog import show_log_output_method
+
 # from ui_event.self_toast import show_toast_thread
 
 current_image_index = 0
@@ -242,6 +243,15 @@ class UIMainWindows(QMainWindow):
         # show_toast_thread("操作失败o(╥﹏╥)o！")
         self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o")
         logger.error('show error tips.')
+
+    def sys_tips(self, content):
+        """
+        show sys tips
+        :param content:
+        :return:
+        """
+        self.sys_status_label.setText(f"{get_cur_time()}: {content}")
+        logger.warning('show sys tips.')
 
     # @logger.catch
     def download_file_thread(self):

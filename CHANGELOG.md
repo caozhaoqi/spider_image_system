@@ -7,6 +7,8 @@
 - fix facedetect bug on Windows os
 - fix edit_config_msg cancel after can not open bug
 - fix sys_info_ui attribute bugs
+- disable windows console
+- update sys_tips
 
 ## v1.1.5-beta.1.240508
 ### 2024/5/8

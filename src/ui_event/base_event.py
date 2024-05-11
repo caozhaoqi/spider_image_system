@@ -24,7 +24,7 @@ from ui_event.about_dialog_ui import InformationDialog
 from ui_event.dialog_ui import Dialog
 from ui_event.get_url import spider_artworks_url
 from run import constants
-from utils.time_utils import time_to_utc, random_fw_time
+from utils.time_utils import time_to_utc, random_fw_time, get_cur_time
 from image.spider_img_save import download_re_error_image
 from utils.file_unzip_7zip import unzip_file
 from ui_event.img_analyze_dialog import ImgAnalyzeHistogram
@@ -194,6 +194,8 @@ def auto_spider_img_thread(self):
     spider_image_keyword, txt_file_list = get_image_keyword()
     if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
         logger.warning("auto spider image null, please add keyword!")
+        if self:
+            self.sys_tips(self, "spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字！")
         return False
     constants.spider_mode = 'auto'
     txt_index = 0

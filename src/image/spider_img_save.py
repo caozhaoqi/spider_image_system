@@ -131,8 +131,9 @@ def download_img_txt(self):
         download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, continue_download_flag = read_end_download_image()
         if constants.stop_download_image_flag:
             # download image stop
-            self.download_show_label.setText("0/0")
-            self.sys_status_label.setText(f"{get_cur_time()}: 下载图片操作停止(⊙︿⊙)...")
+            if self:
+                self.download_show_label.setText("0/0")
+                self.sys_tips(self, "下载图片操作停止(⊙︿⊙)...")
             break
         try:
             if not exists_txt_from_finish(cdds_path):
