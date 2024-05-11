@@ -133,7 +133,7 @@ def download_img_txt(self):
             # download image stop
             if self:
                 self.download_show_label.setText("0/0")
-                self.sys_tips(self, "下载图片操作停止(⊙︿⊙)...")
+                self.sys_tips("下载图片操作停止(⊙︿⊙)...")
             break
         try:
             if not exists_txt_from_finish(cdds_path):

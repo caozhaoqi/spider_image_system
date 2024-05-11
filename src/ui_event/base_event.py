@@ -195,7 +195,7 @@ def auto_spider_img_thread(self):
     if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
         logger.warning("auto spider image null, please add keyword!")
         if self:
-            self.sys_tips(self, "spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字！")
+            self.sys_tips("spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字！")
         return False
     constants.spider_mode = 'auto'
     txt_index = 0
@@ -313,14 +313,14 @@ def log_analyze_ui():
         logger.warning("genshin_impact_view already show!")
 
 
-@logger.catch
-def test_button_event():
-    """
-    test menu event.
-    :return:
-    """
-    # ...
-    # show_message("test", "test info")
+# @logger.catch
+# def test_button_event():
+#     """
+#     test menu event.
+#     :return:
+#     """
+#     # ...
+#     # show_message("test", "test info")
 
 
 @logger.catch()

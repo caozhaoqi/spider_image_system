@@ -211,7 +211,7 @@ def spider_artworks_url(self, key_word):
         if self:
             self.spider_progress_show_label.setText(f"抓取关键字: {key_word}, 页码: {cur_page},"
                                                     f" 已抓取数目: {constants.spider_images_current_count}")
-            self.sys_tips(self, f"抓取关键词: {key_word}中(*^▽^*)...")
+            self.sys_tips(f"抓取关键词: {key_word}中(*^▽^*)...")
         logger.info("current use url: " + str(url_detail))
         try:
             driver.get(url_detail)
