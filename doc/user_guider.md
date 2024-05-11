@@ -37,7 +37,7 @@ chrome_version = 1
 
 ## TODO
 
-- GUI显示抓取进度
-- GUI显示下载进度
-- GUI提示抓取，下载完成dialog
+- [√] GUI显示抓取进度
+- [√] GUI显示下载进度
+- [√] GUI提示抓取，下载完成dialog
 - other

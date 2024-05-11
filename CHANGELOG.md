@@ -5,6 +5,7 @@
 - add reduce memory usage to system_monitor
 - fix LogDisplayDialog attribute bugs
 - fix facedetect bug on Windows os
+- fix edit_config_msg cancel after can not open bug
 
 ## v1.1.5-beta.1.240508
 ### 2024/5/8
