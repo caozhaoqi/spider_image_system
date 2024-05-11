@@ -3,6 +3,8 @@
 ## v1.1.5-beta.2.240513
 ### 2024/5/13
 - add reduce memory usage to system_monitor
+- fix LogDisplayDialog attribute bugs
+- fix facedetect bug on Windows os
 
 ## v1.1.5-beta.1.240508
 ### 2024/5/8

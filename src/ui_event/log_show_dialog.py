@@ -64,23 +64,24 @@ class LogDisplayDialog(QDialog):
         """
         更新日志内容
         """
-        log_file_path = find_latest_log_file(LOG_FILE_PATTERN, LOG_DIR)
-        self.log_file_name_label.setText(log_file_path)
-        file = QFile(log_file_path)
-        if file.exists():
-            if file.open(QFile.ReadOnly | QFile.Text):
-                stream = QTextStream(file)
-                # 设置QTextStream使用UTF-8编码
-                stream.setCodec('UTF-8')
-                content = stream.readAll()
+        if constants.log_check_visible:
+            log_file_path = find_latest_log_file(LOG_FILE_PATTERN, LOG_DIR)
+            self.log_file_name_label.setText(log_file_path)
+            file = QFile(log_file_path)
+            if file.exists():
+                if file.open(QFile.ReadOnly | QFile.Text):
+                    stream = QTextStream(file)
+                    # 设置QTextStream使用UTF-8编码
+                    stream.setCodec('UTF-8')
+                    content = stream.readAll()
 
-                # 更新日志内容并滚动到底部
-                self.logTextEdit.append(content)
-                self.scrollToBottom()
+                    # 更新日志内容并滚动到底部
+                    self.logTextEdit.append(content)
+                    self.scrollToBottom()
 
-            file.close()
-        else:
-            self.logTextEdit.append("日志文件不存在")
+                file.close()
+            else:
+                self.logTextEdit.append("日志文件不存在")
 
     def scrollToBottom(self):
         """
@@ -90,6 +91,17 @@ class LogDisplayDialog(QDialog):
         cursor.movePosition(cursor.End)
         self.logTextEdit.setTextCursor(cursor)
 
+    def stop_timer(self):
+        """
+        stop play picture
+        :return:
+        """
+        # if constants.start_auto_play_flag:
+        # constants.start_auto_play_flag = False
+        self.timer.stop()
+        logger.debug("log check timer stop.")
+        constants.log_check_visible = False
+
     def closeEvent(self, event):
         """
         对话框关闭
@@ -98,6 +110,7 @@ class LogDisplayDialog(QDialog):
         """
         logger.debug('log_check Dialog is closing!')
         constants.log_check_visible = False
+        self.stop_timer()
         super(LogDisplayDialog, self).closeEvent(event)
 
 
@@ -116,4 +129,3 @@ def show_log_output_method():
         dialog.exec_()
     else:
         logger.warning("log_check already show!")
-

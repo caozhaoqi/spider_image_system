@@ -32,7 +32,7 @@ from ui_event.keyword_dialog import KeywordDialog
 from utils.log_monitor import log_mon_war
 from utils.sis_therading import SISThreading
 from utils.sys_info import get_cur_os
-from utils.sytem_monitor import kill_process_linux, kill_process_win, reduce_cpu_usage
+from utils.sytem_monitor import kill_process_linux, kill_process_win, reduce_sys_res_usage
 
 
 @logger.catch
@@ -454,7 +454,7 @@ def kill_other_close():
     """
     try:
         if get_cur_os() == "win32":
-            reduce_cpu_usage()
+            reduce_sys_res_usage()
             logger.success("kill other process success!")
             kill_process_win('taskkill /im ui_main.exe /F /T')
         else:

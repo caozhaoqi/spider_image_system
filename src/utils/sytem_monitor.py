@@ -57,7 +57,7 @@ def check_memory_usage():
     if memory_percent / 100 > MEMORY_THRESHOLD:
         logger.error(
             "Warning: Memory usage is above {}%. Current usage: {}%".format(MEMORY_THRESHOLD * 100, memory_percent))
-        if reduce_cpu_usage():
+        if reduce_sys_res_usage():
             logger.success("reduce memory usage success on win32 system!")
     last_memory_usage = memory_percent
 
@@ -73,13 +73,13 @@ def check_cpu_usage():
     cpu_percent = psutil.cpu_percent(interval=1)
     if cpu_percent / 100 > CPU_THRESHOLD:
         logger.error("Warning: CPU usage is above {}%. Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
-        if reduce_cpu_usage():
+        if reduce_sys_res_usage():
             logger.success("reduce cpu usage success on win32 system!")
     last_cpu_usage = cpu_percent
 
 
 @logger.catch
-def reduce_cpu_usage():
+def reduce_sys_res_usage():
     """
 
     :return:
