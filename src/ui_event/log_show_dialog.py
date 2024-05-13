@@ -58,7 +58,7 @@ class LogDisplayDialog(QDialog):
         """
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateLog)
-        self.timer.start(1000)  # 每秒更新一次
+        self.timer.start(5000)  # 每秒更新一次
 
     def updateLog(self):
         """
@@ -77,7 +77,7 @@ class LogDisplayDialog(QDialog):
 
                     # 更新日志内容并滚动到底部
                     self.logTextEdit.append(content)
-                    self.scrollToBottom()
+                    # self.scrollToBottom()
 
                 file.close()
             else:
