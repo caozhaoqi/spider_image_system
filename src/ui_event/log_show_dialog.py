@@ -124,6 +124,7 @@ def show_log_output_method():
         dialog = LogDisplayDialog()
         dialog.showMaximized()
         dialog.show()
+        dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         logger.info("log_check show!")
         constants.log_check_visible = True
         dialog.exec_()

@@ -9,6 +9,7 @@
 - fix sys_info_ui attribute bugs
 - disable windows console
 - update sys_tips
+- add min max button on dialog
 
 ## v1.1.5-beta.1.240508
 ### 2024/5/8

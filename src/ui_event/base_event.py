@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from selenium.common import StaleElementReferenceException
 import threading
 import time
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QListWidgetItem
 from loguru import logger
@@ -45,6 +45,7 @@ def edit_config_msg():
         dialog = Dialog()
         constants.edit_config_msg_visible = True
         logger.info("config msg dialog show visible.")
+        dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         dialog.exec_()
     else:
         logger.warning("edit_config_msg dialog already open!")
@@ -70,6 +71,7 @@ def about_message_lookup():
         information_dialog = InformationDialog()
         constants.about_message_lookup_visible = True
         logger.info("show sis tools basic info.")
+        information_dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         information_dialog.exec_()
     else:
         logger.warning("about_message_lookup_visible dialog already open!")
@@ -255,6 +257,7 @@ def online_look_image():
         dialog = ImageDialog()
         dialog.showMaximized()
         dialog.show()
+        dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         logger.info("online image viewer show!")
         constants.online_look_image_visible = True
         dialog.exec_()
@@ -272,6 +275,7 @@ def auto_play_image():
         dialog = AutoImageDialog()
         dialog.showMaximized()
         dialog.show()
+        dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         logger.info("auto_play_image show!")
         constants.auto_play_image_visible = True
         dialog.exec_()
@@ -289,6 +293,7 @@ def performance_monitor():
         monitor = SystemMonitor()
         monitor.showMaximized()
         monitor.show()
+        monitor.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         logger.info("sys info show!")
         constants.performance_monitor_visible = True
         monitor.exec_()
@@ -306,6 +311,7 @@ def log_analyze_ui():
         dialog_lah = LogAnalyzeHistogram()
         dialog_lah.showMaximized()
         dialog_lah.show()
+        dialog_lah.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         logger.info("log_analyze_visible show!")
         constants.log_analyze_visible = True
         dialog_lah.exec_()
@@ -471,6 +477,7 @@ def img_category_ana():
         dialog_img = ImgAnalyzeHistogram()
         dialog_img.showMaximized()
         dialog_img.show()
+        dialog_img.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         logger.info("img anal dialog show!")
         constants.img_analyze_visible = True
         dialog_img.exec_()
