@@ -483,3 +483,15 @@ def img_category_ana():
         dialog_img.exec_()
     else:
         logger.warning("genshin_impact_view already show!")
+
+
+@logger.catch
+def on_last_window_closed():
+    """
+
+    :return:
+    """
+    logger.debug("Console window is closing...")
+    exit_save_data()
+    logger.debug("start clean other process...")
+    kill_other_close()

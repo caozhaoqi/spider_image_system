@@ -2,6 +2,7 @@
 import os
 import sys
 
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
@@ -25,6 +26,7 @@ from ui_event.get_url import spider_artworks_url
 from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint, tab_ui_tab
 from ui_event.log_show_dialog import show_log_output_method
 from utils.time_utils import get_cur_time
+from ui_event.base_event import on_last_window_closed
 
 current_image_index = 0
 image_files = show_filter_image(find_images(folder_path))
@@ -95,7 +97,7 @@ class UIMainWindows(QMainWindow):
         self.spider_mode_show_label.setText(constants.spider_mode)
 
         # 配置最小化
-        self.set_tray_Icon()
+        self.set_tray_icon()
 
     def jump_point_image_click(self):
         """
@@ -436,14 +438,14 @@ class UIMainWindows(QMainWindow):
             self.start_download_file_link_thread.start()
             logger.success("success download file thread start")
 
-    def closeEvent(self, event):
-        """
-
-        :param event:
-        :return:
-        """
-        logger.warning("Exe main ui will closing...")
-        exit_save_data()
+    # def closeEvent(self, event):
+    #     """
+    #
+    #     :param event:
+    #     :return:
+    #     """
+    #     logger.warning("Exe main ui will closing...")
+    #     exit_save_data()
 
     def open_data_dir(self):
         """
@@ -472,7 +474,7 @@ class UIMainWindows(QMainWindow):
         self.ui.setWindowTitle(_translate("MainWindow", "USB Listen"))
         self.ui.setWindowIcon(QtGui.QIcon("./favicon.ico"))
 
-    def set_tray_Icon(self):
+    def set_tray_icon(self):
         """
         最小化右键菜单
         :return:
@@ -530,7 +532,9 @@ class UIMainWindows(QMainWindow):
         checkFlag = QtWidgets.QMessageBox.information(self, "退出确认", "是否确认退出？",
                                                       QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if checkFlag == QtWidgets.QMessageBox.Yes:
-            logger.success("sis will quit!")
+            on_last_window_closed()
+            logger.success(f"spider image system {constants.sis_server_version} will quit!")
+            logger.info("------------------------------log end record-------------------------------")
             QtWidgets.qApp.quit()
         else:
             pass

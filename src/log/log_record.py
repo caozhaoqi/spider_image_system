@@ -26,6 +26,7 @@ def log_record():
     logger.configure(
         handlers=[{"sink": sys.stdout, "level": sis_log_level, "format": format_record}])
     logger.add(LOG_DIR, encoding='utf-8', rotation="00:00", retention="30 days", compression="zip")
+    logger.info("------------------------------log start record-------------------------------")
     logger.debug('current SIS log file path: ' + LOG_DIR)
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
     return True
