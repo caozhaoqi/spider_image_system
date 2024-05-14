@@ -58,6 +58,10 @@ def start_sys_mon():
 
 @logger.catch
 def run_main_py():
+    """
+
+    :return:
+    """
     if log_record() and check_version() and start_sys_mon():
         ui_paint()
 

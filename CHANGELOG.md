@@ -4,6 +4,7 @@
 ### 2024/5/16
 - add system tips to success, fail, tip
 - add setTrayIcon method to sis
+- update sh
 
 ## v1.1.5-beta.2.240513
 ### 2024/5/13
