@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.1.5.240516
+### 2024/5/16
+- add system tips to success, fail, tip
+- add setTrayIcon method to sis
+
 ## v1.1.5-beta.2.240513
 ### 2024/5/13
 - add reduce memory usage to system_monitor

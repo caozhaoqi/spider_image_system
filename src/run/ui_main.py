@@ -19,9 +19,12 @@ def ui_paint():
     :return:
     """
     app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(True)
+    # app.setQuitOnLastWindowClosed(True)
 
     app.lastWindowClosed.connect(on_last_window_closed)
+
+    # 单次点击close不退出
+    app.setQuitOnLastWindowClosed(False)
 
     w = UIMainWindows()
     w.show()
@@ -34,9 +37,9 @@ def on_last_window_closed():
 
     :return:
     """
-    logger.warning("Console window is closing...")
+    logger.debug("Console window is closing...")
     exit_save_data()
-    logger.warning("start clean other process...")
+    logger.debug("start clean other process...")
     kill_other_close()
 
 

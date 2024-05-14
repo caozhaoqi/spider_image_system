@@ -2,8 +2,6 @@
 import os
 import sys
 
-from utils.time_utils import get_cur_time
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
@@ -11,7 +9,8 @@ import threading
 import cv2
 from PyQt5.QtCore import Qt, QEvent, QPoint
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QWidget, QMainWindow, QFileDialog
+from PyQt5.QtWidgets import QWidget, QMainWindow, QFileDialog, QSystemTrayIcon
+from PyQt5 import QtWidgets, QtGui, QtCore
 from loguru import logger
 from file.file_process import scan_directory_zip_txt
 from file.gofile_downloader import start_download_file_link
@@ -25,8 +24,7 @@ from ui_event.base_event import scan_populate_mp4_list, exit_save_data
 from ui_event.get_url import spider_artworks_url
 from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint, tab_ui_tab
 from ui_event.log_show_dialog import show_log_output_method
-
-# from ui_event.self_toast import show_toast_thread
+from utils.time_utils import get_cur_time
 
 current_image_index = 0
 image_files = show_filter_image(find_images(folder_path))
@@ -58,6 +56,10 @@ class UIMainWindows(QMainWindow):
 
         """
         QWidget.__init__(self)
+        self.trayIcon = None
+        self.trayIconMenu = None
+        self.quitAppAction = None
+        self.openMainWindowAction = None
         self.open_data_path_thread = None
         self.edt_input_file_text_3_str = None
         self.edt_input_file_text_3 = None
@@ -91,6 +93,9 @@ class UIMainWindows(QMainWindow):
         self.showMaximized()
         # init ui show
         self.spider_mode_show_label.setText(constants.spider_mode)
+
+        # 配置最小化
+        self.set_tray_Icon()
 
     def jump_point_image_click(self):
         """
@@ -232,6 +237,10 @@ class UIMainWindows(QMainWindow):
         """
         # show_toast_thread("操作完成(*^▽^*)！")
         self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作完成! (*^▽^*)")
+        if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
+            self.trayIcon.showMessage("成功提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
+        else:
+            logger.warning("ERROR: windowsMessage()")
         logger.success('show success tips.')
 
     def error_tips(self, operate_name):
@@ -242,6 +251,10 @@ class UIMainWindows(QMainWindow):
         """
         # show_toast_thread("操作失败o(╥﹏╥)o！")
         self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o")
+        if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
+            self.trayIcon.showMessage("错误提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
+        else:
+            logger.warning("ERROR: windowsMessage()")
         logger.error('show error tips.')
 
     def sys_tips(self, content):
@@ -251,6 +264,10 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         self.sys_status_label.setText(f"{get_cur_time()}: {content}")
+        if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
+            self.trayIcon.showMessage("系统提示", content, QtGui.QIcon("./favicon.ico"), 10000)
+        else:
+            logger.warning("ERROR: windowsMessage()")
         logger.warning('show sys tips.')
 
     # @logger.catch
@@ -445,3 +462,75 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         show_log_output_method()
+
+    def re_translate_ui(self):
+        """
+        设置主界面
+        :return:
+        """
+        _translate = QtCore.QCoreApplication.translate
+        self.ui.setWindowTitle(_translate("MainWindow", "USB Listen"))
+        self.ui.setWindowIcon(QtGui.QIcon("./favicon.ico"))
+
+    def set_tray_Icon(self):
+        """
+        最小化右键菜单
+        :return:
+        """
+        # 初始化菜单单项
+        self.openMainWindowAction = QtWidgets.QAction("模拟系统消息")
+        self.quitAppAction = QtWidgets.QAction("退出")
+
+        # 菜单单项连接方法
+        self.openMainWindowAction.triggered.connect(self.windows_message)
+        self.quitAppAction.triggered.connect(self.quit_app)
+
+        # 初始化菜单列表
+        self.trayIconMenu = QtWidgets.QMenu()
+        self.trayIconMenu.addAction(self.openMainWindowAction)
+        self.trayIconMenu.addSeparator()
+        self.trayIconMenu.addAction(self.quitAppAction)
+
+        # 构建菜单UI
+        self.trayIcon = QtWidgets.QSystemTrayIcon()
+        self.trayIcon.setContextMenu(self.trayIconMenu)
+        self.trayIcon.setIcon(QtGui.QIcon("./favicon.ico"))
+        self.trayIcon.setToolTip("双击打开程序")
+        # 左键双击打开主界面
+        self.trayIcon.activated[QtWidgets.QSystemTrayIcon.ActivationReason].connect(self.open_main_window)
+        # 允许托盘菜单显示
+        self.trayIcon.show()
+
+    def open_main_window(self, reason):
+        """
+        双击打开主界面并使其活动
+        :param reason:
+        :return:
+        """
+        if reason == QSystemTrayIcon.DoubleClick:
+            self.showNormal()
+            self.activateWindow()
+
+    def windows_message(self):
+        """
+        配置显示 windows 系统消息通知
+        :return:
+        """
+        # print("example")
+        if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
+            self.trayIcon.showMessage("系统提示", "模拟系统提示！", QtGui.QIcon("./favicon.ico"), 10000)
+        else:
+            logger.warning("ERROR: windowsMessage()")
+
+    def quit_app(self):
+        """
+        包含二次确认的退出
+        :return:
+        """
+        checkFlag = QtWidgets.QMessageBox.information(self, "退出确认", "是否确认退出？",
+                                                      QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        if checkFlag == QtWidgets.QMessageBox.Yes:
+            logger.success("sis will quit!")
+            QtWidgets.qApp.quit()
+        else:
+            pass
