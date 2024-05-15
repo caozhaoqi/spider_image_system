@@ -235,6 +235,9 @@ def sys_mon():
     logger.info(f"cur sys res detect time: {constants.detect_timeout_auto} s.")
 
     while True:
+        # 等待一段时间再次检查（例如，每秒检查一次）
+        time.sleep(constants.detect_timeout_auto)
+
         # 检查CPU使用率
         check_cpu_usage()
 
@@ -246,9 +249,6 @@ def sys_mon():
         check_disk_usage()
 
         check_top_processes()
-
-        # 等待一段时间再次检查（例如，每秒检查一次）
-        time.sleep(constants.detect_timeout_auto)
 
 #
 #

@@ -319,16 +319,6 @@ def log_analyze_ui():
         logger.warning("genshin_impact_view already show!")
 
 
-# @logger.catch
-# def test_button_event():
-#     """
-#     test menu event.
-#     :return:
-#     """
-#     # ...
-#     # show_message("test", "test info")
-
-
 @logger.catch()
 def encoding_tools_convert():
     """
@@ -482,7 +472,7 @@ def img_category_ana():
         constants.img_analyze_visible = True
         dialog_img.exec_()
     else:
-        logger.warning("genshin_impact_view already show!")
+        logger.warning("img anal dialog already show!")
 
 
 @logger.catch
