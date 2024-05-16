@@ -246,7 +246,7 @@ Section "Main" SEC01
   File "..\..\out\ui_main.dist\_socket.pyd"
   File "..\..\out\ui_main.dist\_ssl.pyd"
   File "..\..\out\ui_main.dist\_uuid.pyd"
-  File "..\..\out\ui_main.dist\favicon.ico"
+  File "..\..\run\favicon.ico"
 
 ;针对当前用户有效
   WriteRegStr HKCU "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\ui_main.exe" "RUNASADMIN"
