@@ -34,7 +34,6 @@ def find_latest_log_file(pattern, directory):
     return files[0]
 
 
-# 定义一个事件处理器类，用于监控文件变化
 @logger.catch
 def get_log_cur_time(log_file_path):
     """
@@ -42,8 +41,6 @@ def get_log_cur_time(log_file_path):
     :param log_file_path:
     :return:
     """
-    # 指定日志文件路径
-    # log_file_path = 'path/to/your/logfile.log'
 
     # 打开日志文件并读取最后一行
     last_timestamp = time.time()
@@ -95,6 +92,7 @@ class LogFileHandler(FileSystemEventHandler):
         self.log_file = log_file
         self.last_modified = time.time()
 
+    @logger.catch
     def on_modified(self, event):
         """
 
@@ -104,6 +102,7 @@ class LogFileHandler(FileSystemEventHandler):
         if event.src_path == self.log_file:
             self.last_modified = time.time()
 
+    @logger.catch
     def check_for_timeout(self, timeout):
         """
 
@@ -176,7 +175,3 @@ def log_mon_war(spider_thread_obj):
         observer.stop()
 
     observer.join()
-
-#
-# if __name__ == '__main__':
-#     logger.debug(time.time())

@@ -36,17 +36,20 @@ def log_record():
 def check_version_update():
     """
     check sis version update
-    :return:
+    :return: update sis success flag
     """
     lasted_version = run.constants.sis_server_version
     if compare_versions_with_pre_release(run.constants.sis_server_version, lasted_version) != 0:
         logger.info(f"find new version: {lasted_version}, will update software version.")
         if download_new_version(lasted_version):
             logger.success("new version download success, sis will quit! please run new version software!")
+            return True
         else:
             logger.warning(f"unknown error, will continued run: {run.constants.sis_server_version} version software!")
+            return False
     else:
         logger.info(f"current version: {run.constants.sis_server_version} is newest version!")
+        return False
 
 
 @logger.catch

@@ -41,7 +41,8 @@ class LogAnalyzeHistogram(QDialog):
         self.init_ui("Log Analyze Histogram")
         self.updateChart()
 
-    def init_ui(self, window_title):
+    @logger.catch
+    def init_ui(self, window_title, _=None):
         """
 
         :return: 
@@ -68,7 +69,8 @@ class LogAnalyzeHistogram(QDialog):
         self.layout.addLayout(self.h_layout)
         self.layout.addWidget(self.next_button)
 
-    def parse_log_data(self):
+    @logger.catch
+    def parse_log_data(self, _=None):
         """
 
         :return:
@@ -77,7 +79,8 @@ class LogAnalyzeHistogram(QDialog):
         error_name_list, error_count_list = log_analyze_data_output_new()
         return error_count_list, error_name_list
 
-    def create_chart(self):
+    @logger.catch
+    def create_chart(self, _=None):
         """
         创建并返回一个带有数据标签的柱状图
         :return: QChart 对象
@@ -96,7 +99,13 @@ class LogAnalyzeHistogram(QDialog):
 
         return self.chart
 
-    def create_pie_chart(self):
+    @logger.catch
+    def create_pie_chart(self, _=None):
+        """
+
+        :param _:
+        :return:
+        """
         self.series_pie = QPieSeries()
 
         self.pie_chart = QChart()
@@ -106,7 +115,8 @@ class LogAnalyzeHistogram(QDialog):
 
         return chart_view
 
-    def showNextGroup(self):
+    @logger.catch
+    def showNextGroup(self, _=None):
 
         try:
             self.current_group = (self.current_group + 1) % (len(self.error_counts) // self.group_size)
@@ -115,7 +125,8 @@ class LogAnalyzeHistogram(QDialog):
 
         self.updateChart()
 
-    def updateChart(self):
+    @logger.catch
+    def updateChart(self, _=None):
         """
 
         :return:
@@ -174,9 +185,11 @@ class LogAnalyzeHistogram(QDialog):
         self.pie_chart.addSeries(self.series_pie)
         self.pie_chart.setTitle("pie chart")
 
-    def closeEvent(self, event):
+    @logger.catch
+    def closeEvent(self, event, _=None):
         """
         对话框关闭
+        :param _:
         :param event:
         :return:
         """

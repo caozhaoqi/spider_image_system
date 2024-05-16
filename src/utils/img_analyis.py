@@ -32,6 +32,6 @@ def img_analyze_data_output_new():
 
     return categories, counts
 
-
-if __name__ == '__main__':
-    img_analyze_data_output_new()
+#
+# if __name__ == '__main__':
+#     img_analyze_data_output_new()

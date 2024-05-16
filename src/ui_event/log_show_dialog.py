@@ -4,8 +4,8 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QPushButton, QLabel, QDialog
-from PyQt5.QtCore import QTimer, QDateTime, QFile, QTextStream, Qt
+from PyQt5.QtWidgets import QVBoxLayout, QTextEdit, QLabel, QDialog
+from PyQt5.QtCore import QTimer, QFile, QTextStream, Qt
 from run import constants
 from utils.log_monitor import find_latest_log_file
 from loguru import logger
@@ -28,10 +28,11 @@ class LogDisplayDialog(QDialog):
         self.log_file_name_label = None
         self.timer = None
         self.logTextEdit = None
-        self.initUI()
-        self.setupTimer()
+        self.init_ui()
+        self.setup_timer()
 
-    def initUI(self):
+    @logger.catch
+    def init_ui(self, _=None):
         """
         初始化UI界面
         """
@@ -52,15 +53,17 @@ class LogDisplayDialog(QDialog):
 
         self.setLayout(layout)
 
-    def setupTimer(self):
+    @logger.catch
+    def setup_timer(self, _=None):
         """
         设置定时器以定期更新日志
         """
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.updateLog)
-        self.timer.start(5000)  # 每秒更新一次
+        self.timer.timeout.connect(self.update_log)
+        self.timer.start(2500)  # 每秒更新一次
 
-    def updateLog(self):
+    @logger.catch
+    def update_log(self, _=None):
         """
         更新日志内容
         """
@@ -83,7 +86,8 @@ class LogDisplayDialog(QDialog):
             else:
                 self.logTextEdit.append("日志文件不存在")
 
-    def scrollToBottom(self):
+    @logger.catch
+    def scroll_to_bottom(self, _=None):
         """
         滚动到底部的方法
         """
@@ -91,7 +95,8 @@ class LogDisplayDialog(QDialog):
         cursor.movePosition(cursor.End)
         self.logTextEdit.setTextCursor(cursor)
 
-    def stop_timer(self):
+    @logger.catch
+    def stop_timer(self, _=None):
         """
         stop play picture
         :return:
@@ -102,7 +107,8 @@ class LogDisplayDialog(QDialog):
         logger.debug("log check timer stop.")
         constants.log_check_visible = False
 
-    def closeEvent(self, event):
+    @logger.catch
+    def closeEvent(self, event, _=None):
         """
         对话框关闭
         :param event:

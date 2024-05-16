@@ -55,9 +55,11 @@ class KeywordDialog(QDialog):
         save_button.clicked.connect(lambda: save_data(self))
         cancel_button.clicked.connect(self.reject)
 
-    def closeEvent(self, event):
+    @logger.catch
+    def closeEvent(self, event, _=None):
         """
         对话框关闭
+        :param _:
         :param event:
         :return:
         """

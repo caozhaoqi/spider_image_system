@@ -64,6 +64,31 @@
 
 TypeError: next_img() takes 1 positional argument but 3 were given
 ```
+- solve method:
+>  Qt (或者 PyQt、PySide 等 Qt 的 Python 绑定) 中，当你使用信号和槽机制（即 clicked.connect()）时，槽函数（即你连接到的函数或方法）通常会接收一个额外的参数，这个参数代表了触发信号的发送者（sender）。因此，即使你的 next_img 方法在类定义中只接受一个参数（self），当它被用作一个槽时，Qt 会自动传递一个额外的参数，通常是发出信号的对象的引用。
+> 为了解决这个 TypeError，你需要修改你的 next_img 方法，让它能够接受这个额外的参数。这里是一个简单的修改示例：
+```python
+class MyClass(QWidget):  # 假设 MyClass 继承自 QWidget 或其他 Qt 控件
+    def __init__(self, parent=None):
+        super(MyClass, self).__init__(parent)
+        # 假设 next_button 是一个 QPushButton 的实例
+        self.next_button = QPushButton('Next', self)
+        self.next_button.clicked.connect(self.next_img)
+
+    @logger.catch()
+    def next_img(self, _=None):  # 添加一个额外的参数 _ 来接收发送者
+        """
+        跳转下一页
+        :return:
+        """
+        # 你的代码逻辑
+        pass
+```
+> 在这个例子中，next_img 方法现在接受一个额外的参数 _。这个参数名 _ 是一个常见的约定，用于表示这个参数在方法体内不会被使用。当然，你可以选择其他名称，但 _ 是一个通用的占位符，表明这个参数是“不需要的”。
+
+> 现在，当 next_button 被点击时，next_img 方法会被调用，并且 Qt 会自动传递一个参数（通常是 next_button 的引用）给这个方法。由于我们已经在方法定义中包含了这个额外的参数，所以不会再出现 TypeError。
+
+> 如果你确实需要在方法体内使用这个发送者对象（比如检查是哪个按钮被点击了），你可以给这个参数一个更有意义的名称，并在方法体内使用它。但在这个例子中，看起来我们并不需要这个发送者对象，所以使用 _ 作为参数名是一个合适的解决方案。
 - problem 1 on ubuntu: opencv-python与pyqt5冲突(问题解决)
 ```shell
 sudo pip3 uninstall opencv-python

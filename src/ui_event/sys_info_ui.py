@@ -43,7 +43,8 @@ class SystemMonitor(QDialog):
         self.timer.timeout.connect(self.update_data)
         self.timer.start(2000)
 
-    def init_ui(self):
+    @logger.catch
+    def init_ui(self, _=None):
         """
 
         :return:
@@ -84,7 +85,8 @@ class SystemMonitor(QDialog):
         self.axisX.setTitleText("Time (s)")
         self.axisY.setTitleText("Value")
 
-    def update_data(self):
+    @logger.catch
+    def update_data(self, _=None):
         """
 
         :return:
@@ -132,7 +134,8 @@ class SystemMonitor(QDialog):
 
             self.chart_view.update()
 
-    def closeEvent(self, event):
+    @logger.catch
+    def closeEvent(self, event, _=None):
         """
         对话框关闭
         :param event:

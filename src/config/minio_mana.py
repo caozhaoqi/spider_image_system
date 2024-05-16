@@ -11,6 +11,7 @@ from file.ini_file_spider import spider_config
 class MinioMana:
     mc = None
 
+    @logger.catch
     def __init__(self):
         minio_ip = spider_config().minio_server_ip
         minio_port = spider_config().minio_server_port
@@ -29,6 +30,7 @@ class MinioMana:
             secure=False
         )
 
+    @logger.catch
     def get_file_object(self, bucket, src, dst):
         try:
             result = self.mc.fget_object(bucket, src, dst)
@@ -38,6 +40,7 @@ class MinioMana:
                 result.object_name, result.etag, result.version_id,
             ))
 
+    @logger.catch
     def get_dir_object(self, bucket, dir, local_path):
         objects = self.mc.list_objects(
             bucket, prefix=dir, recursive=True,
@@ -49,6 +52,7 @@ class MinioMana:
                                  obj.object_name,
                                  local_path + obj.object_name)
 
+    @logger.catch
     def put_file_object(self, bucket, multi_level_name, local_path):
         try:
             result = self.mc.fput_object(bucket, multi_level_name, local_path)

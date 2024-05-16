@@ -21,6 +21,7 @@ from utils.http_utils import is_valid_url
 NEW_LINE: str = "\n" if system() != "Windows" else "\r\n"
 
 
+@logger.catch
 def die(_str: str) -> None:
     """
     Display a message of error and exit.
@@ -35,6 +36,7 @@ def die(_str: str) -> None:
     exit(-1)
 
 
+@logger.catch
 def _print(_str: str) -> None:
     """
     Print a message.
@@ -50,6 +52,7 @@ def _print(_str: str) -> None:
 # increase max_workers for parallel downloads
 # defaults to 5 download at time
 class Main:
+    @logger.catch
     def __init__(self, url: str, password: str | None = None, max_workers: int = 5) -> None:
 
         try:
@@ -79,6 +82,7 @@ class Main:
 
         self._threadedDownloads()
 
+    @logger.catch
     def _threadedDownloads(self) -> None:
         """
         Parallelize the downloads.
@@ -92,6 +96,7 @@ class Main:
             for item in self._files_link_list:
                 executor.submit(self._downloadContent, item, self._token, 16384)
 
+    @logger.catch
     def _createDir(self, dirname: str) -> None:
         """
         creates a directory where the files will be saved if doesn't exist and change to it.
@@ -113,6 +118,7 @@ class Main:
         chdir(filepath)
 
     @staticmethod
+    @logger.catch
     def _getToken() -> str:
         """
         Gets the access token of account created.
@@ -139,6 +145,7 @@ class Main:
         return api_token
 
     @staticmethod
+    @logger.catch
     def _downloadContent(file_info: Dict, token: str, chunk_size: int = 4096) -> None:
         """
         Download a file.
@@ -239,6 +246,7 @@ class Main:
                     f"\rDownloading {file_info['filename']}: {path.getsize(filename)} of {has_size} Done!" + NEW_LINE)
                 move(filename, file_info["path"])
 
+    @logger.catch
     def _parseLinks(self, _id: str, token: str, password: str | None = None) -> None:
         """
         Parses for possible links recursively and populate a list with file's info.

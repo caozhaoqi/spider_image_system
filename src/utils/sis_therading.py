@@ -32,7 +32,8 @@ class SISThreading(threading.Thread):
         self.__running = threading.Event()  # 用于停止线程的标识
         self.__running.set()  # 将running设置为True
 
-    def run(self):
+    @logger.catch
+    def run(self, _=None):
         """
 
         :return:
@@ -48,7 +49,8 @@ class SISThreading(threading.Thread):
             self.target(*self.args, **self.kwargs)
             time.sleep(constants.search_delta_time)
 
-    def pause(self):
+    @logger.catch
+    def pause(self, _=None):
         """
 
         :return:
@@ -56,7 +58,8 @@ class SISThreading(threading.Thread):
         logger.error("thread is pause")
         self.__flag.clear()  # 设置为False, 让线程阻塞
 
-    def resume(self):
+    @logger.catch
+    def resume(self, _=None):
         """
 
         :return:
@@ -64,7 +67,8 @@ class SISThreading(threading.Thread):
         logger.warning("thread is resume")
         self.__flag.set()  # 设置为True, 让线程停止阻塞
 
-    def stop(self):
+    @logger.catch
+    def stop(self, _=None):
         """
 
         :return:
@@ -73,7 +77,8 @@ class SISThreading(threading.Thread):
         self.__flag.set()  # 将线程从暂停状态恢复, 如果已经暂停的话
         self.__running.clear()  # 设置为False
 
-    def is_running(self):
+    @logger.catch
+    def is_running(self, _=None):
         """检查线程是否正在运行"""
         return self.__running.is_set()
 

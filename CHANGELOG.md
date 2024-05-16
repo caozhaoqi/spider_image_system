@@ -5,6 +5,9 @@
 - add system tips to success, fail, tip
 - add setTrayIcon method to sis
 - update sh
+- update method name
+- fix @logger.catch bus on pyqt5 method
+- -update README.md
 
 ## v1.1.5-beta.2.240513
 ### 2024/5/13

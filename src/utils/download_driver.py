@@ -25,7 +25,8 @@ class AutoDownloadChromeDrive(object):
         self.headers = {'content-type': 'application/json',
                         'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'}
 
-    def get_chromedriver_urls(self):
+    @logger.catch
+    def get_chromedriver_urls(self, _=None):
         """
 
         :return:
@@ -44,7 +45,8 @@ class AutoDownloadChromeDrive(object):
         except Exception:
             return None
 
-    def download_chrome_drive(self, url):
+    @logger.catch
+    def download_chrome_drive(self, url, _=None):
         """
 
         :param url:
@@ -65,8 +67,10 @@ class AutoDownloadChromeDrive(object):
             logger.warning("request download chromedriver_win32.zip failed!")
             return None
 
-    def find_local_version(self, loc_ver, all_ver):
+    @logger.catch
+    def find_local_version(self, loc_ver, all_ver, _=None):
         """
+        :param _:
         :param loc_ver: 本地浏览器的版本
         :param all_ver: 下载的所有版本浏览器版本
         :return: 找到匹配的，return url,否则return None
@@ -83,9 +87,11 @@ class AutoDownloadChromeDrive(object):
         logger.debug("not find match chrome browser{} version!".format(loc_ver))
         return None
 
-    def kill_process(self, process_name):
+    @logger.catch
+    def kill_process(self, process_name, _=None):
         """
 
+        :param _:
         :param process_name:
         :return:
         """
@@ -99,7 +105,8 @@ class AutoDownloadChromeDrive(object):
         logger.debug('{} 不存在进程中。'.format(process_name))
         return None
 
-    def unzip(self):
+    @logger.catch
+    def unzip(self, _=None):
         """
 
         :return:
@@ -118,7 +125,8 @@ class AutoDownloadChromeDrive(object):
         zFile.close()
         logger.success(f"download webdriver success, path: {zFile.filename}")
 
-    def start(self):
+    @logger.catch
+    def start(self, _=None):
         """
                 读取本地chrome version
 

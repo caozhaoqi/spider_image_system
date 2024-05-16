@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import threading
 import requests
@@ -51,7 +50,8 @@ class ImageDialog(QDialog):
         else:
             self.show_image_view_threading(constants.online_img_list[0])
 
-    def show_previous_image(self):
+    @logger.catch
+    def show_previous_image(self, _=None):
         """
         show previous image
         :return:
@@ -71,7 +71,8 @@ class ImageDialog(QDialog):
         logger.debug(f"function show_previous_image, current page: {constants.cur_show_img_index}")
         pass
 
-    def show_next_image(self):
+    @logger.catch
+    def show_next_image(self, _=None):
         """
         show next image
         :return:
@@ -91,7 +92,15 @@ class ImageDialog(QDialog):
         logger.debug(f"function show_next_image, current page: {constants.cur_show_img_index}")
         pass
 
-    def show_image_view_threading(self, image_path):
+    @logger.catch
+    def show_image_view_threading(self, image_path, _=None):
+        """
+
+        :param image_path:
+        :param _:
+        :return:
+        """
+
         if len(constants.online_img_list) <= 0:
             logger.warning("function show_image_view, cur data dir no image!")
             return False
@@ -101,9 +110,11 @@ class ImageDialog(QDialog):
         spider_thread_obj.start()
         logger.info("show img thread stating.")
 
-    def show_image_view(self, image_path):
+    @logger.catch
+    def show_image_view(self, image_path, _=None):
         """
         show point index image
+        :param _:
         :param image_path:
         :return:
         """
@@ -124,6 +135,7 @@ class ImageDialog(QDialog):
             constants.online_show_image = True
             logger.error(f"unknown error, detail: {e}")
 
+    @logger.catch
     def closeEvent(self, event):
         """
         对话框关闭
@@ -133,4 +145,3 @@ class ImageDialog(QDialog):
         logger.debug('ImageDialog Dialog is closing!')
         constants.online_look_image_visible = False
         super(ImageDialog, self).closeEvent(event)
-

@@ -14,6 +14,7 @@ class InformationDialog(QDialog):
         super().__init__()
         self.init_ui()
 
+    @logger.catch
     def init_ui(self):
         self.setWindowTitle('软件信息(software message)')
         self.setFixedSize(600, 600)
@@ -67,6 +68,7 @@ class InformationDialog(QDialog):
 
         self.setLayout(layout)
 
+    @logger.catch
     def closeEvent(self, event):
         """
         对话框关闭

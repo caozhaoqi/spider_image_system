@@ -54,7 +54,8 @@ class AutoImageDialog(QDialog):
         if len(constants.online_img_list) <= 0:
             logger.warning("cur data dir no image!")
 
-    def start_timer(self):
+    @logger.catch
+    def start_timer(self, _=None):
         """
         Start the timer to change images periodically.
         """
@@ -70,7 +71,8 @@ class AutoImageDialog(QDialog):
         # else:
         #     logger.warning("auto_image_dialog not visible or image play stop!")
 
-    def stop_timer(self):
+    @logger.catch
+    def stop_timer(self, _=None):
         """
         stop play picture
         :return:
@@ -84,7 +86,8 @@ class AutoImageDialog(QDialog):
         # else:
         #     logger.warning("all image not start, or no image!")
 
-    def show_next_image(self):
+    @logger.catch
+    def show_next_image(self, _=None):
         """
         Show the next image in the list.
         """
@@ -101,9 +104,11 @@ class AutoImageDialog(QDialog):
         #     logger.warning("auto_image_dialog not visible or image play stop!")
         #     return False
 
-    def show_image_view(self, image_path):
+    @logger.catch
+    def show_image_view(self, image_path, _=None):
         """
         show point index image
+        :param _:
         :param image_path:
         :return:
         """
@@ -114,6 +119,7 @@ class AutoImageDialog(QDialog):
 
         self.label.resize(pixmap.width(), pixmap.height())
 
+    @logger.catch
     def closeEvent(self, event):
         """
         对话框关闭

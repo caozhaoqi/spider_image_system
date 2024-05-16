@@ -18,7 +18,8 @@ class Toast(QDialog):
         self.timer = None
         self.initUI(message)
 
-    def initUI(self, message):
+    @logger.catch
+    def initUI(self, message, _=None):
         self.setWindowFlags(Qt.SplashScreen | Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 

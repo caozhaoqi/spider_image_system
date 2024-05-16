@@ -2,7 +2,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
@@ -52,7 +51,7 @@ def open_data_path_method():
 
 class UIMainWindows(QMainWindow):
 
-    # @logger.catch
+    @logger.catch
     def __init__(self):
         """
 
@@ -99,7 +98,8 @@ class UIMainWindows(QMainWindow):
         # 配置最小化
         self.set_tray_icon()
 
-    def jump_point_image_click(self):
+    @logger.catch
+    def jump_point_image_click(self, _=None):
         """
         跳转指定页面
         :return:
@@ -127,8 +127,9 @@ class UIMainWindows(QMainWindow):
                     break
         logger.info(f"jump success! current page {numbers[0]}")
 
-    # @logger.catch
-    def next_img(self):
+    # @staticmethod
+    @logger.catch
+    def next_img(self, _=None):
         """
         跳转下一页
         :return:
@@ -143,8 +144,8 @@ class UIMainWindows(QMainWindow):
         except Exception as e:
             logger.warning("dir not image, or other err! detail: " + str(e))
 
-    # @logger.catch
-    def before_img(self):
+    @logger.catch
+    def before_img(self, _=None):
         """
         跳转前一页面
         :return:
@@ -159,9 +160,11 @@ class UIMainWindows(QMainWindow):
         except Exception as e:
             logger.warning("dir not image, or other err! detail: " + str(e))
 
-    def jump_point_image_page(self, index):
+    @logger.catch
+    def jump_point_image_page(self, index, _=None):
         """
         跳转指定页面
+        :param _:
         :param index:
         :param self:
         :return:
@@ -176,8 +179,8 @@ class UIMainWindows(QMainWindow):
         except Exception as e:
             logger.warning("dir not image, or other err! detail: " + str(e))
 
-    # @logger.catch
-    def input_keyword_process(self):
+    @logger.catch
+    def input_keyword_process(self, _=None):
         """
         选择数据路径
         :return:
@@ -198,7 +201,8 @@ class UIMainWindows(QMainWindow):
             constants.stop_spider_url_flag = False
             logger.info("spider img thread starting... ")
 
-    def input_keyword_process_3(self):
+    @logger.catch
+    def input_keyword_process_3(self, _=None):
         """
         选中指定文件夹tab 3
         :return:
@@ -208,7 +212,8 @@ class UIMainWindows(QMainWindow):
             logger.debug('Selected folder:' + self.edt_input_file_text_3_str)
         self.edt_input_file_text_3.setText(self.edt_input_file_text_3_str)
 
-    def remove_error_image_click(self):
+    @logger.catch
+    def remove_error_image_click(self, _=None):
         """
         下载指定txt中url对应images
         :return:
@@ -219,7 +224,8 @@ class UIMainWindows(QMainWindow):
         constants.single_flag = True
         remove_error_image(self)
 
-    def img_category_button_click(self):
+    @logger.catch
+    def img_category_button_click(self, _=None):
         """
         图片分类
         :return:
@@ -230,10 +236,11 @@ class UIMainWindows(QMainWindow):
         constants.single_flag = True
         img_category_button(self)
 
-    # @logger.catch
-    def success_tips(self, operate_name):
+    @logger.catch
+    def success_tips(self, operate_name, _=None):
         """
         success tips
+        :param _:
         :param operate_name
         :return:
         """
@@ -245,9 +252,11 @@ class UIMainWindows(QMainWindow):
             logger.warning("ERROR: windowsMessage()")
         logger.success('show success tips.')
 
-    def error_tips(self, operate_name):
+    @logger.catch
+    def error_tips(self, operate_name, _=None):
         """
         error tips
+        :param _:
         :param operate_name
         :return:
         """
@@ -259,9 +268,11 @@ class UIMainWindows(QMainWindow):
             logger.warning("ERROR: windowsMessage()")
         logger.error('show error tips.')
 
-    def sys_tips(self, content):
+    @logger.catch
+    def sys_tips(self, content, _=None):
         """
         show sys tips
+        :param _:
         :param content:
         :return:
         """
@@ -272,8 +283,8 @@ class UIMainWindows(QMainWindow):
             logger.warning("ERROR: windowsMessage()")
         logger.warning('show sys tips.')
 
-    # @logger.catch
-    def download_file_thread(self):
+    @logger.catch
+    def download_file_thread(self, _=None):
         """
         下载所有图片进程
         :return:
@@ -288,7 +299,8 @@ class UIMainWindows(QMainWindow):
             constants.stop_download_image_flag = False
             logger.info("download img thread starting... ")
 
-    def set_video_position_click(self, position):
+    @logger.catch
+    def set_video_position_click(self, position, _=None):
         """
         更改设置视频播放位置
         unuse
@@ -301,14 +313,16 @@ class UIMainWindows(QMainWindow):
             logger.error("error, detail: " + str(e))
             self.error_tips("快进视频操作")
 
-    def play_video(self):
+    @logger.catch
+    def play_video(self, _=None):
         """
         播放指定视频
         :return:
         """
         play_video_process(self)
 
-    def pause_video(self):
+    @logger.catch
+    def pause_video(self, _=None):
         """
 
         :return:
@@ -321,7 +335,8 @@ class UIMainWindows(QMainWindow):
             cv2.setTrackbarPos('Position', 'Video', 0)
             cv2.waitKey(1000)
 
-    def image_video_click(self):
+    @logger.catch
+    def image_video_click(self, _=None):
         """
         image 生成视频
         :return:
@@ -337,7 +352,8 @@ class UIMainWindows(QMainWindow):
             constants.process_image_flag = True
         pass
 
-    def zoom_in_method(self):
+    @logger.catch
+    def zoom_in_method(self, _=None):
         """
         放大
         :return:
@@ -351,7 +367,8 @@ class UIMainWindows(QMainWindow):
         except Exception as e:
             logger.warning(f"unknown error! detail: {e}")
 
-    def zoom_out_method(self):
+    @logger.catch
+    def zoom_out_method(self, _=None):
         """
         缩小
         :return:
@@ -365,9 +382,11 @@ class UIMainWindows(QMainWindow):
         except Exception as e:
             logger.warning(f"unknown error! detail: {e}")
 
-    def eventFilter(self, obj, event):
+    @logger.catch
+    def eventFilter(self, obj, event, _=None):
         """
         拖动控制
+        :param _:
         :param obj:
         :param event:
         :return:
@@ -387,7 +406,8 @@ class UIMainWindows(QMainWindow):
             self.isDragging = False
         return super().eventFilter(obj, event)
 
-    def download_gif_zip_click(self):
+    @logger.catch
+    def download_gif_zip_click(self, _=None):
         """
         Download file from point url
         :return:
@@ -403,7 +423,8 @@ class UIMainWindows(QMainWindow):
             constants.download_gif_zip_flag = True
             logger.success("success download zip file thread start")
 
-    def unzip_generate_video_click(self):
+    @logger.catch
+    def unzip_generate_video_click(self, _=None):
         """
         unzip file generate video from file.
         :return:
@@ -419,7 +440,8 @@ class UIMainWindows(QMainWindow):
             constants.unzip_generate_video_flag = True
             logger.success("success unzip generate file thread start")
 
-    def download_video_zip_click(self):
+    @logger.catch
+    def download_video_zip_click(self, _=None):
         """
         download video zip file from link
         :return:
@@ -447,7 +469,8 @@ class UIMainWindows(QMainWindow):
     #     logger.warning("Exe main ui will closing...")
     #     exit_save_data()
 
-    def open_data_dir(self):
+    @logger.catch
+    def open_data_dir(self, _=None):
         """
         open sys data dir
         :return:
@@ -458,14 +481,16 @@ class UIMainWindows(QMainWindow):
         self.open_data_path_thread.start()
         logger.success("success open data path start")
 
-    def show_log_output(self):
+    @logger.catch
+    def show_log_output(self, _=None):
         """
 
         :return:
         """
         show_log_output_method()
 
-    def re_translate_ui(self):
+    @logger.catch
+    def re_translate_ui(self, _=None):
         """
         设置主界面
         :return:
@@ -474,7 +499,8 @@ class UIMainWindows(QMainWindow):
         self.ui.setWindowTitle(_translate("MainWindow", "USB Listen"))
         self.ui.setWindowIcon(QtGui.QIcon("./favicon.ico"))
 
-    def set_tray_icon(self):
+    @logger.catch
+    def set_tray_icon(self, _=None):
         """
         最小化右键菜单
         :return:
@@ -503,7 +529,8 @@ class UIMainWindows(QMainWindow):
         # 允许托盘菜单显示
         self.trayIcon.show()
 
-    def open_main_window(self, reason):
+    @logger.catch
+    def open_main_window(self, reason, _=None):
         """
         双击打开主界面并使其活动
         :param reason:
@@ -513,7 +540,8 @@ class UIMainWindows(QMainWindow):
             self.showNormal()
             self.activateWindow()
 
-    def windows_message(self):
+    @logger.catch
+    def windows_message(self, _=None):
         """
         配置显示 windows 系统消息通知
         :return:
@@ -524,7 +552,8 @@ class UIMainWindows(QMainWindow):
         else:
             logger.warning("ERROR: windowsMessage()")
 
-    def quit_app(self):
+    @logger.catch
+    def quit_app(self, _=None):
         """
         包含二次确认的退出
         :return:
