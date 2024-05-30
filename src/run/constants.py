@@ -73,7 +73,8 @@ online_img_list = scan_img_txt(data_path)
 cur_show_img_index = 0
 # 抓取总图片数目 实时统计
 spider_images_current_count = 0
-
+# 定时启动下载flag
+scheduled_download_program_flag = False
 # remove error image
 check_images_flag = False
 # split image category

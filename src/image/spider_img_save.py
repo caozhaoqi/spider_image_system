@@ -16,7 +16,6 @@ from run import constants
 from run.constants import data_path
 from file.file_process import count_lines, read_end_download_image, save_download_end, update_download_continue_flag, \
     record_download_finish_txt, exists_txt_from_finish, write_error_image
-from utils.time_utils import get_cur_time
 
 
 @logger.catch
@@ -108,8 +107,9 @@ def download_images_from_file(self, file_path, cdds_index, final_download_url, c
                 filename = os.path.join(os.path.join(name, "images"), f"{os.path.basename(url)}")
                 cur_download_images_index += 1
                 if self:
-                    self.download_show_label.setText(f"关键词: {match_img_result(name)}, 已下载数目: {cur_download_images_index},"
-                                                     f" 下载图片名: {image_url_re(url)}")
+                    self.download_show_label.setText(
+                        f"关键词: {match_img_result(name)}, 已下载数目: {cur_download_images_index},"
+                        f" 下载图片名: {image_url_re(url)}")
                 download_image(url, filename, cur_txt_image_count, index)
 
 
@@ -250,7 +250,7 @@ def download_re_error_image():
             # r'img_url\/(.*?)_img_result'     pattern = r'.*?\\([^_]+)_img_result'
             new_file_path = os.path.join(os.path.join(constants.data_path, "img_url"), "re_download")
             new_file_path = os.path.join(new_file_path, "img_url")
-            new_file_path = os.path.join(new_file_path, keyword+"_img_result")
+            new_file_path = os.path.join(new_file_path, keyword + "_img_result")
             new_file_path = os.path.join(new_file_path, "images")
             if not os.path.exists(new_file_path):
                 logger.warning("dir not exists, will create!")

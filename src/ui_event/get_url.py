@@ -1,5 +1,6 @@
 import os
 import sys
+import threading
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -20,6 +21,7 @@ from run.constants import detail_delta_time, search_delta_time, s1_url, target_u
     spider_images_max_count, allow_replace_domain_flag
 from selenium.webdriver import ActionChains, Keys
 from utils.time_utils import sys_sleep_time, get_cur_time
+from image.spider_img_save import download_img_txt
 
 
 @logger.catch
@@ -180,6 +182,24 @@ def clear_cache_refresh(driver):
 
 
 @logger.catch
+def detect_download_working():
+    """
+
+    :return:
+    """
+    if constants.scheduled_download_program_flag:
+        if constants.stop_download_image_flag:
+            logger.debug("start download image threading")
+            spider_thread_obj = threading.Thread(
+                target=download_img_txt,
+                args=(None,))
+            spider_thread_obj.start()
+            constants.stop_download_image_flag = False
+            logger.info("download img thread starting(detect download not start auto start download image)... ")
+    # pass
+
+
+@logger.catch
 def spider_artworks_url(self, key_word):
     """
      spider image from point url.
@@ -219,6 +239,8 @@ def spider_artworks_url(self, key_word):
             logger.info(f"keyword: {key_word}, start chrome cost: {driver_finish_star_time - driver_start_time} s")
             # driver.implicitly_wait(search_delta_time)
             sys_sleep_time(driver, search_delta_time, True)
+            # 检测下载进程是否工作
+            detect_download_working()
             if driver.title == constants.ban_content or driver.title == constants.visit_url \
                     or driver.title == '' or driver.title == '请稍候…':
                 logger.warning(

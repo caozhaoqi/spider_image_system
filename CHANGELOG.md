@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.1.6-beta.1.240531
+### 2024/5/31
+- add spider image auto start download image on download not start
+- update spider image keyword
+
 ## v1.1.5.240516
 ### 2024/5/16
 - add system tips to success, fail, tip
