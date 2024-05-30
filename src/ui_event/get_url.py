@@ -182,7 +182,7 @@ def clear_cache_refresh(driver):
 
 
 @logger.catch
-def detect_download_working():
+def detect_download_working(self):
     """
 
     :return:
@@ -240,7 +240,7 @@ def spider_artworks_url(self, key_word):
             # driver.implicitly_wait(search_delta_time)
             sys_sleep_time(driver, search_delta_time, True)
             # 检测下载进程是否工作
-            detect_download_working()
+            detect_download_working(self=self)
             if driver.title == constants.ban_content or driver.title == constants.visit_url \
                     or driver.title == '' or driver.title == '请稍候…':
                 logger.warning(
