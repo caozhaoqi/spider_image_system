@@ -74,7 +74,7 @@ cur_show_img_index = 0
 # 抓取总图片数目 实时统计
 spider_images_current_count = 0
 # 定时启动下载flag
-scheduled_download_program_flag = False
+scheduled_download_program_flag = True
 # remove error image
 check_images_flag = False
 # split image category
@@ -169,6 +169,6 @@ SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH"
 # unzip zip file password
 PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
-sis_server_version = "v1.1.5.240516"
-build_date = "2024-05-16 18:00"
-publish_date = "2024-05-16 18:30"
+sis_server_version = "v1.1.6-beta.1.240531"
+build_date = "2024-05-31 18:00"
+publish_date = "2024-05-31 18:30"
