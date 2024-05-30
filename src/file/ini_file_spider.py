@@ -105,6 +105,7 @@ def write_minio_config_to_file(minio_config):
     conf.set("automatic_config", "chrome_version", "1")
     conf.set("automatic_config", "upload_minio_image_Flag", "False")
     conf.set("automatic_config", "allow_replace_domain_flag", 'True')
+    conf.set("automatic_config", "scheduled_download_program_flag", 'True')
 
     conf.add_section("minio_config_selected")
     conf.set("minio_config_selected", "minio_config_id", "1")
@@ -202,6 +203,8 @@ def check_ini_config():
         conf.set("automatic_config", "chrome_version", "1")
         conf.set("automatic_config", "upload_minio_image_Flag", "False")
         conf.set("automatic_config", "allow_replace_domain_flag", 'True')
+        # scheduled_download_program_flag
+        conf.set("automatic_config", "scheduled_download_program_flag", 'True')
 
         conf.add_section("minio_config_selected")
         conf.set("minio_config_selected", "minio_config_id", "1")

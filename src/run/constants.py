@@ -73,8 +73,6 @@ online_img_list = scan_img_txt(data_path)
 cur_show_img_index = 0
 # 抓取总图片数目 实时统计
 spider_images_current_count = 0
-# 定时启动下载flag
-scheduled_download_program_flag = True
 # remove error image
 check_images_flag = False
 # split image category
@@ -96,10 +94,8 @@ output_video_width = int(read_ini_config(ini_file_path, "spider_config", "output
 output_video_height = int(read_ini_config(ini_file_path, "spider_config", "output_video_height"))
 # 抓取图片最大值
 spider_images_max_count = int(read_ini_config(ini_file_path, "spider_config", "spider_images_max_count"))
-
 # log level
 sis_log_level = read_ini_config(ini_file_path, "spider_config", "sis_log_level")
-
 # 访问网址
 visit_url = read_ini_config(ini_file_path, "spider_config", "visit_url")
 # 图片服务器地址
@@ -134,9 +130,11 @@ filter_image_url = read_ini_config(ini_file_path, "automatic_config", "filter_im
 zoom_in_scale = float(read_ini_config(ini_file_path, "automatic_config", "zoom_in_scale"))
 # zoom_out_scale
 zoom_out_scale = float(read_ini_config(ini_file_path, "automatic_config", "zoom_out_scale"))
+# 定时启动下载flag
+scheduled_download_program_flag = read_ini_config(ini_file_path, "automatic_config", "scheduled_download_program_flag")
 # chrome path
 chrome_path = read_ini_config(ini_file_path, "automatic_config", "chrome_path")
-
+# Google Chrome version match
 chrome_version = read_ini_config(ini_file_path, "automatic_config", "chrome_version")
 # upload_minio_image_Flag
 upload_minio_image_Flag = read_ini_config(ini_file_path, "automatic_config", "upload_minio_image_Flag")
