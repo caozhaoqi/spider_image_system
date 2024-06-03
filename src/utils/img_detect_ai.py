@@ -102,7 +102,7 @@ def model_detect_img_java_v1(img_path):
                 else:
                     move_detect_img(img_path, "other")
                     # print(response.text)
-                return True
+                return result
             else:
                 logger.warning(f"unknown error, detail: {img_path}")
                 return False
@@ -147,8 +147,8 @@ def all_img_detect(path):
         if "porn" in img_path or "sexy" in img_path or "other" in img_path or "neutral" in img_path or "drawings" \
                 in img_path or "hentai" in img_path:
             continue
-        model_detect_img_java_v1(img_path=img_path)
-        logger.success(f"model detect img:{img_path} success, cur {i}, count {count}!")
+        ret = model_detect_img_java_v1(img_path=img_path)
+        logger.success(f"model detect img:{img_path} success, cur {i}, count {count}, result: {ret}")
 
 
 if __name__ == '__main__':
