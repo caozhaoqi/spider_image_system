@@ -140,9 +140,13 @@ def all_img_detect(path):
     :return:
     """
     img_list = find_images(path)  #
+    i = 0
+    count = len(img_list)
     for img_path in img_list:
+        if "porn" in img_path or "sexy" in img_path or "other" in img_path or "neutral" in img_path or "drawings" in img_path:
+            continue
         model_detect_img_java_v1(img_path=img_path)
-        logger.success(f"model detect img:{img_path} success!")
+        logger.success(f"model detect img:{img_path} success, cur {i}, count {count}!")
 
 
 if __name__ == '__main__':
