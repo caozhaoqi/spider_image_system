@@ -85,6 +85,10 @@ add_keyword_finish_flag = False
 ban_content = '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'
 # no putput
 log_no_output_flag = False
+# detect model percent
+detect_model_per = 0.1
+# detect_model_flag
+detect_model_flag = False
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
@@ -148,6 +152,8 @@ download_img_retry_times = int(read_ini_config(ini_file_path, "automatic_config"
 download_img_time_out = int(read_ini_config(ini_file_path, "automatic_config", "download_img_time_out"))
 # detect time out
 detect_timeout_auto = int(read_ini_config(ini_file_path, "automatic_config", "detect_timeout_auto"))
+# detect model img api server
+dmi_api_server = read_ini_config(ini_file_path, "automatic_config", "dmi_api_server")
 # minio config id
 minio_config_id = read_ini_config(ini_file_path, "minio_config_selected", "minio_config_id")
 # minio server ip address
@@ -167,6 +173,6 @@ SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH"
 # unzip zip file password
 PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
-sis_server_version = "v1.1.6-beta.1.240531"
+sis_server_version = "v1.1.6-beta.2.240604"
 build_date = "2024-05-31 18:00"
 publish_date = "2024-05-31 18:30"

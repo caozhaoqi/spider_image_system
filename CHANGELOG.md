@@ -1,4 +1,7 @@
 # CHANGELOG
+## v1.1.6-beta.2.240604
+### 2024/6/4
+- add model detect img category
 
 ## v1.1.6-beta.1.240531
 ### 2024/5/31

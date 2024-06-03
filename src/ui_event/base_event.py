@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from selenium.common import StaleElementReferenceException
@@ -33,6 +34,7 @@ from utils.log_monitor import log_mon_war
 from utils.sis_therading import SISThreading
 from utils.sys_info import get_cur_os
 from utils.sytem_monitor import kill_process_linux, kill_process_win, reduce_sys_res_usage
+from utils.img_detect_ai import all_img_detect
 
 
 @logger.catch
@@ -485,3 +487,20 @@ def on_last_window_closed():
     exit_save_data()
     logger.debug("start clean other process...")
     kill_other_close()
+
+
+@logger.catch
+def model_detect_img():
+    """
+
+    :return:
+    """
+    if not constants.detect_model_flag:
+        constants.detect_model_flag = True
+        detect_img_folder_thread_obj = threading.Thread(
+            target=all_img_detect,
+            args=(constants.data_path,))
+        detect_img_folder_thread_obj.start()
+        logger.info("start detect img !")
+    else:
+        logger.error("detecting img  please wait.")
