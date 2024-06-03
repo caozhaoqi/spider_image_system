@@ -148,7 +148,9 @@ def all_img_detect(path):
                 in img_path or "hentai" in img_path:
             continue
         ret = model_detect_img_java_v1(img_path=img_path)
-        logger.success(f"model detect img:{img_path} success, cur {i}, count {count}, result: {ret}")
+        logger.debug(f"model detect img:{img_path} success, cur {i}, count {count}, result: {ret}")
+    constants.detect_model_flag = False
+    logger.success("model detect image all success!")
 
 
 if __name__ == '__main__':
