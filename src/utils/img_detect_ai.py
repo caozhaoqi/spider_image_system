@@ -11,6 +11,46 @@ from run import constants
 
 
 @logger.catch
+def detect_img_py_v1(img_path):
+    """
+
+    :param img_path:
+    :return:
+    """
+    url = "http://" + str(constants.proxy_server_ip) + ":" + str(constants.proxy_server_port) + "/detect"
+    try:
+        with open(img_path, 'rb') as file:
+            files = {'file': file}  # 注意这里的键名应该与服务器期望的键名一致
+            # response = requests.post('http://example.com/upload', files=files, data=fields)
+            response = requests.post(url, files=files)
+            result = json.loads(response.text)
+            if result['code'] == 200:
+                score = result['score']
+                # {'drawings': 0.9475243, 'hentai': 0.034198754, 'neutral': 0.01824669, 'porn': 1.687202e-05,
+                # 'sexy': 1.34658585e-05}
+                max_score = max(score['porn'], score['drawings', score['hentai'], score['neutral'], score['sexy']])
+                if score['porn'] == max_score:
+                    move_detect_img(img_path, "porn")
+                elif score['drawings'] == max_score:
+                    move_detect_img(img_path, "drawings")
+                elif score['hentai'] == max_score:
+                    move_detect_img(img_path, "hentai")
+                elif score['neutral'] == max_score:
+                    move_detect_img(img_path, "neutral")
+                elif score['sexy'] == max_score:
+                    move_detect_img(img_path, "sexy")
+                else:
+                    move_detect_img(img_path, "other")
+                return result
+            else:
+                logger.warning(f"unknown error, detail: {img_path}")
+                return False
+    except Exception as e:
+        logger.warning(f"unknown error, detail: {e}")
+        return False
+
+
+@logger.catch
 def detect_img_py_local(img_path):
     """
     https://luckycola.com.cn/public/dist/#/
@@ -89,19 +129,19 @@ def model_detect_img_java_v1(img_path):
                 score = result['score']
                 # {'drawings': 0.9475243, 'hentai': 0.034198754, 'neutral': 0.01824669, 'porn': 1.687202e-05,
                 # 'sexy': 1.34658585e-05}
-                if score['porn'] > constants.detect_model_per:
+                max_score = max(score['porn'], score['drawings', score['hentai'], score['neutral'], score['sexy']])
+                if score['porn'] == max_score:
                     move_detect_img(img_path, "porn")
-                elif score['drawings'] > constants.detect_model_per:
+                elif score['drawings'] == max_score:
                     move_detect_img(img_path, "drawings")
-                elif score['hentai'] > constants.detect_model_per:
+                elif score['hentai'] == max_score:
                     move_detect_img(img_path, "hentai")
-                elif score['neutral'] > constants.detect_model_per:
+                elif score['neutral'] == max_score:
                     move_detect_img(img_path, "neutral")
-                elif score['sexy'] > constants.detect_model_per:
+                elif score['sexy'] == max_score:
                     move_detect_img(img_path, "sexy")
                 else:
                     move_detect_img(img_path, "other")
-                    # print(response.text)
                 return result
             else:
                 logger.warning(f"unknown error, detail: {img_path}")
@@ -147,7 +187,10 @@ def all_img_detect(path):
         if "porn" in img_path or "sexy" in img_path or "other" in img_path or "neutral" in img_path or "drawings" \
                 in img_path or "hentai" in img_path:
             continue
-        ret = model_detect_img_java_v1(img_path=img_path)
+        if constants.detect_img_model == "python":
+            ret = detect_img_py_v1(img_path=img_path)
+        else:
+            ret = model_detect_img_java_v1(img_path=img_path)
         logger.debug(f"model detect img:{img_path} success, cur {i}, count {count}, result: {ret}")
     constants.detect_model_flag = False
     logger.success("model detect image all success!")

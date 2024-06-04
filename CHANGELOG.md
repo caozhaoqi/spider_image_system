@@ -3,6 +3,7 @@
 ### 2024/6/4
 - add model detect img category
 - fix bugs on category model detect
+- add img detect for model python
 
 ## v1.1.6-beta.1.240531
 ### 2024/5/31
