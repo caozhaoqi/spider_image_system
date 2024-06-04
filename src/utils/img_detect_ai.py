@@ -129,7 +129,7 @@ def model_detect_img_java_v1(img_path):
                 score = result['score']
                 # {'drawings': 0.9475243, 'hentai': 0.034198754, 'neutral': 0.01824669, 'porn': 1.687202e-05,
                 # 'sexy': 1.34658585e-05}
-                max_score = max(score['porn'], score['drawings', score['hentai'], score['neutral'], score['sexy']])
+                max_score = max(score['porn'], score['drawings'], score['hentai'], score['neutral'], score['sexy'])
                 if score['porn'] == max_score:
                     move_detect_img(img_path, "porn")
                 elif score['drawings'] == max_score:
