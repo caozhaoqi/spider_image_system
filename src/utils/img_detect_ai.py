@@ -28,7 +28,7 @@ def detect_img_py_v1(img_path):
                 score = result['score']
                 # {'drawings': 0.9475243, 'hentai': 0.034198754, 'neutral': 0.01824669, 'porn': 1.687202e-05,
                 # 'sexy': 1.34658585e-05}
-                max_score = max(score['porn'], score['drawings', score['hentai'], score['neutral'], score['sexy']])
+                max_score = max(score['porn'], score['drawings'], score['hentai'], score['neutral'], score['sexy'])
                 if score['porn'] == max_score:
                     move_detect_img(img_path, "porn")
                 elif score['drawings'] == max_score:
@@ -43,7 +43,7 @@ def detect_img_py_v1(img_path):
                     move_detect_img(img_path, "other")
                 return result
             else:
-                logger.warning(f"unknown error, detail: {img_path}")
+                logger.warning(f"unknown error, detail: {result}")
                 return False
     except Exception as e:
         logger.warning(f"unknown error, detail: {e}")
@@ -191,7 +191,7 @@ def all_img_detect(path):
             ret = detect_img_py_v1(img_path=img_path)
         else:
             ret = model_detect_img_java_v1(img_path=img_path)
-        logger.debug(f"model detect img:{img_path} success, cur {i}, count {count}, result: {ret}")
+        logger.debug(f"{constants.detect_img_model} detect img: {img_path}, cur {i}/{count}, server response: {ret}")
     constants.detect_model_flag = False
     logger.success("model detect image all success!")
 
