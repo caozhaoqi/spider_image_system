@@ -2,8 +2,8 @@
 
 ## v1.1.6.240607
 ### 2024/6/7
-- fix spider pid keyword error bug
-- 
+- fix spider pid and users keyword error bug
+- update detect model img code
 
 ## v1.1.6-beta.2.240604
 ### 2024/6/4

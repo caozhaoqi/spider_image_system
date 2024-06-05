@@ -31,16 +31,22 @@ def detect_img_py_v1(img_path):
                 max_score = max(score['porn'], score['drawings'], score['hentai'], score['neutral'], score['sexy'])
                 if score['porn'] == max_score:
                     move_detect_img(img_path, "porn")
+                    result = "porn"
                 elif score['drawings'] == max_score:
                     move_detect_img(img_path, "drawings")
+                    result = "drawings"
                 elif score['hentai'] == max_score:
                     move_detect_img(img_path, "hentai")
+                    result = "hentai"
                 elif score['neutral'] == max_score:
                     move_detect_img(img_path, "neutral")
+                    result = "neutral"
                 elif score['sexy'] == max_score:
                     move_detect_img(img_path, "sexy")
+                    result = "sexy"
                 else:
                     move_detect_img(img_path, "other")
+                    result = "other"
                 return result
             else:
                 logger.warning(f"unknown error, detail: {result}")
@@ -132,16 +138,22 @@ def model_detect_img_java_v1(img_path):
                 max_score = max(score['porn'], score['drawings'], score['hentai'], score['neutral'], score['sexy'])
                 if score['porn'] == max_score:
                     move_detect_img(img_path, "porn")
+                    result = "porn"
                 elif score['drawings'] == max_score:
                     move_detect_img(img_path, "drawings")
+                    result = "drawings"
                 elif score['hentai'] == max_score:
                     move_detect_img(img_path, "hentai")
+                    result = "hentai"
                 elif score['neutral'] == max_score:
                     move_detect_img(img_path, "neutral")
+                    result = "neutral"
                 elif score['sexy'] == max_score:
                     move_detect_img(img_path, "sexy")
+                    result = "sexy"
                 else:
                     move_detect_img(img_path, "other")
+                    result = "other"
                 return result
             else:
                 logger.warning(f"unknown error, detail: {img_path}")
@@ -187,7 +199,7 @@ def all_img_detect(path):
         if "porn" in img_path or "sexy" in img_path or "other" in img_path or "neutral" in img_path or "drawings" \
                 in img_path or "hentai" in img_path:
             continue
-        if constants.detect_img_model == "python":
+        elif constants.detect_img_model == "python":
             ret = detect_img_py_v1(img_path=img_path)
         else:
             ret = model_detect_img_java_v1(img_path=img_path)
