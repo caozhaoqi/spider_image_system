@@ -63,7 +63,7 @@ def is_keyword_num(driver_keyword, key_word):
     if keyword_cat == 'pid':
         return spider_pid_image(driver_keyword, keyword_content)
     elif keyword_cat == 'users':
-        return spider_users_images(driver_keyword, key_word, keyword_cat)
+        return spider_users_images(driver_keyword, keyword_content, keyword_cat)
 
 
 @logger.catch
