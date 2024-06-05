@@ -2,7 +2,6 @@ import json
 import os
 import shutil
 
-import cv2
 import requests
 from loguru import logger
 
@@ -47,7 +46,7 @@ def detect_img_py_v1(img_path):
                 else:
                     move_detect_img(img_path, "other")
                     result = "other"
-                return result
+                return result + ": " + str(max_score)
             else:
                 logger.warning(f"unknown error, detail: {result}")
                 return False
@@ -154,7 +153,7 @@ def model_detect_img_java_v1(img_path):
                 else:
                     move_detect_img(img_path, "other")
                     result = "other"
-                return result
+                return result + ": " + str(max_score)
             else:
                 logger.warning(f"unknown error, detail: {img_path}")
                 return False

@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import random
 from selenium.webdriver.chrome.service import Service
@@ -18,6 +19,7 @@ from ui_event.get_url import open_look_all, slider_page_down, filter_not_use
 from utils.http_utils import image_url_re
 from file.user_agent import read_user_agent
 from utils.spider_operate import filter_not_use_url, artwork_filter
+from utils.time_utils import sys_sleep_time
 
 
 @logger.catch
@@ -80,7 +82,8 @@ def spider_users_images(driver_user, key_word, keyword_cat):
         cur_page = 1
         url = "https://" + visit_url + "/users/" + key_word + "/artworks?p=" + str(cur_page)
         driver_user.get(url)
-        driver_user.implicitly_wait(search_delta_time)
+        # driver_user.implicitly_wait(search_delta_time)
+        sys_sleep_time(driver_user, search_delta_time, True)
         logger.info(f"cur spider users artwork cur_page: {cur_page}")
         artwork_list = user_save_artwork(driver_user)
         if constants.stop_spider_url_flag:
@@ -303,6 +306,7 @@ def artwork_single_image(key_word_pinyin, driver, url):
     image_url_list = []
     try:
         driver.get(url)
+        sys_sleep_time(driver, constants.detail_delta_time, True)
         if driver.title == constants.ban_content or driver.title == constants.visit_url \
                 or driver.title == '':
             logger.warning(f"error! will exit: cur visit domain blocked, title: {driver.title}")

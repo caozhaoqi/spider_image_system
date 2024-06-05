@@ -4,6 +4,7 @@
 ### 2024/6/7
 - fix spider pid and users keyword error bug
 - update detect model img code
+- update users and keyword spider method
 
 ## v1.1.6-beta.2.240604
 ### 2024/6/4
