@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Spider_Image_System"
-!define PRODUCT_VERSION "1.1.6-beta.2.240604"
+!define PRODUCT_VERSION "1.1.6.240607"
 !define PRODUCT_PUBLISHER "Zhaoqi.Cao"
 !define PRODUCT_WEB_SITE "https://caozhaoqi.github.io"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ui_main.exe"
@@ -57,7 +57,7 @@ var ICONS_GROUP
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "SIS_v1.1.6-beta.2.240604_Setup.exe"
+OutFile "SIS_v1.1.6.240607_Setup.exe"
 InstallDir "$PROGRAMFILES\Spider_Image_System"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show

@@ -1,4 +1,10 @@
 # CHANGELOG
+
+## v1.1.6.240607
+### 2024/6/7
+- fix spider pid keyword error bug
+- 
+
 ## v1.1.6-beta.2.240604
 ### 2024/6/4
 - add model detect img category
