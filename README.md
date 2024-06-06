@@ -200,33 +200,33 @@ https://neucrack.com/p/407
 - yarn
 
 ```shell
-#    // 查询源
-    yarn config get registry
+// 查询源
+yarn config get registry
 
-#    // 更换国内源
-    yarn config set registry https://registry.npmmirror.com
+// 更换国内源
+yarn config set registry https://registry.npmmirror.com
 
-#    // 恢复官方源
-    yarn config set registry https://registry.yarnpkg.com
+// 恢复官方源
+yarn config set registry https://registry.yarnpkg.com
 
-#    // 删除注册表
-    yarn config delete registry
+// 删除注册表
+yarn config delete registry
 #最新地址 淘宝 NPM 镜像站喊你切换新域名啦!
 npm config set registry https://registry.npmmirror.com
 
- npm install -g cnpm --registry=https://registry.npmmirror.com
+npm install -g cnpm --registry=https://registry.npmmirror.com
  
  # 注册模块镜像
- npm set registry https://registry.npmmirror.com  
+npm set registry https://registry.npmmirror.com  
  
- // node-gyp 编译依赖的 node 源码镜像  
- npm set disturl https://npmmirror.com/dist 
+# node-gyp 编译依赖的 node 源码镜像  
+npm set disturl https://npmmirror.com/dist 
  
- // 清空缓存  
- npm cache clean --force  
+// 清空缓存  
+npm cache clean --force  
  
- // 安装cnpm  
- npm install -g cnpm --registry=https://registry.npmmirror.com  
+// 安装cnpm  
+npm install -g cnpm --registry=https://registry.npmmirror.com  
  
  
  # mirror config

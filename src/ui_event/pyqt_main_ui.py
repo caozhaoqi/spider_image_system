@@ -71,7 +71,7 @@ class UIMainWindows(QMainWindow):
         self.images_convert_thread = None
         self.show_page_label = None
         self.spider_mode_show_label = None
-        self.setWindowTitle(u"Spider Image System " + sis_server_version + ")")
+        self.setWindowTitle(u"Spider Image System (" + sis_server_version + ")")
         icon = QIcon()
         icon.addPixmap(
             QPixmap("../run/favicon.ico"), QIcon.Normal, QIcon.Off)
