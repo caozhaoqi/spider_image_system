@@ -7,6 +7,7 @@
 - update users and keyword spider method
 - fix detect model start error can't exit bug
 - update detect model start sh
+- update doc
 
 ## v1.1.6-beta.2.240604
 ### 2024/6/4
