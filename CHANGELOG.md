@@ -5,6 +5,8 @@
 - fix spider pid and users keyword error bug
 - update detect model img code
 - update users and keyword spider method
+- fix detect model start error can't exit bug
+- update detect model start sh
 
 ## v1.1.6-beta.2.240604
 ### 2024/6/4

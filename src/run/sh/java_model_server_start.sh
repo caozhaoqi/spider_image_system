@@ -1,3 +1,8 @@
+
+systemctl stop firewalld.service
+
+echo "防火墙已关闭,开始启动程序"
+
 JAR_PATH="./hserver-nsfw.jar"
 
 # 日志文件路径
@@ -7,3 +12,7 @@ LOG_FILE="./run.log"
 nohup java -jar $JAR_PATH > $LOG_FILE 2>&1 &
 
 echo "JAR文件已启动，日志已保存到 $LOG_FILE"
+
+lsof -i:8888
+
+ifconfig
