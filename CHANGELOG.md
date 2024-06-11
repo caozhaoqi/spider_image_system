@@ -3,6 +3,7 @@
 ## v1.1.7-beta.1.240612
 ### 2024/6/12
 - complete ai detect error response
+- add java detect model sh 
 
 ## v1.1.6.240607
 ### 2024/6/7

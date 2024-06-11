@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication
 from loguru import logger
 from log.log_record import log_record, check_version
 from ui_event.pyqt_main_ui import UIMainWindows
-from utils.sytem_monitor import sys_mon
+from utils.system_monitor import sys_mon
 import threading
 
 

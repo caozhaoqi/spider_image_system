@@ -33,7 +33,7 @@ from ui_event.keyword_dialog import KeywordDialog
 from utils.log_monitor import log_mon_war
 from utils.sis_therading import SISThreading
 from utils.sys_info import get_cur_os
-from utils.sytem_monitor import kill_process_linux, kill_process_win, reduce_sys_res_usage
+from utils.system_monitor import kill_process_linux, kill_process_win, reduce_sys_res_usage
 from utils.img_detect_ai import all_img_detect
 
 
