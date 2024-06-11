@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.7-beta.1.240612
+### 2024/6/12
+- complete ai detect error response
+
 ## v1.1.6.240607
 ### 2024/6/7
 - fix spider pid and users keyword error bug
