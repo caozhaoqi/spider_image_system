@@ -4,6 +4,7 @@
 ### 2024/6/17
 - add aliyun fc start code
 - add ini generate to all platform
+- add sis model image java nsis sh
 
 ## v1.1.7-beta.1.240612
 ### 2024/6/12
