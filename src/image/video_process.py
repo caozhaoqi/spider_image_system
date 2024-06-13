@@ -272,3 +272,67 @@ def play_video_process(self):
             logger.warning("Please select a video file.")
     except Exception as e:
         logger.error("error, detail: " + str(e))
+
+
+"""
+video process
+split video
+test data fxs video
+spider data: fu_fu
+"""
+
+
+@logger.catch
+def video_process(video_path, output_directory):
+    """
+    split video to image from point frame
+    :param output_directory: out dir
+    :param video_path: input video path
+    :return:
+    """
+    import cv2
+    import os
+
+    # 确保输出目录存在
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+    # 使用OpenCV打开视频文件
+    cap = cv2.VideoCapture(video_path)
+
+    # 检查视频是否成功打开
+    if not cap.isOpened():
+        logger.error("Error: Could not open video.")
+        exit()
+
+    # 设置保存图像的间隔（例如，每10帧保存一次）
+    frame_interval = 60
+    frame_count = 0
+
+    # 读取视频的每一帧
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            # 视频结束，退出循环
+            break
+
+        frame_count += 1
+        # 检查是否到达保存图像的间隔
+        if frame_count % frame_interval == 0:
+            # 构造图像保存路径
+            image_path = os.path.join(output_directory, f'frame_{frame_count // frame_interval}.jpg')
+            # 保存当前帧为图像
+            cv2.imwrite(image_path, frame)
+            logger.debug(f"Saved frame {frame_count // frame_interval} to {image_path}")
+
+    # 释放视频资源
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    # https://file2.gofile.io/download/web/78704bae-ff7e-409b-a751-6cc84a848c33/FxS_Full_1080_WM_h264.mp4
+    # start_download_file_link("https://gofile.io/d/MRAkaW")
+    video_process(r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\video_gofile'
+                  r'\FxS_Full_1080_WM_h264.mp4',
+                  r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\video_gofile\out_dir')

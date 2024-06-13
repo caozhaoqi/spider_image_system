@@ -6,6 +6,7 @@
 - add ini generate to all platform
 - add sis model image java nsis sh
 - disabled model image error exit
+- add video split data
 
 ## v1.1.7-beta.1.240612
 ### 2024/6/12
