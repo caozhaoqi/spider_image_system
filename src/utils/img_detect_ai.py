@@ -204,9 +204,9 @@ def all_img_detect(path):
             ret = detect_img_py_v1(img_path=img_path)
         else:
             ret = model_detect_img_java_v1(img_path=img_path)
-        if not ret:
-            logger.error(f"unknown error, content: {ret}, detect img will exit.")
-            break
+        # if not ret:
+        #     logger.error(f"unknown error, content: {ret}, detect img will exit.")
+        #     break
         logger.debug(f"{constants.detect_img_model} detect img: {img_path}, cur {i}/{count}, server response: {ret}")
     constants.detect_model_flag = False
     logger.success("model detect image all success!")
