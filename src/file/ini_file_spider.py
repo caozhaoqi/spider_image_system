@@ -1,6 +1,8 @@
 import os
 import sys
 
+from utils.sys_info import get_cur_os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import configparser
@@ -165,8 +167,13 @@ def check_ini_config():
         return True
     else:
         # logger.warning("Not Found config ini file, creating ini file....")
-        if not os.path.exists(".\\config"):
-            os.makedirs(".\\config")
+        # config_folder_name = ""
+        if get_cur_os() == "win32":
+            config_folder_name = ".\\config"
+        else:
+            config_folder_name = "./config"
+        if not os.path.exists(config_folder_name):
+            os.makedirs(config_folder_name)
             logger.debug("dir not exists, creating dir")
         conf.read(iniPath, 'utf-8')
         # logger.info("start generate config ini file: ")
