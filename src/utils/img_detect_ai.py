@@ -17,12 +17,14 @@ def detect_img_py_v1(img_path):
     :return:
     """
     url = "http://" + str(constants.proxy_server_ip) + ":" + str(constants.proxy_server_port) + "/detect"
+    result_server = "default response"
     try:
         with open(img_path, 'rb') as file:
             files = {'file': file}  # 注意这里的键名应该与服务器期望的键名一致
             # response = requests.post('http://example.com/upload', files=files, data=fields)
             response = requests.post(url, files=files)
             result = json.loads(response.text)
+            result_server = result
             if result['code'] == 200:
                 score = result['score']
                 # {'drawings': 0.9475243, 'hentai': 0.034198754, 'neutral': 0.01824669, 'porn': 1.687202e-05,
@@ -48,11 +50,11 @@ def detect_img_py_v1(img_path):
                     result = "other"
                 return result + ": " + str(max_score)
             else:
-                logger.warning(f"unknown error, server response: {response}, detail: {img_path}, skied.")
+                logger.warning(f"unknown error, server result_server: {result_server}, detail: {img_path}, skied.")
                 # constants.detect_model_flag = False
                 return False
     except Exception as e:
-        logger.warning(f"unknown error, server response: {response}, detail: {e}, error image_path: {img_path}, skied.")
+        logger.warning(f"unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
         # constants.detect_model_flag = False
         return False
 
@@ -118,20 +120,16 @@ def model_detect_img_java_v1(img_path):
     :return:
     """
     import requests
-    # drawing_image_lists = []
-    # hentai_image_lists = []
-    # neutral_image_lists = []
-    # porn_image_lists = []
-    # sexy_image_lists = []
-    # other_image_lists = []
 
     url = "http://" + constants.dmi_api_server + "/check"
+    result_server = "default response"
     try:
         with open(img_path, 'rb') as file:
             files = {'file': file}  # 注意这里的键名应该与服务器期望的键名一致
             # response = requests.post('http://example.com/upload', files=files, data=fields)
             response = requests.post(url, files=files)
             result = json.loads(response.text)
+            result_server = result
             if result['code'] == 200:
                 score = result['score']
                 # {'drawings': 0.9475243, 'hentai': 0.034198754, 'neutral': 0.01824669, 'porn': 1.687202e-05,
@@ -157,11 +155,11 @@ def model_detect_img_java_v1(img_path):
                     result = "other"
                 return result + ": " + str(max_score)
             else:
-                logger.warning(f"unknown error, server response: {response}, detail: {img_path}, skied.")
+                logger.warning(f"unknown error, server result_server: {result_server}, detail: {img_path}, skied.")
                 # constants.detect_model_flag = False
                 return False
     except Exception as e:
-        logger.warning(f"unknown error, server response: {response}, detail: {e}, error image_path: {img_path}, skied.")
+        logger.warning(f"unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
         # constants.detect_model_flag = False
         return False
 
