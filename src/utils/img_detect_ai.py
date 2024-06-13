@@ -48,13 +48,11 @@ def detect_img_py_v1(img_path):
                     result = "other"
                 return result + ": " + str(max_score)
             else:
-                logger.warning(f"unknown error, server response: {response}, detail: {img_path}, please re click AI "
-                               f"detect img")
+                logger.warning(f"unknown error, server response: {response}, detail: {img_path}, skied.")
                 # constants.detect_model_flag = False
                 return False
     except Exception as e:
-        logger.warning(f"unknown error, server response: {response}, detail: {e}, error image_path: {img_path}, please "
-                       f"re click AI detect img")
+        logger.warning(f"unknown error, server response: {response}, detail: {e}, error image_path: {img_path}, skied.")
         # constants.detect_model_flag = False
         return False
 
@@ -159,13 +157,11 @@ def model_detect_img_java_v1(img_path):
                     result = "other"
                 return result + ": " + str(max_score)
             else:
-                logger.warning(f"unknown error, server response: {response}, detail: {img_path}, please re click AI "
-                               f"detect img")
+                logger.warning(f"unknown error, server response: {response}, detail: {img_path}, skied.")
                 # constants.detect_model_flag = False
                 return False
     except Exception as e:
-        logger.warning(f"unknown error, server response: {response}, detail: {e}, error image_path: {img_path}, please "
-                       f"re click AI detect img")
+        logger.warning(f"unknown error, server response: {response}, detail: {e}, error image_path: {img_path}, skied.")
         # constants.detect_model_flag = False
         return False
 
