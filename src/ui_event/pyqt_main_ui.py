@@ -84,7 +84,8 @@ class UIMainWindows(QMainWindow):
         tab_2_ui_paint(self)
         tab_3_ui_paint(self)
 
-        scan_populate_mp4_list(self)
+        # 连接 currentChanged 信号到槽函数
+        self.tab_widget.currentChanged.connect(self.on_tab_changed)
 
         self.isDragging = False
         self.dragStartPos = None
@@ -97,6 +98,17 @@ class UIMainWindows(QMainWindow):
 
         # 配置最小化
         self.set_tray_icon()
+
+    def on_tab_changed(self, index, _=None):
+        """
+        tab change
+        :param _:
+        :param index:
+        :return:
+        """
+        if index == 1:
+            scan_populate_mp4_list(self)
+            logger.info("video clicked, loading mp4 data.")
 
     @logger.catch
     def jump_point_image_click(self, _=None):
@@ -523,7 +535,7 @@ class UIMainWindows(QMainWindow):
         self.trayIcon = QtWidgets.QSystemTrayIcon()
         self.trayIcon.setContextMenu(self.trayIconMenu)
         self.trayIcon.setIcon(QtGui.QIcon("./favicon.ico"))
-        self.trayIcon.setToolTip("双击打开程序")
+        self.trayIcon.setToolTip("Spider Image System")
         # 左键双击打开主界面
         self.trayIcon.activated[QtWidgets.QSystemTrayIcon.ActivationReason].connect(self.open_main_window)
         # 允许托盘菜单显示
@@ -533,6 +545,7 @@ class UIMainWindows(QMainWindow):
     def open_main_window(self, reason, _=None):
         """
         双击打开主界面并使其活动
+        :param _:
         :param reason:
         :return:
         """

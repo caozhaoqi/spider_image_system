@@ -103,7 +103,7 @@ safeContent = ['Drawing', 'Neutral']
 
 # // https://github.com/alex000kim/nsfw_data_scraper
 
-imgTypeoObj = {
+imgTypeObj = {
     "Drawing": '艺术性的',
     "Neutral": '中性的',
     "Sexy": '性感的',
@@ -194,7 +194,9 @@ def all_img_detect(path):
     """
     img_list = find_images(path)  #
     i = 0
+    img_list_folder = []
     count = len(img_list)
+    # match_img_result() xx_img
     for img_path in img_list:
         i += 1
         if "porn" in img_path or "sexy" in img_path or "other" in img_path or "neutral" in img_path or "drawings" \

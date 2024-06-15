@@ -7,6 +7,7 @@
 - add sis model image java nsis sh
 - disabled model image error exit
 - add video split data
+- change scan_populate_mp4_list functon location to reduce sis start cost time
 
 ## v1.1.7-beta.1.240612
 ### 2024/6/12

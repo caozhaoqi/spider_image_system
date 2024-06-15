@@ -12,7 +12,7 @@ from utils.http_utils import match_img_result
 @logger.catch
 def img_analyze_data_output_new():
     """
-    log andlyze data analyze
+    log analyze data analyze
     :return:
     """
 
