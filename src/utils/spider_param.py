@@ -55,7 +55,9 @@ def is_keyword_num(driver_keyword, key_word):
     :return:
     """
     if "," not in key_word:
-        # logger.warning(f"you input keyword not contain ',' in spilt keyword: {key_word}.")
+        if constants.spider_mode == "manual":
+            constants.scheduled_download_program_flag = False
+            logger.warning(f"you input keyword not contain ',' in spilt keyword: {key_word}.")
         return False
     constants.scheduled_download_program_flag = False
     key_word_list = key_word.split(',')
