@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.1.7.240620
+### 2024/6/20
+- close single spider image auto download image
+- update single spider image code
+
 ## v1.1.7-beta.2.240617
 ### 2024/6/17
 - add aliyun fc start code

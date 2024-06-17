@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import random
 from selenium.webdriver.chrome.service import Service
@@ -58,10 +57,23 @@ def is_keyword_num(driver_keyword, key_word):
     if "," not in key_word:
         # logger.warning(f"you input keyword not contain ',' in spilt keyword: {key_word}.")
         return False
+    constants.scheduled_download_program_flag = False
     key_word_list = key_word.split(',')
+    special_spider(driver_keyword, key_word_list)
+    return True
+
+
+@logger.catch
+def special_spider(driver_keyword, key_word_list):
+    """
+
+    :param driver_keyword:
+    :param key_word_list:
+    :return:
+    """
     keyword_content = key_word_list[0]
     keyword_cat = key_word_list[1]
-    key_word = keyword_content
+    # key_word = keyword_content
     if keyword_cat == 'pid':
         return spider_pid_image(driver_keyword, keyword_content)
     elif keyword_cat == 'users':
@@ -210,7 +222,8 @@ def spider_param_config(key_word):
     if is_keyword_num(driver, key_word):
         driver.quit()
         return None, None, None
-    url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode
+    else:
+        url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode
     if all_show != 'False':
         # self define url by config file
         url = all_show

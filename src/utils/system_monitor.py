@@ -188,7 +188,7 @@ def check_internet_connection():
 
 
 # 检查网络连接
-check_internet_connection()
+# check_internet_connection()
 
 
 @logger.catch
