@@ -12,6 +12,7 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from run import constants
+from utils.system_monitor import check_internet_connection
 
 # 定义日志文件路径模式
 LOG_FILE_PATTERN = 'sis_v*.log'
@@ -147,12 +148,27 @@ def log_mon_war(spider_thread_obj):
         while True:
             # 定期检查是否超时
             handler.check_for_timeout(TIMEOUT)
+
+            ret = check_internet_connection()
+            # 无网络，暂停爬虫
+            if not ret:
+                logger.error("No internet connect, stop spider image thread and download thread！")
+                spider_thread_obj.stop()
+                constants.stop_download_image_flag = True
+                constants.scheduled_download_program_flag = False
+            else:
+                # 恢复网络，恢复爬虫
+                if not spider_thread_obj.is_running():
+                    logger.success("Internet resume connect, resume spider image thread and download thread.")
+                    constants.scheduled_download_program_flag = True
+                    spider_thread_obj.resume()
+            logger.info(f"Spider_thread_obj.is_running flag value: {spider_thread_obj.is_running()}")
             if constants.log_no_output_flag:
                 # 在某个时候，您可能想要暂停线程
                 spider_thread_obj.pause()
                 spider_thread_obj.resume()
                 logger.warning(
-                    f"log no output, spider threading status: {spider_thread_obj.is_running()}, re start spider ing...")
+                    f"Log no output, spider threading status: {spider_thread_obj.is_running()}, re start spider ing...")
                 constants.log_no_output_flag = False
             # 休眠一段时间再检查
             time.sleep(TIMEOUT)  # 每分钟检查一次

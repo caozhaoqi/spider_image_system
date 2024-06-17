@@ -7,6 +7,7 @@ from loguru import logger
 
 from image.img_switch import find_images
 from run import constants
+from utils.http_utils import match_img_result
 
 
 @logger.catch
@@ -198,6 +199,9 @@ def all_img_detect(path):
     count = len(img_list)
     # match_img_result() xx_img
     for img_path in img_list:
+        # img_url = match_img_result(img_path)
+        # if img_url not in img_list_folder:
+        #     img_list_folder.append(img_url)
         i += 1
         if "porn" in img_path or "sexy" in img_path or "other" in img_path or "neutral" in img_path or "drawings" \
                 in img_path or "hentai" in img_path:

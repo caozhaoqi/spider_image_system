@@ -1,6 +1,8 @@
 import os
 import sys
 
+import requests
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import psutil
@@ -162,6 +164,31 @@ def check_network_usage():
         logger.error(
             f"Warning: Network usage is above {NETWORK_THRESHOLD / (1024 * 1024)} MB/s. Current usage: {network_usage / (1024 * 1024)} MB/s")
     last_network_usage = network_usage
+
+
+@logger.catch
+def check_internet_connection():
+    """
+
+    :return:
+    """
+
+    try:
+        # 尝试访问 Google 的主页，检查网络连接
+        response = requests.get('https://www.baidu.com')
+
+        # 如果状态码是200，说明连接成功
+        if response.status_code == 200:
+            logger.info("Internet connect normal.")
+            return True
+    except Exception as e:
+        # 如果发生任何异常（例如连接错误），则输出错误
+        logger.error(f"Internet connect Error: {e}")
+        return False
+
+
+# 检查网络连接
+check_internet_connection()
 
 
 @logger.catch

@@ -45,7 +45,7 @@ def image_url_re(image_url):
             logger.error(f"image url is unsplit, source url:{image_url}, please check config.ini config and add item!")
             return image_url
         except Exception as e:
-            logger.error(f"unknown error, please check log. source url: {image_url}")
+            logger.error(f"unknown error, please check log, source url: {image_url}")
             return image_url
 
 
