@@ -4,6 +4,7 @@
 ### 2024/6/20
 - close single spider image auto download image
 - update single spider image code
+- add jm id download image
 
 ## v1.1.7-beta.2.240617
 ### 2024/6/17

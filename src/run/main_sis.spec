@@ -16,6 +16,7 @@ a = Analysis(
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\utils','utils'),
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\log','log'),
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\utils\\xml_data','xml_data'),
+    ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\utils\\jmcomic','jmcomic'),
     ('C:\\Users\\Administrator\\PycharmProjects\\spider_image_system\\src\\config','config')
     ],
     hiddenimports=[],

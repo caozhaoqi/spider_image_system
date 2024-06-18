@@ -35,6 +35,7 @@ from utils.sis_therading import SISThreading
 from utils.sys_info import get_cur_os
 from utils.system_monitor import kill_process_linux, kill_process_win, reduce_sys_res_usage
 from utils.img_detect_ai import all_img_detect
+from ui_event.JM_dialog import JMDialog
 
 
 @logger.catch
@@ -504,3 +505,21 @@ def model_detect_img():
         logger.info("start detect img !")
     else:
         logger.error("detecting img  please wait.")
+
+
+@logger.catch
+def start_download_jm():
+    """
+
+    :return:
+    """
+    if not constants.jm_dialog_visible:
+        dialog_jm = JMDialog()
+        dialog_jm.showMaximized()
+        dialog_jm.show()
+        dialog_jm.setWindowFlag(Qt.WindowMinMaxButtonsHint)
+        logger.info("dialog_jm show!")
+        constants.jm_dialog_visible = True
+        dialog_jm.exec_()
+    else:
+        logger.warning("dialog_jm already show!")

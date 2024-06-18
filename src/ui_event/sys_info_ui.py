@@ -141,7 +141,7 @@ class SystemMonitor(QDialog):
         :param event:
         :return:
         """
-        logger.debug('AutoImageDialog Dialog is closing!')
+        logger.debug('sys info Dialog is closing!')
         self.timer.stop()
         constants.performance_monitor_visible = False
         super(SystemMonitor, self).closeEvent(event)

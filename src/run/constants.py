@@ -33,6 +33,8 @@ start_auto_play_flag = False
 performance_monitor_visible = False
 # log ana
 log_analyze_visible = False
+# dialog_jm
+jm_dialog_visible = False
 # img ana
 img_analyze_visible = False
 # face detect
