@@ -156,6 +156,7 @@ def log_mon_war(spider_thread_obj):
                 spider_thread_obj.stop()
                 constants.stop_download_image_flag = True
                 constants.scheduled_download_program_flag = False
+                constants.JM_SD_auto_flag = False
             else:
                 # 恢复网络，恢复爬虫
                 if not spider_thread_obj.is_running():
@@ -163,7 +164,7 @@ def log_mon_war(spider_thread_obj):
                     constants.scheduled_download_program_flag = True
                     spider_thread_obj.resume()
             logger.info(f"Spider_thread_obj.is_running flag value: {spider_thread_obj.is_running()}")
-            if constants.log_no_output_flag:
+            if constants.log_no_output_flag and constants.internet_connect_status:
                 # 在某个时候，您可能想要暂停线程
                 spider_thread_obj.pause()
                 spider_thread_obj.resume()

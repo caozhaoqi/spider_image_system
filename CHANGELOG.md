@@ -7,6 +7,8 @@
 - add jm id download image
 - add detect jm domain code
 - reduce and update log output
+- add JM auto spider keyword and download image
+- fix no internet start spider img thread
 
 ## v1.1.7-beta.2.240617
 ### 2024/6/17

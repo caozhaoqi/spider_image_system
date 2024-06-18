@@ -11,7 +11,7 @@ from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, \
     log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag, \
     user_upload_image, user_download_image, unzip_file_method, add_keyword_alert, img_category_ana, model_detect_img, \
-    start_download_jm, jm_domain_test_method
+    start_download_jm, jm_domain_test_method, jm_automatic_method, stop_jm_spider
 
 
 @logger.catch
@@ -71,6 +71,8 @@ def base_menu(self):
     self.log_analyze = QAction('日志分析', self.tools_menu)
     self.jm_tools = QAction("JM下载", self.tools_menu)
     self.jm_domain_test = QAction("JM检测", self.tools_menu)
+    self.jm_automatic = QAction("JM自动", self.tools_menu)
+    self.jm_stop_automatic = QAction("停止JM", self.tools_menu)
     self.folder_name = QAction('名称转换', self.tools_menu)
     self.encoding_tools = QAction('编码转换', self.tools_menu)
     self.test_driver = QAction('驱动检测', self.tools_menu)
@@ -79,6 +81,8 @@ def base_menu(self):
     self.log_analyze.triggered.connect(lambda: log_analyze_ui())
     self.jm_tools.triggered.connect(lambda: start_download_jm())
     self.jm_domain_test.triggered.connect(lambda: jm_domain_test_method())
+    self.jm_automatic.triggered.connect(lambda: jm_automatic_method())
+    self.jm_stop_automatic.triggered.connect(lambda: stop_jm_spider())
     self.folder_name.triggered.connect(lambda: convert_folder_name())
     self.encoding_tools.triggered.connect(lambda: encoding_tools_convert())
     self.test_driver.triggered.connect(lambda: detect_installed_flag())
@@ -87,6 +91,8 @@ def base_menu(self):
     self.tools_menu.addAction(self.log_analyze)
     self.tools_menu.addAction(self.jm_tools)
     self.tools_menu.addAction(self.jm_domain_test)
+    self.tools_menu.addAction(self.jm_automatic)
+    self.tools_menu.addAction(self.jm_stop_automatic)
     self.tools_menu.addAction(self.folder_name)
     self.tools_menu.addAction(self.encoding_tools)
     self.tools_menu.addAction(self.test_driver)

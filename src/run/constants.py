@@ -93,6 +93,10 @@ log_no_output_flag = False
 # detect_model_per = 0.1
 # detect_model_flag
 detect_model_flag = False
+# JM auto search and download flag
+JM_SD_auto_flag = False
+# internet_connect_status
+internet_connect_status = False
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))

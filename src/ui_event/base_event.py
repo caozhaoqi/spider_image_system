@@ -35,7 +35,7 @@ from utils.sys_info import get_cur_os
 from utils.system_monitor import kill_process_linux, kill_process_win, reduce_sys_res_usage
 from utils.img_detect_ai import all_img_detect
 from ui_event.JM_dialog import JMDialog
-from utils.jm_domain_detect import jm_domain_test
+from utils.jm_domain_detect import jm_domain_test, jm_auto_spider_img_thread
 
 
 @logger.catch
@@ -541,3 +541,34 @@ def jm_domain_test_method():
         logger.info("Start detect jm domain!")
     else:
         logger.error("Detecting jm domain, please wait.")
+
+
+@logger.catch
+def jm_automatic_method():
+    """
+
+    :return:
+    """
+    # JM_SD_auto_flag search_download_jm
+    if not constants.JM_SD_auto_flag:
+        constants.JM_SD_auto_flag = True
+        jm_auto_thread_obj = threading.Thread(
+            target=jm_auto_spider_img_thread,
+            args=())
+        jm_auto_thread_obj.start()
+        logger.info("Start automatic spider and download jm image!")
+    else:
+        logger.error("Spider or downloading jm domain, please wait.")
+
+
+@logger.catch
+def stop_jm_spider():
+    """
+
+    :return:
+    """
+    if constants.JM_SD_auto_flag:
+        constants.JM_SD_auto_flag = False
+        logger.success("JM auto spider stop.")
+    else:
+        logger.warning("JM auto already stop.")

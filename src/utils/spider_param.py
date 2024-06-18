@@ -251,7 +251,7 @@ def chrome_options(options):
         options.add_argument("--disable-software-rasterizer")
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        logger.debug("current spider mode: auto spider image mode!")
+        logger.debug("Current spider mode: auto spider image mode!")
     # open dev tools
     options.add_argument("--auto-open-devtools-for-tabs")
     # 接受不安全证书

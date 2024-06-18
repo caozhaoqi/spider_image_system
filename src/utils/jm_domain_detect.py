@@ -1,6 +1,7 @@
 import os
 import sys
 
+from file.file_process import get_image_keyword
 from run import constants
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -94,3 +95,120 @@ def jm_domain_test():
     constants.jm_domain_detect_flag = False
     logger.success("Detect jm domain finish.")
 
+
+@logger.catch
+def search_content_jm(keyword, jm_id=None):
+    """
+
+    :param jm_id:
+    :param keyword:
+    :return: finish flag
+    """
+    # from jmcomic import *
+
+    logger.debug(f"Start search content: {keyword}.")
+    client = JmOption.default().new_jm_client()
+
+    # 分页查询，search_site就是禁漫网页上的【站内搜索】
+
+    page: JmSearchPage = client.search_site(search_query=keyword, page=1)
+    page_list = []
+    page_count = page.page_count
+    all_count = page.total
+    logger.debug(f"Spider JM image count: {all_count}, start save to list.")
+    for i in range(page_count):
+        page: JmSearchPage = client.search_site(search_query=keyword, page=i)
+        page_list.append(page)
+    # page默认的迭代方式是page.iter_id_title()，每次迭代返回 albun_id, title
+    page_num = 1
+    for page in page_list:
+        logger.debug(f"Page num: {page_num}, spider image.")
+        for album_id, title in page:
+            logger.debug(f'[{album_id}]: {title}')
+        page_num += 1
+
+    if jm_id:
+        # 直接搜索禁漫车号
+        page = client.search_site(search_query=jm_id)
+        album: JmAlbumDetail = page.single_album
+        logger.info(album.tags)
+    return True
+
+
+@logger.catch
+def search_download_jm(actor):
+    """
+
+    :param actor: actor
+    :return: finish flag
+    """
+    logger.debug(f"Start search content: {actor}.")
+
+    jm_option = JmOption.default()
+    client = jm_option.new_jm_client()
+
+    # tag = '無修正'
+    # 搜索标签，可以使用search_tag。
+    # 搜索第一页。
+    page: JmSearchPage = client.search_site(actor, page=1)
+    page_list = []
+    page_count = page.page_count
+    all_count = page.total
+    logger.debug(f"Spider JM image count: {all_count}, start save to list.")
+
+    for i in range(page_count):
+        page: JmSearchPage = client.search_site(search_query=actor, page=i)
+        page_list.append(page)
+
+    aid_list = []
+    page_num = 1
+    for page in page_list:
+        logger.debug(f"Page num: {page_num}, spider image.")
+        for aid, atitle, tag_list in page.iter_id_title_tag():  # 使用page的iter_id_title_tag迭代器
+            # if actor in tag_list:
+            logger.info(f'[角色/{actor}] 发现目标: [{aid}]: [{atitle}]')
+            aid_list.append(aid)
+        page_num += 1
+    logger.debug("Start download JM image.")
+    download_album(aid_list, jm_option)
+    logger.success("Download JM image all finish.")
+    return True
+
+
+@logger.catch
+def jm_auto_spider_img_thread(self):
+    """
+    auto spider img thread
+    @:param self.
+    :return:
+    """
+    logger.info("Auto spider JM img thread starting...")
+    # detect spider work status spider image threading
+    # if constants.log_no_output_flag and not constants.JM_SD_auto_flag:
+    #     constants.stop_auto_jm_flag = False
+    spider_image_keyword, txt_file_list = get_image_keyword()
+    if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
+        logger.warning("Auto spider image null, please add keyword!")
+        if self:
+            self.sys_tips("Notice: spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字！")
+        return False
+    # constants.spider_mode = 'auto'
+    txt_index = 0
+    for spider_img_keyword_detail in spider_image_keyword:
+        logger.debug("Current spider kew word txt: " + str(spider_img_keyword_detail))
+        # 读取用户输入路径
+        # constants.stop_auto_jm_flag = False
+        txt_index += 1
+        for spider_image_keyword_item in spider_img_keyword_detail:
+            logger.debug("Current spider kew word: " + str(spider_image_keyword_item.strip()))
+            try:
+                search_download_jm(self, spider_image_keyword_item.strip())
+            except Exception as e:
+                logger.error(f"Unknown error, detail: {e}")
+
+
+if __name__ == '__main__':
+    """
+    test use
+    """
+    search_download_jm("芙宁娜")

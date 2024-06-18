@@ -1,13 +1,13 @@
 import os
 import sys
 
-from utils.sys_info import get_cur_os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import configparser
 from model.SpiderConfigModel import SpiderConfigModel
 from loguru import logger
+from utils.sys_info import get_cur_os
 
 ini_path = os.path.join(os.getcwd(), 'config')
 ini_file_path = os.path.join(ini_path, 'config.ini')
@@ -110,6 +110,7 @@ def write_minio_config_to_file(minio_config):
     conf.set("automatic_config", "scheduled_download_program_flag", 'True')
     conf.set("automatic_config", "dmi_api_server", '192.168.163.129:8888')
     conf.set("automatic_config", "detect_img_model", "python")
+    # conf.set("automatic_config", "JM_SD_auto_flag", 'True')
 
     conf.add_section("minio_config_selected")
     conf.set("minio_config_selected", "minio_config_id", "1")
@@ -217,6 +218,7 @@ def check_ini_config():
         # dmi_api_server
         conf.set("automatic_config", "dmi_api_server", '192.168.163.129:8888')
         conf.set("automatic_config", "detect_img_model", "python")
+        # conf.set("automatic_config", "JM_SD_auto_flag", 'True')
 
         conf.add_section("minio_config_selected")
         conf.set("minio_config_selected", "minio_config_id", "1")

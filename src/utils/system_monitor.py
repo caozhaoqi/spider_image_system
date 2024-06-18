@@ -180,10 +180,12 @@ def check_internet_connection():
         # 如果状态码是200，说明连接成功
         if response.status_code == 200:
             logger.info("Internet connect normal.")
+            constants.internet_connect_status = True
             return True
     except Exception as e:
         # 如果发生任何异常（例如连接错误），则输出错误
-        logger.error(f"Internet connect Error: {e}")
+        # logger.error(f"Internet connect Error: {e}")
+        constants.internet_connect_status = False
         return False
 
 
