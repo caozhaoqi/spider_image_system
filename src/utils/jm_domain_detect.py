@@ -176,7 +176,7 @@ def search_download_jm(actor):
 
 
 @logger.catch
-def jm_auto_spider_img_thread(self):
+def jm_auto_spider_img_thread():
     """
     auto spider img thread
     @:param self.
@@ -189,8 +189,8 @@ def jm_auto_spider_img_thread(self):
     spider_image_keyword, txt_file_list = get_image_keyword()
     if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
         logger.warning("Auto spider image null, please add keyword!")
-        if self:
-            self.sys_tips("Notice: spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字！")
+        # if self:
+        #     self.sys_tips("Notice: spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字！")
         return False
     # constants.spider_mode = 'auto'
     txt_index = 0
@@ -202,7 +202,7 @@ def jm_auto_spider_img_thread(self):
         for spider_image_keyword_item in spider_img_keyword_detail:
             logger.debug("Current spider kew word: " + str(spider_image_keyword_item.strip()))
             try:
-                search_download_jm(self, spider_image_keyword_item.strip())
+                search_download_jm(spider_image_keyword_item.strip())
             except Exception as e:
                 logger.error(f"Unknown error, detail: {e}")
 
