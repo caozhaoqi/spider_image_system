@@ -59,7 +59,7 @@ def sys_sleep_time(driver, sleep_time, img_flag):
         else:
             driver.implicitly_wait(sleep_time)
     except Exception as e:
-        logger.warning(f"sys_sleep_time unknown error, detail: {e} ")
+        logger.warning(f"Sys_sleep_time unknown error, detail: {e} ")
         return False
     return True
 

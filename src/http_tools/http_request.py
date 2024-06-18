@@ -40,19 +40,19 @@ def download_all_zip(url, save_dir):
             return True
         return False
     except FileNotFoundError as fnee:  # 处理文件不存在错误
-        logger.warning(f"target file not exists: {fnee}")
+        logger.warning(f"Target file not exists: {fnee}")
         return False
     except HTTPError as errh:  # 处理HTTP错误
-        logger.error(f"http error: {errh}")
+        logger.error(f"Http error: {errh}")
         return False
     except Timeout:  # 处理请求超时错误
-        logger.error("connection time out.")
+        logger.error("Connection time out.")
         return False
     except TooManyRedirects:  # 处理过多重定向错误
-        logger.error("max redirects.")
+        logger.error("Max redirects.")
         return False
     except Exception as e:  # 处理其他未知错误
-        logger.error(f"unknown error, detail: {e}")
+        logger.error(f"Unknown error, detail: {e}")
         return False
 
 
@@ -82,7 +82,7 @@ def extract_file(save_path, file_name):
                 logger.debug(f"Files extracted to {result_path}")
                 return result_path
         except Exception as e:
-            logger.warning(f"unknown error! detail: {e}")
+            logger.warning(f"Unknown error! detail: {e}")
             return None
     else:
         logger.debug(
@@ -107,10 +107,10 @@ def generate_gif_video(zip_file_list):
         else:
             result_path_list.append(unzip_path)
             logger.success(f"File extracted successfully to {unzip_path}.")
-    logger.info("start scan zip unzip img file.")
+    logger.info("Start scan zip unzip img file.")
     output_video_path = os.path.join(constants.data_path, zip_file_list[0].replace("zip", "video"))
     if not os.path.exists(output_video_path):
-        logger.warning("output video exists not, creating.")
+        logger.warning("Output video exists not, creating.")
         os.makedirs(output_video_path)
     for result_path_list_detail in result_path_list:
         img_list = []
@@ -125,11 +125,11 @@ def generate_gif_video(zip_file_list):
         if len(img_list) > 0:
             point_path, point_gif_name = os.path.split(result_path_list_detail)
             point_gif_video_name, ext = os.path.splitext(point_gif_name)
-            logger.info(f"start generate mp4 video. folder name: {point_gif_video_name}")
+            logger.info(f"Start generate mp4 video. folder name: {point_gif_video_name}")
             video_name = img_video_convert(img_list, output_video_path, point_gif_video_name)
             logger.success(f"video generate success! flag {video_name}")
     constants.unzip_generate_video_flag = False
-    logger.success(f"generate gif video success! file length: {len(result_path_list)}")
+    logger.success(f"Generate gif video success! file length: {len(result_path_list)}")
     return True
 
 
@@ -151,7 +151,7 @@ def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
                 width = image.shape[1]
             height = image.shape[0]
         except Exception as e:
-            logger.error("error! detail: " + "file name or path: " + image_path + ", error detail: " + str(e))
+            logger.error("Error! detail: " + "file name or path: " + image_path + ", error detail: " + str(e))
             continue
 
     if not os.path.exists(video_out_path):
@@ -160,11 +160,11 @@ def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
     fourcc = cv2.VideoWriter.fourcc(*'MJPG')
     video_name = video_out_path + "/" + point_gif_video_name + "_test.mp4"
     if os.path.exists(video_name):
-        logger.warning(f"video exists! name and path: {video_name}")
+        logger.warning(f"Video exists! name and path: {video_name}")
         return False
     video = cv2.VideoWriter(video_name, fourcc, int(output_video_fps), (width, height))  # 设置视频帧率、输出视频大小
     if not video.isOpened():
-        logger.debug("can't open video writer!")
+        logger.debug("Can't open video writer!")
         return False
 
     try:
@@ -199,7 +199,7 @@ def download_file_fun(url, filename):
     start_time = time.time()
     constants.download_finish_flag = False
     if os.path.exists(filename):
-        logger.warning(f"zip file already download! skip file name: {filename}")
+        logger.warning(f"Zip file already download! skip file name: {filename}")
         constants.download_finish_flag = True
         return True
     try:
@@ -230,9 +230,9 @@ def url_zip_all_process(zip_url_txt_list):
     :param zip_url_txt_list:
     :return:
     """
-    logger.info("get zip url txt in zip url.")
+    logger.info("Get zip url txt in zip url.")
     if len(zip_url_txt_list) == 0:
-        logger.warning("current data path null zip_txt file!")
+        logger.warning("Current data path null zip_txt file!")
         return False
     for zip_url_detail in zip_url_txt_list:
         txt_path, txt_name = os.path.split(zip_url_detail)
@@ -241,24 +241,24 @@ def url_zip_all_process(zip_url_txt_list):
         old_file_name = os.path.join(txt_path, zip_url_detail)
         if "_result" not in txt_file_name:
             new_file_name = os.path.join(txt_path, txt_file_name + "_result" + ext)
-            logger.warning(f"file: {new_file_name} not exists, create it.")
+            logger.warning(f"File: {new_file_name} not exists, create it.")
 
         else:
             new_file_name = txt_file_name + ext
 
         remove_duplicates_from_txt(old_file_name, new_file_name)
-        logger.success(f"remove duplicate file success: {zip_url_detail}")
+        logger.success(f"Remove duplicate file success: {zip_url_detail}")
         with open(new_file_name, 'r', encoding='utf-8', errors='replace') as f:
             zip_url_list = f.readlines()
         if len(zip_url_list) == 0:
-            logger.warning(f"txt file null, name：{zip_url_detail}")
+            logger.warning(f"Txt file null, name：{zip_url_detail}")
             continue
-        logger.info(f"start download all zip file! txt file name: {zip_url_detail}")
+        logger.info(f"Start download all zip file! txt file name: {zip_url_detail}")
         for zip_url in zip_url_list:
             if not download_all_zip(zip_url, txt_path):
                 continue
     constants.download_gif_zip_flag = False
-    logger.success(f"zip download file success! zip file length: {len(zip_url_txt_list)}")
+    logger.success(f"Zip download file success! zip file length: {len(zip_url_txt_list)}")
     return True
 
 
@@ -271,6 +271,6 @@ def unzip_generate_gif():
     """
     zip_file_list = scan_directory_zip(constants.data_path)
     if len(zip_file_list) == 0:
-        logger.warning("zip file not exists.")
+        logger.warning("Zip file not exists.")
         return False
     return generate_gif_video(zip_file_list)

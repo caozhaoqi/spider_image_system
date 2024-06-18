@@ -21,7 +21,7 @@ def get_proxy(url):
         response = requests.get(url)
     except Exception as e:
         response = None
-        logger.error(f"unknown error: {e}")
+        logger.error(f"Unknown error: {e}")
     return response
 
 
@@ -35,11 +35,11 @@ def get_proxy_item():
     while True:
         ret = get_proxy(get_proxy_api)
         if ret:
-            logger.info(f"get proxy host and port: {ret}")
+            logger.info(f"Get proxy host and port: {ret}")
             ret = ret.text
             break
         else:
-            logger.error("no proxy use, please modify config.ini file proxy_flag = False or check proxy server status!")
+            logger.error("No proxy use, please modify config.ini file proxy_flag = False or check proxy server status!")
             ret = None
             break
     return ret

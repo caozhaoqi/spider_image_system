@@ -200,7 +200,7 @@ def auto_spider_img_thread(self):
     if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
         logger.warning("Auto spider image null, please add keyword!")
         if self:
-            self.sys_tips("spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字！")
+            self.sys_tips("Notice: spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字！")
         return False
     constants.spider_mode = 'auto'
     txt_index = 0
@@ -443,7 +443,7 @@ def exit_save_data():
     """
     #     # 保存抓取进度 当有抓取任务时
     logger.warning("-------------------------------------------------------------")
-    logger.warning(f"-----sis-{constants.sis_server_version} exe will quit!-----------------")
+    logger.warning(f"-----SIS-{constants.sis_server_version} exe will quit!-----------------")
     logger.warning("-------------------------------------------------------------")
 
 
@@ -502,7 +502,7 @@ def model_detect_img():
             target=all_img_detect,
             args=(constants.data_path,))
         detect_img_folder_thread_obj.start()
-        logger.info("Start detect img !")
+        logger.info("Start detect img!")
     else:
         logger.error("Detecting img  please wait.")
 
@@ -518,7 +518,7 @@ def start_download_jm():
         # dialog_jm.showMaximized()
         dialog_jm.show()
         dialog_jm.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        logger.info("dialog_jm show!")
+        logger.info("Dialog_jm show!")
         constants.jm_dialog_visible = True
         dialog_jm.exec_()
     else:
@@ -540,4 +540,4 @@ def jm_domain_test_method():
         jm_domain_detectr_thread_obj.start()
         logger.info("Start detect jm domain!")
     else:
-        logger.error("Detecting  jm domain, please wait.")
+        logger.error("Detecting jm domain, please wait.")

@@ -309,7 +309,7 @@ def start_download_file_link(link):
     password: str | None = None
 
     if url == '' or url is None or not is_valid_url(url):
-        logger.warning(f"you input msg error! url: {url}")
+        logger.warning(f"You input msg error! url: {url}")
     else:
         _print('Starting, please wait...' + NEW_LINE)
         Main(url=url, password=password, max_workers=3)

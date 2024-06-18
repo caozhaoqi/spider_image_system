@@ -64,7 +64,7 @@ class KeywordDialog(QDialog):
         :return:
         """
         # 在这里你可以添加任何你需要在对话框关闭时执行的代码
-        logger.debug('keyword Dialog is closing!')
+        logger.debug('Keyword Dialog is closing!')
         # constants.edit_config_msg_visible = False
         # 调用基类的 closeEvent 方法以确保对话框正常关闭
         super(KeywordDialog, self).closeEvent(event)
@@ -88,7 +88,7 @@ def save_data(self):
     # 使用split()方法按','切割字符串
     split_string = keyword_txt.split(',')
     if not split_string or split_string == ['']:
-        logger.warning(f"not input keyword: {keyword_txt}")
+        logger.warning(f"Not input keyword: {keyword_txt}")
         return False
     full_file_path = os.path.join(auto_spider_file_path, file_name)
     # 打开文件以写入模式
@@ -97,6 +97,6 @@ def save_data(self):
         for item in split_string:
             file.write("%s\n" % item)
 
-    logger.success(f"add success, please re click spider menu start spider: {keyword_txt}")
+    logger.success(f"Add success, please re click spider menu start spider: {keyword_txt}")
     # super(KeywordDialog, self).closeEvent(event)
     self.close()

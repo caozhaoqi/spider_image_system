@@ -53,7 +53,7 @@ class JMDialog(QDialog):
         """
         # 读取输入框中的jm_id
         jm_id = self.jm_id_input.text()
-        if not jm_id and jm_id != "":
+        if jm_id and jm_id != "":
             # logger.debug(f'Download jm_id: {jm_id} s')
             download_jm_thread_obj = threading.Thread(
                 target=download_jm_thread,
@@ -68,7 +68,7 @@ class JMDialog(QDialog):
         :return:
         """
         # 在这里你可以添加任何你需要在对话框关闭时执行的代码
-        logger.debug('jm_dialog is cancel closing!')
+        logger.debug('JM_dialog is cancel closing!')
         constants.jm_dialog_visible = False
         # 调用基类的 closeEvent 方法以确保对话框正常关闭
         super(JMDialog, self).reject()
@@ -80,7 +80,7 @@ class JMDialog(QDialog):
         :return:
         """
         # 在这里你可以添加任何你需要在对话框关闭时执行的代码
-        logger.debug('jm dialog Dialog is close closing!')
+        logger.debug('JM_dialog is close closing!')
         constants.jm_dialog_visible = False
         # 调用基类的 closeEvent 方法以确保对话框正常关闭
         super(JMDialog, self).closeEvent(event)
@@ -93,10 +93,10 @@ def download_jm_thread(jm_id):
     :param jm_id:
     :return:
     """
-    logger.debug(f"start download jm_id: {jm_id}")
+    logger.debug(f"Start download jm_id: {jm_id}")
     jmcomic.download_album(jm_id)
     constants.jm_dialog_visible = False
-    logger.success(f"download jm {jm_id} finish.")
+    logger.success(f"Download jm {jm_id} finish.")
 
 #
 # if __name__ == '__main__':

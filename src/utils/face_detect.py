@@ -27,7 +27,7 @@ def face_detect(path, image_path):
 
     if folder_name is None:
         folder_name = 'unknown_name'
-        logger.warning('folder_name is None, default use unknown_name.')
+        logger.warning('Folder_name is None, default use unknown_name.')
 
     base_path = os.path.join(path, "face_detect_result")
     base_path = os.path.join(base_path, folder_name)
@@ -38,14 +38,14 @@ def face_detect(path, image_path):
 
     if not os.path.exists(img_file_path):
         os.makedirs(img_file_path)
-        logger.warning("face detect split_face dir not exists, create it.")
+        logger.warning("Face detect split_face dir not exists, create it.")
     if not os.path.exists(img_file_path_line):
         os.makedirs(img_file_path_line)
-        logger.warning(f"face detect red_line dir not exists, create it: {img_file_path}.")
+        logger.warning(f"Face detect red_line dir not exists, create it: {img_file_path}.")
 
     # 只生成没有的
     if os.path.exists(img_file_name) or os.path.exists(img_file_name_line):
-        logger.warning(f"{img_file_name} already exists, will skip!")
+        logger.warning(f"FILE {img_file_name} already exists, will skip!")
         return False
     try:
         face_xml_path = get_data_file("xml_data/haarcascade_frontalface_default.xml")
@@ -135,9 +135,9 @@ def save_face(img_file_name, img_file_name_line, img, faces, gray, eye_cascade):
         cv2.imwrite(img_file_name, faces_image)
         cv2.imwrite(img_file_name_line, img)
     except Exception as e:
-        logger.error(f"unknown error, detail: {e}, name: {img_file_name[-27:]}")
+        logger.error(f"Unknown error, detail: {e}, name: {img_file_name[-27:]}")
         return False
-    logger.success(f"save success, name: {img_file_name[-27:]}")
+    logger.success(f"Save success, name: {img_file_name[-27:]}")
     return True
 
 
@@ -152,14 +152,14 @@ def face_detect_result(path):
     img_list = find_images(path)  # 10 ms
     # 2024-03-01 14:12:04.065162
     if not img_list:
-        logger.warning("cur dir data path not image!")
+        logger.warning("Cur dir data path not image!")
         return False
     for img in img_list:
         if not face_detect(path, img):
             continue
 
     end_time = time.time()
-    logger.success(f'generate finish, data path: {path}, cost time: {int((end_time - start_time))} seconds')
+    logger.success(f'Generate finish, data path: {path}, cost time: {int((end_time - start_time))} seconds')
 
     constants.face_detect_flag = False
 

@@ -27,7 +27,7 @@ def log_record():
         handlers=[{"sink": sys.stdout, "level": sis_log_level, "format": format_record}])
     logger.add(LOG_DIR, encoding='utf-8', rotation="00:00", retention="30 days", compression="zip")
     logger.info("------------------------------log start record-------------------------------")
-    logger.debug('current SIS log file path: ' + LOG_DIR)
+    logger.debug('Current SIS log file path: ' + LOG_DIR)
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
     return True
 
@@ -40,15 +40,15 @@ def check_version_update():
     """
     lasted_version = run.constants.sis_server_version
     if compare_versions_with_pre_release(run.constants.sis_server_version, lasted_version) != 0:
-        logger.info(f"find new version: {lasted_version}, will update software version.")
+        logger.info(f"Find new version: {lasted_version}, will update software version.")
         if download_new_version(lasted_version):
-            logger.success("new version download success, sis will quit! please run new version software!")
+            logger.success("New version download success, sis will quit! please run new version software!")
             return True
         else:
-            logger.warning(f"unknown error, will continued run: {run.constants.sis_server_version} version software!")
+            logger.warning(f"Unknown error, will continued run: {run.constants.sis_server_version} version software!")
             return False
     else:
-        logger.info(f"current version: {run.constants.sis_server_version} is newest version!")
+        logger.info(f"Current version: {run.constants.sis_server_version} is newest version!")
         return False
 
 
@@ -58,17 +58,17 @@ def sys_info_select():
     sys info print
     :return:
     """
-    logger.info("start print current system info: ")
-    logger.info("python version: " + sys.version)
-    logger.info("os and version info: " + platform.platform())
-    logger.info('os version: ' + platform.version())
-    logger.info('os name: ' + platform.system())
-    logger.info('os bit: ' + str(platform.architecture()))
-    logger.info('pc type: ' + platform.machine())
-    logger.info('pc name: ' + platform.node())
+    logger.info("Start print current system info: ")
+    logger.info("Python version: " + sys.version)
+    logger.info("OS and version info: " + platform.platform())
+    logger.info('OS version: ' + platform.version())
+    logger.info('OS name: ' + platform.system())
+    logger.info('OS bit: ' + str(platform.architecture()))
+    logger.info('PC type: ' + platform.machine())
+    logger.info('PC name: ' + platform.node())
     logger.info('CPU type: ' + platform.processor())
-    logger.info('pc other info: ' + str(platform.uname()))
-    logger.info("end print current system info. ")
+    logger.info('PC other info: ' + str(platform.uname()))
+    logger.info("End print current system info. ")
     # logger.info("now, start check version update update!")
     # check_version_update()
 
@@ -80,7 +80,7 @@ def check_version():
     :return:
     """
     # logger.info("-------------start print SIS version info---------------------------")
-    logger.info("system started, current SIS version: " + sis_server_version)
+    logger.info("System started, current SIS version: " + sis_server_version)
     # logger.info("--------------------------------------------------------------------")
     # logger.info("current version build time: " + build_date)
     # logger.info("--------------------------------------------------------------------")

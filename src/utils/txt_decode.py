@@ -25,7 +25,7 @@ def convert_txt(input_file_path, output_file_path):
         with codecs.open(input_file_path, 'r', encoding='utf-8', errors='replace') as file:
             read_lines.extend(file.readlines())
     except Exception as e:
-        logger.debug(f"error, detail: {e}")
+        logger.debug(f"Error, detail: {e}")
         # exit(1)
     # read_lines = remove_non_printable_chars(read_lines)
     with codecs.open(output_file_path, 'w', encoding='utf-8', errors='replace') as cleaned_file:
@@ -33,7 +33,7 @@ def convert_txt(input_file_path, output_file_path):
             # if line_num not in corrupt_lines:
             cleaned_file.write(line)
 
-    logger.debug(f"already：cleaned: {output_file_path}")
+    logger.debug(f"Already：cleaned: {output_file_path}")
 
 
 @logger.catch
@@ -63,6 +63,6 @@ def scan_txt(path):
     img_txt_files = []
     for root, dirs, files in os.walk(path):
         for file in files:
-            if file.endswith('spider_finished_keyword.txt') or file.endswith('download_finished_txt.txt'):
+            if file.endswith('Spider_finished_keyword.txt') or file.endswith('download_finished_txt.txt'):
                 img_txt_files.append(os.path.join(root, file))
     return img_txt_files

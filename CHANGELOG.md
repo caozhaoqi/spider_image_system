@@ -6,6 +6,7 @@
 - update single spider image code
 - add jm id download image
 - add detect jm domain code
+- reduce and update log output
 
 ## v1.1.7-beta.2.240617
 ### 2024/6/17

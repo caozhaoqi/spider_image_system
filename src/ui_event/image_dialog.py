@@ -46,7 +46,7 @@ class ImageDialog(QDialog):
         self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
             constants.online_img_list)))
         if len(constants.online_img_list) <= 0:
-            logger.warning("cur data dir no image!")
+            logger.warning("Cur data dir no image!")
         else:
             self.show_image_view_threading(constants.online_img_list[0])
 
@@ -57,10 +57,10 @@ class ImageDialog(QDialog):
         :return:
         """
         if not constants.online_show_image:
-            logger.warning("loading image, please wait.")
+            logger.warning("Loading image, please wait.")
             return False
         if len(constants.online_img_list) <= 0:
-            logger.warning("function show_previous_image, cur data dir no image!")
+            logger.warning("Function show_previous_image, cur data dir no image!")
             return False
         if constants.cur_show_img_index > 0:
             constants.cur_show_img_index -= 1
@@ -68,7 +68,7 @@ class ImageDialog(QDialog):
             constants.cur_show_img_index = len(constants.online_img_list) - 1
         constants.online_show_image = False
         self.show_image_view_threading(constants.online_img_list[constants.cur_show_img_index])
-        logger.debug(f"function show_previous_image, current page: {constants.cur_show_img_index}")
+        logger.debug(f"Function show_previous_image, current page: {constants.cur_show_img_index}")
         pass
 
     @logger.catch
@@ -78,10 +78,10 @@ class ImageDialog(QDialog):
         :return:
         """
         if not constants.online_show_image:
-            logger.warning("loading image, please wait.")
+            logger.warning("Loading image, please wait.")
             return False
         if len(constants.online_img_list) <= 0:
-            logger.warning("function show_next_image, cur data dir no image!")
+            logger.warning("Function show_next_image, cur data dir no image!")
             return False
         if constants.cur_show_img_index < len(constants.online_img_list) - 1:
             constants.cur_show_img_index += 1
@@ -89,7 +89,7 @@ class ImageDialog(QDialog):
             constants.cur_show_img_index = 0
         constants.online_show_image = False
         self.show_image_view_threading(constants.online_img_list[constants.cur_show_img_index])
-        logger.debug(f"function show_next_image, current page: {constants.cur_show_img_index}")
+        logger.debug(f"Function show_next_image, current page: {constants.cur_show_img_index}")
         pass
 
     @logger.catch
@@ -102,13 +102,13 @@ class ImageDialog(QDialog):
         """
 
         if len(constants.online_img_list) <= 0:
-            logger.warning("function show_image_view, cur data dir no image!")
+            logger.warning("Function show_image_view, cur data dir no image!")
             return False
         spider_thread_obj = threading.Thread(
             target=self.show_image_view,
             args=(image_path,))
         spider_thread_obj.start()
-        logger.info("show img thread stating.")
+        logger.info("Show img thread stating.")
 
     @logger.catch
     def show_image_view(self, image_path, _=None):
@@ -127,13 +127,13 @@ class ImageDialog(QDialog):
                 self.label.resize(pixmap.width(), pixmap.height())
                 self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
                     constants.online_img_list)))
-                logger.success(f"loading image: {image_path[-27:].strip()} success!")
+                logger.success(f"Loading image: {image_path[-27:].strip()} success!")
                 constants.online_show_image = True
             else:
-                logger.warning(f"error, Invalid image format! response content: {response}")
+                logger.warning(f"Error, Invalid image format! response content: {response}")
         except Exception as e:
             constants.online_show_image = True
-            logger.error(f"unknown error, detail: {e}")
+            logger.error(f"Unknown error, detail: {e}")
 
     @logger.catch
     def closeEvent(self, event):

@@ -26,7 +26,7 @@ def exists_keyword_finish_txt(keyword):
         with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
             txt_list = f.readlines()
     except Exception as e:
-        logger.warning(f"unknown error, detail: {e}")
+        logger.warning(f"Unknown error, detail: {e}")
         return False
     for txt in txt_list:
         if txt_keyword in txt:
@@ -40,8 +40,8 @@ def exists_keyword_finish_txt(keyword):
         # 将新列表写回文件，覆盖原内容
         with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
             f.writelines(filtered_txt_list)
-        logger.debug(f"already delete keyword_img: {txt_keyword} download_finish_txt.txt!")
+        logger.debug(f"Already delete keyword_img: {txt_keyword} download_finish_txt.txt!")
         return True
     else:
-        logger.info(f"not found exists keyword: {keyword} from download_finish_txt.txt!")
+        logger.info(f"Not found exists keyword: {keyword} from download_finish_txt.txt!")
         return False

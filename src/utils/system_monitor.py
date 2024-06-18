@@ -60,7 +60,7 @@ def check_memory_usage():
         logger.error(
             "Warning: Memory usage is above {}%. Current usage: {}%".format(MEMORY_THRESHOLD * 100, memory_percent))
         if reduce_sys_res_usage():
-            logger.success("reduce memory usage success on win32 system!")
+            logger.success("Reduce memory usage success on win32 system!")
     last_memory_usage = memory_percent
 
 
@@ -76,7 +76,7 @@ def check_cpu_usage():
     if cpu_percent / 100 > CPU_THRESHOLD:
         logger.error("Warning: CPU usage is above {}%. Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
         if reduce_sys_res_usage():
-            logger.success("reduce cpu usage success on win32 system!")
+            logger.success("Reduce cpu usage success on win32 system!")
     last_cpu_usage = cpu_percent
 
 
@@ -89,7 +89,7 @@ def reduce_sys_res_usage():
     try:
         if get_cur_os() == "win32":
             if not kill_process_win('taskkill /im chrome.exe /F'):
-                logger.warning("start force kill chrome.exe process.")
+                logger.warning("Start force kill chrome.exe process.")
                 kill_process_win("taskkill /im chrome.exe /F /T")
             # kill_process_win('taskkill /im chromedriver.exe /F')
             # kill_process_win('taskkill /im webdriver.exe /F')
@@ -99,7 +99,7 @@ def reduce_sys_res_usage():
             kill_process_linux('webdriver')
         return True
     except Exception as e:
-        logger.warning(f"reduce cpu usage fail, detail: {e}")
+        logger.warning(f"Reduce cpu usage fail, detail: {e}")
         return False
 
 
@@ -242,10 +242,10 @@ def check_top_processes():
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             # 进程可能已经结束，或者我们没有权限访问它
             continue
-    logger.warning("-----------------start output system resources msg---------------------------------")
+    logger.warning("-----------------Start output system resources msg---------------------------------")
     for proc in top_processes:
         logger.info(proc)
-    logger.warning("-----------------end output system resources msg------------------------------------")
+    logger.warning("-----------------End output system resources msg------------------------------------")
     return True
 
 
@@ -257,9 +257,9 @@ def sys_mon():
 
     :return:
     """
-    logger.info("system monitor start...")
+    logger.info("System monitor start...")
 
-    logger.info(f"cur sys res detect time: {constants.detect_timeout_auto} s.")
+    logger.info(f"Cur sys res detect time: {constants.detect_timeout_auto} s.")
 
     while True:
         # 等待一段时间再次检查（例如，每秒检查一次）

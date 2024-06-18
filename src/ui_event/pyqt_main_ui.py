@@ -44,9 +44,9 @@ def open_data_path_method():
             import subprocess
             subprocess.Popen(['xdg-open', constants.data_path])
 
-        logger.success(f"open data path: {constants.data_path} success!")
+        logger.success(f"Open data path: {constants.data_path} success!")
     except Exception as e:
-        logger.error(f"open data path: {constants.data_path} fail, detail: {e}")
+        logger.error(f"Open data path: {constants.data_path} fail, detail: {e}")
 
 
 class UIMainWindows(QMainWindow):
@@ -108,7 +108,7 @@ class UIMainWindows(QMainWindow):
         """
         if index == 1:
             scan_populate_mp4_list(self)
-            logger.info("video clicked, loading mp4 data.")
+            logger.info("Video clicked, loading mp4 data.")
 
     @logger.catch
     def jump_point_image_click(self, _=None):
@@ -118,26 +118,26 @@ class UIMainWindows(QMainWindow):
         """
         images_list = find_images(constants.data_path)
         if len(images_list) == 0:
-            logger.warning("jump image error, no image!")
+            logger.warning("Jump image error, no image!")
             return False
         image_keyword = self.image_page.text()
         if image_keyword == '' or image_keyword is None:
-            logger.warning("input keyword error!")
+            logger.warning("Input keyword error!")
             return False
         numbers = re.findall(r'\d+', image_keyword)
         letters = re.findall('[a-zA-Z]+', image_keyword)
-        logger.info(f"you input search keyword: {numbers}, {letters}")
+        logger.info(f"You input search keyword: {numbers}, {letters}")
         if numbers[0] and len(letters) == 0:
             # 存在数字 并且不存在字母
-            logger.info(f"start jump image page: {image_keyword}")
+            logger.info(f"Start jump image page: {image_keyword}")
             self.jump_point_image_page(int(image_keyword))
         else:
-            logger.info(f"start jump image page, image name keyword {image_keyword}")
+            logger.info(f"Start jump image page, image name keyword {image_keyword}")
             for index, image_content in enumerate(images_list):
                 if image_keyword in image_content:
                     self.jump_point_image_page(index)
                     break
-        logger.info(f"jump success! current page {numbers[0]}")
+        logger.info(f"Jump success! current page {numbers[0]}")
 
     # @staticmethod
     @logger.catch
@@ -151,10 +151,10 @@ class UIMainWindows(QMainWindow):
             current_image_index = (current_image_index + 1) % len(image_files)
             show_image(self, image_files[current_image_index])
             self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
-            logger.info("next image show, current page: " + str(current_image_index) + ", count page: " + str(
+            logger.info("Next image show, current page: " + str(current_image_index) + ", count page: " + str(
                 len(image_files)))
         except Exception as e:
-            logger.warning("dir not image, or other err! detail: " + str(e))
+            logger.warning("Dir not image, or other err! detail: " + str(e))
 
     @logger.catch
     def before_img(self, _=None):
@@ -167,10 +167,10 @@ class UIMainWindows(QMainWindow):
             current_image_index = (current_image_index - 1 + len(image_files)) % len(image_files)
             show_image(self, image_files[current_image_index])
             self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
-            logger.info("after image show, current page: " + str(current_image_index) + ", count page: " + str(
+            logger.info("After image show, current page: " + str(current_image_index) + ", count page: " + str(
                 len(image_files)))
         except Exception as e:
-            logger.warning("dir not image, or other err! detail: " + str(e))
+            logger.warning("Dir not image, or other err! detail: " + str(e))
 
     @logger.catch
     def jump_point_image_page(self, index, _=None):
@@ -186,10 +186,10 @@ class UIMainWindows(QMainWindow):
             current_image_index = index
             show_image(self, image_files[current_image_index])
             self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
-            logger.info("after image show, current page: " + str(current_image_index) + ", count page: " + str(
+            logger.info("After image show, current page: " + str(current_image_index) + ", count page: " + str(
                 len(image_files)))
         except Exception as e:
-            logger.warning("dir not image, or other err! detail: " + str(e))
+            logger.warning("Dir not image, or other err! detail: " + str(e))
 
     @logger.catch
     def input_keyword_process(self, _=None):
@@ -203,15 +203,15 @@ class UIMainWindows(QMainWindow):
             constants.spider_mode = 'manual'
             key_word = self.file_text.text()
             if key_word == '' or key_word is None:
-                logger.warning("input keyword empty or error!")
+                logger.warning("Input keyword empty or error!")
                 return False
-            logger.debug("you input keyword is: " + str(key_word))
+            logger.debug("You input keyword is: " + str(key_word))
             spider_thread_obj = threading.Thread(
                 target=spider_artworks_url,
                 args=(self, key_word,))
             spider_thread_obj.start()
             constants.stop_spider_url_flag = False
-            logger.info("spider img thread starting... ")
+            logger.info("Spider img thread starting... ")
 
     @logger.catch
     def input_keyword_process_3(self, _=None):
@@ -262,7 +262,7 @@ class UIMainWindows(QMainWindow):
             self.trayIcon.showMessage("成功提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
         else:
             logger.warning("ERROR: windowsMessage()")
-        logger.success('show success tips.')
+        logger.success('Show success tips.')
 
     @logger.catch
     def error_tips(self, operate_name, _=None):
@@ -278,7 +278,7 @@ class UIMainWindows(QMainWindow):
             self.trayIcon.showMessage("错误提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
         else:
             logger.warning("ERROR: windowsMessage()")
-        logger.error('show error tips.')
+        logger.error('Show error tips.')
 
     @logger.catch
     def sys_tips(self, content, _=None):
@@ -293,7 +293,7 @@ class UIMainWindows(QMainWindow):
             self.trayIcon.showMessage("系统提示", content, QtGui.QIcon("./favicon.ico"), 10000)
         else:
             logger.warning("ERROR: windowsMessage()")
-        logger.warning('show sys tips.')
+        logger.warning('Show sys tips.')
 
     @logger.catch
     def download_file_thread(self, _=None):
@@ -309,7 +309,7 @@ class UIMainWindows(QMainWindow):
                 args=(self,))
             spider_thread_obj.start()
             constants.stop_download_image_flag = False
-            logger.info("download img thread starting... ")
+            logger.info("Download img thread starting... ")
 
     @logger.catch
     def set_video_position_click(self, position, _=None):
@@ -320,9 +320,9 @@ class UIMainWindows(QMainWindow):
         """
         try:
             cv2.setTrackbarPos('Position', 'Video', position)
-            logger.info("current position: " + str(position * 1000))
+            logger.info("Current position: " + str(position * 1000))
         except Exception as e:
-            logger.error("error, detail: " + str(e))
+            logger.error("Error, detail: " + str(e))
             self.error_tips("快进视频操作")
 
     @logger.catch
@@ -360,7 +360,7 @@ class UIMainWindows(QMainWindow):
                 target=process_images_thread,
                 args=(self,))
             self.images_convert_thread.start()
-            logger.success("spider image process starting. ")
+            logger.success("Spider image process starting. ")
             constants.process_image_flag = True
         pass
 
@@ -375,9 +375,9 @@ class UIMainWindows(QMainWindow):
             self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio,
                                                                    Qt.SmoothTransformation)
             self.label.setPixmap(self.pixmap_image_tab1)
-            logger.info(f"scale zoom in new_size: {new_size}")
+            logger.info(f"Scale zoom in new_size: {new_size}")
         except Exception as e:
-            logger.warning(f"unknown error! detail: {e}")
+            logger.warning(f"Unknown error! detail: {e}")
 
     @logger.catch
     def zoom_out_method(self, _=None):
@@ -390,9 +390,9 @@ class UIMainWindows(QMainWindow):
             self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio,
                                                                    Qt.SmoothTransformation)
             self.label.setPixmap(self.pixmap_image_tab1)
-            logger.info(f"scale zoom out new_size: {new_size}")
+            logger.info(f"Scale zoom out new_size: {new_size}")
         except Exception as e:
-            logger.warning(f"unknown error! detail: {e}")
+            logger.warning(f"Unknown error! detail: {e}")
 
     @logger.catch
     def eventFilter(self, obj, event, _=None):
@@ -425,7 +425,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if constants.download_gif_zip_flag:
-            logger.warning("download_gif_zip ing.")
+            logger.warning("Download_gif_zip ing.")
             self.error_tips("下载动态操作")
         else:
             self.download_gif_zip_thread = threading.Thread(
@@ -433,7 +433,7 @@ class UIMainWindows(QMainWindow):
                 args=(scan_directory_zip_txt(constants.data_path),))
             self.download_gif_zip_thread.start()
             constants.download_gif_zip_flag = True
-            logger.success("success download zip file thread start")
+            logger.success("Success download zip file thread start")
 
     @logger.catch
     def unzip_generate_video_click(self, _=None):
@@ -442,7 +442,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if constants.unzip_generate_video_flag:
-            logger.warning("len(zip_url_txt) is null.")
+            logger.warning("FILE len(zip_url_txt) is null.")
             self.error_tips("解压生成gif视频操作")
         else:
             self.unzip_generate_video_thread = threading.Thread(
@@ -450,7 +450,7 @@ class UIMainWindows(QMainWindow):
                 args=())
             self.unzip_generate_video_thread.start()
             constants.unzip_generate_video_flag = True
-            logger.success("success unzip generate file thread start")
+            logger.success("Success unzip generate file thread start")
 
     @logger.catch
     def download_video_zip_click(self, _=None):
@@ -459,18 +459,18 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if constants.download_video_link_flag:
-            logger.warning("already downloading file, please wait！")
+            logger.warning("Already downloading file, please wait！")
             self.error_tips("下载gif压缩包操作")
         else:
             logger.info("start download file!")
             link = self.edt_input_file_text_3.text()
-            logger.info(f"you input link: {link}")
+            logger.info(f"You input link: {link}")
             self.start_download_file_link_thread = threading.Thread(
                 target=start_download_file_link,
                 args=(link,))
             constants.download_video_link_flag = True
             self.start_download_file_link_thread.start()
-            logger.success("success download file thread start")
+            logger.success("Success download file thread start")
 
     # def closeEvent(self, event):
     #     """
@@ -491,7 +491,7 @@ class UIMainWindows(QMainWindow):
             target=open_data_path_method,
             args=())
         self.open_data_path_thread.start()
-        logger.success("success open data path start")
+        logger.success("Success open data path start")
 
     @logger.catch
     def show_log_output(self, _=None):
@@ -575,8 +575,8 @@ class UIMainWindows(QMainWindow):
                                                       QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if checkFlag == QtWidgets.QMessageBox.Yes:
             on_last_window_closed()
-            logger.success(f"spider image system {constants.sis_server_version} will quit!")
-            logger.info("------------------------------log end record-------------------------------")
+            logger.success(f"Spider image system {constants.sis_server_version} will quit!")
+            logger.info("------------------------------Log end record-------------------------------")
             QtWidgets.qApp.quit()
         else:
             pass

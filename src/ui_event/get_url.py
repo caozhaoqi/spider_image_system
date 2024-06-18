@@ -38,12 +38,12 @@ def save_img_url(self, driver, key_word, cur_page):
     cdds = [os.path.join(root, _) for root, dirs, files in os.walk(data_path) for _ in files if
             _.endswith(key_word_pinyin + "_result_url.txt")]
     for cdds_path in cdds:
-        logger.debug("save name: " + str(cdds_path))
+        logger.debug("Save name: " + str(cdds_path))
         with open(cdds_path, 'r', encoding='utf-8') as f:
             for line in f:
                 url = line.strip()
                 if url and not constants.stop_spider_url_flag:
-                    logger.info(f"------start spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
+                    logger.info(f"------Start spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
                     if self:
                         self.spider_progress_show_label.setText(f"抓取关键字: {key_word}, 页码: {cur_page},"
                                                                 f" 抓取图片名: {url[-9:]},"
@@ -51,7 +51,7 @@ def save_img_url(self, driver, key_word, cur_page):
                     if not artwork_to_image(key_word_pinyin, driver, url):
                         break
                 else:
-                    logger.warning("stop spider url! save_img url.")
+                    logger.warning("Stop spider url! save_img url.")
                     return False
     return True
 
@@ -68,14 +68,14 @@ def artwork_to_image(key_word_pinyin, driver, url):
     try:
         driver.get(url)
         if driver.title == constants.ban_content:
-            logger.warning("error! will exit: cur visit domain blocked.")
+            logger.warning("Error! will exit: cur visit domain blocked.")
             constants.firewall_flag = True
             return False
     except Exception as e:
-        logger.warning(f"unknown error: type: {type(e).__name__}")
+        logger.warning(f"Unknown error: type: {type(e).__name__}")
         return False
     if open_look_all(driver):
-        logger.success(f"click look all {key_word_pinyin} success! pid: {url[-9:]}")  # 116299335
+        logger.success(f"Click look all {key_word_pinyin} success! pid: {url[-9:]}")  # 116299335
     # 抓取动图link
     if constants.spider_mode == 'manual':
         # 手动模式滑动页面 自动模式不滑动
@@ -87,7 +87,7 @@ def artwork_to_image(key_word_pinyin, driver, url):
         save_img_element(driver, key_word_pinyin)
         # logger.info(f"------end spider pid: {url[-9:]} image, keyword: {key_word_pinyin}.------")
     except Exception as e:
-        logger.warning(f"unknown error, type: {type(e).__name__}")
+        logger.warning(f"Unknown error, type: {type(e).__name__}")
         return False
     return True
 
@@ -111,7 +111,7 @@ def save_img_element(driver, key_word_pinyin):
                 else:
                     result = filter_exists_images(key_word_pinyin, image_url, "_img")
                     if result:
-                        logger.warning(f"image src already exists: {key_word_pinyin}!")
+                        logger.warning(f"Image src already exists: {key_word_pinyin}!")
                         continue
                     driver.execute_script("return arguments[0].src;", image_element)
                     image_filename = os.path.basename(image_url)  # 获取图片文件名
@@ -121,16 +121,16 @@ def save_img_element(driver, key_word_pinyin):
                     constants.spider_images_current_count += 1
                     # 已获取img 数量自增 仅在此统计
                     write_url_txt(data_path + "/img_url/", key_word_pinyin + "_img", image_url)
-                    logger.debug(f"save: {image_filename}, save num: {constants.spider_images_current_count}")
+                    logger.debug(f"Save: {image_filename}, save num: {constants.spider_images_current_count}")
             except Exception as e:
-                logger.warning(f"unknown error, will skip cur loop, execute next loop detail, type: {type(e).__name__}")
+                logger.warning(f"Unknown error, will skip cur loop, execute next loop detail, type: {type(e).__name__}")
                 # driver.quit()
                 if type(e).__name__ == "WebDriverException":
                     logger.error("WebDriverException, loop will quit!")
                     break
                 continue
     except Exception as e:
-        logger.warning(f"unknown error, type: {type(e).__name__}")
+        logger.warning(f"Unknown error, type: {type(e).__name__}")
 
 
 @logger.catch
@@ -175,10 +175,10 @@ def clear_cache_refresh(driver):
         driver.close()  # close this tab
         driver.switch_to.window(driver.window_handles[0])  # switch back
 
-        logger.info("clear cache finished!")
+        logger.info("Clear cache finished!")
 
     except Exception as e:
-        logger.warning(f"unknown error, type: {type(e).__name__}")
+        logger.warning(f"Unknown error, type: {type(e).__name__}")
 
 
 @logger.catch
@@ -189,13 +189,13 @@ def detect_download_working(self):
     """
     if constants.scheduled_download_program_flag:
         if constants.stop_download_image_flag:
-            logger.debug("start download image threading")
+            logger.debug("Start download image threading")
             spider_thread_obj = threading.Thread(
                 target=download_img_txt,
                 args=(None,))
             spider_thread_obj.start()
             constants.stop_download_image_flag = False
-            logger.info("download img thread starting(detect download not start auto start download image)... ")
+            logger.info("Download img thread starting(detect download not start auto start download image)... ")
     # pass
 
 
@@ -211,10 +211,10 @@ def spider_artworks_url(self, key_word):
     driver, url, cur_page = spider_param_config(key_word)
     if driver is None and url is None and cur_page is None:
         constants.stop_spider_url_flag = True
-        logger.info("spider single image end, not execute follow operate!")
+        logger.info("Spider single image end, not execute follow operate!")
         return True
     elif driver is None:
-        logger.warning("driver get error, will continue next keyword.")
+        logger.warning("Driver get error, will continue next keyword.")
         return False
     # 处理 当抓取关键词存在于download_finish_txt.txt中,删除该关键词，以方便下次下载
     exists_keyword_finish_txt(key_word)
@@ -223,20 +223,20 @@ def spider_artworks_url(self, key_word):
         if key_word_flag:
             cur_page = int(last_page) + 1
             logger.warning(
-                f"last already spider: {key_word.strip()} and page: {last_page.strip()}, next page: {cur_page}")
+                f"Last already spider: {key_word.strip()} and page: {last_page.strip()}, next page: {cur_page}")
         if constants.stop_spider_url_flag:
-            logger.warning("stop spider url, get url spider artwork url.")
+            logger.warning("Stop spider url, get url spider artwork url.")
             break
         url_detail = url_process_page(url, current_page=cur_page)
         if self:
             self.spider_progress_show_label.setText(f"抓取关键字: {key_word}, 页码: {cur_page},"
                                                     f" 已抓取数目: {constants.spider_images_current_count}")
             self.sys_tips(f"抓取关键词: {key_word}中(*^▽^*)...")
-        logger.info("current use url: " + str(url_detail))
+        logger.info("Current use url: " + str(url_detail))
         try:
             driver.get(url_detail)
             driver_finish_star_time = time.time()
-            logger.info(f"keyword: {key_word}, start chrome cost: {driver_finish_star_time - driver_start_time} s")
+            logger.info(f"Keyword: {key_word}, start chrome cost: {driver_finish_star_time - driver_start_time} s")
             # driver.implicitly_wait(search_delta_time)
             sys_sleep_time(driver, search_delta_time, True)
             # 检测下载进程是否工作
@@ -244,12 +244,12 @@ def spider_artworks_url(self, key_word):
             if driver.title == constants.ban_content or driver.title == constants.visit_url \
                     or driver.title == '' or driver.title == '请稍候…':
                 logger.warning(
-                    f"error! will exit: cur visit domain blocked, or visit url: {constants.visit_url} not visit!")
+                    f"Error! will exit: cur visit domain blocked, or visit url: {constants.visit_url} not visit!")
                 constants.firewall_flag = True
                 break
-            logger.debug("start load href save url to txt.")
+            logger.debug("Start load href save url to txt.")
         except Exception as e:
-            logger.warning(f"unknown error: type: {type(e).__name__}, will skip spider!")
+            logger.warning(f"Unknown error: type: {type(e).__name__}, will skip spider!")
             break
         load_save_flag = load_href_save(driver, key_word)
         if load_save_flag == 1:
@@ -258,35 +258,35 @@ def spider_artworks_url(self, key_word):
                     break
                 record_finish_keyword(key_word, cur_page)
                 # cur_page += 1
-                logger.success("save img all finish, current page:  " + str(cur_page))
+                logger.success("Save img all finish, current page:  " + str(cur_page))
 
             except NoSuchWindowException as nswe:
-                logger.warning("chrome force exit! detail:" + str(nswe))
+                logger.warning("Chrome force exit! detail:" + str(nswe))
         elif load_save_flag == 2:
             # all pid exists skip, spider next page image
             record_finish_keyword(key_word, cur_page)
             # cur_page += 1
-            logger.warning("all pid exists skip, spider next page image, current page:  " + str(cur_page))
+            logger.warning("All pid exists skip, spider next page image, current page:  " + str(cur_page))
 
             keyword_count = keyword_times(key_word, cur_page)
             if keyword_count > 2:
-                logger.warning(f"cur keyword count: {keyword_count} > 2 , will spider next keyword! ")
+                logger.warning(f"Cur keyword count: {keyword_count} > 2 , will spider next keyword! ")
                 break
         else:
-            logger.warning("skip spider loop!")
+            logger.warning("Skip spider loop!")
             break
     if self:
         # stop spider image
         self.spider_progress_show_label.setText("0/0")
         self.success_tips(f"关键词: {key_word}, 图片爬取操作")
     else:
-        logger.success("spider image operate success finished!")
+        logger.success("Spider image operate success finished!")
     if constants.spider_mode == 'manual':
         constants.stop_spider_url_flag = True
     try:
-        logger.warning(f"google chrome will exit! chrome title: {driver.title} ")
+        logger.warning(f"Google chrome will exit! chrome title: {driver.title} ")
     except Exception as e:
-        logger.warning(f"google chrome will exit! unknown error, type: {type(e).__name__},")
+        logger.warning(f"Google chrome will exit! unknown error, type: {type(e).__name__},")
     record_end_spider_image_keyword(cur_page=cur_page, key_word=key_word)
     clear_cache_refresh(driver)
     driver.quit()
@@ -321,7 +321,7 @@ def load_href_save(driver, key_word):
                 if constants.spider_images_current_count >= int(spider_images_max_count) and constants.spider_mode \
                         == 'manual':
                     logger.warning(
-                        "spider image max value, current value: " + str(constants.spider_images_current_count))
+                        "Spider image max value, current value: " + str(constants.spider_images_current_count))
                     constants.spider_images_current_count = 0
                     constants.stop_spider_url_flag = False
                     break
@@ -329,13 +329,13 @@ def load_href_save(driver, key_word):
                 # logger.warning(f"spider url stop！cur spider image_element {image_element}")
                 break
         if url_list_save(key_word_pinyin, image_urls_list):
-            logger.success("save url and remove duplicates content success!")
+            logger.success("Save url and remove duplicates content success!")
             return 1
         elif len(image_urls_list) == len(image_urls_exists_list):
-            logger.warning(f"cur page image already save, will spider next page! chrome title: {driver.title}")
+            logger.warning(f"Cur page image already save, will spider next page! chrome title: {driver.title}")
             return 2
         else:
             return 3
     except Exception as un_e:
-        logger.warning(f"unknown error, type: {type(un_e).__name__}.")
+        logger.warning(f"Unknown error, type: {type(un_e).__name__}.")
         return 0

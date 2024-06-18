@@ -111,7 +111,7 @@ def download_new_version(version):
 
             for chunk in response.iter_content(chunk_size=1024):
                 file.write(chunk)
-        logger.success(f"new version download finished: {save_path}")
+        logger.success(f"New version download finished: {save_path}")
         return True
     else:
         logger.error(f"请求失败，状态码：{response.status_code}")

@@ -7,7 +7,6 @@ from loguru import logger
 
 from image.img_switch import find_images
 from run import constants
-from utils.http_utils import match_img_result
 
 
 @logger.catch
@@ -18,7 +17,7 @@ def detect_img_py_v1(img_path):
     :return:
     """
     url = "http://" + str(constants.proxy_server_ip) + ":" + str(constants.proxy_server_port) + "/detect"
-    result_server = "default response"
+    result_server = "Default response"
     try:
         with open(img_path, 'rb') as file:
             files = {'file': file}  # 注意这里的键名应该与服务器期望的键名一致
@@ -51,11 +50,11 @@ def detect_img_py_v1(img_path):
                     result = "other"
                 return result + ": " + str(max_score)
             else:
-                logger.warning(f"unknown error, server result_server: {result_server}, detail: {img_path}, skied.")
+                logger.warning(f"Unknown error, server result_server: {result_server}, detail: {img_path}, skied.")
                 # constants.detect_model_flag = False
                 return False
     except Exception as e:
-        logger.warning(f"unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
+        logger.warning(f"Unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
         # constants.detect_model_flag = False
         return False
 
@@ -123,7 +122,7 @@ def model_detect_img_java_v1(img_path):
     import requests
 
     url = "http://" + constants.dmi_api_server + "/check"
-    result_server = "default response"
+    result_server = "Default response"
     try:
         with open(img_path, 'rb') as file:
             files = {'file': file}  # 注意这里的键名应该与服务器期望的键名一致
@@ -156,11 +155,11 @@ def model_detect_img_java_v1(img_path):
                     result = "other"
                 return result + ": " + str(max_score)
             else:
-                logger.warning(f"unknown error, server result_server: {result_server}, detail: {img_path}, skied.")
+                logger.warning(f"Unknown error, server result_server: {result_server}, detail: {img_path}, skied.")
                 # constants.detect_model_flag = False
                 return False
     except Exception as e:
-        logger.warning(f"unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
+        logger.warning(f"Unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
         # constants.detect_model_flag = False
         return False
 
@@ -211,12 +210,12 @@ def all_img_detect(path):
         else:
             ret = model_detect_img_java_v1(img_path=img_path)
         # if not ret:
-        #     logger.error(f"unknown error, content: {ret}, detect img will exit.")
+        #     logger.error(f"Unknown error, content: {ret}, detect img will exit.")
         #     break
         logger.debug(f"{constants.detect_img_model} detect img: {img_path}, cur {i}/{count}, server response: {ret}")
     constants.detect_model_flag = False
-    logger.success("model detect image all success!")
+    logger.success("Model detect image all success!")
 
-
-if __name__ == '__main__':
-    all_img_detect(r"C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data")
+#
+# if __name__ == '__main__':
+#     all_img_detect(r"C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data")

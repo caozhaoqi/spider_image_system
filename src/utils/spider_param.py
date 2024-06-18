@@ -57,7 +57,7 @@ def is_keyword_num(driver_keyword, key_word):
     if "," not in key_word:
         if constants.spider_mode == "manual":
             constants.scheduled_download_program_flag = False
-            logger.warning(f"you input keyword not contain ',' in spilt keyword: {key_word}.")
+            logger.warning(f"You input keyword not contain ',' in spilt keyword: {key_word}.")
         return False
     constants.scheduled_download_program_flag = False
     key_word_list = key_word.split(',')
@@ -91,35 +91,35 @@ def spider_users_images(driver_user, key_word, keyword_cat):
     :param keyword_cat:
     :return:
     """
-    logger.info("input keyword is users, start process")
+    logger.info("Input keyword is users, start process")
     while True:
         cur_page = 1
         url = "https://" + visit_url + "/users/" + key_word + "/artworks?p=" + str(cur_page)
         driver_user.get(url)
         # driver_user.implicitly_wait(search_delta_time)
         sys_sleep_time(driver_user, search_delta_time, True)
-        logger.info(f"cur spider users artwork cur_page: {cur_page}")
+        logger.info(f"Cur spider users artwork cur_page: {cur_page}")
         artwork_list = user_save_artwork(driver_user)
         if constants.stop_spider_url_flag:
-            logger.warning("stop spider url, get users url spider artwork url.")
+            logger.warning("Stop spider url, get users url spider artwork url.")
             break
         if not artwork_list or driver_user.title == constants.ban_content or driver_user.title == constants.visit_url \
                 or driver_user.title == '':
             logger.warning(
-                f"users: {keyword_cat}, spider image no artwork or ban content:{driver_user.title}, skip loop")
+                f"Users: {keyword_cat}, spider image no artwork or ban content:{driver_user.title}, skip loop")
             constants.firewall_flag = True
             break
         for artwork_url in artwork_list:
             image_list = artwork_single_image(key_word, driver_user, artwork_url)
             if not image_list:
-                logger.warning(f"users: {keyword_cat}, spider image:{artwork_url}, no image.")
+                logger.warning(f"Users: {keyword_cat}, spider image:{artwork_url}, no image.")
                 continue
             else:
-                logger.success("spider success, start download.")
+                logger.success("Spider success, start download.")
                 for image_url in image_list:
                     download_single_image(key_word, image_url)
         cur_page += 1
-    logger.info("spider users end.")
+    logger.info("Spider users end.")
     return True
 
 
@@ -131,14 +131,14 @@ def spider_pid_image(driver_pid, key_word):
     :param key_word:
     :return:
     """
-    logger.info("input keyword is num, start process.")
+    logger.info("Input keyword is num, start process.")
     url = "https://" + visit_url + "/artworks/" + key_word
     image_list = artwork_single_image(key_word, driver_pid, url)
     if not image_list:
-        logger.warning("pid spider image no image.")
+        logger.warning("Pid spider image no image.")
         return False
     else:
-        logger.success("spider success, start download.")
+        logger.success("Spider success, start download.")
         for image_url in image_list:
             download_single_image(key_word, image_url)
     return True
@@ -171,22 +171,22 @@ def spider_param_config(key_word):
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 '
             'Safari/537.36 '
         ]
-        logger.warning(f"not found user-agent, use default user-agent: {user_agents[0]}")
+        logger.warning(f"Not found user-agent, use default user-agent: {user_agents[0]}")
     # 随机添加user-agent
     cur_user_agents = random.choice(user_agents).strip()
     # add user-agent
     if cur_user_agents:
         options.add_argument(
             f"user-agent={cur_user_agents}")
-        logger.info(f"current use user-agent: {cur_user_agents}")
+        logger.info(f"Current use user-agent: {cur_user_agents}")
     if proxy_flag == 'True':
         if constants.proxy_mode == 'auto':
-            logger.info("cur spider use proxy is auto select proxy model.")
+            logger.info("Cur spider use proxy is auto select proxy model.")
             proxy_item = get_proxy_item()
             if not proxy_item:
-                logger.error("proxy_item None, will quit spider image!")
+                logger.error("Proxy_item None, will quit spider image!")
                 return None, None, None
-            logger.debug(f"use proxy: {proxy_item}")
+            logger.debug(f"Use proxy: {proxy_item}")
             proxy = {
                 "proxyType": "manual",
                 "httpProxy": "http://" + proxy_item,  # 代理服务器地址和端口
@@ -197,7 +197,7 @@ def spider_param_config(key_word):
             }
         # options.set_capability("proxy", proxy)
         options.add_argument("--proxy-server={}".format(proxy["httpProxy"]))
-        logger.info("current use internal proxy, proxy content: " + str(proxy['httpProxy']))
+        logger.info("Current use internal proxy, proxy content: " + str(proxy['httpProxy']))
 
     try:
         if constants.chrome_path != 'None':
@@ -205,20 +205,20 @@ def spider_param_config(key_word):
             ser.path = constants.chrome_path
             # 连接Edge浏览器
             driver = webdriver.Chrome(service=ser, options=options)
-            logger.debug("user self define chrome driver exe!")
+            logger.debug("User self define chrome driver exe!")
         else:
             driver = webdriver.Chrome(options=options)
-            logger.info("use system default web driver!")
+            logger.info("Use system default web driver!")
     except Exception as e:
-        logger.warning(f"unknown error, type: {type(e).__name__}.")
+        logger.warning(f"Unknown error, type: {type(e).__name__}.")
 
     mode = ''
     if r18_mode == 'True':
         mode = 'mode=r18&'
-        logger.debug("current start use r18 mode!")
+        logger.debug("Current start use r18 mode!")
 
     if allow_replace_domain_flag:
-        logger.debug(f"start replace image domain, flag value: {allow_replace_domain_flag}")
+        logger.debug(f"Start replace image domain, flag value: {allow_replace_domain_flag}")
 
     cur_page = 1
     if is_keyword_num(driver, key_word):
@@ -270,7 +270,7 @@ def chrome_options(options):
     if random_boolean:
         # 无痕模式 减少被追踪风险
         options.add_argument("--incognito")  # 启动无痕模式
-        logger.info("cur enable incognito mode spider image!")
+        logger.info("Cur enable incognito mode spider image!")
     return options
 
 
@@ -292,7 +292,7 @@ def download_single_image(key_word, url):
     if not image_exists_flag:
         file_dir = constants.data_path + "/according_pid_download_image/" + key_word + "/images"
         if not os.path.exists(file_dir):
-            logger.warning("single save dir not exists, will create!")
+            logger.warning("Single save dir not exists, will create!")
             os.makedirs(file_dir)
         filename = os.path.join(file_dir, f"{os.path.basename(url)}")
         try:
@@ -302,11 +302,11 @@ def download_single_image(key_word, url):
                     f.write(response.content)
                 logger.debug(f"Image saved as {filename} success! ")
             else:
-                logger.error("save fail!")
+                logger.error("Save fail!")
         except Exception as e:
-            logger.error(f"save error, detail: {e}.")
+            logger.error(f"Save error, detail: {e}.")
     else:
-        logger.warning("image already exists, will skip!")
+        logger.warning("Image already exists, will skip!")
 
 
 @logger.catch
@@ -324,13 +324,13 @@ def artwork_single_image(key_word_pinyin, driver, url):
         sys_sleep_time(driver, constants.detail_delta_time, True)
         if driver.title == constants.ban_content or driver.title == constants.visit_url \
                 or driver.title == '':
-            logger.warning(f"error! will exit: cur visit domain blocked, title: {driver.title}")
+            logger.warning(f"Error! will exit: cur visit domain blocked, title: {driver.title}")
             constants.firewall_flag = True
             return False
     except Exception as e:
-        logger.warning(f"unknown error: type: {type(e).__name__}.")
+        logger.warning(f"Unknown error: type: {type(e).__name__}.")
     if open_look_all(driver):
-        logger.success(f"click look all success! pid: {url[-9:]}")
+        logger.success(f"Click look all success! pid: {url[-9:]}")
     # 抓取动图link
     if constants.spider_mode == 'manual':
         # 手动模式滑动页面 自动模式不滑动
@@ -345,7 +345,7 @@ def artwork_single_image(key_word_pinyin, driver, url):
         else:
             driver.execute_script("return arguments[0].src;", image_element)
             image_url_list.append(image_url)
-            logger.debug(f"single pid spider, save: {image_url}.")
+            logger.debug(f"Single pid spider, save: {image_url}.")
     return image_url_list
 
 

@@ -28,14 +28,14 @@ def write_url_txt(path, file_name, url):
             f.write(str(url) + "\n")
         f.close()
     except FileNotFoundError as ffe:
-        logger.warning("dir not exists , will create dir. detail: " + str(ffe))
+        logger.warning("Dir not exists , will create dir. detail: " + str(ffe))
         if not os.path.exists(path):
             os.makedirs(path)
         with open(path + file_name + ".txt", "a", encoding='utf-8', errors='replace') as f:
             f.write(str(url) + "\n")
         f.close()
     except Exception as ue:
-        logger.error("unknown error, detail: " + str(ue))
+        logger.error("Unknown error, detail: " + str(ue))
 
 
 @logger.catch
@@ -78,7 +78,7 @@ def find_value(target_value, data_list):
     """
     for item in data_list:
         if item == target_value:
-            # logger.warning("item exists will skip, pid: " + target_value[-9:].strip())
+            # logger.warning("Item exists will skip, pid: " + target_value[-9:].strip())
             return True
     return False
 
@@ -99,13 +99,13 @@ def url_list_save(key_word, image_urls_list):
                                        data_path + "/href_url/" + key_word + "_result_url.txt")
             return True
         elif len(image_urls_list) == 0:
-            logger.warning("no image! don't save to url txt, chrome will exit!")
+            logger.warning("No image! don't save to url txt, chrome will exit!")
             return False
         else:
-            logger.warning("you input key word error or other err, please check log file!")
+            logger.warning("You input key word error or other err, please check log file!")
             return False
     else:
-        logger.warning("stop spider url! url list save will exit.")
+        logger.warning("Stop spider url! url list save will exit.")
         return False
 
 
@@ -129,7 +129,7 @@ def remove_duplicates_from_txt(input_file, output_file):
                 if line.strip():
                     file.write(line)
     except FileNotFoundError as ffe:
-        logger.warning("dir not exists, will create dir. detail: " + str(ffe))
+        logger.warning("Dir not exists, will create dir. detail: " + str(ffe))
         if not os.path.exists(input_file):
             os.makedirs(input_file)
         if not os.path.exists(output_file):
@@ -145,7 +145,7 @@ def remove_duplicates_from_txt(input_file, output_file):
                 if line.strip():
                     file.write(line)
     except Exception as ue:
-        logger.error("unknown error, detail: " + str(ue))
+        logger.error("Unknown error, detail: " + str(ue))
 
 
 @logger.catch
@@ -227,7 +227,7 @@ def convert_and_move_folder(folder_path):
             pinyin_convert(folder_name, folder_path, folder, False)
 
     constants.convert_folder_name_flag = False
-    logger.success("all folder convert success!")
+    logger.success("All folder convert success!")
 
 
 @logger.catch
@@ -258,7 +258,7 @@ def pinyin_convert(folder_name, folder_path, folder, pinyin_flag):
         os.makedirs(pinyin_folder_path)
         move_sou_dir = os.path.join(folder_path, folder)
         if not os.path.exists(move_sou_dir):
-            logger.warning(f"{move_sou_dir} not exists!")
+            logger.warning(f"DIR {move_sou_dir} not exists!")
             return False
         for img in os.listdir(move_sou_dir):
             src_path = os.path.join(move_sou_dir, img)
@@ -329,7 +329,7 @@ def find_img_result(path):
         parts = path.split("/")
 
     else:
-        logger.error("unknown error!")
+        logger.error("Unknown error!")
         return None
 
     # 从后往前遍历，找到第一个包含'_img_result'的文件夹名

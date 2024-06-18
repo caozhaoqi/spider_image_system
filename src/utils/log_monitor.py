@@ -125,7 +125,7 @@ def log_mon_war(spider_thread_obj):
     :param spider_thread_obj:
     :return:
     """
-    logger.info("log monitor start...")
+    logger.info("Log monitor start...")
     # 设置无输出超时时间（例如，5分钟）
     handler = None
     TIMEOUT = constants.detect_timeout_auto

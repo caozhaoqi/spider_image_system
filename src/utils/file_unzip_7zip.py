@@ -22,7 +22,7 @@ def extract_xz_to_7z(seven_zip_path, xz_file_path, temp_7z_file_path):
         subprocess.run(cmd, check=True)
         return True
     except Exception as e:
-        logger.error(f"unknown error, please check config! detail: {e}")
+        logger.error(f"Unknown error, please check config! detail: {e}")
         return False
 
 
@@ -47,7 +47,7 @@ def extract_7z(seven_zip_path, password, archive_path, output_path):
         subprocess.run(cmd, check=True)
         return True
     except Exception as e:
-        logger.error(f"unknown error, please check config! detail: {e}")
+        logger.error(f"Unknown error, please check config! detail: {e}")
         return False
 
 
@@ -84,7 +84,7 @@ def unzip_file(dir_path):
         constants.unzip_file_flag = False
         return False
 
-    logger.debug(f"start unzip .xz to 7zp length: {len(file_list)}: ")
+    logger.debug(f"Start unzip .xz to 7zp length: {len(file_list)}: ")
     for file in file_list:
         if file.endswith('.7z.xz'):
             # 提取文件名和目录
@@ -100,7 +100,7 @@ def unzip_file(dir_path):
                 continue
 
     # f7zp_list = os.listdir(dir_path)
-    logger.debug(f"start unzip .7z to mp4 length {len(file_list)}: ")
+    logger.debug(f"Start unzip .7z to mp4 length {len(file_list)}: ")
     if not file_list:
         logger.warning(f"{dir_path} no 7z content!")
         constants.unzip_file_flag = False
@@ -114,7 +114,7 @@ def unzip_file(dir_path):
             mp4_file_path = os.path.join(dir_path, filename + '.mp4')
             unzip_file_path = os.path.join(os.path.dirname(mp4_file_path), 'unzip_video')
             if not os.path.exists(unzip_file_path):
-                logger.warning(f"unzip file path not exists, will create it: {unzip_file_path}")
+                logger.warning(f"Unzip file path not exists, will create it: {unzip_file_path}")
                 os.makedirs(unzip_file_path)
             # 解压.xz文件为.7z文件
             if not os.path.exists(mp4_file_path):
@@ -124,6 +124,6 @@ def unzip_file(dir_path):
                 logger.warning(f".mp4 存在：{file_7z} skip!")
                 continue
 
-    logger.success("unzip all file success!")
+    logger.success("Unzip all file success!")
     constants.unzip_file_flag = False
     return True

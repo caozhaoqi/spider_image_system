@@ -83,10 +83,10 @@ def create_agent_init(user_agent_file_path):
     with open(user_agent_file_path, 'w', encoding='utf-8', errors='replace') as f:
         if not os.path.exists(ini_path):
             os.makedirs(ini_path)
-            logger.warning("base config not exists, will create.")
+            logger.warning("Base config agent file not exists, will create.")
         for agent_detail in user_agents:
             f.write(agent_detail + "\n")
-    logger.success("init user agent file write success!")
+    logger.success("Init user agent file write success!")
 
 
 @logger.catch

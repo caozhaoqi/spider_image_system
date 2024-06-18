@@ -149,7 +149,7 @@ def save_download_end(index, file_path, url, cdds_index):
                       time_to_utc(time.time()), cdds_index, True)
     record_end_download_image(os.path.join(constants.data_path, "download_final_image.json"), data)
     logger.warning(
-        f"set stop image stop_download_image_flag True! save result: {data.image_url}, txt name: {file_path}.")
+        f"Set stop image stop_download_image_flag True! save result: {data.image_url}, txt name: {file_path}.")
 
 
 @logger.catch
@@ -161,7 +161,7 @@ def update_download_continue_flag():
     data = ImageModel(None, None, None, None,
                       time_to_utc(time.time()), None, False)
     record_end_download_image(os.path.join(constants.data_path, "download_final_image.json"), data)
-    logger.info("download final image json continue_flag update success!")
+    logger.info("Download final image json continue_flag update success!")
     # constants.con
 
 
@@ -177,7 +177,7 @@ def record_download_finish_txt(content):
     file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
     with open(file_name, 'a', encoding='utf-8', errors='replace') as f:
         f.write(content + "\n")
-    logger.success(f"download {content} finished, will write txt.")
+    logger.success(f"Download {content} finished, will write txt.")
     return True
 
 
@@ -218,10 +218,10 @@ def record_end_spider_image_keyword(key_word, cur_page):
         json_str = json.dumps(data.__dict__, ensure_ascii=False)
         with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
             f.write(json_str)
-        logger.success("stop spider, spider end keyword already write txt.")
+        logger.success("Stop spider, spider end keyword already write txt.")
         return True
     else:
-        logger.warning("new keyword! txt not save.")
+        logger.warning("New keyword! txt not save.")
         return False
 
 
@@ -247,10 +247,10 @@ def get_image_keyword():
     if not os.path.exists(full_file_path):
         # 如果文件不存在，创建它
         with open(full_file_path, 'w', encoding='utf-8', errors='replace') as f:
-            logger.warning(f"{full_file_path} not exists, will create demo txt!")
+            logger.warning(f"Current {full_file_path} not exists, will create demo txt!")
     try:
         if len(txt_file_list) == 0:
-            logger.warning("spider_img_keyword txt length null!")
+            logger.warning("File spider_img_keyword txt length null!")
             return [], []
         spider_image_keyword = []
         for txt_name in txt_file_list:
@@ -258,7 +258,7 @@ def get_image_keyword():
                 spider_image_keyword.append(f.readlines())
         return spider_image_keyword, txt_file_list
     except Exception as e:
-        logger.error(f"unknown error, detail {e}")
+        logger.error(f"Unknown error, detail {e}")
         return [], []
 
 
@@ -300,7 +300,7 @@ def record_finish_keyword(keyword, cur_page):
         return False
     with open(file_name, "a", encoding='utf-8', errors='replace') as f:
         f.write(content + "\n")
-    logger.success(f"record finish keyword {keyword}, page {cur_page}!")
+    logger.success(f"Record finish keyword {keyword}, page {cur_page}!")
 
 
 @logger.catch

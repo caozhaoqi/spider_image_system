@@ -92,5 +92,5 @@ def jm_domain_test():
     for domain, status in domain_status_dict.items():
         logger.debug(f'{domain}: {status}')
     constants.jm_domain_detect_flag = False
-    logger.success("detect jm domain finish.")
+    logger.success("Detect jm domain finish.")
 

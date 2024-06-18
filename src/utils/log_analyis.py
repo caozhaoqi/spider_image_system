@@ -153,7 +153,7 @@ def log_data_analyze():
         log_list_content.append(result_detail_list)
         log_list_content.append(log_content)
         log_analyze_data.append(log_list_content)
-    logger.info(f"scan log end finish, scan result log length: {len(log_list)}")
+    logger.info(f"Scan log end finish, scan result log length: {len(log_list)}")
     return log_analyze_data
 
 

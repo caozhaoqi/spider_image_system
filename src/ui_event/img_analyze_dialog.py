@@ -115,7 +115,7 @@ class ImgAnalyzeHistogram(QDialog):
         try:
             self.current_group = (self.current_group + 1) % (len(self.error_counts) // self.group_size)
         except Exception as e:
-            logger.warning(f"unknown error! detail: {e}")
+            logger.warning(f"Unknown error! detail: {e}")
 
         self.updateChart()
 
@@ -172,7 +172,7 @@ class ImgAnalyzeHistogram(QDialog):
             pie_slice.setLabel(f"{update_list_item[index][0:6]}:{percentage:.1f}%")
             pie_slice.setLabelVisible()
         self.pie_chart.addSeries(self.series_pie)
-        self.pie_chart.setTitle("pie chart")
+        self.pie_chart.setTitle("Pie chart")
 
     @logger.catch
     def closeEvent(self, event, _=None):

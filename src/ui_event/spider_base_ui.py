@@ -70,7 +70,7 @@ def base_menu(self):
     self.img_ana = QAction('图片分析', self.tools_menu)
     self.log_analyze = QAction('日志分析', self.tools_menu)
     self.jm_tools = QAction("JM下载", self.tools_menu)
-    self.jm_domain_test = QAction("JM域名检测", self.tools_menu)
+    self.jm_domain_test = QAction("JM检测", self.tools_menu)
     self.folder_name = QAction('名称转换', self.tools_menu)
     self.encoding_tools = QAction('编码转换', self.tools_menu)
     self.test_driver = QAction('驱动检测', self.tools_menu)

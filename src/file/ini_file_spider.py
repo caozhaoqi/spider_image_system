@@ -54,23 +54,23 @@ def write_minio_config_to_file(minio_config):
     :return:
     """
     iniPath = os.path.realpath(ini_file_path)
-    logger.info("generate file path: " + iniPath)
+    logger.info("Generate file path: " + iniPath)
     conf = configparser.ConfigParser()
     if os.path.exists(iniPath):
         try:
             os.remove(iniPath)
         except PermissionError as pe:
-            logger.error("permission error, ini file only read mode, please update ini file chmod! detail: " + str(pe))
+            logger.error("Permission error, ini file only read mode, please update ini file chmod! detail: " + str(pe))
             return False
         except Exception as e:
-            logger.error("unknown error, detail: " + str(e))
+            logger.error("Unknown error, detail: " + str(e))
             return False
     logger.warning("Not Found config ini file , creating ini file ....")
     if not os.path.exists(ini_path):
         os.makedirs(ini_path)
-        logger.debug("dir not exists, create dir")
+        logger.debug("Dir not exists, create dir")
     conf.read(iniPath, 'utf-8')
-    logger.info("start generate config ini file.")
+    logger.info("Start generate config ini file.")
 
     conf.add_section("spider_config")
     conf.set("spider_config", "s2_url", minio_config.s2_url)
@@ -126,7 +126,7 @@ def write_minio_config_to_file(minio_config):
 
     conf.write(open(iniPath, 'a+', encoding="utf-8"))
     conf.read(iniPath, 'utf-8')
-    logger.info("config write finished, read test, current use visit url: " + conf.get("spider_config", "visit_url"))
+    logger.info("Config write finished, read test, current use visit url: " + conf.get("spider_config", "visit_url"))
     return True
 
 
@@ -174,7 +174,7 @@ def check_ini_config():
             config_folder_name = "./config"
         if not os.path.exists(config_folder_name):
             os.makedirs(config_folder_name)
-            logger.debug("dir not exists, creating dir")
+            logger.debug("Dir not exists, creating dir")
         conf.read(iniPath, 'utf-8')
         # logger.info("start generate config ini file: ")
         conf.add_section("spider_config")

@@ -25,7 +25,7 @@ def find_images(directory):
     image_files_lists = []
     if not os.path.exists(directory):
         os.makedirs(directory)
-        logger.info("dir not exists, create dir: " + str(directory))
+        logger.info("Dir not exists, create dir: " + str(directory))
     for root, dirs, files in os.walk(directory):
         for file in files:
             if "img_url" in root or "according_pid_download_image" in root:
@@ -84,7 +84,7 @@ def show_next_image(self):
         self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
 
     except Exception as e:
-        logger.warning("dir not image, or other err! detail: " + str(e))
+        logger.warning("Dir not image, or other err! detail: " + str(e))
 
 
 @logger.catch
@@ -99,7 +99,7 @@ def show_image(self, image_file):
     self.pixmap_image_tab1 = QPixmap(os.path.join(folder_path, image_file))  # 创建新的QPixmap实例
     self.label.setPixmap(self.pixmap_image_tab1)  # 更新QLabel的显示内容
     self.label.resize(self.pixmap_image_tab1.width(), self.pixmap_image_tab1.height())
-    logger.info("current show image name and path: " + str(os.path.join(folder_path, image_file)))
+    logger.info("Current show image name and path: " + str(os.path.join(folder_path, image_file)))
 
 
 @logger.catch
@@ -153,7 +153,7 @@ def check_images(self, image_path):
                     shutil.move(error_images, image_path + "/error_images/" + file_name)
                     f.close()
         except Exception as e:
-            # logger.warning(f"unknown error, detail: {e}")
+            # logger.warning(f"Unknown error, detail: {e}")
             ...
     for small_image in small_image_lists:
         try:
@@ -168,15 +168,15 @@ def check_images(self, image_path):
                     shutil.move(small_image, image_path + "/small_images/" + file_name)
                     f.close()
         except Exception as e:
-            # logger.warning(f"unknown error, detail: {e}")
+            # logger.warning(f"Unknown error, detail: {e}")
             ...
     if constants.check_images_flag:
         constants.check_images_flag = False
-        logger.success(f"finished check! flag: {constants.check_images_flag}")
+        logger.success(f"Finished check! flag: {constants.check_images_flag}")
     # constants.check_images_flag = False
     if constants.single_flag:
         logger.success(
-            f"scan end, flag: {constants.check_images_flag}, images moved error_images and small_images folder!")
+            f"Scan end, flag: {constants.check_images_flag}, images moved error_images and small_images folder!")
         constants.single_flag = False
 
 
@@ -207,7 +207,7 @@ def img_category_images(self, image_path):
             elif "custom" in filename:
                 custom_image_lists.append(filename)
             # else:
-            # logger.warning("unknown category image: " + str(filename))
+            # logger.warning("Unknown category image: " + str(filename))
     for square_image in square_image_lists:
         dir_path, file_name = os.path.split(square_image)
         if not os.path.exists(dir_path + "/square/"):
@@ -218,7 +218,7 @@ def img_category_images(self, image_path):
             shutil.move(square_image, dir_path + "/square/" + file_name)
             f.close()
         except Exception as e:
-            # logger.warning(f"unknown error, detail: {e}")
+            # logger.warning(f"Unknown error, detail: {e}")
             ...
     for custom_image in custom_image_lists:
         dir_path, file_name = os.path.split(custom_image)
@@ -230,7 +230,7 @@ def img_category_images(self, image_path):
             shutil.move(custom_image, dir_path + "/custom/" + file_name)
             f.close()
         except Exception as e:
-            logger.warning(f"unknown error, detail: {e}")
+            logger.warning(f"Unknown error, detail: {e}")
     for master_image in master_image_lists:
         dir_path, file_name = os.path.split(master_image)
         if not os.path.exists(dir_path + "/master/"):
@@ -241,14 +241,14 @@ def img_category_images(self, image_path):
             shutil.move(master_image, dir_path + "/master/" + file_name)
             f.close()
         except Exception as e:
-            # logger.warning(f"unknown error, detail: {e}")
+            # logger.warning(f"Unknown error, detail: {e}")
             ...
 
     if constants.category_image_flag:
         constants.category_image_flag = False
-        logger.success(f"finished category! flag: {constants.category_image_flag}")
+        logger.success(f"Finished category! flag: {constants.category_image_flag}")
     if constants.single_flag:
-        logger.success(f"img category success! flag: {constants.category_image_flag}")
+        logger.success(f"Img category success! flag: {constants.category_image_flag}")
         constants.single_flag = False
 
 

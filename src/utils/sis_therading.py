@@ -40,9 +40,9 @@ class SISThreading(threading.Thread):
         """
         while self.__running.is_set():
             if constants.stop_spider_url_flag:
-                logger.warning("stop spider url in threading run.")
+                logger.warning("Stop spider url in threading run.")
                 break
-            logger.info("thread is running!")
+            logger.info("Thread is running!")
             self.__flag.wait()  # 为True时立即返回, 为False时阻塞直到self.__flag为True后返回
             # logger.debug("run = ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
             # 调用目标函数并传递参数
@@ -55,7 +55,7 @@ class SISThreading(threading.Thread):
 
         :return:
         """
-        logger.error("thread is pause")
+        logger.error("Thread is pause")
         self.__flag.clear()  # 设置为False, 让线程阻塞
 
     @logger.catch
@@ -64,7 +64,7 @@ class SISThreading(threading.Thread):
 
         :return:
         """
-        logger.warning("thread is resume")
+        logger.warning("Thread is resume")
         self.__flag.set()  # 设置为True, 让线程停止阻塞
 
     @logger.catch
@@ -73,7 +73,7 @@ class SISThreading(threading.Thread):
 
         :return:
         """
-        logger.error("thread is stop")
+        logger.error("Thread is stop")
         self.__flag.set()  # 将线程从暂停状态恢复, 如果已经暂停的话
         self.__running.clear()  # 设置为False
 

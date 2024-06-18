@@ -36,7 +36,7 @@ class LogDisplayDialog(QDialog):
         """
         初始化UI界面
         """
-        self.setWindowTitle('log check')
+        self.setWindowTitle('Log check')
         self.resize(800, 600)
 
         layout = QVBoxLayout()
@@ -104,7 +104,7 @@ class LogDisplayDialog(QDialog):
         # if constants.start_auto_play_flag:
         # constants.start_auto_play_flag = False
         self.timer.stop()
-        logger.debug("log check timer stop.")
+        logger.debug("Log check timer stop.")
         constants.log_check_visible = False
 
     @logger.catch
@@ -114,7 +114,7 @@ class LogDisplayDialog(QDialog):
         :param event:
         :return:
         """
-        logger.debug('log_check Dialog is closing!')
+        logger.debug('Log_check Dialog is closing!')
         constants.log_check_visible = False
         self.stop_timer()
         super(LogDisplayDialog, self).closeEvent(event)
@@ -131,8 +131,8 @@ def show_log_output_method():
         dialog.showMaximized()
         dialog.show()
         dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        logger.info("log_check show!")
+        logger.info("Log_check show!")
         constants.log_check_visible = True
         dialog.exec_()
     else:
-        logger.warning("log_check already show!")
+        logger.warning("Log_check already show!")

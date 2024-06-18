@@ -65,9 +65,9 @@ def api_main():
     if not web_flag_start:
         check_version()
         uvicorn.run(app='sis_main_process:app', host='0.0.0.0', port=app_port, reload=False)
-        logger.success("web api starting!")
+        logger.success("Web api starting!")
     else:
-        logger.error("web api already start!")
+        logger.error("Web api already start!")
 
 
 if __name__ == "__main__":

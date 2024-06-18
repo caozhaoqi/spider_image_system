@@ -226,7 +226,7 @@ class Dialog(QDialog):
         :return:
         """
         # 在这里你可以添加任何你需要在对话框关闭时执行的代码
-        logger.debug('log show  dialog  is cancel closing!')
+        logger.debug('Config dialog  is cancel closing!')
         constants.edit_config_msg_visible = False
         # 调用基类的 closeEvent 方法以确保对话框正常关闭
         super(Dialog, self).reject()
@@ -238,7 +238,7 @@ class Dialog(QDialog):
         :return:
         """
         # 在这里你可以添加任何你需要在对话框关闭时执行的代码
-        logger.debug('log show  dialog is close closing!')
+        logger.debug('Config dialog is close closing!')
         constants.edit_config_msg_visible = False
         # 调用基类的 closeEvent 方法以确保对话框正常关闭
         super(Dialog, self).closeEvent(event)
@@ -276,7 +276,7 @@ def save_data(self):
         proxy_flag_txt = False
     search_delta_time_txt = int(self.search_delta_time_line.text()) if self.search_delta_time_line else None
     detail_delta_time_txt = int(self.detail_delta_time_line.text()) if self.detail_delta_time_line else None
-    logger.debug("update config ini file mgs: ")
+    logger.debug("Update config ini file mgs: ")
     logger.debug(f"Source1 URL: {s1_url_txt}")
     logger.debug(f"Source2 URL: {s2_url_txt}")
     logger.debug(f"visit URL: {visit_url_txt}")

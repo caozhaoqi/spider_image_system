@@ -34,15 +34,15 @@ def start_spider_single_image(key_word: Union[str, None] = Query(default=..., al
     else:
         constants.spider_mode = 'manual'
         if key_word == '' or key_word is None:
-            logger.warning("input keyword empty or error!")
+            logger.warning("Input keyword empty or error!")
             return False
-        logger.debug("you input keyword is: " + str(key_word))
+        logger.debug("You input keyword is: " + str(key_word))
         spider_thread_obj = threading.Thread(
             target=spider_artworks_url,
             args=(None, key_word,))
         spider_thread_obj.start()
         constants.stop_spider_url_flag = False
-        logger.info("spider img thread starting... ")
+        logger.info("Spider img thread starting... ")
         return JsonResponse.success("success!")
 
 
@@ -62,7 +62,7 @@ def spider_all_keyword():
     # 创建SISThreading类的实例并传递参数
     # read txt file spider keyword
     if not constants.stop_spider_url_flag:
-        logger.error("already spider img, please stop here before operate!")
+        logger.error("Already spider img, please stop here before operate!")
         return False
     spider_thread_obj = SISThreading(target=auto_spider_img_thread, args=(None,))
 
@@ -78,12 +78,12 @@ def spider_all_keyword():
 
     if constants.log_no_output_flag:
         spider_thread_obj.start()
-        logger.warning("log no output re start spider ing...")
+        logger.warning("Log no output re start spider ing...")
         constants.log_no_output_flag = False
     if not constants.stop_spider_url_flag:
-        return JsonResponse.error("already spider img, please stop here before operate!")
+        return JsonResponse.error("Already spider img, please stop here before operate!")
     else:
-        return JsonResponse.success("start spider all keyword image")
+        return JsonResponse.success("Start spider all keyword image")
 
 
 @logger.catch
@@ -101,8 +101,8 @@ def download_all_image():
             args=(None,))
         spider_thread_obj.start()
         constants.stop_download_image_flag = False
-        logger.info("download img thread starting... ")
-        return JsonResponse.success("download img thread starting... ")
+        logger.info("Download img thread starting... ")
+        return JsonResponse.success("Download img thread starting... ")
 
 
 @logger.catch
@@ -113,9 +113,9 @@ def stop_spider_image_api():
     :return:
     """
     if stop_spider_image():
-        return JsonResponse.success("stop success!")
+        return JsonResponse.success("Stop success!")
     else:
-        return JsonResponse.error("spider url already stop!")
+        return JsonResponse.error("Spider url already stop!")
 
 
 @logger.catch
@@ -126,9 +126,9 @@ def stop_download_image_api():
     :return:
     """
     if stop_download_image():
-        return JsonResponse.success("stop success!")
+        return JsonResponse.success("Stop success!")
     else:
-        return JsonResponse.error("download image already stop!")
+        return JsonResponse.error("Download image already stop!")
 
 
 @logger.catch
@@ -140,9 +140,9 @@ def upload_all_image():
     """
 
     if user_upload_image():
-        return JsonResponse.success("start upload")
+        return JsonResponse.success("Start upload")
     else:
-        return JsonResponse.error("uploading image, please wait.")
+        return JsonResponse.error("Uploading image, please wait.")
 
 
 @logger.catch
@@ -153,6 +153,6 @@ def start_face_detect():
     :return:
     """
     if face_detect_action():
-        return JsonResponse.success("start detect!")
+        return JsonResponse.success("Start detect!")
     else:
-        return JsonResponse.error("detecting, please wait...")
+        return JsonResponse.error("Detecting, please wait...")

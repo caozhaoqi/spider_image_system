@@ -20,7 +20,7 @@ def find_upload_file(directory):
     image_files_lists = []
     if not os.path.exists(directory):
         os.makedirs(directory)
-        logger.info("dir not exists, create dir: " + str(directory))
+        logger.info("Dir not exists, create dir: " + str(directory))
     for root, dirs, files in os.walk(directory):
         for file in files:
             if "img_url" in root or "according_pid_download_image" in root or "log_dir" in root:
@@ -77,7 +77,7 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
     image_files_upload = show_filter_image_log(find_upload_file(constants.basic_path))
 
     if not image_files_upload:
-        logger.warning(f"path:{local_folder_path} no file!")
+        logger.warning(f"Path:{local_folder_path} no file!")
         return False
     for file in image_files_upload:
 
@@ -92,10 +92,10 @@ def upload_images_to_minio(endpoint_url, access_key, secret_key, bucket_name, lo
                     client.fput_object(bucket_name, remote_file_path, file)
                     logger.success(f"Uploaded: {remote_file_path}")
                 except Exception as e:
-                    logger.error(f"unknown error, detail: {e}")
+                    logger.error(f"Unknown error, detail: {e}")
             else:
                 # 处理其他可能的异常
-                logger.error("unknown error, detail:", s3_e)
+                logger.error("Unknown error, detail:", s3_e)
                 return False
     return True
 
@@ -114,9 +114,9 @@ def upload_image(path):
     SECRET_KEY = constants.minio_password
     BUCKET_NAME = "dataupload"
     LOCAL_FOLDER_PATH = path
-    logger.info(f"current use minio server: {ENDPOINT_URL}")
+    logger.info(f"Current use minio server: {ENDPOINT_URL}")
     if upload_images_to_minio(ENDPOINT_URL, ACCESS_KEY, SECRET_KEY, BUCKET_NAME, LOCAL_FOLDER_PATH):
-        logger.success("image and log, upload all image success!")
+        logger.success("Image and log, upload all image success!")
         constants.uploading_image_flag = False
     else:
-        logger.warning("upload error!")
+        logger.warning("Upload error, LINK MINIO SERVER FAIL!")

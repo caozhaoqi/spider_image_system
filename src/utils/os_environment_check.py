@@ -36,7 +36,7 @@ def auto_download_chrome():
     dest_path = constants.basic_path + "/chrome.exe"  # 对于Windows系统
     url = search_chrome_download_link(constants.chrome_version)
     if not url:
-        logger.error("not search chrome version! end execute follow operate.")
+        logger.error("Not search chrome version! end execute follow operate.")
         return False
     response = requests.get(url, stream=True)
     if response.status_code == 200:
@@ -45,7 +45,7 @@ def auto_download_chrome():
                 file.write(chunk)
         logger.info(f"File downloaded to {dest_path}")
         extract_zip(dest_path, dest_path)
-        logger.success("unzip success, please open chrome.exe install!")
+        logger.success("Unzip success, please open chrome.exe install!")
     else:
         logger.error(f"Failed to download file. Status code: {response.status_code}")
 
@@ -104,13 +104,13 @@ def detect_installed():
 
     # 检查并安装selenium和chromedriver
     if not is_chromedriver_installed():
-        logger.error("you hasn't install selenium for chrome explore or chrome webdriver, please visit follow website "
+        logger.error("You hasn't install selenium for chrome explore or chrome webdriver, please visit follow website "
                      "download:")
-        logger.warning("url: https://googlechromelabs.github.io/chrome-for-testing/#stable select correct version to"
+        logger.warning("Url: https://googlechromelabs.github.io/chrome-for-testing/#stable select correct version to"
                        " download, finish config download webdriver.exe path to chrome_path from "
                        "./config/config.ini file.")
         chrome_version = get_chrome_version_from_executable()
-        logger.info(f"current google chrome version: {chrome_version}.")
+        logger.info(f"Current google chrome version: {chrome_version}.")
         if chrome_version:
             auto_download_webdriver()
         else:
@@ -137,10 +137,10 @@ def is_chromedriver_installed():
             ser.path = constants.chrome_path
             # 连接Edge浏览器
             driver = webdriver.Chrome(service=ser, options=options)
-            logger.warning("user self define chrome driver exe!")
+            logger.warning("User self define chrome driver exe!")
         else:
             driver = webdriver.Chrome(options=options)
-            logger.info("use system default web driver!")
+            logger.info("Use system default web driver!")
         logger.success("ChromeDriver is installed and working correctly.")
         driver.quit()
         return True

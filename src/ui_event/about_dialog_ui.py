@@ -75,6 +75,6 @@ class InformationDialog(QDialog):
         :param event:
         :return:
         """
-        logger.debug('about_message_lookup_visible Dialog is closing!')
+        logger.debug('About_message_lookup_visible Dialog is closing!')
         constants.about_message_lookup_visible = False
         super(InformationDialog, self).closeEvent(event)

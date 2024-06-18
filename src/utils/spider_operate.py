@@ -25,7 +25,7 @@ def filter_not_use(url):
                 return True
     except Exception as e:
         # 遇到异常跳过该url
-        logger.warning("unknown error, detail: " + str(e))
+        logger.warning("Unknown error, detail: " + str(e))
         return True
 
 
@@ -42,7 +42,7 @@ def filter_not_use_url(image_url):
             if filter_url_image_content in image_url or "artworks" not in image_url:
                 return True
     except Exception as e:
-        logger.warning("unknown error, detail: " + str(e))
+        logger.warning("Unknown error, detail: " + str(e))
         return True
 
 
@@ -100,7 +100,7 @@ def open_look_all(driver):
             random_action(driver)
             return True
     except Exception as e:
-        logger.warning(f"unknown error, MaxRetryError!!! detail: {e}")
+        logger.warning(f"Unknown error, MaxRetryError!!! detail: {e}")
         # driver.quit()
         return False
     return False
@@ -130,13 +130,13 @@ def slider_page_down(driver):
         sys_sleep_time(driver, constants.detail_delta_time, False)
         # driver.implicitly_wait(detail_delta_time)
 
-        logger.info(f"slider page down! page height {page_height}px")
+        logger.info(f"Slider page down! page height {page_height}px")
         random_action(driver)
 
         sys_sleep_time(driver, constants.detail_delta_time, False)
         # driver.implicitly_wait(detail_delta_time)
     except Exception as e:
-        logger.warning(f"unknown error, type: {type(e).__name__}")
+        logger.warning(f"Unknown error, type: {type(e).__name__}")
 
 
 @logger.catch
@@ -175,5 +175,5 @@ def random_action(driver):
         # 记录日志
         logger.info(f"Random slider page down! page height {page_height}px")
     except Exception as e:
-        logger.warning(f"unknown error, type: {type(e).__name__}")
+        logger.warning(f"Unknown error, type: {type(e).__name__}")
 

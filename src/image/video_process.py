@@ -23,12 +23,12 @@ def generate_video_from_images(images_input_path, video_out_path):
         for file in files:
             if "square" in file or "custom" in file or "error_images" in root or "small_images" in root \
                     or "gif_unzip" in root:
-                logger.warning(f"skip file, because images error or small, name: {file}")
+                logger.warning(f"Skip file, because images error or small, name: {file}")
                 continue
             elif file.endswith('.jpg') or file.endswith('.png'):  # 仅处理jpg和png图片文件
                 image_paths.append(os.path.join(root, file))
     logger.debug(
-        "scan image coule use image length: " + str(len(image_paths)) + ", scan dir: " + str(constants.data_path))
+        "Scan image coule use image length: " + str(len(image_paths)) + ", scan dir: " + str(constants.data_path))
     if len(image_paths) <= 0:
         return False
     width = 0
@@ -41,7 +41,7 @@ def generate_video_from_images(images_input_path, video_out_path):
                 width = image.shape[1]
             height = image.shape[0]
         except Exception as e:
-            logger.error("error! detail: " + "file name or path: " + image_path + ", error detail: " + str(e))
+            logger.error("Error! detail: " + "file name or path: " + image_path + ", error detail: " + str(e))
             continue
 
         # 检查输出路径是否存在，如果不存在则创建目录
@@ -53,7 +53,7 @@ def generate_video_from_images(images_input_path, video_out_path):
     video_name = video_out_path + id_generate_time() + "test.mp4"
     video = cv2.VideoWriter(video_name, fourcc, int(output_video_fps), (width, height))  # 设置视频帧率、输出视频大小
     if not video.isOpened():
-        logger.error("not open video watch!")
+        logger.error("Not open video watch!")
         return False
 
     try:
@@ -70,7 +70,7 @@ def generate_video_from_images(images_input_path, video_out_path):
             if image is not None:
                 video.write(resized_image)
             if percent_cur % 10 == 0:
-                logger.info(f"export process to export_index / image_size_len: {export_index} / {image_size_len} * "
+                logger.info(f"Export process to export_index / image_size_len: {export_index} / {image_size_len} * "
                             f"100%10: {percent_cur}%")
     finally:
         video.release()
@@ -99,9 +99,9 @@ def convert_image(images_input_path, target_dir):
                 image_paths.append(os.path.join(root, file))
                 # 检查文件是否为图片
     if len(image_paths) == 0:
-        logger.warning("convert image no image!")
+        logger.warning("Convert image no image!")
         return False
-    logger.debug("convert_image: scan result, need convert images count: " + str(len(image_paths)))
+    logger.debug("Convert_image: scan result, need convert images count: " + str(len(image_paths)))
     for filename in image_paths:
         result = image_fill_black(target_dir, filename)
         if not result:
@@ -167,11 +167,11 @@ def image_fill_black(target_dir, image_path):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     except AttributeError as uie:
-        logger.error("error, AttributeError: 'NoneType' object has no attribute 'shape'! detail: " + str(uie) +
+        logger.error("Error, AttributeError: 'NoneType' object has no attribute 'shape'! detail: " + str(uie) +
                      ", ""file_name or path: " + str(image_path))
         return False
     except Exception as e:
-        logger.error("error, unknown error! detail: " + str(e) + ", file_name or path: " + str(image_path))
+        logger.error("Error, unknown error! detail: " + str(e) + ", file_name or path: " + str(image_path))
         return False
     return True
 
@@ -189,7 +189,7 @@ def process_images_thread(self):
     if result:
         process_ret = generate_video_from_images(constants.data_path + "/img_result", constants.data_path + "/video/")
         if process_ret:
-            logger.success("out video success! file_name: " + process_ret)
+            logger.success("Out video success! file_name: " + process_ret)
         constants.process_image_flag = False
         self.success_tips("图片处理操作")
 
@@ -229,20 +229,20 @@ def play_video_process(self):
                     if cv2.waitKey(1) & 0xFF == ord('p'):  # 按p键暂停/继续播放
                         if current_time > last_time:  # 如果当前时间大于上次时间，说明视频在播放，暂停播放
                             cap.set(cv2.CAP_PROP_POS_FRAMES, last_time)
-                            logger.info("p pause or play video up!")
+                            logger.info("P pause or play video up!")
                         else:  # 否则，恢复播放
                             cap.set(cv2.CAP_PROP_POS_FRAMES, current_time)
-                            logger.info("p replay video up!")
+                            logger.info("P replay video up!")
                         last_time = current_time  # 更新上次时间
 
                     # 处理前进/后退
                     if cv2.waitKey(1) & 0xFF == ord('f'):  # 按f键快进
                         if current_time > last_time:  # 如果当前时间大于上次时间，说明视频在播放，快进到指定位置
                             cap.set(cv2.CAP_PROP_POS_MSEC, (last_time + 1000) * 1000)  # 快进10秒
-                            logger.info("f video speed up!")
+                            logger.info("F video speed up!")
                         else:  # 否则，快退到指定位置
                             cap.set(cv2.CAP_PROP_POS_MSEC, last_time * 1000)  # 退后1秒
-                            logger.info("f video speed down!")
+                            logger.info("F video speed down!")
 
                         last_time = current_time  # 更新上次时间
 
@@ -271,7 +271,7 @@ def play_video_process(self):
         else:
             logger.warning("Please select a video file.")
     except Exception as e:
-        logger.error("error, detail: " + str(e))
+        logger.error("Error, detail: " + str(e))
 
 
 """
@@ -330,9 +330,9 @@ def video_process(video_path, output_directory):
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
-    # https://file2.gofile.io/download/web/78704bae-ff7e-409b-a751-6cc84a848c33/FxS_Full_1080_WM_h264.mp4
-    # start_download_file_link("https://gofile.io/d/MRAkaW")
-    video_process(r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\video_gofile'
-                  r'\FxS_Full_1080_WM_h264.mp4',
-                  r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\video_gofile\out_dir')
+# if __name__ == '__main__':
+#     # https://file2.gofile.io/download/web/78704bae-ff7e-409b-a751-6cc84a848c33/FxS_Full_1080_WM_h264.mp4
+#     # start_download_file_link("https://gofile.io/d/MRAkaW")
+#     video_process(r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\video_gofile'
+#                   r'\FxS_Full_1080_WM_h264.mp4',
+#                   r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\video_gofile\out_dir')

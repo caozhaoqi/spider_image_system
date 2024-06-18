@@ -52,7 +52,7 @@ class AutoImageDialog(QDialog):
         self.show_page_label_auto.setText(str(self.current_image_index) + "/" + str(len(self.image_files)))
 
         if len(constants.online_img_list) <= 0:
-            logger.warning("cur data dir no image!")
+            logger.warning("Cur data dir no image!")
 
     @logger.catch
     def start_timer(self, _=None):
@@ -64,10 +64,10 @@ class AutoImageDialog(QDialog):
                 self.timer = QTimer(self)
                 self.timer.timeout.connect(self.show_next_image)
                 self.timer.start(self.interval)
-                logger.info("all image start play!")
+                logger.info("All image start play!")
                 constants.start_auto_play_flag = True
             else:
-                logger.warning("all image already play, or no image!")
+                logger.warning("All image already play, or no image!")
         # else:
         #     logger.warning("auto_image_dialog not visible or image play stop!")
 
@@ -82,7 +82,7 @@ class AutoImageDialog(QDialog):
         self.timer.stop()
         constants.auto_play_image_visible = False
         constants.start_auto_play_flag = False
-        logger.warning("all image stop play!")
+        logger.warning("All image stop play!")
         # else:
         #     logger.warning("all image not start, or no image!")
 
@@ -97,9 +97,9 @@ class AutoImageDialog(QDialog):
                     self.current_image_index = (self.current_image_index + 1) % len(self.image_files)
                     self.show_image_view(self.current_image_index)
                 else:
-                    logger.warning("no image in cur dir!")
+                    logger.warning("No image in cur dir!")
             except Exception as e:
-                logger.error(f"unknown error, auto_image_explore.py, detail: {e}")
+                logger.error(f"Unknown error, auto_image_explore.py, detail: {e}")
         # else:
         #     logger.warning("auto_image_dialog not visible or image play stop!")
         #     return False
@@ -130,5 +130,5 @@ class AutoImageDialog(QDialog):
         constants.auto_play_image_visible = False
         constants.start_auto_play_flag = False
         self.stop_timer()
-        logger.info("autoplay dialog closed, timer stop!")
+        logger.info("Autoplay dialog closed, timer stop!")
         super(AutoImageDialog, self).closeEvent(event)

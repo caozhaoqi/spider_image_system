@@ -37,7 +37,7 @@ class AutoDownloadChromeDrive(object):
             logger.debug(response.status_code, response.encoding)
             html = etree.HTML(response.text, etree.HTMLParser())  # 解析HTML文本内容
             version_href = html.xpath(".//strong//..//@href")
-            logger.debug("all chrome browser versions can be choosed:")
+            logger.debug("All chrome browser versions can be choosed:")
             for href in version_href:
                 logger.debug(href)
 
@@ -64,7 +64,7 @@ class AutoDownloadChromeDrive(object):
                 logger.warning('Url请求返回错误，错误码为： %d' % response.status_code)
                 return None
         except Exception:
-            logger.warning("request download chromedriver_win32.zip failed!")
+            logger.warning("Request download chromedriver_win32.zip failed!")
             return None
 
     @logger.catch
@@ -84,7 +84,7 @@ class AutoDownloadChromeDrive(object):
             except Exception:
                 continue
 
-        logger.debug("not find match chrome browser{} version!".format(loc_ver))
+        logger.debug("Not find match chrome browser{} version!".format(loc_ver))
         return None
 
     @logger.catch
@@ -118,12 +118,12 @@ class AutoDownloadChromeDrive(object):
             for sub_file in os.listdir(old_driver_path):
                 os.chmod(os.path.join(old_driver_path, sub_file), stat.S_IRWXU)
         time.sleep(1)  # 这个delay必须要有，os操作还是需要时间的
-        logger.debug('''解压 chromedriver_win32.zip,覆盖旧版本''')
+        logger.debug('''解压 chromedriver_win32.zip, 覆盖旧版本''')
         zFile = zipfile.ZipFile(os.path.join(os.getcwd(), "chromedriver_win32.zip"), "r")
         for fileM in zFile.namelist():
             zFile.extract(fileM, old_driver_path)
         zFile.close()
-        logger.success(f"download webdriver success, path: {zFile.filename}")
+        logger.success(f"Download webdriver success, path: {zFile.filename}")
 
     @logger.catch
     def start(self, _=None):
@@ -134,13 +134,13 @@ class AutoDownloadChromeDrive(object):
         """
         version = get_chrome_version_from_executable()
         if not version:
-            logger.debug("check chrome browser version failed!")
+            logger.debug("Check chrome browser version failed!")
             return None
-        logger.debug("chrome browser version:", version)
+        logger.debug("Chrome browser version:", version)
         '''下载网页端与本地匹配的chromedriver.exe'''
         version_href = self.get_chromedriver_urls()
         if not version_href:
-            logger.debug("request %s failed!" % self.chrome_drive_url)
+            logger.debug("Request %s failed!" % self.chrome_drive_url)
             return None
 
         find_url = self.find_local_version(version.split(".")[0], version_href)
@@ -150,7 +150,7 @@ class AutoDownloadChromeDrive(object):
         version_num = re.search(r"path=(.*?)/", find_url).group(1)
         find_url_2 = find_url.rsplit('/', 2)[0]
         new_url = "{}/{}/chromedriver_win32.zip".format(find_url_2, version_num)
-        logger.debug("downloading......\n%s" % new_url)
+        logger.debug("Downloading......\n%s" % new_url)
         ret = self.download_chrome_drive(new_url)
         if not ret:
             return None

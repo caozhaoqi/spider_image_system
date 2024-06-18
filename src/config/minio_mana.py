@@ -36,7 +36,7 @@ class MinioMana:
             result = self.mc.fget_object(bucket, src, dst)
         # Read data from response.
         finally:
-            logger.info("created {0} object; etag: {1}, version-id: {2}".format(
+            logger.info("Created {0} object; etag: {1}, version-id: {2}".format(
                 result.object_name, result.etag, result.version_id,
             ))
 
@@ -58,7 +58,7 @@ class MinioMana:
             result = self.mc.fput_object(bucket, multi_level_name, local_path)
         # Read data from response.
         finally:
-            logger.info("created {0} object; etag: {1}, version-id: {2}".format(
+            logger.info("Created {0} object; etag: {1}, version-id: {2}".format(
                 result.object_name, result.etag, result.version_id,
             ))
 
