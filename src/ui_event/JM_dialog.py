@@ -1,14 +1,17 @@
+import os
 import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import threading
 
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QDialog
 from loguru import logger
 
 from run import constants
 from utils import jmcomic
 
 
-class JMDialog(QWidget):
+class JMDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.download_button = None
@@ -50,7 +53,7 @@ class JMDialog(QWidget):
         """
         # 读取输入框中的jm_id
         jm_id = self.jm_id_input.text()
-        if not jm_id:
+        if not jm_id and jm_id != "":
             logger.success(f'Download jm_id: {jm_id} Finish')
             download_jm_thread_obj = threading.Thread(
                 target=download_jm_thread,
@@ -94,8 +97,8 @@ def download_jm_thread(jm_id):
     jmcomic.download_album(jm_id)
     constants.jm_dialog_visible = False
 
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = JMDialog()
-    sys.exit(app.exec_())
+#
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     ex = JMDialog()
+#     sys.exit(app.exec_())

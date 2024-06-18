@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from selenium.common import StaleElementReferenceException
@@ -36,6 +35,7 @@ from utils.sys_info import get_cur_os
 from utils.system_monitor import kill_process_linux, kill_process_win, reduce_sys_res_usage
 from utils.img_detect_ai import all_img_detect
 from ui_event.JM_dialog import JMDialog
+from utils.jm_domain_detect import jm_domain_test
 
 
 @logger.catch
@@ -47,11 +47,11 @@ def edit_config_msg():
     if not constants.edit_config_msg_visible:
         dialog = Dialog()
         constants.edit_config_msg_visible = True
-        logger.info("config msg dialog show visible.")
+        logger.info("Config msg dialog show visible.")
         dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         dialog.exec_()
     else:
-        logger.warning("edit_config_msg dialog already open!")
+        logger.warning("Edit_config_msg dialog already open!")
 
 
 @logger.catch
@@ -61,7 +61,7 @@ def visit_web():
     :return:
     """
     QDesktopServices.openUrl(QUrl("https://caozhaoqi.github.io/"))
-    logger.info("jump target help web url.")
+    logger.info("Jump target help web url.")
 
 
 @logger.catch
@@ -73,11 +73,11 @@ def about_message_lookup():
     if not constants.about_message_lookup_visible:
         information_dialog = InformationDialog()
         constants.about_message_lookup_visible = True
-        logger.info("show sis tools basic info.")
+        logger.info("Show sis tools basic info.")
         information_dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         information_dialog.exec_()
     else:
-        logger.warning("about_message_lookup_visible dialog already open!")
+        logger.warning("About_message_lookup_visible dialog already open!")
 
 
 @logger.catch
@@ -135,10 +135,10 @@ def stop_spider_image():
     """
     if not constants.stop_spider_url_flag:
         constants.stop_spider_url_flag = True
-        logger.warning("flag stop_spider_url_flag set true!")
+        logger.warning("Flag stop_spider_url_flag set true!")
         return True
     else:
-        logger.warning("spider url already stop!")
+        logger.warning("Spider url already stop!")
         return False
 
 
@@ -156,7 +156,7 @@ def auto_start_spider_image(self):
 
     # read txt file spider keyword
     if not constants.stop_spider_url_flag:
-        logger.error("already spider img, please stop here before operate!")
+        logger.error("Already spider img, please stop here before operate!")
         return False
 
     # 创建SISThreading类的实例并传递参数
@@ -180,7 +180,7 @@ def add_keyword_alert():
     :return:
     """
     dialog = KeywordDialog()
-    logger.info("keyword msg dialog show visible.")
+    logger.info("Keyword msg dialog show visible.")
     # dialog.show()
     dialog.exec_()
 
@@ -192,45 +192,45 @@ def auto_spider_img_thread(self):
     @:param self.
     :return:
     """
-    logger.info("auto spider img thread starting...")
+    logger.info("Auto spider img thread starting...")
     # detect spider work status
     if constants.log_no_output_flag and not constants.stop_spider_url_flag:
         constants.stop_spider_url_flag = False
     spider_image_keyword, txt_file_list = get_image_keyword()
     if len(spider_image_keyword) == 0 or spider_image_keyword == [] or spider_image_keyword == [[]]:
-        logger.warning("auto spider image null, please add keyword!")
+        logger.warning("Auto spider image null, please add keyword!")
         if self:
             self.sys_tips("spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字！")
         return False
     constants.spider_mode = 'auto'
     txt_index = 0
     for spider_img_keyword_detail in spider_image_keyword:
-        logger.debug("cur spider kew word txt: " + str(spider_img_keyword_detail))
+        logger.debug("Current spider kew word txt: " + str(spider_img_keyword_detail))
         # 读取用户输入路径
         constants.stop_spider_url_flag = False
         txt_index += 1
         for spider_image_keyword_item in spider_img_keyword_detail:
-            logger.debug("cur spider kew word: " + str(spider_image_keyword_item.strip()))
+            logger.debug("Current spider kew word: " + str(spider_image_keyword_item.strip()))
             try:
                 spider_artworks_url(self, spider_image_keyword_item.strip())
             except StaleElementReferenceException as sere:
-                logger.warning(f"unknown error, detail: {sere}")
+                logger.warning(f"Unknown error, detail: {sere}")
             except Exception as e:
-                logger.error(f"unknown error, detail: {e}")
+                logger.error(f"Unknown error, detail: {e}")
             if constants.stop_spider_url_flag:
                 logger.warning(
-                    f"auto spider img stop! will exit, final spider keyword: {spider_image_keyword_item.strip()}!")
+                    f"Auto spider img stop! will exit, final spider keyword: {spider_image_keyword_item.strip()}!")
                 break
             fire_wall_delay_time = random_fw_time(constants.fire_wall_delay_time)
             if constants.firewall_flag:
-                logger.warning(f"block {constants.visit_url} domain, will retry! cur random retry time:"
+                logger.warning(f"Block {constants.visit_url} domain, will retry! cur random retry time:"
                                f" {float(fire_wall_delay_time)} seconds.")
                 # 设置重试时间
                 time.sleep(fire_wall_delay_time)
                 continue
         if constants.stop_spider_url_flag:
             # stop auto mode spider
-            logger.warning(f"auto spider img stop! will exit, end spider txt name: {txt_file_list[txt_index - 1]}!")
+            logger.warning(f"Auto spider img stop! will exit, end spider txt name: {txt_file_list[txt_index - 1]}!")
             break
 
 
@@ -243,10 +243,10 @@ def stop_download_image():
     if not constants.stop_download_image_flag or not constants.download_image_re_flag:
         constants.stop_download_image_flag = True
         constants.download_image_re_flag = False
-        logger.warning("flag stop_download_mage_flag set true!")
+        logger.warning("Flag stop_download_mage_flag set true!")
         return True
     else:
-        logger.warning("download image already stop or not download image!")
+        logger.warning("Download image already stop or not download image!")
         return False
 
 
@@ -261,11 +261,11 @@ def online_look_image():
         dialog.showMaximized()
         dialog.show()
         dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        logger.info("online image viewer show!")
+        logger.info("Online image viewer show!")
         constants.online_look_image_visible = True
         dialog.exec_()
     else:
-        logger.warning("online look msg already open!")
+        logger.warning("Online look msg already open!")
 
 
 @logger.catch
@@ -279,11 +279,11 @@ def auto_play_image():
         dialog.showMaximized()
         dialog.show()
         dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        logger.info("auto_play_image show!")
+        logger.info("Auto_play_image show!")
         constants.auto_play_image_visible = True
         dialog.exec_()
     else:
-        logger.warning("auto play image already show!")
+        logger.warning("Auto play image already show!")
 
 
 @logger.catch
@@ -297,11 +297,11 @@ def performance_monitor():
         monitor.showMaximized()
         monitor.show()
         monitor.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        logger.info("sys info show!")
+        logger.info("System info show!")
         constants.performance_monitor_visible = True
         monitor.exec_()
     else:
-        logger.warning("performance_monitor already show!")
+        logger.warning("Performance_monitor already show!")
 
 
 @logger.catch
@@ -315,11 +315,11 @@ def log_analyze_ui():
         dialog_lah.showMaximized()
         dialog_lah.show()
         dialog_lah.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        logger.info("log_analyze_visible show!")
+        logger.info("Log_analyze_visible show!")
         constants.log_analyze_visible = True
         dialog_lah.exec_()
     else:
-        logger.warning("genshin_impact_view already show!")
+        logger.warning("Genshin_impact_view already show!")
 
 
 @logger.catch()
@@ -329,7 +329,7 @@ def encoding_tools_convert():
     :return:
     """
     scan_txt_file_all(constants.data_path)
-    logger.success("convert point txt finish!")
+    logger.success("Convert point txt finish!")
 
 
 @logger.catch
@@ -342,7 +342,7 @@ def detect_installed_flag():
         target=detect_installed,
         args=())
     detect_installed_thread_obj.start()
-    logger.debug("detecting chrome webdriver start!")
+    logger.debug("Detecting chrome webdriver start!")
 
 
 @logger.catch
@@ -357,10 +357,10 @@ def face_detect_action():
             target=face_detect_result,
             args=(constants.data_path,))
         face_detect_thread_obj.start()
-        logger.info("start detect face!")
+        logger.info("Start detect face!")
         return True
     else:
-        logger.error("detect face ing, please wait.")
+        logger.error("Detect face ing, please wait.")
         return False
 
 
@@ -376,9 +376,9 @@ def convert_folder_name():
             target=convert_and_move_folder,
             args=(os.path.join(constants.data_path, 'img_url'),))
         convert_folder_thread_obj.start()
-        logger.info("start convert folder_name!")
+        logger.info("Start convert folder_name!")
     else:
-        logger.error("converting folder_name please wait.")
+        logger.error("Converting folder_name please wait.")
 
 
 @logger.catch
@@ -393,10 +393,10 @@ def user_upload_image():
             target=upload_image,
             args=(constants.basic_path,))
         upload_image_thread_obj.start()
-        logger.info("start upload image!")
+        logger.info("Start upload image!")
         return True
     else:
-        logger.error("uploading image, please wait.")
+        logger.error("Uploading image, please wait.")
         return False
 
 
@@ -413,9 +413,9 @@ def user_download_image():
             target=download_re_error_image,
             args=())
         download_re_error_threading_obj.start()
-        logger.info("start re error download image!")
+        logger.info("Start re error download image!")
     else:
-        logger.error("downloading error image, please wait.")
+        logger.error("Downloading error image, please wait.")
 
 
 @logger.catch
@@ -430,9 +430,9 @@ def unzip_file_method():
             target=unzip_file,
             args=(constants.data_path,))
         unzip_file_threading_obj.start()
-        logger.info(f"start unzip file! path: {constants.data_path}")
+        logger.info(f"Start unzip file! path: {constants.data_path}")
     else:
-        logger.error("unzip ing file, please wait.")
+        logger.error("Unzip ing file, please wait.")
 
 
 @logger.catch
@@ -456,12 +456,12 @@ def kill_other_close():
     try:
         if get_cur_os() == "win32":
             reduce_sys_res_usage()
-            logger.success("kill other process success!")
+            logger.success("Kill other process success!")
             kill_process_win('taskkill /im ui_main.exe /F /T')
         else:
             kill_process_linux('ui_main')
     except Exception as e:
-        logger.error(f"clear other process fail, detail: {e}")
+        logger.error(f"Clear other process fail, detail: {e}")
 
 
 @logger.catch
@@ -471,11 +471,11 @@ def img_category_ana():
         dialog_img.showMaximized()
         dialog_img.show()
         dialog_img.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        logger.info("img anal dialog show!")
+        logger.info("Img anal dialog show!")
         constants.img_analyze_visible = True
         dialog_img.exec_()
     else:
-        logger.warning("img anal dialog already show!")
+        logger.warning("Img anal dialog already show!")
 
 
 @logger.catch
@@ -486,7 +486,7 @@ def on_last_window_closed():
     """
     logger.debug("Console window is closing...")
     exit_save_data()
-    logger.debug("start clean other process...")
+    logger.debug("Start clean other process...")
     kill_other_close()
 
 
@@ -502,9 +502,9 @@ def model_detect_img():
             target=all_img_detect,
             args=(constants.data_path,))
         detect_img_folder_thread_obj.start()
-        logger.info("start detect img !")
+        logger.info("Start detect img !")
     else:
-        logger.error("detecting img  please wait.")
+        logger.error("Detecting img  please wait.")
 
 
 @logger.catch
@@ -515,11 +515,29 @@ def start_download_jm():
     """
     if not constants.jm_dialog_visible:
         dialog_jm = JMDialog()
-        dialog_jm.showMaximized()
+        # dialog_jm.showMaximized()
         dialog_jm.show()
         dialog_jm.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         logger.info("dialog_jm show!")
         constants.jm_dialog_visible = True
         dialog_jm.exec_()
     else:
-        logger.warning("dialog_jm already show!")
+        logger.warning("Dialog_jm already show!")
+
+
+@logger.catch
+def jm_domain_test_method():
+    """
+
+    :return:
+    """
+    # jm_domain_test()
+    if not constants.jm_domain_detect_flag:
+        constants.jm_domain_detect_flag = True
+        jm_domain_detectr_thread_obj = threading.Thread(
+            target=jm_domain_test,
+            args=())
+        jm_domain_detectr_thread_obj.start()
+        logger.info("Start detect jm domain!")
+    else:
+        logger.error("Detecting  jm domain, please wait.")

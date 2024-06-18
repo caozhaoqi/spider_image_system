@@ -35,6 +35,8 @@ performance_monitor_visible = False
 log_analyze_visible = False
 # dialog_jm
 jm_dialog_visible = False
+# jm_domain_detect_flag
+jm_domain_detect_flag = False
 # img ana
 img_analyze_visible = False
 # face detect
