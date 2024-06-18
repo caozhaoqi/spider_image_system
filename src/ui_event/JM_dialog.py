@@ -54,7 +54,7 @@ class JMDialog(QDialog):
         # 读取输入框中的jm_id
         jm_id = self.jm_id_input.text()
         if not jm_id and jm_id != "":
-            logger.success(f'Download jm_id: {jm_id} Finish')
+            # logger.debug(f'Download jm_id: {jm_id} s')
             download_jm_thread_obj = threading.Thread(
                 target=download_jm_thread,
                 args=(jm_id,))
@@ -93,9 +93,10 @@ def download_jm_thread(jm_id):
     :param jm_id:
     :return:
     """
-    logger.start(f"start download jm_id: {jm_id}")
+    logger.debug(f"start download jm_id: {jm_id}")
     jmcomic.download_album(jm_id)
     constants.jm_dialog_visible = False
+    logger.success(f"download jm {jm_id} finish.")
 
 #
 # if __name__ == '__main__':
