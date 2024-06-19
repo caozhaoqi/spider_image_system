@@ -158,6 +158,8 @@ def search_download_jm(actor):
     for i in range(page_count):
         page: JmSearchPage = client.search_site(search_query=actor, page=i)
         page_list.append(page)
+        if not constants.JM_SD_auto_flag:
+            return False
 
     aid_list = []
     a_title_list = []
@@ -169,6 +171,8 @@ def search_download_jm(actor):
             logger.info(f'[角色/{actor}] 发现目标: [{aid}]: [{atitle}]')
             aid_list.append(aid)
             a_title_list.append(atitle)
+            if not constants.JM_SD_auto_flag:
+                return False
         page_num += 1
     logger.debug("Start download JM image.")
     download_jm_index = 1
@@ -178,6 +182,8 @@ def search_download_jm(actor):
         logger.debug(f"Download jm image: {aid_process}, title: {a_title_list[download_jm_index]},"
                      f" download index: {download_jm_index} finish.")
         download_jm_index += 1
+        if not constants.JM_SD_auto_flag:
+            return False
     logger.success("Download JM image all finish.")
     return True
 
@@ -210,6 +216,9 @@ def jm_auto_spider_img_thread():
             logger.debug("Current spider kew word: " + str(spider_image_keyword_item.strip()))
             try:
                 search_download_jm(spider_image_keyword_item.strip())
+                if not constants.JM_SD_auto_flag:
+                    # logger.warning("stop jm spider.")
+                    return False
             except Exception as e:
                 logger.error(f"Unknown error, detail: {e}")
 
