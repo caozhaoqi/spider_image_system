@@ -163,11 +163,13 @@ def log_mon_war(spider_thread_obj):
                     logger.success("Internet resume connect, resume spider image thread and download thread.")
                     constants.scheduled_download_program_flag = True
                     spider_thread_obj.resume()
+                    spider_thread_obj.run()
             logger.info(f"Spider_thread_obj.is_running flag value: {spider_thread_obj.is_running()}")
             if constants.log_no_output_flag and constants.internet_connect_status:
                 # 在某个时候，您可能想要暂停线程
                 spider_thread_obj.pause()
                 spider_thread_obj.resume()
+                spider_thread_obj.run()
                 logger.warning(
                     f"Log no output, spider threading status: {spider_thread_obj.is_running()}, re start spider ing...")
                 constants.log_no_output_flag = False

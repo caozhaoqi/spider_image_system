@@ -432,7 +432,7 @@ class JmModuleConfig:
         dir_rule = option_dict['dir_rule']
         if dir_rule['base_dir'] is None:
             import os
-            dir_rule['base_dir'] = os.getcwd()
+            dir_rule['base_dir'] = os.path.join(os.getcwd(), 'data/jm_image/')
 
         # client cache
         client = option_dict['client']
