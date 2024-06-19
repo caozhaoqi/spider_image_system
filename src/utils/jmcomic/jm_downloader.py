@@ -1,9 +1,11 @@
 from .jm_option import *
+from loguru import logger
 
 
 # noinspection PyMethodMayBeStatic
 class DownloadCallback:
 
+    @logger.catch
     def before_album(self, album: JmAlbumDetail):
         jm_log('album.before',
                f'本子获取成功: [{album.id}], '
@@ -14,9 +16,11 @@ class DownloadCallback:
                f'关键词: {album.tags}'
                )
 
+    @logger.catch
     def after_album(self, album: JmAlbumDetail):
         jm_log('album.after', f'本子下载完成: [{album.id}]')
 
+    @logger.catch
     def before_photo(self, photo: JmPhotoDetail):
         jm_log('photo.before',
                f'开始下载章节: {photo.id} ({photo.album_id}[{photo.index}/{len(photo.from_album)}]), '
@@ -24,10 +28,12 @@ class DownloadCallback:
                f'图片数为[{len(photo)}]'
                )
 
+    @logger.catch
     def after_photo(self, photo: JmPhotoDetail):
         jm_log('photo.after',
                f'章节下载完成: [{photo.id}] ({photo.album_id}[{photo.index}/{len(photo.from_album)}])')
 
+    @logger.catch
     def before_image(self, image: JmImageDetail, img_save_path):
         if image.exists:
             jm_log('image.before',
@@ -38,6 +44,7 @@ class DownloadCallback:
                    f'图片准备下载: {image.tag}, [{image.img_url}] → [{img_save_path}]'
                    )
 
+    @logger.catch
     def after_image(self, image: JmImageDetail, img_save_path):
         jm_log('image.after',
                f'图片下载完成: {image.tag}, [{image.img_url}] → [{img_save_path}]')
@@ -55,12 +62,14 @@ class JmDownloader(DownloadCallback):
         # 下载失败的记录list
         self.download_failed_list: List[Tuple[JmImageDetail, BaseException]] = []
 
+    @logger.catch
     def download_album(self, album_id):
         client = self.client_for_album(album_id)
         album = client.get_album_detail(album_id)
         self.download_by_album_detail(album, client)
         return album
 
+    @logger.catch
     def download_by_album_detail(self, album: JmAlbumDetail, client: JmcomicClient):
         self.before_album(album)
         if album.skip:
@@ -72,12 +81,14 @@ class JmDownloader(DownloadCallback):
         )
         self.after_album(album)
 
+    @logger.catch
     def download_photo(self, photo_id):
         client = self.client_for_photo(photo_id)
         photo = client.get_photo_detail(photo_id)
         self.download_by_photo_detail(photo, client)
         return photo
 
+    @logger.catch
     def download_by_photo_detail(self, photo: JmPhotoDetail, client: JmcomicClient):
         client.check_photo(photo)
 
@@ -91,6 +102,7 @@ class JmDownloader(DownloadCallback):
         )
         self.after_photo(photo)
 
+    @logger.catch
     def download_by_image_detail(self, image: JmImageDetail, client: JmcomicClient):
         img_save_path = self.option.decide_image_filepath(image)
 
@@ -122,12 +134,15 @@ class JmDownloader(DownloadCallback):
             # 保存失败记录
             self.download_failed_list.append((image, e))
 
-        if e is not None:
-            raise e
+            if e is not None:
+                raise e
+            logger.warning(f"Unknown error, detail: {e}")
+            # return
 
         self.after_image(image, img_save_path)
 
     # noinspection PyMethodMayBeStatic
+    @logger.catch
     def execute_by_condition(self,
                              iter_objs: DetailEntity,
                              apply: Callable,
@@ -157,6 +172,7 @@ class JmDownloader(DownloadCallback):
             )
 
     # noinspection PyMethodMayBeStatic
+    @logger.catch
     def do_filter(self, detail: DetailEntity):
         """
         该方法可用于过滤本子/章节，默认不会做过滤。
@@ -170,6 +186,7 @@ class JmDownloader(DownloadCallback):
         return detail
 
     # noinspection PyUnusedLocal
+    @logger.catch
     def client_for_album(self, jm_album_id) -> JmcomicClient:
         """
         默认情况下，所有的JmDownloader共用一个JmcomicClient
@@ -177,6 +194,7 @@ class JmDownloader(DownloadCallback):
         return self.option.build_jm_client()
 
     # noinspection PyUnusedLocal
+    @logger.catch
     def client_for_photo(self, jm_photo_id) -> JmcomicClient:
         """
         默认情况下，所有的JmDownloader共用一个JmcomicClient
@@ -184,6 +202,7 @@ class JmDownloader(DownloadCallback):
         return self.option.build_jm_client()
 
     @property
+    @logger.catch
     def all_success(self) -> bool:
         """
         是否成功下载了全部图片
@@ -207,6 +226,7 @@ class JmDownloader(DownloadCallback):
 
     # 下面是回调方法
 
+    @logger.catch
     def before_album(self, album: JmAlbumDetail):
         super().before_album(album)
         self.download_success_dict.setdefault(album, {})
@@ -216,6 +236,7 @@ class JmDownloader(DownloadCallback):
             downloader=self,
         )
 
+    @logger.catch
     def after_album(self, album: JmAlbumDetail):
         super().after_album(album)
         self.option.call_all_plugin(
@@ -224,6 +245,7 @@ class JmDownloader(DownloadCallback):
             downloader=self,
         )
 
+    @logger.catch
     def before_photo(self, photo: JmPhotoDetail):
         super().before_photo(photo)
         self.download_success_dict.setdefault(photo.from_album, {})
@@ -234,6 +256,7 @@ class JmDownloader(DownloadCallback):
             downloader=self,
         )
 
+    @logger.catch
     def after_photo(self, photo: JmPhotoDetail):
         super().after_photo(photo)
         self.option.call_all_plugin(
@@ -242,6 +265,7 @@ class JmDownloader(DownloadCallback):
             downloader=self,
         )
 
+    @logger.catch
     def before_image(self, image: JmImageDetail, img_save_path):
         super().before_image(image, img_save_path)
         self.option.call_all_plugin(
@@ -250,6 +274,7 @@ class JmDownloader(DownloadCallback):
             downloader=self,
         )
 
+    @logger.catch
     def after_image(self, image: JmImageDetail, img_save_path):
         super().after_image(image, img_save_path)
         photo = image.from_photo
@@ -286,6 +311,7 @@ class DoNotDownloadImage(JmDownloader):
     不会下载任何图片的Downloader，用作测试
     """
 
+    @logger.catch
     def download_by_image_detail(self, image: JmImageDetail, client: JmcomicClient):
         # ensure make dir
         self.option.decide_image_filepath(image)
@@ -300,6 +326,7 @@ class JustDownloadSpecificCountImage(JmDownloader):
     count_lock = Lock()
     count = 0
 
+    @logger.catch
     def download_by_image_detail(self, image: JmImageDetail, client: JmcomicClient):
         # ensure make dir
         self.option.decide_image_filepath(image)
@@ -307,6 +334,7 @@ class JustDownloadSpecificCountImage(JmDownloader):
         if self.try_countdown():
             return super().download_by_image_detail(image, client)
 
+    @logger.catch
     def try_countdown(self):
         if self.count < 0:
             return False

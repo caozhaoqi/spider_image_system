@@ -1,20 +1,19 @@
 import os
 import sys
 
-from file.file_process import get_image_keyword
-from run import constants
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from jmcomic import *
-from loguru import logger
-
+from file.file_process import get_image_keyword
+from run import constants
+from utils.jmcomic import *
 option = JmOption.default()
 
 meta_data = {
     # 'proxies': ProxyBuilder.clash_proxy()
 }
 
-disable_jm_log()
+# disable_jm_log()
+from loguru import logger
 
 
 @logger.catch
@@ -161,6 +160,7 @@ def search_download_jm(actor):
         page_list.append(page)
 
     aid_list = []
+    a_title_list = []
     page_num = 1
     for page in page_list:
         logger.debug(f"Page num: {page_num}, spider image.")
@@ -168,9 +168,16 @@ def search_download_jm(actor):
             # if actor in tag_list:
             logger.info(f'[角色/{actor}] 发现目标: [{aid}]: [{atitle}]')
             aid_list.append(aid)
+            a_title_list.append(atitle)
         page_num += 1
     logger.debug("Start download JM image.")
-    download_album(aid_list, jm_option)
+    download_jm_index = 1
+    for aid_process in aid_list:
+        # result[aid_process].
+        download_album(aid_process, jm_option)
+        logger.debug(f"Download jm image: {aid_process}, title: {a_title_list[download_jm_index]},"
+                     f" download index: {download_jm_index} finish.")
+        download_jm_index += 1
     logger.success("Download JM image all finish.")
     return True
 

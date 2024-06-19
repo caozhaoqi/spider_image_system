@@ -10,6 +10,7 @@
 - add JM auto spider keyword and download image
 - fix no internet start spider img thread
 - fix bugs for log monitor and change jm download dir
+- add jm download process show
 
 ## v1.1.7-beta.2.240617
 ### 2024/6/17
