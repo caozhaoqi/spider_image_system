@@ -175,12 +175,12 @@ def search_download_jm(actor):
                 return False
         page_num += 1
     logger.debug("Start download JM image.")
-    download_jm_index = 1
+    download_jm_index = 0
     for aid_process in aid_list:
         # result[aid_process].
         download_album(aid_process, jm_option)
         logger.debug(f"Download jm image: {aid_process}, title: {a_title_list[download_jm_index]},"
-                     f" download index: {download_jm_index} finish.")
+                     f" download index: {download_jm_index + 1} finish.")
         download_jm_index += 1
         if not constants.JM_SD_auto_flag:
             return False
