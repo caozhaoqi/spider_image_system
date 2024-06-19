@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import threading
@@ -38,6 +37,7 @@ class SISThreading(threading.Thread):
 
         :return:
         """
+        # logger.debug(f"Start run thread, thread status: {self.__running.is_set()}")
         while self.__running.is_set():
             if constants.stop_spider_url_flag:
                 logger.warning("Stop spider url in threading run.")
@@ -66,6 +66,7 @@ class SISThreading(threading.Thread):
         """
         logger.warning("Thread is resume")
         self.__flag.set()  # 设置为True, 让线程停止阻塞
+        self.__running.set()  # 设置为True
 
     @logger.catch
     def stop(self, _=None):
@@ -81,4 +82,3 @@ class SISThreading(threading.Thread):
     def is_running(self, _=None):
         """检查线程是否正在运行"""
         return self.__running.is_set()
-
