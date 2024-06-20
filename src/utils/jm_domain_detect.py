@@ -181,7 +181,7 @@ def search_download_jm(actor):
         # result[aid_process].
         download_album(aid_process, jm_option)
         logger.debug(f"Download jm image: {aid_process}, title: {a_title_list[download_jm_index]},"
-                     f" download index: {download_jm_index + 1} finish.")
+                     f" download index: {download_jm_index + 1}, count: {len(aid_list)}, finish.")
         download_jm_index += 1
         if not constants.JM_SD_auto_flag:
             return False
