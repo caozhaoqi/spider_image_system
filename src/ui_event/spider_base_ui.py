@@ -61,7 +61,7 @@ def base_menu(self):
     self.video_menu.addAction(self.stop_generate_action)
     self.video_menu.addAction(self.video_other_action)
 
-    self.JM_menu = QMenu('JM管理', self.menu_bar)
+    self.JM_menu = QMenu('JM', self.menu_bar)
     self.log_analyze = QAction('日志分析', self.JM_menu)
     self.jm_tools = QAction("JM下载", self.JM_menu)
     self.jm_domain_test = QAction("JM检测", self.JM_menu)
