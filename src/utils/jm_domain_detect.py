@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from file.file_process import get_image_keyword
 from run import constants
-from utils.jmcomic import *
+from jmcomic import *
 option = JmOption.default()
 
 meta_data = {
@@ -143,6 +143,7 @@ def search_download_jm(actor):
     """
     logger.debug(f"Start search content: {actor}.")
 
+    #     client = JmOption.default().new_jm_client()
     jm_option = JmOption.default()
     client = jm_option.new_jm_client()
 
