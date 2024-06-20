@@ -185,7 +185,7 @@ def search_download_jm(actor):
         download_jm_index += 1
         if not constants.JM_SD_auto_flag:
             return False
-    logger.success("Download JM image all finish.")
+    logger.success(f"Download JM keyword: {actor} image finish.")
     return True
 
 
@@ -222,6 +222,8 @@ def jm_auto_spider_img_thread():
                     return False
             except Exception as e:
                 logger.error(f"Unknown error, detail: {e}")
+    constants.JM_SD_auto_flag = False
+    logger.success(f"Download JM All image finish, set JM_SD_auto_flag=False.")
 
 
 if __name__ == '__main__':
