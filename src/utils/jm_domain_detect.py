@@ -223,7 +223,7 @@ def jm_auto_spider_img_thread():
             except Exception as e:
                 logger.error(f"Unknown error, detail: {e}")
     constants.JM_SD_auto_flag = False
-    logger.success(f"Download JM All image finish, set JM_SD_auto_flag=False.")
+    logger.success(f"Download JM All image finish, set JM_SD_auto_flag = False.")
 
 
 if __name__ == '__main__':

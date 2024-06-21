@@ -37,7 +37,7 @@ class AutoDownloadChromeDrive(object):
             logger.debug(response.status_code, response.encoding)
             html = etree.HTML(response.text, etree.HTMLParser())  # 解析HTML文本内容
             version_href = html.xpath(".//strong//..//@href")
-            logger.debug("All chrome browser versions can be choosed:")
+            logger.debug("All chrome browser versions can be chose:")
             for href in version_href:
                 logger.debug(href)
 
@@ -49,6 +49,7 @@ class AutoDownloadChromeDrive(object):
     def download_chrome_drive(self, url, _=None):
         """
 
+        :param _:
         :param url:
         :return:
         """
