@@ -569,6 +569,6 @@ def stop_jm_spider():
     """
     if constants.JM_SD_auto_flag:
         constants.JM_SD_auto_flag = False
-        logger.success("JM auto spider stop.")
+        logger.debug("Start JM auto spider stop.")
     else:
         logger.warning("JM auto already stop.")

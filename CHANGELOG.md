@@ -3,6 +3,7 @@
 ## v1.1.8-beta.1.240624
 ### 2024/6/24
 - add menu for JM function
+- update jm stop log
 
 ## v1.1.7.240620
 ### 2024/6/20
