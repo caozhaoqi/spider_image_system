@@ -20,6 +20,16 @@
 ## GUI
 
 - Pyqt5 paint main ui.
+> UI show
+> 
+- Main UI
+    ![img](doc/image/sis_main_ui.png)
+- Video UI
+    ![img](doc/image/video_ui.png)
+- Other Ui
+    ![img](doc/image/other_ui.png)
+- Version UI
+    ![img](doc/image/sis_version_info.png)
 
 ## Technology lib
 
