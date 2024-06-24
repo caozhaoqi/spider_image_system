@@ -4,6 +4,8 @@
 ### 2024/6/24
 - add menu for JM function
 - update jm stop log
+- add record jm download progress function
+- skip already download finish keyword
 
 ## v1.1.7.240620
 ### 2024/6/20

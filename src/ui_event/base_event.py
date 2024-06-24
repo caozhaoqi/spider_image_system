@@ -458,6 +458,7 @@ def kill_other_close():
             reduce_sys_res_usage()
             logger.success("Kill other process success!")
             kill_process_win('taskkill /im ui_main.exe /F /T')
+            # kill_process_win('taskkill /python.exe /F /T')
         else:
             kill_process_linux('ui_main')
     except Exception as e:

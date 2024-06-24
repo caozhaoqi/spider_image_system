@@ -1,11 +1,11 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from file.file_process import get_image_keyword
 from run import constants
 from jmcomic import *
+
 option = JmOption.default()
 
 meta_data = {
@@ -135,6 +135,43 @@ def search_content_jm(keyword, jm_id=None):
 
 
 @logger.catch
+def exists_jm_from_finish(content):
+    """
+    exists txt download finish image
+    :param content:
+    :return:
+    """
+    # txt_list = []
+    file_name = os.path.join(constants.data_path, "jm_download_finished_txt.txt")
+    if not os.path.exists(file_name):
+        with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
+            f.write("")
+        return False
+    with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
+        txt_list = f.readlines()
+    for txt in txt_list:
+        if content in txt:
+            logger.warning(f"{content} already download finished, will skip txt!")
+            return True
+
+
+@logger.catch
+def write_already_download_jm_finish(actor):
+    """
+
+    :param actor:
+    :return:
+    """
+    if exists_jm_from_finish(actor):
+        return True
+    file_name = os.path.join(constants.data_path, "jm_download_finished_txt.txt")
+    with open(file_name, 'a', encoding='utf-8', errors='replace') as f:
+        f.write(actor + "\n")
+    logger.success(f"Download {actor} finished, will write txt.")
+    # pass
+
+
+@logger.catch
 def search_download_jm(actor):
     """
 
@@ -185,7 +222,8 @@ def search_download_jm(actor):
         download_jm_index += 1
         if not constants.JM_SD_auto_flag:
             return False
-    logger.success(f"Download JM keyword: {actor} image finish.")
+    # logger.success(f"Download JM keyword: {actor} image finish.")
+    write_already_download_jm_finish(actor)
     return True
 
 
@@ -216,7 +254,8 @@ def jm_auto_spider_img_thread():
         for spider_image_keyword_item in spider_img_keyword_detail:
             logger.debug("Current spider kew word: " + str(spider_image_keyword_item.strip()))
             try:
-                if not search_download_jm(spider_image_keyword_item.strip()):
+                if not search_download_jm(spider_image_keyword_item.strip()) and \
+                        not exists_jm_from_finish(spider_image_keyword_item.strip()):
                     logger.success("Stop jm spider finished")
                     return False
             except Exception as e:
