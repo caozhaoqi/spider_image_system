@@ -254,10 +254,13 @@ def jm_auto_spider_img_thread():
         for spider_image_keyword_item in spider_img_keyword_detail:
             logger.debug("Current spider kew word: " + str(spider_image_keyword_item.strip()))
             try:
-                if not search_download_jm(spider_image_keyword_item.strip()) and \
-                        not exists_jm_from_finish(spider_image_keyword_item.strip()):
-                    logger.success("Stop jm spider finished")
-                    return False
+                if exists_jm_from_finish(spider_image_keyword_item.strip()):
+                    logger.warning(f"Already download JM keyword, skip: {spider_image_keyword_item.strip()}")
+                    continue
+                else:
+                    if not search_download_jm(spider_image_keyword_item.strip()):
+                        logger.success("Stop jm spider finished")
+                        return False
             except Exception as e:
                 logger.error(f"Unknown error, detail: {e}")
     constants.JM_SD_auto_flag = False

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.8-beta.2.240628
+### 2024/6/28
+- 
+
 ## v1.1.8-beta.1.240624
 ### 2024/6/24
 - add menu for JM function
