@@ -2,7 +2,9 @@
 
 ## v1.1.8-beta.2.240628
 ### 2024/6/28
-- 
+- add download finish keyword folder move
+- update move method
+- skip exists jm title
 
 ## v1.1.8-beta.1.240624
 ### 2024/6/24

@@ -252,7 +252,7 @@ def pinyin_convert(folder_name, folder_path, folder, pinyin_flag):
     if os.path.exists(pinyin_folder_path):
         logger.warning(f"Folder '{pinyin_folder_name}' already exists. Moving content to the existing folder.")
         # 移动文件夹内容到已存在的文件夹
-        move_content_to_existing_folder(os.path.join(folder_path, folder), pinyin_folder_path)
+        move_target_folder(os.path.join(folder_path, folder), pinyin_folder_path)
     else:
         # 如果新文件夹不存在，则创建它，并移动文件夹内容到新文件夹
         os.makedirs(pinyin_folder_path)
@@ -270,20 +270,23 @@ def pinyin_convert(folder_name, folder_path, folder, pinyin_flag):
 
 
 @logger.catch
-def move_content_to_existing_folder(source_folder_path, target_folder_path):
+def move_target_folder(source_folder_path, target_folder_path):
     """
 
     :param source_folder_path:
     :param target_folder_path:
     :return:
     """
+    if not os.path.exists(source_folder_path):
+        logger.warning(f"Source folder path not exists: {source_folder_path}, skip not moved.")
+        return
     # 获取源文件夹中的所有文件和子文件夹
     for item in os.listdir(source_folder_path):
         source_item_path = os.path.join(source_folder_path, item)
 
         # 如果是文件夹，则递归调用此函数
         if os.path.isdir(source_item_path):
-            move_content_to_existing_folder(source_item_path, target_folder_path)
+            move_target_folder(source_item_path, target_folder_path)
         else:
             # 如果是文件，则直接移动文件
             if os.path.exists(source_item_path):

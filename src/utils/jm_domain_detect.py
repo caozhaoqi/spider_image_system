@@ -5,6 +5,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from file.file_process import get_image_keyword
 from run import constants
 from jmcomic import *
+from pypinyin import Style, lazy_pinyin
+from utils.file_utils import move_target_folder
 
 option = JmOption.default()
 
@@ -172,6 +174,29 @@ def write_already_download_jm_finish(actor):
 
 
 @logger.catch
+def move_jm_keyword_dir(actor, a_title_list):
+    """
+
+    :param actor:
+    :param a_title_list:
+    :return:
+    """
+    actor = ''.join(lazy_pinyin(actor, style=Style.TONE3))
+    actor_path = os.path.join(os.path.join(constants.data_path, "jm_image"), actor)
+    if not os.path.exists(actor_path):
+        logger.warning("Keyword folder not exists, create it.")
+        os.makedirs(actor_path)
+    root_path_jm = os.path.join(constants.data_path, "jm_image")
+    for actor_jm_content in a_title_list:
+        try:
+            move_target_folder(os.path.join(root_path_jm, actor_jm_content), os.path.join(actor_path, actor_jm_content))
+        except Exception as e:
+            logger.warning(f"Unknown error, detail: {e}, skip: {actor_jm_content}.")
+            continue
+    logger.debug(f"Moved keyword: {actor} Finish.")
+
+
+@logger.catch
 def search_download_jm(actor):
     """
 
@@ -215,15 +240,23 @@ def search_download_jm(actor):
     logger.debug("Start download JM image.")
     download_jm_index = 0
     for aid_process in aid_list:
-        # result[aid_process].
-        download_album(aid_process, jm_option)
-        logger.debug(f"Download jm image: {aid_process}, title: {a_title_list[download_jm_index]},"
-                     f" download index: {download_jm_index + 1}, count: {len(aid_list)}, finish.")
+        if search_local_jm_keyword(a_title_list[download_jm_index]):
+            logger.warning(f"Keyword JM image title: {a_title_list[download_jm_index]} exists, skip.")
+            continue
+        else:
+            download_album(aid_process, jm_option)
+            logger.debug(f"Download jm image: {aid_process}, title: {a_title_list[download_jm_index]},"
+                         f" download index: {download_jm_index + 1}, count: {len(aid_list)}, finish.")
         download_jm_index += 1
         if not constants.JM_SD_auto_flag:
             return False
     # logger.success(f"Download JM keyword: {actor} image finish.")
-    write_already_download_jm_finish(actor)
+    try:
+        write_already_download_jm_finish(actor)
+        # 处理文件至同一文件夹中
+        move_jm_keyword_dir(actor, a_title_list)
+    except Exception as e:
+        logger.warning(f"Unknown error, detail: {e}")
     return True
 
 
@@ -265,6 +298,20 @@ def jm_auto_spider_img_thread():
                 logger.error(f"Unknown error, detail: {e}")
     constants.JM_SD_auto_flag = False
     logger.success(f"Download JM All image finish, set JM_SD_auto_flag = False.")
+
+
+@logger.catch
+def search_local_jm_keyword(jm_title):
+    """
+
+    :return: result
+    """
+    jm_root_dir = os.path.join(constants.data_path, "jm_image")
+    for root, dirs, files in os.walk(jm_root_dir):
+        for dir_name in dirs:
+            if jm_title.lower() in dir_name.lower():
+                return True
+    return False
 
 
 if __name__ == '__main__':
