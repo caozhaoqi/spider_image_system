@@ -277,9 +277,13 @@ def move_target_folder(source_folder_path, target_folder_path):
     :param target_folder_path:
     :return:
     """
+    if not source_folder_path.endswith('/'):
+        source_folder_path += '/'
+    if not target_folder_path.endswith('/'):
+        target_folder_path += '/'
     if not os.path.exists(source_folder_path):
         logger.warning(f"Source folder path not exists: {source_folder_path}, skip not moved.")
-        return
+        return False
     # 获取源文件夹中的所有文件和子文件夹
     for item in os.listdir(source_folder_path):
         source_item_path = os.path.join(source_folder_path, item)
@@ -294,6 +298,7 @@ def move_target_folder(source_folder_path, target_folder_path):
                 continue
             shutil.move(source_item_path, target_folder_path)
     # os.remove(source_folder_path)
+    return True
 
 
 @logger.catch
