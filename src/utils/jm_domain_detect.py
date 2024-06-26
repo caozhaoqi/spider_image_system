@@ -190,7 +190,7 @@ def move_jm_keyword_dir(actor, a_title_list):
     for actor_jm_content in a_title_list:
         try:
             src_path = os.path.join(root_path_jm, actor_jm_content)
-            target_path =  os.path.join(actor_path,actor_jm_content)
+            target_path = os.path.join(actor_path, actor_jm_content)
             if not move_target_folder(src_path, target_path):
                 continue
             else:
@@ -250,10 +250,13 @@ def search_download_jm(actor):
             download_jm_index += 1
             continue
         else:
-            download_album(aid_process, jm_option)
-            logger.debug(f"Download jm image: {aid_process}, title: {a_title_list[download_jm_index]},"
-                         f" download index: {download_jm_index + 1}, count: {len(aid_list)}, finish.")
-            download_jm_index += 1
+            try:
+                download_album(aid_process, jm_option)
+                logger.debug(f"Download jm image: {aid_process}, title: {a_title_list[download_jm_index]},"
+                             f" download index: {download_jm_index + 1}, count: {len(aid_list)}, finish.")
+                download_jm_index += 1
+            except Exception as e:
+                logger.warning(f"Unknown Error, detail: {e}")
         if not constants.JM_SD_auto_flag:
             return False
     # logger.success(f"Download JM keyword: {actor} image finish.")

@@ -134,8 +134,8 @@ class JmDownloader(DownloadCallback):
             # 保存失败记录
             self.download_failed_list.append((image, e))
 
-            if e is not None:
-                raise e
+            # if e is not None:
+            #     raise e
             logger.warning(f"Unknown error, detail: {e}")
             # return
 

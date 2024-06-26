@@ -6,6 +6,7 @@
 - update move method
 - skip exists jm title
 - fix exists jm title bug
+- catch method download_album exception
 
 ## v1.1.8-beta.1.240624
 ### 2024/6/24
