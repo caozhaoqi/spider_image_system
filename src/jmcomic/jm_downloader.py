@@ -136,7 +136,7 @@ class JmDownloader(DownloadCallback):
 
             if e is not None:
                 raise e
-            logger.warning(f"Unknown error, detail: {e}")
+            # logger.warning(f"Unknown error, detail: {e}")
             # return
 
         self.after_image(image, img_save_path)

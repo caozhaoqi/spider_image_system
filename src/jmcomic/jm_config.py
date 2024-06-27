@@ -1,9 +1,10 @@
 from common import time_stamp, str_to_list, field_cache, ProxyBuilder
+from loguru import logger
 
 
 def default_jm_logging(topic: str, msg: str):
     from common import format_ts, current_thread
-    print('[{}] [{}]:【{}】{}'.format(format_ts(), current_thread().name, topic, msg))
+    logger.info('[{}] [{}]:【{}】{}'.format(format_ts(), current_thread().name, topic, msg))
 
 
 # 禁漫常量
@@ -405,7 +406,7 @@ class JmModuleConfig:
                 }
             },
             'impl': None,
-            'retry_times': 5,
+            'retry_times': 3,
         },
         'plugins': {
             # 如果插件抛出参数校验异常，只log。（全局配置，可以被插件的局部配置覆盖）
