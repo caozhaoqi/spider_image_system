@@ -302,6 +302,7 @@ def jm_auto_spider_img_thread():
                 else:
                     if not search_download_jm(spider_image_keyword_item.strip()):
                         logger.success("Stop jm spider finished")
+                        constants.JM_SD_auto_flag = False
                         return False
             except Exception as e:
                 logger.error(f"Unknown error, detail: {e}")

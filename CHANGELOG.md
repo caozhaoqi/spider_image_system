@@ -9,6 +9,7 @@
 - catch method download_album exception
 - update jm option config
 - enable jm loguru log record
+- fix no internet stop spider after not start spider jm bug
 
 ## v1.1.8-beta.1.240624
 ### 2024/6/24
