@@ -153,7 +153,7 @@ def exists_jm_from_finish(content):
         txt_list = f.readlines()
     for txt in txt_list:
         if content in txt:
-            logger.warning(f"{content} already download finished, will skip txt!")
+            logger.warning(f"{content} already download finished, will skip keyword!")
             return True
 
 
