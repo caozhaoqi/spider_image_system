@@ -406,7 +406,7 @@ class JmModuleConfig:
                 }
             },
             'impl': None,
-            'retry_times': 1,
+            'retry_times': 0,
         },
         'plugins': {
             # 如果插件抛出参数校验异常，只log。（全局配置，可以被插件的局部配置覆盖）

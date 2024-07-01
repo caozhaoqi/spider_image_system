@@ -3,6 +3,7 @@
 ## v1.1.8.240703
 ### 2024/7/3
 - add close main dialog ask quit
+- disabled retry on download image fail 
 
 ## v1.1.8-beta.2.240628
 ### 2024/6/28
