@@ -183,6 +183,6 @@ SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH"
 # unzip zip file password
 PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
-sis_server_version = "v1.1.8-beta.2.240628"
-build_date = "2024-06-28 18:00"
-publish_date = "2024-06-28 18:30"
+sis_server_version = "v1.1.8.240703"
+build_date = "2024-07-03 18:00"
+publish_date = "2024-07-03 18:30"

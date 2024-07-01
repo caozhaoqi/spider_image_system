@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.8.240703
+### 2024/7/3
+- add close main dialog ask quit
+
 ## v1.1.8-beta.2.240628
 ### 2024/6/28
 - add download finish keyword folder move

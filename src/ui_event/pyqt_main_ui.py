@@ -472,14 +472,14 @@ class UIMainWindows(QMainWindow):
             self.start_download_file_link_thread.start()
             logger.success("Success download file thread start")
 
-    # def closeEvent(self, event):
-    #     """
-    #
-    #     :param event:
-    #     :return:
-    #     """
-    #     logger.warning("Exe main ui will closing...")
-    #     exit_save_data()
+    def closeEvent(self, event):
+        """
+
+        :param event:
+        :return:
+        """
+        logger.warning("User click main ui close button, exe main ui will closing ...")
+        self.quit_app()
 
     @logger.catch
     def open_data_dir(self, _=None):
