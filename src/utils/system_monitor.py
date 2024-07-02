@@ -261,7 +261,7 @@ def sys_mon():
     """
     logger.info("System monitor start...")
 
-    logger.info(f"Cur sys res detect time: {constants.detect_timeout_auto} s.")
+    logger.info(f"Current system resource detect time: {constants.detect_timeout_auto} s.")
 
     while True:
         # 等待一段时间再次检查（例如，每秒检查一次）
