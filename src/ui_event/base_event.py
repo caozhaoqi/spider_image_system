@@ -35,7 +35,7 @@ from utils.sys_info import get_cur_os
 from utils.system_monitor import kill_process_linux, kill_process_win, reduce_sys_res_usage
 from utils.img_detect_ai import all_img_detect
 from ui_event.JM_dialog import JMDialog
-from utils.jm_domain_detect import jm_domain_test, jm_auto_spider_img_thread
+from utils.jm_domain_detect import jm_domain_test, jm_auto_spider_img_thread, process_jm_image_category
 
 
 @logger.catch
@@ -573,3 +573,21 @@ def stop_jm_spider():
         logger.debug("Start JM auto spider stop.")
     else:
         logger.warning("JM auto already stop.")
+
+
+@logger.catch
+def jm_category_image_method():
+    """
+
+    :return:
+    """
+    logger.warning("The function disabled.")
+    # if not constants.process_jm_image_category_flag:
+    #     constants.process_jm_image_category_flag = True
+    #     jm_auto_thread_obj = threading.Thread(
+    #         target=process_jm_image_category,
+    #         args=())
+    #     jm_auto_thread_obj.start()
+    #     logger.info("Start process spider jm image!")
+    # else:
+    #     logger.error("Process or Category jm, please wait.")

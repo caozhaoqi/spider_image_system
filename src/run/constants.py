@@ -97,6 +97,8 @@ detect_model_flag = False
 JM_SD_auto_flag = False
 # internet_connect_status
 internet_connect_status = False
+# process image jm category
+process_jm_image_category_flag = False
 
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))

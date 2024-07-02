@@ -11,7 +11,7 @@ from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, \
     log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag, \
     user_upload_image, user_download_image, unzip_file_method, add_keyword_alert, img_category_ana, model_detect_img, \
-    start_download_jm, jm_domain_test_method, jm_automatic_method, stop_jm_spider
+    start_download_jm, jm_domain_test_method, jm_automatic_method, stop_jm_spider, jm_category_image_method
 
 
 @logger.catch
@@ -67,14 +67,17 @@ def base_menu(self):
     self.jm_domain_test = QAction("JM检测", self.JM_menu)
     self.jm_automatic = QAction("JM自动", self.JM_menu)
     self.jm_stop_automatic = QAction("停止JM", self.JM_menu)
+    self.jm_image_category = QAction("JM处理", self.JM_menu)
     self.jm_tools.triggered.connect(lambda: start_download_jm())
     self.jm_domain_test.triggered.connect(lambda: jm_domain_test_method())
     self.jm_automatic.triggered.connect(lambda: jm_automatic_method())
     self.jm_stop_automatic.triggered.connect(lambda: stop_jm_spider())
+    self.jm_image_category.triggered.connect(lambda: jm_category_image_method())
     self.JM_menu.addAction(self.jm_tools)
     self.JM_menu.addAction(self.jm_domain_test)
     self.JM_menu.addAction(self.jm_automatic)
     self.JM_menu.addAction(self.jm_stop_automatic)
+    self.JM_menu.addAction(self.jm_image_category)
 
     self.performance_menu = QMenu('性能', self.menu_bar)
     self.look_performance = QAction('性能监视', self.performance_menu)

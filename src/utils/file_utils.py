@@ -252,7 +252,7 @@ def pinyin_convert(folder_name, folder_path, folder, pinyin_flag):
     if os.path.exists(pinyin_folder_path):
         logger.warning(f"Folder '{pinyin_folder_name}' already exists. Moving content to the existing folder.")
         # 移动文件夹内容到已存在的文件夹
-        move_target_folder(os.path.join(folder_path, folder), pinyin_folder_path)
+        move_folder_contents(os.path.join(folder_path, folder), pinyin_folder_path)
     else:
         # 如果新文件夹不存在，则创建它，并移动文件夹内容到新文件夹
         os.makedirs(pinyin_folder_path)
@@ -270,34 +270,36 @@ def pinyin_convert(folder_name, folder_path, folder, pinyin_flag):
 
 
 @logger.catch
-def move_target_folder(source_folder_path, target_folder_path):
+def move_folder_contents(source_folder_path, target_folder_path):
     """
+    移动源文件夹中的所有文件和子文件夹到目标文件夹，保持其层级结构。
 
-    :param source_folder_path:
-    :param target_folder_path:
-    :return:
+    :param source_folder_path: 源文件夹路径
+    :param target_folder_path: 目标文件夹路径
+    :return: 如果成功则返回True，否则返回False
     """
-    if not source_folder_path.endswith('/'):
-        source_folder_path += '/'
-    if not target_folder_path.endswith('/'):
-        target_folder_path += '/'
     if not os.path.exists(source_folder_path):
-        logger.warning(f"Source folder path not exists: {source_folder_path}, skip not moved.")
+        logger.warning(f"源文件夹路径不存在: {source_folder_path}, 跳过移动。")
         return False
+
+    if not os.path.exists(target_folder_path):
+        os.makedirs(target_folder_path)
+
     # 获取源文件夹中的所有文件和子文件夹
     for item in os.listdir(source_folder_path):
         source_item_path = os.path.join(source_folder_path, item)
+        target_item_path = os.path.join(target_folder_path, item)
 
         # 如果是文件夹，则递归调用此函数
         if os.path.isdir(source_item_path):
-            move_target_folder(source_item_path, target_folder_path)
+            if not os.path.exists(target_item_path):
+                os.makedirs(target_item_path)
+            move_folder_contents(source_item_path, target_item_path)
         else:
             # 如果是文件，则直接移动文件
-            if os.path.exists(source_item_path):
-                # logger.warning(f"item: {source_item_path} exists, will skip.")
-                continue
-            shutil.move(source_item_path, target_folder_path)
-    # os.remove(source_folder_path)
+            shutil.move(source_item_path, target_item_path)
+            logger.info(f"成功将文件 {source_item_path} 移动到 {target_item_path}。")
+
     return True
 
 

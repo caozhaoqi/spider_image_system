@@ -6,7 +6,7 @@ from file.file_process import get_image_keyword
 from run import constants
 from jmcomic import *
 from pypinyin import Style, lazy_pinyin
-from utils.file_utils import move_target_folder
+from utils.file_utils import move_folder_contents
 
 option = JmOption.default()
 
@@ -174,27 +174,35 @@ def write_already_download_jm_finish(actor):
 
 
 @logger.catch
-def move_jm_keyword_dir(actor, a_title_list):
+def move_jm_keyword_dir(actor, a_title_list, jm_already_keyword, extra_path=None):
     """
 
+    :param jm_already_keyword:
+    :param extra_path:
     :param actor:
     :param a_title_list:
     :return:
     """
     actor = ''.join(lazy_pinyin(actor, style=Style.TONE3))
-    actor_path = os.path.join(os.path.join(constants.data_path, "jm_image"), actor)
-    if not os.path.exists(actor_path):
-        logger.warning("Keyword folder not exists, create it.")
-        os.makedirs(actor_path)
+    root_path = os.path.join(constants.data_path, "jm_image")
     root_path_jm = os.path.join(constants.data_path, "jm_image")
+    if extra_path:
+        root_path = os.path.join(root_path, extra_path)
+        root_path_jm = os.path.join(root_path_jm, extra_path)
+    actor_path = os.path.join(root_path, actor)
+    if not os.path.exists(actor_path):
+        logger.warning(f"Keyword folder not exists, create {actor_path} it.")
+        os.makedirs(actor_path)
     for actor_jm_content in a_title_list:
         try:
             src_path = os.path.join(root_path_jm, actor_jm_content)
-            target_path = os.path.join(actor_path, actor_jm_content)
-            if not move_target_folder(src_path, target_path):
+            if src_path in jm_already_keyword:
                 continue
-            else:
-                logger.success(f"Move name: {actor_jm_content} Success, move to {target_path}!")
+            target_path = os.path.join(actor_path, actor_jm_content)
+            move_folder_contents(src_path, target_path)
+            #     continue
+            # else:
+            #     logger.success(f"Move name: {actor_jm_content} Success, move to {target_path}!")
         except Exception as e:
             logger.warning(f"Unknown error, detail: {e}, skip: {actor_jm_content}.")
             continue
@@ -234,11 +242,11 @@ def search_download_jm(actor):
     page_num = 1
     for page in page_list:
         logger.debug(f"Page num: {page_num}, spider image.")
-        for aid, atitle, tag_list in page.iter_id_title_tag():  # 使用page的iter_id_title_tag迭代器
+        for aid, a_title, tag_list in page.iter_id_title_tag():  # 使用page的iter_id_title_tag迭代器
             # if actor in tag_list:
-            logger.info(f'[角色/{actor}] 发现目标: [{aid}]: [{atitle}]')
+            logger.info(f'[角色/{actor}] 发现目标: [{aid}]: [{a_title}]')
             aid_list.append(aid)
-            a_title_list.append(atitle)
+            a_title_list.append(a_title)
             if not constants.JM_SD_auto_flag:
                 return False
         page_num += 1
@@ -263,7 +271,7 @@ def search_download_jm(actor):
     try:
         write_already_download_jm_finish(actor)
         # 处理文件至同一文件夹中
-        move_jm_keyword_dir(actor, a_title_list)
+        # move_jm_keyword_dir(actor, a_title_list)
     except Exception as e:
         logger.warning(f"Unknown error, detail: {e}")
     return True
@@ -313,7 +321,7 @@ def jm_auto_spider_img_thread():
 @logger.catch
 def search_local_jm_keyword(jm_title):
     """
-
+    filter exists keyword for jm
     :return: result
     """
     jm_root_dir = os.path.join(constants.data_path, "jm_image")
@@ -324,8 +332,93 @@ def search_local_jm_keyword(jm_title):
     return False
 
 
-if __name__ == '__main__':
+@logger.catch
+def jm_move_category(actor, keyword_cat, jm_already_keyword):
     """
-    test use
+    process  image category
+    :param jm_already_keyword:
+    :param keyword_cat:
+    :param actor: actor
+    :return: finish flag
     """
-    search_download_jm("芙宁娜")
+    logger.debug(f"Start category content: {actor}.")
+
+    #     client = JmOption.default().new_jm_client()
+    if actor is keyword_cat:
+        logger.debug(f"start new category: {actor}")
+        return
+
+    jm_option = JmOption.default()
+    client = jm_option.new_jm_client()
+
+    page: JmSearchPage = client.search_site(actor, page=1)
+    page_list = []
+    page_count = page.page_count
+
+    for i in range(page_count):
+        page: JmSearchPage = client.search_site(search_query=actor, page=i)
+        page_list.append(page)
+    a_title_list = []
+    page_num = 1
+    for page in page_list:
+        for aid, title, tag_list in page.iter_id_title_tag():  # 使用page的iter_id_title_tag迭代器
+            a_title_list.append(title)
+        page_num += 1
+    try:
+        root_path = os.path.join(constants.data_path, "jm_image")
+        for entry in os.listdir(root_path):
+            if keyword_cat in entry:
+                # and entry not in jm_already_keyword:
+                entry_path = os.path.join(root_path, entry)
+                if os.path.isdir(entry_path):
+                    move_jm_keyword_dir(actor, a_title_list,  jm_already_keyword, extra_path=entry)
+    except Exception as e:
+        logger.warning(f"Unknown error, detail: {e}")
+    return True
+
+
+@logger.catch
+def process_jm_image_category():
+    """
+
+    :return
+    """
+    category = ''
+    jm_already_keyword = get_jm_already_image_keyword()
+    for jm_keyword_already_content in jm_already_keyword:
+        if "gi" in jm_keyword_already_content or "sr" in jm_keyword_already_content \
+                or "hk3rd" in jm_keyword_already_content or "cbjq" in jm_keyword_already_content or \
+                "blda" in jm_keyword_already_content:
+            category = jm_keyword_already_content.strip()
+            continue
+        jm_move_category(jm_keyword_already_content.strip(), category, jm_already_keyword)
+    constants.process_jm_image_category_flag = False
+    logger.success("Process ALL Image Success.")
+
+
+@logger.catch
+def get_jm_already_image_keyword():
+    """
+    get image keyword list
+    :return:
+    """
+    auto_spider_file_path = constants.data_path
+
+    if not os.path.exists(auto_spider_file_path):
+        os.makedirs(auto_spider_file_path)
+
+    file_name = 'jm_download_finished_txt.txt'
+    full_file_path = os.path.join(auto_spider_file_path, file_name)
+    if not os.path.exists(full_file_path):
+        # 如果文件不存在，创建它
+        with open(full_file_path, 'w', encoding='utf-8', errors='replace') as f:
+            logger.warning(f"Current {full_file_path} not exists, will create demo txt!")
+            return []
+    try:
+        # spider_image_keyword = []
+        with open(full_file_path, 'r', encoding='utf-8', errors='replace') as f:
+            spider_image_keyword = f.readlines()
+        return spider_image_keyword
+    except Exception as e:
+        logger.error(f"Unknown error, detail {e}")
+        return []
