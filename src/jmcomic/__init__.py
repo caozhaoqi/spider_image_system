@@ -1,10 +1,10 @@
 # 模块依赖关系如下:
 # 被依赖方 <--- 使用方
 # config <--- entity <--- toolkit <--- client <--- option <--- downloader
-import os
-import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# import os
+# import sys
+#
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 __version__ = '2.5.14'
 
