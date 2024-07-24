@@ -2,12 +2,13 @@ psutil~=5.9.8
 certifi==2023.11.17
 idna==3.6
 pypinyin~=0.50.0
-lxml
-watchdog
+lxml~=5.2.2
+commonx
+watchdog~=4.0.1
 loguru~=0.7.2
-numpy~=1.26.3
+numpy~=2.0.1
 uvicorn~=0.22.0
-fastapi~=0.97.0
+fastapi~=0.111.1
 urllib3~=2.1.0
 pillow~=10.2.0
 selenium~=4.16.0
@@ -16,4 +17,5 @@ minio~=7.2.5
 PyQt5~=5.15.10
 pyqtchart
 Nuitka
-opencv-python~=4.9.0.80
+opencv-python~=4.10.0.84
+setuptools~=57.0.0

@@ -1,7 +1,9 @@
+
 import os
 import sys
 
 import requests
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -11,6 +13,7 @@ from loguru import logger
 from run import constants
 from utils.sys_info import get_cur_os
 import subprocess
+from utils.wx_push import wx_push_content
 
 MEMORY_THRESHOLD = 0.90  # 内存使用阈值（90%）
 CPU_THRESHOLD = 0.90  # CPU使用阈值（90%）
@@ -58,9 +61,11 @@ def check_memory_usage():
     memory_percent = memory.percent
     if memory_percent / 100 > MEMORY_THRESHOLD:
         logger.error(
-            "Warning: Memory usage is above {}%. Current usage: {}%".format(MEMORY_THRESHOLD * 100, memory_percent))
+            "Warning: Memory usage is above {}%, Current usage: {}%".format(MEMORY_THRESHOLD * 100, memory_percent))
         if reduce_sys_res_usage():
             logger.success("Reduce memory usage success on win32 system!")
+            wx_push_content("Warning: Memory usage is above {}%, already reduce memory usage"
+                            " Current usage: {}%".format(CPU_THRESHOLD * 100, memory_percent))
     last_memory_usage = memory_percent
 
 
@@ -74,9 +79,11 @@ def check_cpu_usage():
     global last_cpu_usage, CPU_THRESHOLD
     cpu_percent = psutil.cpu_percent(interval=1)
     if cpu_percent / 100 > CPU_THRESHOLD:
-        logger.error("Warning: CPU usage is above {}%. Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
+        logger.error("Warning: CPU usage is above {}%, Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
         if reduce_sys_res_usage():
             logger.success("Reduce cpu usage success on win32 system!")
+            wx_push_content("Warning: CPU usage is above {}%, already reduce cpu usage"
+                            " Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
     last_cpu_usage = cpu_percent
 
 

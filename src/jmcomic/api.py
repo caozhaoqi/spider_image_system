@@ -1,6 +1,12 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from .jm_downloader import *
 
 __DOWNLOAD_API_RET = Tuple[JmAlbumDetail, JmDownloader]
+
 
 def download_batch(download_api,
                    jm_id_iter: Union[Iterable, Generator],

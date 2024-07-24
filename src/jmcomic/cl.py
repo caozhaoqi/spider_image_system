@@ -7,6 +7,11 @@ $ jmcomic 123 456 p333 --option="D:/option.yml"
 
 
 """
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import os.path
 from typing import List, Optional
 

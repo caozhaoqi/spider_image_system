@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.9.240724
+### 2024/7/24
+- add function push msg to WeChat
+
 ## v1.1.8.240703
 ### 2024/7/3
 - add close main dialog ask quit

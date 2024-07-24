@@ -1,3 +1,8 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # 该文件存放jmcomic的异常机制设计和实现
 from .jm_entity import *
 

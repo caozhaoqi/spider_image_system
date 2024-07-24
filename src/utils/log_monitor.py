@@ -13,6 +13,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from run import constants
 from utils.system_monitor import check_internet_connection
+from utils.wx_push import wx_push_content
 
 # 定义日志文件路径模式
 LOG_FILE_PATTERN = 'sis_v*.log'
@@ -119,6 +120,47 @@ class LogFileHandler(FileSystemEventHandler):
 
 
 @logger.catch
+def push_log_msg(new_latest_log_file):
+    """
+
+    """
+
+    last_lines = read_last_lines(new_latest_log_file, n=10)
+    wx_push_content(f"Current read new log: {last_lines}")
+    logger.debug(f"Already push log: {new_latest_log_file} msg to WeChat.")
+    # pass
+
+
+@logger.catch
+def read_last_lines(log_file, n=10):
+    """
+
+    读取日志文件的最后n行
+    """
+    with open(log_file, 'rb') as f:
+        size = os.path.getsize(log_file)
+        if size == 0:
+            return []
+        blocks = -1  # 最后一块
+        step = 64  # 步长
+        while size > 0:
+            size -= step
+            if size < 0:
+                blocks -= 1
+                step = 32
+            elif size == 0:
+                blocks -= 1
+                step = 1
+            if blocks < 0:
+                break
+        f.seek(size)
+        lines = f.readlines()
+        if size != 0 and lines and lines[-1]:
+            lines.append(f.readline())
+    return lines[-n:]
+
+
+@logger.catch
 def log_mon_war(spider_thread_obj):
     """
 
@@ -157,6 +199,7 @@ def log_mon_war(spider_thread_obj):
                 constants.stop_download_image_flag = True
                 constants.scheduled_download_program_flag = False
                 constants.JM_SD_auto_flag = False
+                wx_push_content("No internet connect, stop spider image thread and download thread！")
             else:
                 # 恢复网络，恢复爬虫
                 if not spider_thread_obj.is_running():
@@ -164,6 +207,7 @@ def log_mon_war(spider_thread_obj):
                     constants.scheduled_download_program_flag = True
                     spider_thread_obj.resume()
                     spider_thread_obj.run()
+                    wx_push_content("Internet resume connect, resume spider image thread and download thread.")
             logger.info(f"Spider_thread_obj.is_running flag value: {spider_thread_obj.is_running()}")
             if constants.log_no_output_flag and constants.internet_connect_status:
                 # 在某个时候，您可能想要暂停线程
@@ -189,6 +233,10 @@ def log_mon_war(spider_thread_obj):
                 # 重新安排对新文件的监控
                 observer.schedule(handler, path=LOG_DIR, recursive=False)
                 logger.debug(f"已开始监控新日志文件：{latest_log_file}")
+
+            #         push log end 10 line to WeChat
+            push_log_msg(new_latest_log_file)
+            logger.debug("End current loop log monitor.")
 
     except KeyboardInterrupt:
         observer.stop()

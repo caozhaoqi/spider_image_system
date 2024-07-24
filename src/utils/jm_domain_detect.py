@@ -7,6 +7,7 @@ from run import constants
 from jmcomic import *
 from pypinyin import Style, lazy_pinyin
 from utils.file_utils import move_folder_contents
+from utils.wx_push import wx_push_content
 
 option = JmOption.default()
 
@@ -90,9 +91,11 @@ def jm_domain_test():
         iter_objs=domain_set,
         apply_each_obj_func=test_domain,
     )
-
+    content = ''
     for domain, status in domain_status_dict.items():
+        content += domain + ":" + status
         logger.debug(f'{domain}: {status}')
+    wx_push_content(content)
     constants.jm_domain_detect_flag = False
     logger.success("Detect jm domain finish.")
 
@@ -169,6 +172,7 @@ def write_already_download_jm_finish(actor):
     file_name = os.path.join(constants.data_path, "jm_download_finished_txt.txt")
     with open(file_name, 'a', encoding='utf-8', errors='replace') as f:
         f.write(actor + "\n")
+    wx_push_content(actor + ", already_download_jm_finish")
     logger.success(f"Download {actor} finished, will write txt.")
     # pass
 
@@ -371,7 +375,7 @@ def jm_move_category(actor, keyword_cat, jm_already_keyword):
                 # and entry not in jm_already_keyword:
                 entry_path = os.path.join(root_path, entry)
                 if os.path.isdir(entry_path):
-                    move_jm_keyword_dir(actor, a_title_list,  jm_already_keyword, extra_path=entry)
+                    move_jm_keyword_dir(actor, a_title_list, jm_already_keyword, extra_path=entry)
     except Exception as e:
         logger.warning(f"Unknown error, detail: {e}")
     return True

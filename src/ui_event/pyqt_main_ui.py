@@ -2,6 +2,7 @@
 import os
 import sys
 
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
@@ -26,6 +27,7 @@ from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, t
 from ui_event.log_show_dialog import show_log_output_method
 from utils.time_utils import get_cur_time
 from ui_event.base_event import on_last_window_closed
+from utils.wx_push import wx_push_content
 
 current_image_index = 0
 image_files = show_filter_image(find_images(folder_path))
@@ -260,6 +262,7 @@ class UIMainWindows(QMainWindow):
         self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作完成! (*^▽^*)")
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("成功提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
+            wx_push_content(f"{get_cur_time()}: {operate_name}, 操作完成! (*^▽^*)")
         else:
             logger.warning("ERROR: windowsMessage()")
         logger.success('Show success tips.')
@@ -276,6 +279,7 @@ class UIMainWindows(QMainWindow):
         self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o")
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("错误提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
+            wx_push_content(f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o")
         else:
             logger.warning("ERROR: windowsMessage()")
         logger.error('Show error tips.')
@@ -291,6 +295,7 @@ class UIMainWindows(QMainWindow):
         self.sys_status_label.setText(f"{get_cur_time()}: {content}")
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("系统提示", content, QtGui.QIcon("./favicon.ico"), 10000)
+            wx_push_content(content)
         else:
             logger.warning("ERROR: windowsMessage()")
         logger.warning('Show sys tips.')
