@@ -92,10 +92,18 @@ def save_data(self):
         return False
     full_file_path = os.path.join(auto_spider_file_path, file_name)
     # 打开文件以写入模式
+    # 读入已保存keyword
+    with open(full_file_path, 'r', encoding='utf-8') as file:
+        saved_content_list = file.readlines()
+
+    if len(split_string) > 0:
+        for item in split_string:
+            saved_content_list.append(item)
+
     with open(full_file_path, 'w', encoding='utf-8') as file:
         # 将切割后的字符串逐行写入文件
-        for item in split_string:
-            file.write("%s\n" % item)
+        for item in saved_content_list:
+            file.write("%s\n" % item.strip())
 
     logger.success(f"Add success, please re click spider menu start spider: {keyword_txt}")
     # super(KeywordDialog, self).closeEvent(event)

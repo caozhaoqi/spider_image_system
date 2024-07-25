@@ -125,7 +125,7 @@ def push_log_msg(new_latest_log_file):
 
     """
 
-    last_lines = read_last_lines(new_latest_log_file, n=10)
+    last_lines = read_last_lines(new_latest_log_file, n=1000)
     wx_push_content(f"Current read new log: {last_lines}")
     logger.debug(f"Already push log: {new_latest_log_file} msg to WeChat.")
     # pass
