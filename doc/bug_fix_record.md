@@ -101,9 +101,4 @@ xdg-open https://www.baidu.com
 python -m nuitka --onefile --mingw64 --standalone --follow-import-to=file,http_tools,image,log,model,run,ui_event,utils,jmcomic --output-dir=out  --plugin-enable=pyqt5 --windows-icon-from-ico=./run/favicon.ico --show-progress ./run/ui_main.py --windows-disable-console
 ```
 - 解决措施
-> 删除所有代码，清除缓存，重新拉去代码，安装第三方库，再次尝试打包，问题解决。
-[//]: # (- 删除此目录关于jmcomic所有文件夹)
-[//]: # (```shell)
-[//]: # (#rm -rf ./* C:\Users\Administrator\PycharmProjects\spider_image_system\venv\Lib\site-packages)
-
-[//]: # (```)
+> 删除所有代码，清除缓存，重新拉取代码，安装第三方库，再次尝试打包，问题解决。
