@@ -18,8 +18,5 @@ PyQt5~=5.15.10
 pyqtchart
 Nuitka
 opencv-python~=4.10.0.84
-setuptools~=57.0.0
 PyYAML
 pycryptodome
-plugin_jm_server
-jmcomic

@@ -95,3 +95,14 @@ chmod -R 777 /home/czq/
 xdg-open https://www.baidu.com
 # re run ./sh/run.sh to solve the problem
 ```
+
+## 带有--windows-disable-console选项打包exe后无法打开
+```shell
+python -m nuitka --onefile --mingw64 --standalone --follow-import-to=file,http_tools,image,log,model,run,ui_event,utils,jmcomic --output-dir=out  --plugin-enable=pyqt5 --windows-icon-from-ico=./run/favicon.ico --show-progress ./run/ui_main.py --windows-disable-console
+```
+
+[//]: # (- 删除此目录关于jmcomic所有文件夹)
+[//]: # (```shell)
+[//]: # (#rm -rf ./* C:\Users\Administrator\PycharmProjects\spider_image_system\venv\Lib\site-packages)
+
+[//]: # (```)
