@@ -194,12 +194,12 @@ def log_mon_war(spider_thread_obj):
             ret = check_internet_connection()
             # 无网络，暂停爬虫
             if not ret:
-                logger.error("No internet connect, stop spider image thread and download thread！")
+                logger.error("No internet connect, stop spider image thread and download thread!")
                 spider_thread_obj.stop()
                 constants.stop_download_image_flag = True
                 constants.scheduled_download_program_flag = False
                 constants.JM_SD_auto_flag = False
-                wx_push_content("No internet connect, stop spider image thread and download thread！")
+                wx_push_content("No internet connect, stop spider image thread and download thread!")
             else:
                 # 恢复网络，恢复爬虫
                 if not spider_thread_obj.is_running():

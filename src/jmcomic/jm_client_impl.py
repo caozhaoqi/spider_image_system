@@ -264,7 +264,7 @@ class JmHtmlClient(AbstractJmClient):
         if res['status'] != 1:
             msg = parse_unicode_escape_text(res['msg'])
             error_msg = PatternTool.match_or_default(msg, JmcomicText.pattern_ajax_favorite_msg, msg)
-            # 此圖片已經在您最喜愛的清單！
+            # 此圖片已經在您最喜愛的清單!
 
             self.raise_request_error(
                 resp,
@@ -990,11 +990,11 @@ class JmApiClient(AbstractJmClient):
                 # 找到第一个有效字符
                 ExceptionTool.require_true(
                     char == '{',
-                    f'请求不是json格式，强制重试！响应文本: [{resp.text}]'
+                    f'请求不是json格式，强制重试! 响应文本: [{resp.text}]'
                 )
                 return resp
 
-        ExceptionTool.raises_resp(f'响应无数据！request_url=[{url}]', resp)
+        ExceptionTool.raises_resp(f'响应无数据! request_url=[{url}]', resp)
 
     def after_init(self):
         # 保证拥有cookies，因为移动端要求必须携带cookies，否则会直接跳转同一本子【禁漫娘】

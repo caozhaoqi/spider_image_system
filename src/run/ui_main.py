@@ -23,7 +23,6 @@ def ui_paint():
     app.setQuitOnLastWindowClosed(False)
 
     w = UIMainWindows()
-    print("ui paint success.")
     w.show()
     app.exec_()
 
@@ -48,10 +47,8 @@ def run_main_py():
     :return:
     """
     if log_record() and check_version() and start_sys_mon():
-        print("log_record and version and sys mon start.")
         ui_paint()
 
 
 if __name__ == '__main__':
-    print("start sis py.")
     run_main_py()

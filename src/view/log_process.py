@@ -30,7 +30,7 @@ def start_spider_single_image(key_word: Union[str, None] = Query(default=..., al
     :return:
     """
     if not constants.stop_spider_url_flag:
-        return JsonResponse.error("操作进行中！")
+        return JsonResponse.error("操作进行中!")
     else:
         constants.spider_mode = 'manual'
         if key_word == '' or key_word is None:
@@ -94,7 +94,7 @@ def download_all_image():
     :return:
     """
     if not constants.stop_download_image_flag:
-        return JsonResponse.error("操作进行中！")
+        return JsonResponse.error("操作进行中!")
     else:
         spider_thread_obj = threading.Thread(
             target=download_img_txt,

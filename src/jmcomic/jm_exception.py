@@ -149,7 +149,7 @@ class ExceptionTool:
         req_type = "本子" if "album" in url else "章节"
         cls.raises(
             (
-                f'请求的{req_type}不存在！({url})\n'
+                f'请求的{req_type}不存在! ({url})\n'
                 '原因可能为:\n'
                 f'1. id有误，检查你的{req_type}id\n'
                 '2. 该漫画只对登录用户可见，请配置你的cookies，或者使用移动端Client（api）\n'

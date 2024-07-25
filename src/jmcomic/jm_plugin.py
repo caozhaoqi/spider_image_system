@@ -198,7 +198,7 @@ class UsageLogPlugin(JmOptionPlugin):
                 warning_msg_list.append(f'线程数过多 ({thread_count} >= {warning_thread_count})')
 
             if len(warning_msg_list) != 0:
-                warning_msg_list.insert(0, '硬件占用告警，占用过高可能导致系统卡死！')
+                warning_msg_list.insert(0, '硬件占用告警，占用过高可能导致系统卡死!')
                 warning_msg_list.append('')
                 self.log('\n'.join(warning_msg_list), topic='warning')
 
@@ -658,7 +658,7 @@ class ConvertJpgToPdfPlugin(JmOptionPlugin):
 
         ExceptionTool.require_true(
             cur_suffix is not None and cur_suffix.endswith(std_suffix),
-            '请把图片的后缀转换配置为jpg，不然无法使用Magick！'
+            '请把图片的后缀转换配置为jpg，不然无法使用Magick!'
             f'（当前配置是[{cur_suffix}]）\n'
             f'配置模板如下: \n'
             f'```\n'
@@ -716,7 +716,7 @@ class ConvertJpgToPdfPlugin(JmOptionPlugin):
 
         ExceptionTool.require_true(
             code == 0,
-            'jpg图片合并为pdf失败！'
+            'jpg图片合并为pdf失败!'
             '请确认你是否安装了magick，安装网站: [https://www.imagemagick.org/]',
         )
 
@@ -870,7 +870,7 @@ class JmServerPlugin(JmOptionPlugin):
                 self.running = True
 
     def warning_wrong_usage_of_debug(self):
-        self.log('注意！当配置debug=True时，请确保当前插件是在主线程中被调用。\n'
+        self.log('注意!当配置debug=True时，请确保当前插件是在主线程中被调用。\n'
                  '因为如果本插件配置在 [after_album/after_photo] 这种时机调用，\n'
                  '会使得flask框架不在主线程debug运行，\n'
                  '导致报错（ValueError: signal only works in main thread of the main interpreter）。\n',

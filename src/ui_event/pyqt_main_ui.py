@@ -258,7 +258,7 @@ class UIMainWindows(QMainWindow):
         :param operate_name
         :return:
         """
-        # show_toast_thread("操作完成(*^▽^*)！")
+        # show_toast_thread("操作完成(*^▽^*)!")
         self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作完成! (*^▽^*)")
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("成功提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
@@ -275,7 +275,7 @@ class UIMainWindows(QMainWindow):
         :param operate_name
         :return:
         """
-        # show_toast_thread("操作失败o(╥﹏╥)o！")
+        # show_toast_thread("操作失败o(╥﹏╥)o!")
         self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o")
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("错误提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
@@ -464,7 +464,7 @@ class UIMainWindows(QMainWindow):
         :return:
         """
         if constants.download_video_link_flag:
-            logger.warning("Already downloading file, please wait！")
+            logger.warning("Already downloading file, please wait!")
             self.error_tips("下载gif压缩包操作")
         else:
             logger.info("start download file!")
@@ -566,7 +566,7 @@ class UIMainWindows(QMainWindow):
         """
         # print("example")
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
-            self.trayIcon.showMessage("系统提示", "模拟系统提示！", QtGui.QIcon("./favicon.ico"), 10000)
+            self.trayIcon.showMessage("系统提示", "模拟系统提示!", QtGui.QIcon("./favicon.ico"), 10000)
         else:
             logger.warning("ERROR: windowsMessage()")
 
