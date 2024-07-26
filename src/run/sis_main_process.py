@@ -42,7 +42,7 @@ def init_app():
     app = FastAPI(title="Spider Image System", version=sis_server_version,
                   description="API version", debug=True)
     # 路由引入
-    app.include_router(router=api_router, prefix="/api/v1.0.1")
+    app.include_router(router=api_router, prefix="/api/" +  sis_server_version)
     # 日志配置与捕获
     logging.getLogger().handlers = [InterceptHandler()]
     logger.configure(
@@ -54,6 +54,7 @@ def init_app():
 
 
 app = init_app()
+app.openapi_version = "3.0.0"
 
 
 @logger.catch

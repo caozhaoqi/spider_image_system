@@ -126,13 +126,13 @@ def push_log_msg(new_latest_log_file):
     """
 
     last_lines = read_last_lines(new_latest_log_file, n=1000)
-    wx_push_content(f"Current read new log: {last_lines}")
+    wx_push_content(f"Current read new log: \n {last_lines}")
     logger.debug(f"Already push log: {new_latest_log_file} msg to WeChat.")
     # pass
 
 
 @logger.catch
-def read_last_lines(log_file, n=10):
+def read_last_lines(log_file, n=1000):
     """
 
     读取日志文件的最后n行
@@ -142,12 +142,12 @@ def read_last_lines(log_file, n=10):
         if size == 0:
             return []
         blocks = -1  # 最后一块
-        step = 64  # 步长
+        step = 10000  # 步长
         while size > 0:
             size -= step
             if size < 0:
                 blocks -= 1
-                step = 32
+                step = 10000
             elif size == 0:
                 blocks -= 1
                 step = 1
