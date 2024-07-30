@@ -85,7 +85,7 @@ def scan_files_go(directory):
     file_list = []
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if os.path.getsize(file) > 0:
+            if os.stat(file).st_size > 0:
                 file_list.append(os.path.join(root, file))
     return file_list
 
@@ -110,4 +110,4 @@ def upload_all_gofile(path):
 
 
 if __name__ == '__main__':
-    upload_all_gofile('../../proto_dump_bk')
+    upload_all_gofile('./')
