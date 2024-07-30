@@ -142,12 +142,12 @@ def read_last_lines(log_file, n=1000):
         if size == 0:
             return []
         blocks = -1  # 最后一块
-        step = 10000  # 步长
-        while size > 0:
+        step = 1024  # 步长
+        while size > step:
             size -= step
             if size < 0:
                 blocks -= 1
-                step = 10000
+                step = 1024
             elif size == 0:
                 blocks -= 1
                 step = 1
