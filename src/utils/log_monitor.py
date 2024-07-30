@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -126,7 +127,8 @@ def push_log_msg(new_latest_log_file):
     """
 
     last_lines = read_last_lines(new_latest_log_file, n=1000)
-    wx_push_content(f"Current read new log: \n {last_lines}")
+    lines_header = platform.node()
+    wx_push_content(f"System info: {lines_header}. \n Current read new log: \n {last_lines}")
     logger.debug(f"Already push log: {new_latest_log_file} msg to WeChat.")
     # pass
 
