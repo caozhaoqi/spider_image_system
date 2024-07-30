@@ -85,9 +85,8 @@ def scan_files_go(directory):
     file_list = []
     for root, dirs, files in os.walk(directory):
         for file in files:
-            # if os.path.isfile(file):
-            # print(file)
-            file_list.append(os.path.join(root, file))
+            if os.path.getsize(file) > 0:
+                file_list.append(os.path.join(root, file))
     return file_list
 
 
