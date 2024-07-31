@@ -8,10 +8,34 @@ import configparser
 from model.SpiderConfigModel import SpiderConfigModel
 from loguru import logger
 from utils.sys_info import get_cur_os
+import json
 
 ini_path = os.path.join(os.getcwd(), 'config')
 ini_file_path = os.path.join(ini_path, 'config.ini')
 
+
+@logger.catch
+def read_config_all():
+    """
+    ini file select all
+    :return:
+    """		
+
+    config = configparser.ConfigParser()
+ 
+    # 读取配置文件
+    iniPath = os.path.realpath(ini_file_path)
+    config.read(iniPath)
+ 
+  # 将配置项保存到列表中
+   # 将配置转换为字典
+    ini_dict = {section: dict(config.items(section)) for section in config.sections()}
+ 
+    # 将字典转换为JSON字符串
+    json_data = json.dumps(ini_dict, indent=4)
+    # 打印结果
+   #print(tolist)
+    return ini_dict
 
 @logger.catch
 def spider_config():

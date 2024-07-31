@@ -16,10 +16,25 @@ from ui_event.base_event import auto_spider_img_thread, stop_spider_image, stop_
 from ui_event.get_url import spider_artworks_url
 from utils.log_monitor import log_mon_war
 from utils.sis_therading import SISThreading
+from utils.img_detect_ai import all_img_detect
+from file.ini_file_spider import read_config_all
 
 
 router = APIRouter()
 
+
+@logger.catch
+@router.get("/spider_image/config", summary="lookup config ini file", description="lookup config ini file")
+def lookup_file_config():
+    """
+
+    :return:
+    """
+    ret = read_config_all()
+    if ret:
+        return JsonResponse.success(ret)
+    else:
+        return JsonResponse.error("select config ini file fail.")
 
 @logger.catch
 @router.post("/spider_start/single", summary="开始爬取单个关键字", description='开始爬取单个关键字')
@@ -156,3 +171,23 @@ def start_face_detect():
         return JsonResponse.success("Start detect!")
     else:
         return JsonResponse.error("Detecting, please wait...")
+        
+        
+@logger.catch
+@router.get("/spider_image/detect_img/", summary="nsfw img detect", description="nsfw model detect image")
+def detect_image_views():
+    """
+
+    :return:
+    """
+    if not constants.detect_model_flag:
+        constants.detect_model_flag = True
+        detect_img_folder_thread_obj = threading.Thread(
+            target=all_img_detect,
+            args=(constants.data_path,))
+        detect_img_folder_thread_obj.start()
+        logger.info("Start detect img!")
+        return JsonResponse.success("start detect image for nsfw.")
+    else:
+        logger.error("Detecting img  please wait.")
+        return JsonResopnse.error("Detecting img  please wait.")
