@@ -20,3 +20,4 @@ Nuitka
 opencv-python~=4.10.0.84
 PyYAML
 pycryptodome
+curl_cffi
