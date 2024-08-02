@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v1.2.0.240802
+### 2024/8/2
+- update jm search and download method
+- update filter already upload file to gofile
+- web api update
+- update push sys msg to WeChat
+- update doc
+- fix some bugs
+- fix log_process bugs
+- update web api
+- add sis sys code
+
 ## v1.1.9.240724
 ### 2024/7/24
 - add function push msg to WeChat

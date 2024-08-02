@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import configparser
@@ -19,23 +18,24 @@ def read_config_all():
     """
     ini file select all
     :return:
-    """		
+    """
 
     config = configparser.ConfigParser()
- 
+
     # 读取配置文件
     iniPath = os.path.realpath(ini_file_path)
     config.read(iniPath)
- 
-  # 将配置项保存到列表中
-   # 将配置转换为字典
+
+    # 将配置项保存到列表中
+    # 将配置转换为字典
     ini_dict = {section: dict(config.items(section)) for section in config.sections()}
- 
+
     # 将字典转换为JSON字符串
     json_data = json.dumps(ini_dict, indent=4)
     # 打印结果
-   #print(tolist)
+    # print(tolist)
     return ini_dict
+
 
 @logger.catch
 def spider_config():
@@ -84,7 +84,7 @@ def write_minio_config_to_file(minio_config):
         try:
             os.remove(iniPath)
         except PermissionError as pe:
-            logger.error("Permission error, ini file only read mode, please update ini file chmod! detail: " + str(pe))
+            logger.error("Permission error, ini file only read mode, please update config.ini file permission! detail: " + str(pe))
             return False
         except Exception as e:
             logger.error("Unknown error, detail: " + str(e))
@@ -135,7 +135,7 @@ def write_minio_config_to_file(minio_config):
     conf.set("automatic_config", "dmi_api_server", '192.168.163.129:8888')
     conf.set("automatic_config", "detect_img_model", "python")
     conf.set("automatic_config", "WeChat_push_flag", 'True')
-    conf.set("automatic_config", "search_content",  "site")
+    conf.set("automatic_config", "search_content", "site")
 
     conf.add_section("minio_config_selected")
     conf.set("minio_config_selected", "minio_config_id", "1")
@@ -244,7 +244,7 @@ def check_ini_config():
         conf.set("automatic_config", "dmi_api_server", '192.168.163.129:8888')
         conf.set("automatic_config", "detect_img_model", "python")
         conf.set("automatic_config", "WeChat_push_flag", 'True')
-        conf.set("automatic_config", "search_content",  "site")
+        conf.set("automatic_config", "search_content", "site")
 
         conf.add_section("minio_config_selected")
         conf.set("minio_config_selected", "minio_config_id", "1")

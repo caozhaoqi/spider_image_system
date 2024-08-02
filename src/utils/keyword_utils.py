@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from loguru import logger
@@ -17,7 +16,7 @@ def exists_keyword_finish_txt(keyword):
     :return:
     """
     keyword = ''.join(lazy_pinyin(keyword, style=Style.TONE3))
-    txt_keyword = keyword+"_img.txt"
+    txt_keyword = keyword + "_img.txt"
     exists_keyword_flag = False
     # read download_finish_keyword.txt
     file_name = os.path.join(constants.data_path, "download_finished_txt.txt")

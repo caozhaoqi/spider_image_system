@@ -11,6 +11,7 @@ import os
 
 import requests
 from loguru import logger
+from run import constants
 
 """
 
@@ -157,6 +158,12 @@ def upload_all_gofile(data_path):
     :param data_path:
     :return:
     """
+    go_file_config_str = """
+    token: sz6exDf8GuR0yuB38GOerYDspmY5qB7F
+id: e6b6dd7f-a89a-4165-af70-9674aab82c18
+folderId: f5822db9-1046-4a41-b6f1-3ad3aee6e8fe
+    """
+    logger.info(f"Start input gofile server info: \n {go_file_config_str}")
     try:
         list_img_txt = exists_upload_gofile(data_path)
         list_file = scan_files_go(data_path)
@@ -170,6 +177,8 @@ def upload_all_gofile(data_path):
                 save_upload_already(data_path, file)
             else:
                 logger.warning(f"File: {file} Already upload gofile server, skip upload.")
+        constants.GO_FILE_UPLOAD_FLAG = False
+        logger.success("Upload file success to gofile.")
     except Exception as e:
         logger.error(f"ERROR!!! detail: {e}")
 

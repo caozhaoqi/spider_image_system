@@ -329,7 +329,6 @@ def video_process(video_path, output_directory):
     cap.release()
     cv2.destroyAllWindows()
 
-
 # if __name__ == '__main__':
 #     # https://file2.gofile.io/download/web/78704bae-ff7e-409b-a751-6cc84a848c33/FxS_Full_1080_WM_h264.mp4
 #     # start_download_file_link("https://gofile.io/d/MRAkaW")

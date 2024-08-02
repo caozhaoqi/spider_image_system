@@ -153,7 +153,7 @@ def download_img_txt(self):
             # 非当前停止txt记录
             #     记录已下载完成txt
             record_download_finish_txt(cdds_path)
-        if constants.upload_minio_image_Flag == 'True' and not constants.category_image_flag\
+        if constants.upload_minio_image_Flag == 'True' and not constants.category_image_flag \
                 and not constants.check_images_flag:
             logger.debug("Will start upload image and log!")
             upload_image(constants.basic_path)

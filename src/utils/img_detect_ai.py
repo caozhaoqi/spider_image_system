@@ -54,7 +54,8 @@ def detect_img_py_v1(img_path):
                 # constants.detect_model_flag = False
                 return False
     except Exception as e:
-        logger.warning(f"Unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
+        logger.warning(
+            f"Unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
         # constants.detect_model_flag = False
         return False
 
@@ -159,7 +160,8 @@ def model_detect_img_java_v1(img_path):
                 # constants.detect_model_flag = False
                 return False
     except Exception as e:
-        logger.warning(f"Unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
+        logger.warning(
+            f"Unknown error, server result_server: {result_server}, detail: {e}, error image_path: {img_path}, skied.")
         # constants.detect_model_flag = False
         return False
 

@@ -61,4 +61,3 @@ class MinioMana:
             logger.info("Created {0} object; etag: {1}, version-id: {2}".format(
                 result.object_name, result.etag, result.version_id,
             ))
-

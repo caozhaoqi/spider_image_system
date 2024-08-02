@@ -99,7 +99,7 @@ JM_SD_auto_flag = False
 internet_connect_status = False
 # process image jm category
 process_jm_image_category_flag = False
-
+GO_FILE_UPLOAD_FLAG = False
 # 输出 video 帧率
 output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
 # 输出 video 宽度
@@ -189,6 +189,6 @@ SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH"
 # unzip zip file password
 PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
-sis_server_version = "v1.1.9.240724"
-build_date = "2024-07-24 18:00"
-publish_date = "2024-07-24 18:30"
+sis_server_version = "v1.2.0.240802"
+build_date = "2024-08-02 18:00"
+publish_date = "2024-08-02 18:30"

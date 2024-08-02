@@ -11,7 +11,8 @@ from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop
     visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, \
     log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag, \
     user_upload_image, user_download_image, unzip_file_method, add_keyword_alert, img_category_ana, model_detect_img, \
-    start_download_jm, jm_domain_test_method, jm_automatic_method, stop_jm_spider, jm_category_image_method
+    start_download_jm, jm_domain_test_method, jm_automatic_method, stop_jm_spider, jm_category_image_method, \
+    go_file_upload_all
 
 
 @logger.catch
@@ -38,6 +39,8 @@ def base_menu(self):
     self.image_face_detect_action.triggered.connect(lambda: face_detect_action())
     self.user_upload_image_action = QAction("手动上传", self.image_menu)
     self.user_upload_image_action.triggered.connect(lambda: user_upload_image())
+    self.go_file_upload_action = QAction('gofile上传', self.image_menu)
+    self.go_file_upload_action.triggered.connect(lambda: go_file_upload_all())
     self.user_download_re_action = QAction("重新下载", self.image_menu)
     self.user_download_re_action.triggered.connect(lambda: user_download_image())
     self.detect_model_img_action = QAction("AI鉴图", self.image_menu)
@@ -52,6 +55,7 @@ def base_menu(self):
     self.image_menu.addAction(self.user_upload_image_action)
     self.image_menu.addAction(self.user_download_re_action)
     self.image_menu.addAction(self.detect_model_img_action)
+    self.image_menu.addAction(self.go_file_upload_action)
 
     self.video_menu = QMenu('视频', self.menu_bar)
     self.start_generate_action = QAction('开始生成', self.video_menu)

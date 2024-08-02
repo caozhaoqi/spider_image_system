@@ -101,11 +101,11 @@ def jm_domain_test():
 
 
 @logger.catch
-def get_page_content(keyword, page_num):
+def get_page_content(client, keyword, page_num):
     """
             # 分页查询，search_site就是禁漫网页上的【站内搜索】
     """
-  
+
     if constants.search_content == 'site':
         page: JmSearchPage = client.search_site(search_query=keyword, page=page_num)
         return page
@@ -124,7 +124,7 @@ def get_page_content(keyword, page_num):
     else:
         logger.warning('Config item: search_content not config!!!')
         return False
-     
+
 
 @logger.catch
 def search_content_jm(keyword, jm_id=None):
@@ -139,14 +139,14 @@ def search_content_jm(keyword, jm_id=None):
     logger.debug(f"Start search content: {keyword}.")
     client = JmOption.default().new_jm_client()
 
-    page = get_page_content(keyword, 1)
+    page = get_page_content(client, keyword, 1)
     page_list = []
     page_count = page.page_count
     all_count = page.total
     logger.debug(f"Spider JM image count: {all_count}, start save to list.")
     for i in range(page_count):
         # page: JmSearchPage = client.search_site(search_query=keyword, page=i)
-        page = get_page_content(keyword, i)
+        page = get_page_content(client, keyword, i)
         page_list.append(page)
     # page默认的迭代方式是page.iter_id_title()，每次迭代返回 albun_id, title
     page_num = 1
@@ -254,7 +254,7 @@ def search_download_jm(actor):
     # tag = '無修正'
     # 搜索标签，可以使用search_tag。
     # 搜索第一页。
-    page = get_page_content(keyword, 1)
+    page = get_page_content(client, actor, 1)
     page_list = []
     page_count = page.page_count
     all_count = page.total
@@ -262,7 +262,7 @@ def search_download_jm(actor):
 
     for i in range(page_count):
         # page: JmSearchPage = client.search_site(search_query=actor, page=i)
-        page = get_page_content(keyword, i)
+        page = get_page_content(client, actor, i)
         page_list.append(page)
         if not constants.JM_SD_auto_flag:
             return False

@@ -35,7 +35,8 @@ from utils.sys_info import get_cur_os
 from utils.system_monitor import kill_process_linux, kill_process_win, reduce_sys_res_usage
 from utils.img_detect_ai import all_img_detect
 from ui_event.JM_dialog import JMDialog
-from utils.jm_domain_detect import jm_domain_test, jm_auto_spider_img_thread, process_jm_image_category
+from utils.jm_domain_detect import jm_domain_test, jm_auto_spider_img_thread
+from utils.go_file_utils import upload_all_gofile
 
 
 @logger.catch
@@ -591,3 +592,19 @@ def jm_category_image_method():
     #     logger.info("Start process spider jm image!")
     # else:
     #     logger.error("Process or Category jm, please wait.")
+
+
+@logger.catch
+def go_file_upload_all():
+    """
+
+    """
+    if not constants.GO_FILE_UPLOAD_FLAG:
+        constants.GO_FILE_UPLOAD_FLAG = True
+        gofile_auto_thread_obj = threading.Thread(
+            target=upload_all_gofile,
+            args=(constants.data_path,))
+        gofile_auto_thread_obj.start()
+        logger.info("Start gofile upload image!")
+    else:
+        logger.error("Gofile uploading file, please wait.")

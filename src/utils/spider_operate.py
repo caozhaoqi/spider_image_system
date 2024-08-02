@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import random
@@ -176,4 +175,3 @@ def random_action(driver):
         logger.info(f"Random slider page down! page height {page_height}px")
     except Exception as e:
         logger.warning(f"Unknown error, type: {type(e).__name__}")
-
