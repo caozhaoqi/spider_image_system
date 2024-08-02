@@ -135,6 +135,7 @@ def write_minio_config_to_file(minio_config):
     conf.set("automatic_config", "dmi_api_server", '192.168.163.129:8888')
     conf.set("automatic_config", "detect_img_model", "python")
     conf.set("automatic_config", "WeChat_push_flag", 'True')
+    conf.set("automatic_config", "search_content",  "site")
 
     conf.add_section("minio_config_selected")
     conf.set("minio_config_selected", "minio_config_id", "1")
@@ -243,6 +244,7 @@ def check_ini_config():
         conf.set("automatic_config", "dmi_api_server", '192.168.163.129:8888')
         conf.set("automatic_config", "detect_img_model", "python")
         conf.set("automatic_config", "WeChat_push_flag", 'True')
+        conf.set("automatic_config", "search_content",  "site")
 
         conf.add_section("minio_config_selected")
         conf.set("minio_config_selected", "minio_config_id", "1")

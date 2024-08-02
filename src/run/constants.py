@@ -164,6 +164,8 @@ download_img_time_out = int(read_ini_config(ini_file_path, "automatic_config", "
 detect_timeout_auto = int(read_ini_config(ini_file_path, "automatic_config", "detect_timeout_auto"))
 # WeChat push flag
 WeChat_push_flag = read_ini_config(ini_file_path, "automatic_config", "WeChat_push_flag")
+# search_content
+search_content = read_ini_config(ini_file_path, "automatic_config", "search_content")
 # detect model img api server
 dmi_api_server = read_ini_config(ini_file_path, "automatic_config", "dmi_api_server")
 # detect_img_model
