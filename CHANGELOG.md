@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v1.2.1.240808
+### 2024/8/8
+- fix chrome webdriver bug
+- fix ui_main view video bug
+- update doc and sh
+- update other
+
 ## v1.2.0.240802
 ### 2024/8/2
 - update jm search and download method

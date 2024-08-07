@@ -72,6 +72,7 @@ class UIMainWindows(QMainWindow):
         self.images_convert_thread = None
         self.show_page_label = None
         self.spider_mode_show_label = None
+        self.index_1_show_flag = False
         self.setWindowTitle(u"Spider Image System (" + sis_server_version + ")")
         icon = QIcon()
         icon.addPixmap(
@@ -107,9 +108,11 @@ class UIMainWindows(QMainWindow):
         :param index:
         :return:
         """
-        if index == 1:
+        if index == 1 and not self.index_1_show_flag:
             scan_populate_mp4_list(self)
             logger.info("Video clicked, loading mp4 data.")
+            self.index_1_show_flag = True
+            # index = 0
 
     @logger.catch
     def jump_point_image_click(self, _=None):
