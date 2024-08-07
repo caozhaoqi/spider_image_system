@@ -8,9 +8,9 @@ import sys
 import uvicorn
 from fastapi import FastAPI, applications
 from loguru import logger
-from src.log.log_base import LOG_DIR
-from src.log.log_config import InterceptHandler, format_record
-from src.router.router import api_router
+from log.log_base import LOG_DIR
+from log.log_config import InterceptHandler, format_record
+from router.router import api_router
 from run.constants import app_port, sis_server_version, web_flag_start
 from fastapi.openapi.docs import get_swagger_ui_html
 from log.log_record import check_version

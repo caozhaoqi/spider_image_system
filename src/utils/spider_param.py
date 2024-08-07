@@ -162,6 +162,7 @@ def spider_param_config(key_word):
     }
 
     options = webdriver.ChromeOptions()
+    # options = webdriver.FirefoxOptions()
     options = chrome_options(options)
     # 模拟不同浏览器访问页面 减少被封风险
     user_agents = read_user_agent()
@@ -204,13 +205,18 @@ def spider_param_config(key_word):
             ser = Service()
             ser.path = constants.chrome_path
             # 连接Edge浏览器
+            # chrome_exe_path = "/home/czq/.cache/selenium/chrome/linux64/127.0.6533.88/chrome"
+            options.binary_location = constants.chrome_exe_path
             driver = webdriver.Chrome(service=ser, options=options)
-            logger.debug("User self define chrome driver exe!")
+            # driver = webdriver.Firefox(service=ser, options=options)
+            logger.info(f"User self define chrome driver exe: chrome webdriver path:"
+                        f" {constants.chrome_path}, chrome exe path: {constants.chrome_exe_path}")
         else:
             driver = webdriver.Chrome(options=options)
+            # driver = webdriver.Firefox(options=options)
             logger.info("Use system default web driver!")
     except Exception as e:
-        logger.warning(f"Unknown error, type: {type(e).__name__}.")
+        logger.warning(f"Unknown error, type: {type(e).__name__}, detail: {e}")
 
     mode = ''
     if r18_mode == 'True':

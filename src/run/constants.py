@@ -148,6 +148,8 @@ zoom_out_scale = float(read_ini_config(ini_file_path, "automatic_config", "zoom_
 scheduled_download_program_flag = read_ini_config(ini_file_path, "automatic_config", "scheduled_download_program_flag")
 # chrome path
 chrome_path = read_ini_config(ini_file_path, "automatic_config", "chrome_path")
+# chrome_exe_path
+chrome_exe_path = read_ini_config(ini_file_path, "automatic_config", "chrome_exe_path")
 # Google Chrome version match
 chrome_version = read_ini_config(ini_file_path, "automatic_config", "chrome_version")
 # upload_minio_image_Flag
