@@ -17,8 +17,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from loguru import logger
 
-
 import sqlite3
+
 
 @logger.catch
 def create_database(database_name):
@@ -29,15 +29,13 @@ def create_database(database_name):
 
 
 @logger.catch
-def create_table(con, table_name):
+def create_table(con, table_name, columns):
     """
     """
     cur = con.cursor()
 
     # Create table
-    cur.execute('''CREATE TABLE (?)
-                (date text, trans text, symbol text, qty real, price real)''', table_name)
-
+    cur.execute(f'''CREATE TABLE IF NOT EXISTS {table_name} ({columns})''')
 
     # Save (commit) the changes
     # cur.executemany("insert into characters(c) values (?)", theIter)
@@ -46,7 +44,8 @@ def create_table(con, table_name):
 
     # We can also close the connection if we are done with it.
     # Just be sure any changes have been committed or they will be lost.
-    con.close()
+    # con.close()
+
 
 @logger.catch
 def sql_execute(con, sql):
@@ -57,12 +56,13 @@ def sql_execute(con, sql):
     # Insert a row of data
     cur.execute(sql)
 
-        # Save (commit) the changes
+    # Save (commit) the changes
     con.commit()
 
     # We can also close the connection if we are done with it.
     # Just be sure any changes have been committed or they will be lost.
-    con.close()
+    # con.close()
+
 
 @logger.catch
 def sql_select(con, sql):
@@ -79,4 +79,12 @@ def sql_select(con, sql):
     return ret
 
 
-create_database("sis_db.db")
+if __name__ == '__main__':
+    conn = create_database("sis_db.db")
+    columns = 'id TEXT, name TEXT, role_name TEXT, src TEXT, page TEXT, pix_index TEXT, mark TEXT'
+    create_table(conn, "pix_images", columns)
+    sql_insert_value_pix = "INSERT INTO pix_images (id,name,role_name,src,page,pix_index,mark) \
+                       VALUES (1, 'John', '1121', 'John', '1121', 'John', '1121');"
+    sql_execute(conn, sql_insert_value_pix)
+    select_sql_pix = "select * from pix_images"
+    sql_select(conn, select_sql_pix)
