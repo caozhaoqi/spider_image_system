@@ -321,6 +321,19 @@ class JmcomicText:
         import zhconv
         return zhconv.convert(s, 'zh_cn')
 
+    @classmethod
+    def try_mkdir(cls, save_dir: str):
+        try:
+            mkdir_if_not_exists(save_dir)
+        except OSError as e:
+            if e.errno == 36:
+                # 目录名过长
+                limit = JmModuleConfig.VAR_FILE_NAME_LENGTH_LIMIT
+                jm_log('error', f'目录名过长，无法创建目录，强制缩短到{limit}个字符并重试')
+                save_dir = save_dir[0:limit]
+                mkdir_if_not_exists(save_dir)
+        return save_dir
+
 
 # 支持dsl: #{???} -> os.getenv(???)
 JmcomicText.dsl_replacer.add_dsl_and_replacer(r'\$\{(.*?)\}', JmcomicText.match_os_env)
@@ -379,8 +392,7 @@ class JmPageTool:
     pattern_html_search_tags = compile(r'<a[^>]*?>(.*?)</a>')
 
     # 查找错误，例如 [错误，關鍵字過短，請至少輸入兩個字以上。]
-    pattern_html_search_error = compile(
-        r'<fieldset>\n<legend>(.*?)</legend>\n<div class=.*?>\n(.*?)\n</div>\n</fieldset>')
+    pattern_html_search_error = compile(r'<fieldset>\n<legend>(.*?)</legend>\n<div class=.*?>\n(.*?)\n</div>\n</fieldset>')
 
     pattern_html_search_total = compile(r'class="text-white">(\d+)</span> A漫.'), 0
 

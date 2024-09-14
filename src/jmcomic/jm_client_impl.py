@@ -32,7 +32,7 @@ class AbstractJmClient(
         self.retry_times = retry_times
         self.domain_list = domain_list
         self.CLIENT_CACHE = None
-        self.__username = None  # help for favorite_folder method
+        self._username = None  # help for favorite_folder method
         self.enable_cache()
         self.after_init()
 
@@ -97,7 +97,7 @@ class AbstractJmClient(
             jm_log(self.log_topic(), self.decode(url))
         else:
             # 图片url
-            pass
+            self.update_request_with_specify_domain(kwargs, None, True)
 
         if domain_index != 0 or retry_count != 0:
             jm_log(f'req.retry',
@@ -138,7 +138,7 @@ class AbstractJmClient(
         """
         return resp
 
-    def update_request_with_specify_domain(self, kwargs: dict, domain: str):
+    def update_request_with_specify_domain(self, kwargs: dict, domain: Optional[str], is_image: bool = False):
         """
         域名自动切换时，用于更新请求参数的回调
         """
@@ -407,7 +407,7 @@ class JmHtmlClient(AbstractJmClient):
                          allow_redirects=False,
                          )
 
-        if resp.status_code != 301:
+        if resp.status_code != 200:
             ExceptionTool.raises_resp(f'登录失败，状态码为{resp.status_code}', resp)
 
         orig_cookies = self.get_meta_data('cookies') or {}
@@ -417,7 +417,7 @@ class JmHtmlClient(AbstractJmClient):
             return resp
 
         self['cookies'] = new_cookies
-        self.__username = username
+        self._username = username
 
         return resp
 
@@ -428,8 +428,8 @@ class JmHtmlClient(AbstractJmClient):
                         username='',
                         ) -> JmFavoritePage:
         if username == '':
-            ExceptionTool.require_true(self.__username is not None, 'favorite_folder方法需要传username参数')
-            username = self.__username
+            ExceptionTool.require_true(self._username is not None, 'favorite_folder方法需要传username参数')
+            username = self._username
 
         resp = self.get_jm_html(
             f'/user/{username}/favorite/albums',
@@ -468,7 +468,10 @@ class JmHtmlClient(AbstractJmClient):
 
         return resp
 
-    def update_request_with_specify_domain(self, kwargs: dict, domain: Optional[str]):
+    def update_request_with_specify_domain(self, kwargs: dict, domain: Optional[str], is_image=False):
+        if is_image:
+            return
+
         latest_headers = kwargs.get('headers', None)
         base_headers = self.get_meta_data('headers', None) or JmModuleConfig.new_html_headers(domain)
         base_headers.update(latest_headers or {})
@@ -914,8 +917,10 @@ class JmApiClient(AbstractJmClient):
 
         return resp
 
-    def update_request_with_specify_domain(self, kwargs: dict, domain: str):
-        pass
+    def update_request_with_specify_domain(self, kwargs: dict, domain: Optional[str], is_image=False):
+        if is_image:
+            # 设置APP端的图片请求headers
+            kwargs['headers'] = {**JmModuleConfig.APP_HEADERS_TEMPLATE, **JmModuleConfig.APP_HEADERS_IMAGE}
 
     # noinspection PyMethodMayBeStatic
     def decide_headers_and_ts(self, kwargs, url):
@@ -935,7 +940,7 @@ class JmApiClient(AbstractJmClient):
             token, tokenparam = JmCryptoTool.token_and_tokenparam(ts)
 
         # 设置headers
-        headers = kwargs.get('headers', None) or JmMagicConstants.APP_HEADERS_TEMPLATE.copy()
+        headers = kwargs.get('headers', None) or JmModuleConfig.APP_HEADERS_TEMPLATE.copy()
         headers.update({
             'token': token,
             'tokenparam': tokenparam,
@@ -978,6 +983,11 @@ class JmApiClient(AbstractJmClient):
             # 例如图片请求
             return resp
 
+        code = resp.status_code
+        if code >= 500:
+            msg = JmModuleConfig.JM_ERROR_STATUS_CODE.get(code, f'HTTP状态码: {code}')
+            ExceptionTool.raises_resp(f"禁漫API异常响应, {msg}", resp)
+
         url = resp.request.url
 
         if self.API_SCRAMBLE in url:
@@ -990,11 +1000,11 @@ class JmApiClient(AbstractJmClient):
                 # 找到第一个有效字符
                 ExceptionTool.require_true(
                     char == '{',
-                    f'请求不是json格式，强制重试! 响应文本: [{resp.text}]'
+                    f'请求不是json格式，强制重试！响应文本: [{resp.text}]'
                 )
                 return resp
 
-        ExceptionTool.raises_resp(f'响应无数据! request_url=[{url}]', resp)
+        ExceptionTool.raises_resp(f'响应无数据！request_url=[{url}]', resp)
 
     def after_init(self):
         # 保证拥有cookies，因为移动端要求必须携带cookies，否则会直接跳转同一本子【禁漫娘】

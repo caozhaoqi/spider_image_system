@@ -606,7 +606,7 @@ class FavoriteFolderExportPlugin(JmOptionPlugin):
         for page in page_data:
             for aid, extra in page.content:
                 data.append(
-                    (aid, extra.get('author', '') or JmMagicConstants.DEFAULT_AUTHOR, extra['name'])
+                    (aid, extra.get('author', '') or JmModuleConfig.DEFAULT_AUTHOR, extra['name'])
                 )
 
         if len(data) == 0:
@@ -658,7 +658,7 @@ class ConvertJpgToPdfPlugin(JmOptionPlugin):
 
         ExceptionTool.require_true(
             cur_suffix is not None and cur_suffix.endswith(std_suffix),
-            '请把图片的后缀转换配置为jpg，不然无法使用Magick!'
+            '请把图片的后缀转换配置为jpg，不然无法使用Magick！'
             f'（当前配置是[{cur_suffix}]）\n'
             f'配置模板如下: \n'
             f'```\n'
@@ -716,7 +716,7 @@ class ConvertJpgToPdfPlugin(JmOptionPlugin):
 
         ExceptionTool.require_true(
             code == 0,
-            'jpg图片合并为pdf失败!'
+            'jpg图片合并为pdf失败！'
             '请确认你是否安装了magick，安装网站: [https://www.imagemagick.org/]',
         )
 
@@ -739,13 +739,17 @@ class Img2pdfPlugin(JmOptionPlugin):
     plugin_key = 'img2pdf'
 
     def invoke(self,
-               photo: JmPhotoDetail,
+               photo: JmPhotoDetail = None,
+               album: JmAlbumDetail = None,
                downloader=None,
                pdf_dir=None,
                filename_rule='Pid',
                delete_original_file=False,
                **kwargs,
                ):
+        if photo is None and album is None:
+            jm_log('wrong_usage', 'img2pdf必须运行在after_photo或after_album时')
+
         try:
             import img2pdf
         except ImportError:
@@ -754,28 +758,50 @@ class Img2pdfPlugin(JmOptionPlugin):
 
         self.delete_original_file = delete_original_file
 
-        # 处理文件夹配置
-        filename = DirRule.apply_rule_directly(None, photo, filename_rule)
-        photo_dir = self.option.decide_image_save_dir(photo)
-
         # 处理生成的pdf文件的路径
-        if pdf_dir is None:
-            pdf_dir = photo_dir
-        else:
-            pdf_dir = fix_filepath(pdf_dir, True)
-            mkdir_if_not_exists(pdf_dir)
+        pdf_dir = self.ensure_make_pdf_dir(pdf_dir)
 
+        # 处理pdf文件名
+        filename = DirRule.apply_rule_directly(album, photo, filename_rule)
+
+        # pdf路径
         pdf_filepath = os.path.join(pdf_dir, f'{filename}.pdf')
 
         # 调用 img2pdf 把 photo_dir 下的所有图片转为pdf
-        all_img = files_of_dir(photo_dir)
-        with open(pdf_filepath, 'wb') as f:
-            f.write(img2pdf.convert(all_img))
+        img_path_ls, img_dir_ls = self.write_img_2_pdf(pdf_filepath, album, photo)
+        self.log(f'Convert Successfully: JM{album or photo} → {pdf_filepath}')
 
         # 执行删除
-        self.log(f'Convert Successfully: JM{photo.id} → {pdf_filepath}')
-        all_img.append(self.option.decide_image_save_dir(photo, ensure_exists=False))
-        self.execute_deletion(all_img)
+        img_path_ls += img_dir_ls
+        self.execute_deletion(img_path_ls)
+
+    def write_img_2_pdf(self, pdf_filepath, album: JmAlbumDetail, photo: JmPhotoDetail):
+        import img2pdf
+
+        if album is None:
+            img_dir_ls = [self.option.decide_image_save_dir(photo)]
+        else:
+            img_dir_ls = [self.option.decide_image_save_dir(photo) for photo in album]
+
+        img_path_ls = []
+
+        for img_dir in img_dir_ls:
+            imgs = files_of_dir(img_dir)
+            if not imgs:
+                continue
+            img_path_ls += imgs
+
+        with open(pdf_filepath, 'wb') as f:
+            f.write(img2pdf.convert(img_path_ls))
+
+        return img_path_ls, img_dir_ls
+
+    @staticmethod
+    def ensure_make_pdf_dir(pdf_dir: str):
+        pdf_dir = pdf_dir or os.getcwd()
+        pdf_dir = fix_filepath(pdf_dir, True)
+        mkdir_if_not_exists(pdf_dir)
+        return pdf_dir
 
 
 class JmServerPlugin(JmOptionPlugin):
@@ -870,7 +896,7 @@ class JmServerPlugin(JmOptionPlugin):
                 self.running = True
 
     def warning_wrong_usage_of_debug(self):
-        self.log('注意!当配置debug=True时，请确保当前插件是在主线程中被调用。\n'
+        self.log('注意！当配置debug=True时，请确保当前插件是在主线程中被调用。\n'
                  '因为如果本插件配置在 [after_album/after_photo] 这种时机调用，\n'
                  '会使得flask框架不在主线程debug运行，\n'
                  '导致报错（ValueError: signal only works in main thread of the main interpreter）。\n',
@@ -1072,3 +1098,27 @@ class DeleteDuplicatedFilesPlugin(JmOptionPlugin):
                           [f'  {path}' for path in paths]
                 self.log('\n'.join(message))
                 self.execute_deletion(paths)
+
+
+class ReplacePathStringPlugin(JmOptionPlugin):
+    plugin_key = 'replace_path_string'
+
+    def invoke(self,
+               replace: Dict[str, str],
+               ):
+        if not replace:
+            return
+
+        old_decide_dir = self.option.decide_image_save_dir
+
+        def new_decide_dir(photo, ensure_exists=True) -> str:
+            original_path: str = old_decide_dir(photo, False)
+            for k, v in replace.items():
+                original_path = original_path.replace(k, v)
+
+            if ensure_exists:
+                JmcomicText.try_mkdir(original_path)
+
+            return original_path
+
+        self.option.decide_image_save_dir = new_decide_dir

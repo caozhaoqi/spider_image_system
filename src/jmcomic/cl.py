@@ -69,7 +69,7 @@ class JmcomicUI:
             try:
                 return JmcomicText.parse_to_jm_id(text)
             except Exception as e:
-                # print(e.args[0])
+                print(e.args[0])
                 exit(1)
 
         for raw_id in self.raw_id_list:

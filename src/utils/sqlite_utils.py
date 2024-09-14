@@ -79,12 +79,42 @@ def sql_select(con, sql):
     return ret
 
 
-if __name__ == '__main__':
+@logger.catch
+def image_data_insert(data_list, conn):
+    """
+
+    """
+    # data_list_pix = []
+    sql_insert_value_pix = "INSERT INTO pix_images (id, name, role_name, src, page, pix_index, mark) \
+                        VALUES (1, 'John', '1121', 'John', '1121', 'John', '1121');"
+    sql_execute(conn, sql_insert_value_pix)
+
+
+@logger.catch
+def pix_image_select(conn):
+    """
+
+    """
+    select_sql_pix = "select * from pix_images"
+    sql_select(conn, select_sql_pix)
+
+
+@logger.catch
+def table_create_init():
+    """
+
+    """
     conn = create_database("sis_db.db")
+    # table_struct = []
     columns = 'id TEXT, name TEXT, role_name TEXT, src TEXT, page TEXT, pix_index TEXT, mark TEXT'
     create_table(conn, "pix_images", columns)
-    sql_insert_value_pix = "INSERT INTO pix_images (id,name,role_name,src,page,pix_index,mark) \
-                       VALUES (1, 'John', '1121', 'John', '1121', 'John', '1121');"
-    sql_execute(conn, sql_insert_value_pix)
+    data_list_pix = []
+    # sql_insert_value_pix = "INSERT INTO pix_images (id, name, role_name, src, page, pix_index, mark) \
+    #                    VALUES (1, 'John', '1121', 'John', '1121', 'John', '1121');"
+    # sql_execute(conn, sql_insert_value_pix)
+
+
+if __name__ == '__main__':
+    conn = create_database("sis_db.db")
     select_sql_pix = "select * from pix_images"
     sql_select(conn, select_sql_pix)
