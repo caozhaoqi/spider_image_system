@@ -102,3 +102,4 @@ python -m nuitka --onefile --mingw64 --standalone --follow-import-to=file,http_t
 ```
 - 解决措施
 > 删除所有代码，清除缓存，重新拉取代码，安装第三方库，再次尝试打包，问题解决。
+> 使用命令行模式检查问题，修复后重新打包尝试
