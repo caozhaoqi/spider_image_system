@@ -85,13 +85,20 @@ def save_data(self):
         os.makedirs(auto_spider_file_path)
 
     file_name = 'spider_img_keyword.txt'
+
     # 使用split()方法按','切割字符串
     split_string = keyword_txt.split(',')
     if not split_string or split_string == ['']:
         logger.warning(f"Not input keyword: {keyword_txt}")
         return False
     full_file_path = os.path.join(auto_spider_file_path, file_name)
-    # 打开文件以写入模式
+
+    # 确保文件存在
+    if not os.path.exists(full_file_path):
+        with open(full_file_path, 'w', encoding='utf-8') as file:
+            file.write("")
+            logger.warning(f"Not found {full_file_path}, start create file and write.")
+
     # 读入已保存keyword
     with open(full_file_path, 'r', encoding='utf-8') as file:
         saved_content_list = file.readlines()

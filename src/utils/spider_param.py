@@ -1,9 +1,11 @@
 import os
 import sys
 
+from selenium.webdriver.edge.service import Service
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import random
-from selenium.webdriver.chrome.service import Service
+# from selenium.webdriver.chrome.service import Service
 from http_tools.proxy_request import get_proxy_item
 import requests
 from loguru import logger
@@ -161,8 +163,8 @@ def spider_param_config(key_word):
         "proxyAutoconfigUrl": ""
     }
 
-    options = webdriver.ChromeOptions()
-    # options = webdriver.FirefoxOptions()
+    # options = webdriver.ChromeOptions()
+    options = webdriver.EdgeOptions()
     options = chrome_options(options)
     # 模拟不同浏览器访问页面 减少被封风险
     user_agents = read_user_agent()
@@ -207,12 +209,14 @@ def spider_param_config(key_word):
             # 连接Edge浏览器
             # chrome_exe_path = "/home/czq/.cache/selenium/chrome/linux64/127.0.6533.88/chrome"
             options.binary_location = constants.chrome_exe_path
-            driver = webdriver.Chrome(service=ser, options=options)
+            # driver = webdriver.Chrome(service=ser, options=options)
+            driver = webdriver.Edge(service=ser, options=options)
             # driver = webdriver.Firefox(service=ser, options=options)
             logger.info(f"User self define chrome driver exe: chrome webdriver path:"
                         f" {constants.chrome_path}, chrome exe path: {constants.chrome_exe_path}")
         else:
-            driver = webdriver.Chrome(options=options)
+            # driver = webdriver.Chrome(options=options)
+            driver = webdriver.Edge(options=options)
             # driver = webdriver.Firefox(options=options)
             logger.info("Use system default web driver!")
     except Exception as e:

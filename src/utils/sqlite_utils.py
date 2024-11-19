@@ -73,7 +73,7 @@ def sql_select(con, sql):
 
     cur.execute(sql)
     for row in cur:
-        print(row)
+        logger.debug(row)
         ret.append(row)
     con.close()
     return ret

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.2.2.241119
+### 2024/11/19
+- fix keyword txt bug
+- switch webdriver to edge from chrome
+- add edge default config
+
 ## v1.2.1.240808
 ### 2024/8/8
 - fix chrome webdriver bug
