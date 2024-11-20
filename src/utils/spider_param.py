@@ -5,6 +5,7 @@ from selenium.webdriver.edge.service import Service
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import random
+from webdriver_manager.microsoft import EdgeChromiumDriver, EdgeChromiumDriverManager
 # from selenium.webdriver.chrome.service import Service
 from http_tools.proxy_request import get_proxy_item
 import requests
@@ -204,12 +205,13 @@ def spider_param_config(key_word):
 
     try:
         if constants.chrome_path != 'None':
-            ser = Service()
+            ser = Service(EdgeChromiumDriverManager().install())
             ser.path = constants.chrome_path
             # 连接Edge浏览器
             # chrome_exe_path = "/home/czq/.cache/selenium/chrome/linux64/127.0.6533.88/chrome"
             options.binary_location = constants.chrome_exe_path
             # driver = webdriver.Chrome(service=ser, options=options)
+            #
             driver = webdriver.Edge(service=ser, options=options)
             # driver = webdriver.Firefox(service=ser, options=options)
             logger.info(f"User self define chrome driver exe: chrome webdriver path:"
