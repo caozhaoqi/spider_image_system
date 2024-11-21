@@ -5,6 +5,7 @@
 - fix keyword txt bug
 - switch webdriver to edge from chrome
 - add edge default config
+- according to system info select explore
 
 ## v1.2.1.240808
 ### 2024/8/8

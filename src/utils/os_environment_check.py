@@ -2,6 +2,7 @@
 exe execute os environment
 """
 import os
+import platform
 import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -148,3 +149,31 @@ def is_chromedriver_installed():
         logger.error("ChromeDriver is not installed or not configured correctly.")
         logger.error("Error message:", str(e))
         return False
+
+@logger.catch
+def get_system_info_sim():
+    """
+
+    """
+    # 获取操作系统的名称、版本、架构等信息
+    os_name = platform.system()  # 操作系统名称，例如 'Windows', 'Linux', 'Darwin'（macOS）
+    os_version = platform.version()  # 操作系统版本
+    os_release = platform.release()  # 操作系统发布版本号
+    architecture = platform.architecture()  # 获取操作系统的架构信息（如 32-bit 或 64-bit）
+
+    # 如果是 Windows，获取更详细的 Windows 版本信息
+    if os_name == "Windows":
+        windows_version = platform.win32_ver()  # 获取Windows的版本信息
+    else:
+        windows_version = None
+
+    # 返回包含操作系统相关信息的字典
+    system_info = {
+        "操作系统名称": os_name,
+        "操作系统版本": os_version,
+        "操作系统发布版本": os_release,
+        "系统架构": architecture,
+        "Windows版本": windows_version
+    }
+
+    return os_name

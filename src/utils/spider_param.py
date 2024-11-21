@@ -2,11 +2,13 @@ import os
 import sys
 
 from selenium.webdriver.edge.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
+from utils.os_environment_check import get_system_info_sim
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import random
-from webdriver_manager.microsoft import EdgeChromiumDriver, EdgeChromiumDriverManager
-# from selenium.webdriver.chrome.service import Service
+from webdriver_manager.microsoft import  EdgeChromiumDriverManager
 from http_tools.proxy_request import get_proxy_item
 import requests
 from loguru import logger
@@ -148,99 +150,162 @@ def spider_pid_image(driver_pid, key_word):
 
 
 @logger.catch
-def spider_param_config(key_word):
+def set_proxy(proxy_flag):
     """
-    spider param config
-    :param key_word:
-    :return:
+
     """
-    driver = None
+    """设置代理"""
     proxy = {
         "proxyType": "manual",
-        "httpProxy": "http://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),  # 代理服务器地址和端口
-        "ftpProxy": "ftp://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
-        "sslProxy": "https://" + constants.proxy_server_ip + ":" + str(constants.proxy_server_port),
+        "httpProxy": f"http://{constants.proxy_server_ip}:{constants.proxy_server_port}",
+        "ftpProxy": f"ftp://{constants.proxy_server_ip}:{constants.proxy_server_port}",
+        "sslProxy": f"https://{constants.proxy_server_ip}:{constants.proxy_server_port}",
         "noProxy": "",
         "proxyAutoconfigUrl": ""
     }
 
-    # options = webdriver.ChromeOptions()
-    options = webdriver.EdgeOptions()
-    options = chrome_options(options)
-    # 模拟不同浏览器访问页面 减少被封风险
-    user_agents = read_user_agent()
-    if not user_agents:
-        # 没有txt 使用default value
-        user_agents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 '
-            'Safari/537.36 '
-        ]
-        logger.warning(f"Not found user-agent, use default user-agent: {user_agents[0]}")
-    # 随机添加user-agent
-    cur_user_agents = random.choice(user_agents).strip()
-    # add user-agent
-    if cur_user_agents:
-        options.add_argument(
-            f"user-agent={cur_user_agents}")
-        logger.info(f"Current use user-agent: {cur_user_agents}")
     if proxy_flag == 'True':
         if constants.proxy_mode == 'auto':
-            logger.info("Cur spider use proxy is auto select proxy model.")
+            logger.info("Using auto select proxy model.")
             proxy_item = get_proxy_item()
             if not proxy_item:
-                logger.error("Proxy_item None, will quit spider image!")
-                return None, None, None
-            logger.debug(f"Use proxy: {proxy_item}")
+                logger.error("Proxy item is None, quitting spider.")
+                return None
             proxy = {
                 "proxyType": "manual",
-                "httpProxy": "http://" + proxy_item,  # 代理服务器地址和端口
-                "ftpProxy": "ftp://" + proxy_item,
-                "sslProxy": "https://" + proxy_item,
+                "httpProxy": f"http://{proxy_item}",
+                "ftpProxy": f"ftp://{proxy_item}",
+                "sslProxy": f"https://{proxy_item}",
                 "noProxy": "",
                 "proxyAutoconfigUrl": ""
             }
-        # options.set_capability("proxy", proxy)
-        options.add_argument("--proxy-server={}".format(proxy["httpProxy"]))
-        logger.info("Current use internal proxy, proxy content: " + str(proxy['httpProxy']))
+        logger.info(f"Using proxy: {proxy['httpProxy']}")
+        return proxy
+    return None
 
+
+@logger.catch
+def configure_browser_options():
+    """根据操作系统配置浏览器选项"""
+    system_info = get_system_info_sim()  # 获取系统信息
+    user_agents = read_user_agent()
+
+    if not user_agents:
+        # 如果没有用户代理文件，使用默认值
+        user_agents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36']
+        logger.warning("No user-agent file found, using default user-agent.")
+
+    # 随机选择一个 user-agent
+    cur_user_agents = random.choice(user_agents).strip()
+    logger.info(f"Current user-agent: {cur_user_agents}")
+
+    # 根据系统设置浏览器选项
+    if system_info == 'Linux':
+        options = webdriver.ChromeOptions()
+        logger.debug("Using Chrome browser on Linux.")
+    elif system_info == 'Windows':
+        options = webdriver.EdgeOptions()
+        logger.debug("Using Edge browser on Windows.")
+    else:
+        options = webdriver.SafariOptions()
+        logger.debug("Using Safari browser.")
+
+    # 配置浏览器选项
+    options.add_argument(f"user-agent={cur_user_agents}")
+    options = chrome_options(options)  # 应用任何额外的浏览器配置
+
+    return options
+
+
+@logger.catch
+def initialize_driver(options_explore, system_info):
+    """初始化并返回浏览器驱动"""
     try:
+        # 如果有自定义的浏览器路径
         if constants.chrome_path != 'None':
-            ser = Service(EdgeChromiumDriverManager().install())
-            ser.path = constants.chrome_path
-            # 连接Edge浏览器
-            # chrome_exe_path = "/home/czq/.cache/selenium/chrome/linux64/127.0.6533.88/chrome"
-            options.binary_location = constants.chrome_exe_path
-            # driver = webdriver.Chrome(service=ser, options=options)
-            #
-            driver = webdriver.Edge(service=ser, options=options)
-            # driver = webdriver.Firefox(service=ser, options=options)
-            logger.info(f"User self define chrome driver exe: chrome webdriver path:"
-                        f" {constants.chrome_path}, chrome exe path: {constants.chrome_exe_path}")
+            driver_service = get_driver_service(system_info)
+            driver_service.path = constants.chrome_path
+            options_explore.binary_location = constants.chrome_exe_path
+            driver = create_driver(system_info, options_explore, driver_service)
         else:
-            # driver = webdriver.Chrome(options=options)
-            driver = webdriver.Edge(options=options)
-            # driver = webdriver.Firefox(options=options)
-            logger.info("Use system default web driver!")
+            driver = create_driver(system_info, options_explore)
+
+        logger.info(
+            f"Driver initialized with executable path: {constants.chrome_path}, exe path: {constants.chrome_exe_path}")
+        return driver
     except Exception as e:
-        logger.warning(f"Unknown error, type: {type(e).__name__}, detail: {e}")
+        logger.warning(f"Error initializing driver: {type(e).__name__}, {e}")
+        return None
+
+
+@logger.catch
+def get_driver_service(system_info):
+    """根据操作系统返回相应的驱动服务"""
+    if system_info == 'Linux':
+        return Service(ChromeDriverManager().install())
+    elif system_info == 'Windows':
+        return Service(EdgeChromiumDriverManager().install())
+    else:
+        return Service()
+
+
+@logger.catch
+def create_driver(system_info, options_explore, service=None):
+    """根据操作系统创建相应的浏览器驱动"""
+    if system_info == 'Linux':
+        return webdriver.Chrome(service=service, options=options_explore) if service else webdriver.Chrome(
+            options=options_explore)
+    elif system_info == 'Windows':
+        return webdriver.Edge(service=service, options=options_explore) if service else webdriver.Edge(
+            options=options_explore)
+    else:
+        return webdriver.Safari(service=service, options=options_explore) if service else webdriver.Safari(
+            options=options_explore)
+
+
+@logger.catch
+def spider_param_config(key_word):
+    """
+    Spider param configuration for initializing the driver and handling proxy setup
+    :param key_word: Keyword to be used in the search
+    :return: driver, url, cur_page
+    """
+    driver = None
+    options_explore = configure_browser_options()  # 配置浏览器选项
+
+    # 设置代理
+    proxy = set_proxy(proxy_flag)
+
+    if proxy:
+        options_explore.add_argument(f"--proxy-server={proxy['httpProxy']}")
+        logger.info(f"Using internal proxy: {proxy['httpProxy']}")
+
+    # 初始化浏览器驱动
+    system_info = get_system_info_sim()
+    driver = initialize_driver(options_explore, system_info)
+
+    if driver is None:
+        return None, None, None
 
     mode = ''
     if r18_mode == 'True':
         mode = 'mode=r18&'
-        logger.debug("Current start use r18 mode!")
+        logger.debug("R18 mode enabled.")
 
     if allow_replace_domain_flag:
-        logger.debug(f"Start replace image domain, flag value: {allow_replace_domain_flag}")
+        logger.debug(f"Replacing image domain, flag: {allow_replace_domain_flag}")
 
     cur_page = 1
     if is_keyword_num(driver, key_word):
         driver.quit()
         return None, None, None
     else:
-        url = "https://" + visit_url + "/tags/" + key_word + "/artworks?" + mode
+        url = f"https://{visit_url}/tags/{key_word}/artworks?{mode}"
+
     if all_show != 'False':
-        # self define url by config file
         url = all_show
+
     return driver, url, cur_page
 
 
