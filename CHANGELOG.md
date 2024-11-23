@@ -7,6 +7,12 @@
 - add edge default config
 - according to system info select explore
 
+## v1.2.2.240922
+### 2024/9/22
+- jm plugin update
+- add sqlite3 database
+- update lib
+
 ## v1.2.1.240808
 ### 2024/8/8
 - fix chrome webdriver bug
