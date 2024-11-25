@@ -1,147 +1,154 @@
 import os
 import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import threading
 import requests
 from loguru import logger
 from run import constants
-from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea
+from PyQt5.QtWidgets import (
+    QDialog, QLabel, QVBoxLayout, QPushButton, 
+    QHBoxLayout, QScrollArea
+)
 from PyQt5.QtGui import QPixmap, QImage
 
 
 class ImageDialog(QDialog):
     def __init__(self):
         super().__init__()
-
         self.setWindowTitle("SIS Online Image Viewer")
+        self.init_ui()
+        self.load_initial_image()
 
+    def init_ui(self):
+        """Initialize the UI components"""
+        # Create main layout
         layout = QVBoxLayout()
         self.setLayout(layout)
 
+        # Create image display widgets
         self.label = QLabel()
         self.show_page_label_online = QLabel()
-
+        
+        # Setup scroll area
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.label)
         self.label.resize(self.scroll_area.width(), self.scroll_area.height())
         layout.addWidget(self.scroll_area)
 
-        h_box_layout = QHBoxLayout()
+        # Create button layout
+        button_layout = QHBoxLayout()
+        
+        # Add navigation buttons
         self.prev_button = QPushButton("Previous")
         self.prev_button.clicked.connect(self.show_previous_image)
-        h_box_layout.addWidget(self.prev_button)
+        button_layout.addWidget(self.prev_button)
 
         self.close_button = QPushButton("Close")
         self.close_button.clicked.connect(self.close)
-        h_box_layout.addWidget(self.close_button)
+        button_layout.addWidget(self.close_button)
 
         self.next_button = QPushButton("Next")
         self.next_button.clicked.connect(self.show_next_image)
-        h_box_layout.addWidget(self.next_button)
-        h_box_layout.addWidget(self.show_page_label_online)
+        button_layout.addWidget(self.next_button)
+        
+        button_layout.addWidget(self.show_page_label_online)
+        layout.addLayout(button_layout)
 
-        layout.addLayout(h_box_layout)
+    def load_initial_image(self):
+        """Load the first image on dialog creation"""
+        self.update_page_counter()
+        if not constants.online_img_list:
+            logger.warning("No images available in current directory")
+            return
+        self.show_image_view_threading(constants.online_img_list[0])
 
-        self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
-            constants.online_img_list)))
-        if len(constants.online_img_list) <= 0:
-            logger.warning("Cur data dir no image!")
-        else:
-            self.show_image_view_threading(constants.online_img_list[0])
+    def update_page_counter(self):
+        """Update the page counter display"""
+        total = len(constants.online_img_list)
+        self.show_page_label_online.setText(f"{constants.cur_show_img_index + 1}/{total}")
 
     @logger.catch
     def show_previous_image(self, _=None):
-        """
-        show previous image
-        :return:
-        """
-        if not constants.online_show_image:
-            logger.warning("Loading image, please wait.")
+        """Display the previous image"""
+        if not self.can_change_image():
             return False
-        if len(constants.online_img_list) <= 0:
-            logger.warning("Function show_previous_image, cur data dir no image!")
-            return False
+
         if constants.cur_show_img_index > 0:
             constants.cur_show_img_index -= 1
         else:
             constants.cur_show_img_index = len(constants.online_img_list) - 1
-        constants.online_show_image = False
-        self.show_image_view_threading(constants.online_img_list[constants.cur_show_img_index])
-        logger.debug(f"Function show_previous_image, current page: {constants.cur_show_img_index}")
-        pass
+
+        self.change_image()
+        logger.debug(f"Showing previous image, current page: {constants.cur_show_img_index}")
 
     @logger.catch
     def show_next_image(self, _=None):
-        """
-        show next image
-        :return:
-        """
-        if not constants.online_show_image:
-            logger.warning("Loading image, please wait.")
+        """Display the next image"""
+        if not self.can_change_image():
             return False
-        if len(constants.online_img_list) <= 0:
-            logger.warning("Function show_next_image, cur data dir no image!")
-            return False
+
         if constants.cur_show_img_index < len(constants.online_img_list) - 1:
             constants.cur_show_img_index += 1
         else:
             constants.cur_show_img_index = 0
+
+        self.change_image()
+        logger.debug(f"Showing next image, current page: {constants.cur_show_img_index}")
+
+    def can_change_image(self):
+        """Check if image can be changed"""
+        if not constants.online_show_image:
+            logger.warning("Loading image, please wait.")
+            return False
+        if not constants.online_img_list:
+            logger.warning("No images available")
+            return False
+        return True
+
+    def change_image(self):
+        """Change the displayed image"""
         constants.online_show_image = False
-        self.show_image_view_threading(constants.online_img_list[constants.cur_show_img_index])
-        logger.debug(f"Function show_next_image, current page: {constants.cur_show_img_index}")
-        pass
+        self.show_image_view_threading(
+            constants.online_img_list[constants.cur_show_img_index]
+        )
 
     @logger.catch
     def show_image_view_threading(self, image_path, _=None):
-        """
-
-        :param image_path:
-        :param _:
-        :return:
-        """
-
-        if len(constants.online_img_list) <= 0:
-            logger.warning("Function show_image_view, cur data dir no image!")
+        """Start a thread to load and display the image"""
+        if not constants.online_img_list:
+            logger.warning("No images available to display")
             return False
-        spider_thread_obj = threading.Thread(
+
+        thread = threading.Thread(
             target=self.show_image_view,
-            args=(image_path,))
-        spider_thread_obj.start()
-        logger.info("Show img thread stating.")
+            args=(image_path,)
+        )
+        thread.start()
+        logger.info("Image loading thread started")
 
     @logger.catch
     def show_image_view(self, image_path, _=None):
-        """
-        show point index image
-        :param _:
-        :param image_path:
-        :return:
-        """
+        """Load and display the image"""
         try:
             response = requests.get(image_path)
             if response.headers.get('Content-Type', '').startswith('image/'):
-                # 创建QPixmap对象并加载图片数据
                 pixmap = QPixmap.fromImage(QImage.fromData(response.content))
                 self.label.setPixmap(pixmap)
                 self.label.resize(pixmap.width(), pixmap.height())
-                self.show_page_label_online.setText(str(constants.cur_show_img_index) + "/" + str(len(
-                    constants.online_img_list)))
-                logger.success(f"Loading image: {image_path[-27:].strip()} success!")
+                self.update_page_counter()
+                logger.success(f"Successfully loaded image: {image_path[-27:].strip()}")
                 constants.online_show_image = True
             else:
-                logger.warning(f"Error, Invalid image format! response content: {response}")
+                logger.warning(f"Invalid image format in response: {response}")
         except Exception as e:
             constants.online_show_image = True
-            logger.error(f"Unknown error, detail: {e}")
+            logger.error(f"Error loading image: {str(e)}")
 
     @logger.catch
     def closeEvent(self, event):
-        """
-        对话框关闭
-        :param event:
-        :return:
-        """
-        logger.debug('ImageDialog Dialog is closing!')
+        """Handle dialog close event"""
+        logger.debug('Image Dialog closing')
         constants.online_look_image_visible = False
-        super(ImageDialog, self).closeEvent(event)
+        super().closeEvent(event)

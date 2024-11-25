@@ -1,32 +1,33 @@
-# 导入OS模块
 import os
 import sys
-
-# 把当前文件所在文件夹的父文件夹路径加入到PYTHONPATH
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from pprint import pformat
 import logging
+from pprint import pformat
 from loguru import logger
 from log.log_base import LOG_FORMAT
 
+# Add parent directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 class InterceptHandler(logging.Handler):
-    def emit(self, record):
+    """Handler to intercept standard logging and redirect to loguru"""
+    
+    def emit(self, record: logging.LogRecord) -> None:
         """
-
-        :param record:
-        :return:
+        Intercept logging records and emit them through loguru
+        
+        Args:
+            record: The logging record to handle
         """
-        # Get corresponding Loguru level if it exists
         try:
             level = logger.level(record.levelname).name
         except ValueError:
             level = record.levelno
 
-        # Find caller from where originated the logged message
-        frame, depth = logging.currentframe(), 2
-        while frame.f_code.co_filename == logging.__file__:
+        # Find original caller
+        frame = logging.currentframe()
+        depth = 2
+        while frame and frame.f_code.co_filename == logging.__file__:
             frame = frame.f_back
             depth += 1
 
@@ -37,15 +38,23 @@ class InterceptHandler(logging.Handler):
 
 def format_record(record: dict) -> str:
     """
-    log 格式化记录
-    :param record:
-    :return:
+    Format a log record with optional payload
+    
+    Args:
+        record: The log record to format
+        
+    Returns:
+        str: The formatted log string
     """
     format_string = LOG_FORMAT
 
-    if record["extra"].get("payload") is not None:
+    payload = record["extra"].get("payload")
+    if payload is not None:
         record["extra"]["payload"] = pformat(
-            record["extra"]["payload"], indent=4, compact=True, width=88
+            payload,
+            indent=4,
+            compact=True,
+            width=88
         )
         format_string += "\n<level>{extra[payload]}</level>"
 

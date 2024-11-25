@@ -1,43 +1,37 @@
 import os
 import sys
+from pathlib import Path
+from typing import List, Tuple, Optional
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import json
 import time
 from model.ImageModel import ImageModel
-from model.SpiderKeywordModel import SpiderKeyWordModel
 from run import constants
 from utils.http_utils import image_url_re, match_img_result
 from utils.time_utils import time_to_utc
-import os
 from loguru import logger
+from model import SpiderKeywordModel
 
 
 @logger.catch
-def scan_directory(path):
-    """
-    scan dir
-    :param path:
-    :return:
-    """
+def scan_directory(path: str) -> List[str]:
+    """Scan directory for video files"""
     video_files = []
-    for root, dirs, files in os.walk(path):
+    for root, _, files in os.walk(path):
         for file in files:
-            if file.endswith('.mp4') or file.endswith('.avi'):
+            if file.endswith(('.mp4', '.avi')):
                 video_files.append(os.path.join(root, file))
     return video_files
 
 
 @logger.catch
-def scan_directory_zip_txt(path):
-    """
-    scan dir
-    :param path:
-    :return:
-    """
+def scan_directory_zip_txt(path: str) -> List[str]:
+    """Scan directory for zip txt files"""
     zip_txt_files = []
-    for root, dirs, files in os.walk(path):
+    for root, _, files in os.walk(path):
         for file in files:
             if file.endswith('.txt') and "_zip" in file:
                 zip_txt_files.append(os.path.join(root, file))
@@ -45,14 +39,10 @@ def scan_directory_zip_txt(path):
 
 
 @logger.catch
-def scan_directory_zip(path):
-    """
-    scan dir
-    :param path:
-    :return:
-    """
+def scan_directory_zip(path: str) -> List[str]:
+    """Scan directory for zip files"""
     zip_files = []
-    for root, dirs, files in os.walk(path):
+    for root, _, files in os.walk(path):
         for file in files:
             if file.endswith('.zip'):
                 zip_files.append(os.path.join(root, file))
@@ -60,299 +50,219 @@ def scan_directory_zip(path):
 
 
 @logger.catch
-def count_lines(filename):
-    """
-    count txt file line
-    :param filename:
-    :return:
-    """
+def count_lines(filename: str) -> int:
+    """Count lines in text file"""
     with open(filename, 'r', encoding='utf-8', errors='replace') as file:
-        lines = file.readlines()
-    return len(lines)
+        return sum(1 for _ in file)
 
 
 @logger.catch
-def write_error_image(txt_path, image_path, filename):
-    """
-    写入下载错误图片数据至txt
-    :param filename: anbai_img_result 区分错误文件夹
-    :param txt_path:
-    :param image_path:
-    :return:
-    """
+def write_error_image(txt_path: str, image_path: str, filename: str) -> bool:
+    """Write failed image download data to txt"""
     keyword = match_img_result(filename)
-    txt_path = os.path.join(txt_path, "download_fail_image.txt")
-    with open(txt_path, 'a', encoding='utf-8', errors='replace') as f:
-        f.write(image_path + "," + keyword + "\n")
+    error_file = os.path.join(txt_path, "download_fail_image.txt")
+    with open(error_file, 'a', encoding='utf-8', errors='replace') as f:
+        f.write(f"{image_path},{keyword}\n")
     return True
 
 
 @logger.catch
-def record_end_download_image(file_name, data):
-    """
-    记录最后一次下载数据
-    :param file_name: file name
-    :param data: data
-    :return: 
-    """
-    # .__dict__
-    json_str = json.dumps(data.__dict__)
+def record_end_download_image(file_name: str, data: ImageModel) -> bool:
+    """Record last download data"""
     with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
-        f.write(json_str)
+        json.dump(data.__dict__, f, ensure_ascii=False)
     return True
 
 
 @logger.catch
-def look_end_download_image(file_name):
+def look_end_download_image(file_name: str) -> Optional[dict]:
+    """Read last download record"""
     if not os.path.exists(file_name):
-        logger.warning("not found image record json data file! ")
+        logger.warning("Image record json data file not found!")
         return None
-    else:
-        # 打开JSON文件并读取其内容
-        with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
-            data = json.load(f)
-        return data
+    
+    with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
+        return json.load(f)
 
 
 @logger.catch
-def read_end_download_image():
-    """
-    return download msg for last download
-    :return:
-    """
+def read_end_download_image() -> Tuple[Optional[ImageModel], Optional[str], Optional[str], Optional[int], Optional[bool]]:
+    """Get last download message"""
     download_final_flag = look_end_download_image(os.path.join(constants.data_path, "download_final_image.json"))
+    
     if download_final_flag:
-        download_final_flag_model = ImageModel(download_final_flag['image_index'], download_final_flag['txt_name'],
-                                               download_final_flag['image_url'], download_final_flag['image_name'],
-                                               download_final_flag['download_date'], download_final_flag['txt_index'],
-                                               download_final_flag['continue_flag'])
-        final_download_txt_name = download_final_flag_model.txt_name
-        final_download_url = download_final_flag_model.image_url
-        final_cdds_index = download_final_flag_model.txt_index
-        continue_download_flag = download_final_flag_model.continue_flag
-        return download_final_flag_model, final_download_txt_name, final_download_url, final_cdds_index, \
-               continue_download_flag
+        model = ImageModel(
+            download_final_flag['image_index'],
+            download_final_flag['txt_name'],
+            download_final_flag['image_url'],
+            download_final_flag['image_name'],
+            download_final_flag['download_date'],
+            download_final_flag['txt_index'],
+            download_final_flag['continue_flag']
+        )
+        return (
+            model,
+            model.txt_name,
+            model.image_url,
+            model.txt_index,
+            model.continue_flag
+        )
     return None, None, None, None, None
 
 
 @logger.catch
-def save_download_end(index, file_path, url, cdds_index):
-    """
-    save data to json file
-    :param index:
-    :param file_path:
-    :param url:
-    :param cdds_index:
-    :return:
-    """
-    data = ImageModel(index, file_path, url, image_url_re(url),
-                      time_to_utc(time.time()), cdds_index, True)
+def save_download_end(index: int, file_path: str, url: str, cdds_index: int) -> None:
+    """Save download end data"""
+    data = ImageModel(
+        index, file_path, url,
+        image_url_re(url),
+        time_to_utc(time.time()),
+        cdds_index, True
+    )
     record_end_download_image(os.path.join(constants.data_path, "download_final_image.json"), data)
-    logger.warning(
-        f"Set stop image stop_download_image_flag True! save result: {data.image_url}, txt name: {file_path}.")
+    logger.warning(f"Set stop image flag True! URL: {data.image_url}, txt: {file_path}")
 
 
 @logger.catch
-def update_download_continue_flag():
-    """
-    update json file
-    :return:
-    """
+def update_download_continue_flag() -> None:
+    """Update download continue flag"""
     data = ImageModel(None, None, None, None,
-                      time_to_utc(time.time()), None, False)
+                     time_to_utc(time.time()), None, False)
     record_end_download_image(os.path.join(constants.data_path, "download_final_image.json"), data)
-    logger.info("Download final image json continue_flag update success!")
-    # constants.con
+    logger.info("Download final image json continue_flag updated")
 
 
 @logger.catch
-def record_download_finish_txt(content):
-    """
-    record already download txt
-    :param content:
-    :return:
-    """
+def record_download_finish_txt(content: str) -> bool:
+    """Record completed downloads"""
     if exists_txt_from_finish(content):
         return True
+        
     file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
     with open(file_name, 'a', encoding='utf-8', errors='replace') as f:
-        f.write(content + "\n")
-    logger.success(f"Download {content} finished, will write txt.")
+        f.write(f"{content}\n")
+    logger.success(f"Download {content} finished")
     return True
 
 
 @logger.catch
-def exists_txt_from_finish(content):
-    """
-    exists txt download finish image
-    :param content:
-    :return:
-    """
-    # txt_list = []
+def exists_txt_from_finish(content: str) -> bool:
+    """Check if download is already completed"""
     file_name = os.path.join(constants.data_path, "download_finished_txt.txt")
+    
     if not os.path.exists(file_name):
-        with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
-            f.write("")
+        Path(file_name).write_text("", encoding='utf-8')
         return False
+        
     with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
-        txt_list = f.readlines()
-    for txt in txt_list:
-        if content in txt:
-            logger.warning(f"{content} already download finished, will skip txt!")
+        if any(content in line for line in f):
+            logger.warning(f"{content} already downloaded, skipping")
             return True
+    return False
 
 
 @logger.catch
-def record_end_spider_image_keyword(key_word, cur_page):
-    """
-    record end spider image keyword
-    :param key_word:
-    :param cur_page:
-    :return:
-    """
+def record_end_spider_image_keyword(key_word: str, cur_page: int) -> bool:
+    """Record end spider image keyword"""
     spider_image_keyword, txt_file_list = get_image_keyword()
     cur_keyword_txt = find_keyword_txt(key_word, txt_file_list, spider_image_keyword)
-    file_name = constants.data_path + '/spider_img_keyword_final.json'
+    
     if cur_keyword_txt:
-        data = SpiderKeyWordModel(cur_keyword_txt, key_word, cur_page, True)
-        json_str = json.dumps(data.__dict__, ensure_ascii=False)
+        data = SpiderKeywordModel(cur_keyword_txt, key_word, cur_page, True)
+        file_name = os.path.join(constants.data_path, 'spider_img_keyword_final.json')
         with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
-            f.write(json_str)
-        logger.success("Stop spider, spider end keyword already write txt.")
+            json.dump(data.__dict__, f, ensure_ascii=False)
+        logger.success("Spider stopped, end keyword written")
         return True
-    else:
-        logger.warning("New keyword! txt not save.")
-        return False
+    
+    logger.warning("New keyword! txt not saved")
+    return False
 
 
 @logger.catch
-def get_image_keyword():
-    """
-    get image keyword list
-    :return:
-    """
-    auto_spider_file_path = os.path.join(constants.data_path, "auto_spider_img")
+def get_image_keyword() -> Tuple[List[str], List[str]]:
+    """Get image keyword list"""
+    auto_spider_path = os.path.join(constants.data_path, "auto_spider_img")
+    os.makedirs(auto_spider_path, exist_ok=True)
 
-    if not os.path.exists(auto_spider_file_path):
-        os.makedirs(auto_spider_file_path)
+    txt_files = [f for f in Path(auto_spider_path).rglob('*spider_img_keyword.txt')]
+    
+    default_file = os.path.join(auto_spider_path, 'spider_img_keyword.txt')
+    if not os.path.exists(default_file):
+        Path(default_file).touch()
+        logger.warning(f"Created default file: {default_file}")
 
-    txt_file_list = []
-    for root, dirs, files in os.walk(auto_spider_file_path):
-        for file in files:
-            if file.endswith('spider_img_keyword.txt'):
-                txt_file_list.append(os.path.join(root, file))
+    if not txt_files:
+        logger.warning("No spider_img_keyword txt files found")
+        return [], []
 
-    file_name = 'spider_img_keyword.txt'
-    full_file_path = os.path.join(auto_spider_file_path, file_name)
-    if not os.path.exists(full_file_path):
-        # 如果文件不存在，创建它
-        with open(full_file_path, 'w', encoding='utf-8', errors='replace') as f:
-            logger.warning(f"Current {full_file_path} not exists, will create demo txt!")
     try:
-        if len(txt_file_list) == 0:
-            logger.warning("File spider_img_keyword txt length null!")
-            return [], []
-        spider_image_keyword = []
-        for txt_name in txt_file_list:
-            with open(txt_name, 'r', encoding='utf-8', errors='replace') as f:
-                spider_image_keyword.append(f.readlines())
-        return spider_image_keyword, txt_file_list
+        keywords = []
+        for txt in txt_files:
+            with open(txt, 'r', encoding='utf-8', errors='replace') as f:
+                keywords.append(f.readlines())
+        return keywords, [str(p) for p in txt_files]
     except Exception as e:
-        logger.error(f"Unknown error, detail {e}")
+        logger.error(f"Error reading keywords: {e}")
         return [], []
 
 
 @logger.catch
-def find_keyword_txt(key_word, txt_file_list, spider_image_keyword):
-    """
-    find point keyword in txt
-    :param spider_image_keyword:
-    :param key_word:
-    :param txt_file_list:
-    :return:
-    """
-    cur_keyword_txt = None
-    for spider_image in txt_file_list:
-        with open(spider_image, 'r', encoding='utf-8', errors='replace') as f:
-            spider_image_keyword.append(f.readlines())
-            for spider_image_k in spider_image_keyword:
-                for s_i_k in spider_image_k:
-                    if key_word in s_i_k:
-                        cur_keyword_txt = spider_image
-                        break
-    return cur_keyword_txt
+def find_keyword_txt(key_word: str, txt_file_list: List[str], spider_image_keyword: List[str]) -> Optional[str]:
+    """Find keyword in txt files"""
+    for txt_file in txt_file_list:
+        with open(txt_file, 'r', encoding='utf-8', errors='replace') as f:
+            if any(key_word in line for line in f):
+                return txt_file
+    return None
 
 
 @logger.catch
-def record_finish_keyword(keyword, cur_page):
-    """
-    record finish spider keyword and page
-    :param keyword:
-    :param cur_page:
-    :return:
-    """
-    file_name = "/spider_finished_keyword.txt"
-    content = keyword + "," + str(cur_page)
-    file_name = constants.data_path + file_name
+def record_finish_keyword(keyword: str, cur_page: int) -> None:
+    """Record finished spider keyword and page"""
+    file_name = os.path.join(constants.data_path, "spider_finished_keyword.txt")
+    content = f"{keyword},{cur_page}"
+
     if not os.path.exists(file_name):
-        with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
-            f.write("")
-        return False
+        Path(file_name).write_text("", encoding='utf-8')
+        return
+
     with open(file_name, "a", encoding='utf-8', errors='replace') as f:
-        f.write(content + "\n")
-    logger.success(f"Record finish keyword {keyword}, page {cur_page}!")
+        f.write(f"{content}\n")
+    logger.success(f"Recorded finish: keyword={keyword}, page={cur_page}")
 
 
 @logger.catch
-def keyword_times(keyword, cur_page):
-    """
-    多次写入同一keyword+cur_page
-    :param keyword:
-    :param cur_page:
-    :return:
-    """
-    same_count = 0
-    file_name = "/spider_finished_keyword.txt"
-    file_name = constants.data_path + file_name
-    content = keyword + "," + str(cur_page)
+def keyword_times(keyword: str, cur_page: int) -> int:
+    """Count keyword occurrences"""
+    file_name = os.path.join(constants.data_path, "spider_finished_keyword.txt")
+    content = f"{keyword},{cur_page}"
 
     if not os.path.exists(file_name):
-        with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
-            f.write("")
-        return False
-    with open(file_name, "r", encoding='utf-8', errors='replace') as f:
-        keyword_list = f.readlines()
-
-    for keyword_con in keyword_list:
-        if content in keyword_con:
-            same_count += 1
-    if not same_count:
+        Path(file_name).write_text("", encoding='utf-8')
         return 0
-    return same_count
+
+    with open(file_name, "r", encoding='utf-8', errors='replace') as f:
+        return sum(1 for line in f if content in line)
 
 
 @logger.catch
-def exists_image_keyword(key_word):
-    """
-    get image keyword list
-    :return:
-    """
-    file_name = '/spider_finished_keyword.txt'
+def exists_image_keyword(key_word: str) -> Tuple[bool, int]:
+    """Check if image keyword exists"""
+    file_name = os.path.join(constants.data_path, 'spider_finished_keyword.txt')
+    
     try:
-        exists_record = []
-        with open(constants.data_path + file_name, 'r', encoding='utf-8', errors='replace') as f:
-            spider_image_keyword = f.readlines()
-        if not spider_image_keyword:
+        if not os.path.exists(file_name):
             return False, 0
-        for spider_image in spider_image_keyword:
-            sik_w = spider_image.split(',')[0]
-            sik_page = spider_image.split(',')[1]
-            if key_word in sik_w:
-                exists_record.append(sik_page)
-                # logger.success()
-        if exists_record:
-            return True, max(exists_record)
+            
+        pages = []
+        with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
+            for line in f:
+                word, page = line.strip().split(',')
+                if key_word in word:
+                    pages.append(int(page))
+                    
+        return bool(pages), max(pages) if pages else 0
+        
     except Exception as e:
-        # logger.warning(f"unknown error, detail {e}")
         return False, 0
-    return False, 0

@@ -1,290 +1,231 @@
 import os
+import subprocess
 import sys
+import time
+from typing import Dict, List, Optional
 
 import requests
+import psutil
+from loguru import logger
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import psutil
-import time
-from loguru import logger
 from run import constants
 from utils.sys_info import get_cur_os
-import subprocess
 from utils.wx_push import wx_push_content
 
-MEMORY_THRESHOLD = 0.90  # 内存使用阈值（90%）
-CPU_THRESHOLD = 0.90  # CPU使用阈值（90%）
-NETWORK_THRESHOLD = 5 * 1024 * 1024  # 网络带宽阈值（1MB/s）
-DISK_USAGE_THRESHOLD = 0.90  # 设置存储使用警告阈值（例如，90% 使用率）
+# 系统资源阈值配置
+THRESHOLDS = {
+    'memory': 0.90,  # 内存使用阈值 90%
+    'cpu': 0.90,     # CPU使用阈值 90%
+    'network': 5 * 1024 * 1024,  # 网络带宽阈值 5MB/s
+    'disk': 0.90     # 存储使用阈值 90%
+}
 
-# 上次检查的资源使用情况
-last_memory_usage = 0
-last_cpu_usage = 0
-last_disk_usage = 0
-last_network_usage = 0
+# 监控状态
+MONITOR_STATE = {
+    'memory': 0,
+    'cpu': 0, 
+    'disk': 0,
+    'network': 0
+}
 
-# 只收集前20个进程的信息
-process_count = 5
+# 监控进程数量
+PROCESS_COUNT = 5
 
-
-# 检查系统盘存储使用情况的函数
 @logger.catch
-def check_disk_usage():
-    """
-
-    :return:
-    """
-    global DISK_USAGE_THRESHOLD
-    # 获取系统盘使用情况
+def check_disk_usage() -> None:
+    """检查系统盘存储使用情况"""
     disk_usage = psutil.disk_usage('/')
-    # 计算使用率
-    disk_percent_used = disk_usage.percent / 100.0
-    # 检查是否超过阈值
-    if disk_percent_used > DISK_USAGE_THRESHOLD:
-        # 输出警告信息
+    disk_percent = disk_usage.percent / 100.0
+    
+    if disk_percent > THRESHOLDS['disk']:
         logger.error(
-            f"Warning: System disk usage is above {DISK_USAGE_THRESHOLD * 100}%. Current usage: {disk_percent_used * 100}%.")
+            f"Warning: System disk usage is above {THRESHOLDS['disk']*100}%. "
+            f"Current usage: {disk_percent*100}%"
+        )
 
-
-# 检查内存使用情况的函数
-@logger.catch
-def check_memory_usage():
-    """
-
-    :return:
-    """
-    global last_memory_usage, MEMORY_THRESHOLD
+@logger.catch 
+def check_memory_usage() -> None:
+    """检查内存使用情况"""
     memory = psutil.virtual_memory()
-    memory_percent = memory.percent
-    if memory_percent / 100 > MEMORY_THRESHOLD:
+    memory_percent = memory.percent / 100
+    
+    if memory_percent > THRESHOLDS['memory']:
         logger.error(
-            "Warning: Memory usage is above {}%, Current usage: {}%".format(MEMORY_THRESHOLD * 100, memory_percent))
+            f"Warning: Memory usage is above {THRESHOLDS['memory']*100}%. "
+            f"Current usage: {memory_percent*100}%"
+        )
         if reduce_sys_res_usage():
-            logger.success("Reduce memory usage success on win32 system!")
-            wx_push_content("Warning: Memory usage is above {}%, already reduce memory usage"
-                            " Current usage: {}%".format(CPU_THRESHOLD * 100, memory_percent))
-    last_memory_usage = memory_percent
-
-
-# 检查CPU使用情况的函数
-@logger.catch
-def check_cpu_usage():
-    """
-
-    :return:
-    """
-    global last_cpu_usage, CPU_THRESHOLD
-    cpu_percent = psutil.cpu_percent(interval=1)
-    if cpu_percent / 100 > CPU_THRESHOLD:
-        logger.error("Warning: CPU usage is above {}%, Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
-        if reduce_sys_res_usage():
-            logger.success("Reduce cpu usage success on win32 system!")
-            wx_push_content("Warning: CPU usage is above {}%, already reduce cpu usage"
-                            " Current usage: {}%".format(CPU_THRESHOLD * 100, cpu_percent))
-    last_cpu_usage = cpu_percent
-
+            logger.success("Successfully reduced memory usage on win32 system!")
+            wx_push_content(
+                f"Warning: Memory usage is above {THRESHOLDS['memory']*100}%, "
+                f"memory usage reduced. Current usage: {memory_percent*100}%"
+            )
+    MONITOR_STATE['memory'] = memory_percent
 
 @logger.catch
-def reduce_sys_res_usage():
-    """
+def check_cpu_usage() -> None:
+    """检查CPU使用情况"""
+    cpu_percent = psutil.cpu_percent(interval=1) / 100
+    
+    if cpu_percent > THRESHOLDS['cpu']:
+        logger.error(
+            f"Warning: CPU usage is above {THRESHOLDS['cpu']*100}%. "
+            f"Current usage: {cpu_percent*100}%"
+        )
+        if reduce_sys_res_usage():
+            logger.success("Successfully reduced CPU usage on win32 system!")
+            wx_push_content(
+                f"Warning: CPU usage is above {THRESHOLDS['cpu']*100}%, "
+                f"CPU usage reduced. Current usage: {cpu_percent*100}%"
+            )
+    MONITOR_STATE['cpu'] = cpu_percent
 
-    :return:
-    """
+@logger.catch
+def reduce_sys_res_usage() -> bool:
+    """降低系统资源使用"""
     try:
         if get_cur_os() == "win32":
             if not kill_process_win('taskkill /im chrome.exe /F'):
-                logger.warning("Start force kill chrome.exe process.")
+                logger.warning("Starting force kill chrome.exe process")
                 kill_process_win("taskkill /im chrome.exe /F /T")
-            # kill_process_win('taskkill /im chromedriver.exe /F')
-            # kill_process_win('taskkill /im webdriver.exe /F')
         else:
             kill_process_linux('chrome')
             kill_process_linux('chromedriver')
             kill_process_linux('webdriver')
         return True
     except Exception as e:
-        logger.warning(f"Reduce cpu usage fail, detail: {e}")
+        logger.warning(f"Failed to reduce resource usage: {e}")
         return False
 
-
 @logger.catch
-def kill_process_win(command):
-    """
+def kill_process_win(command: str) -> bool:
+    """结束Windows进程
     
-    :param command:
-    :return:
+    Args:
+        command: 进程终止命令
+        
+    Returns:
+        是否成功终止进程
     """
-
     import subprocess
-
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    
+    process = subprocess.Popen(
+        command,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
     stdout, stderr = process.communicate()
+    
     try:
-        if stdout.decode('gbk') == "":
-            logger.warning("Standard Error: " + stderr.decode('gbk').strip())
+        if not stdout.decode('gbk'):
+            logger.warning(f"Error: {stderr.decode('gbk').strip()}")
             return False
-        logger.debug("Standard Output: " + stdout.decode('gbk').strip())
-    except Exception as e:
-        logger.warning("Standard Error: " + stderr.decode('gbk').strip())
+        logger.debug(f"Output: {stdout.decode('gbk').strip()}")
+        return True
+    except Exception:
+        logger.warning(f"Error: {stderr.decode('gbk').strip()}")
         return False
-    return True
-
 
 @logger.catch
-def kill_process_linux(process_name):
-    """
-
-    :param process_name:
-    :return:
+def kill_process_linux(process_name: str) -> None:
+    """结束Linux进程
+    
+    Args:
+        process_name: 进程名称
     """
     try:
         pid = subprocess.check_output(['pgrep', '-f', process_name]).decode('utf-8').strip()
         if pid:
-            # 结束进程
-            os.system('kill -9 ' + pid)
-            logger.success(f"Killed {process_name} with PID {pid} on linux system!")
-        # else:
-        # logger.debug(f"{process_name} is not running.")
+            os.system(f'kill -9 {pid}')
+            logger.success(f"Killed {process_name} with PID {pid} on Linux system")
     except Exception as e:
-        logger.warning(f"Error killing {process_name}: {e} on linux system!")
+        logger.warning(f"Error killing {process_name}: {e} on Linux system")
 
-
-# 检查网络带宽的函数
 @logger.catch
-def check_network_usage():
-    """
-
-    :return:
-    """
-    global last_network_usage, NETWORK_THRESHOLD
-    # 获取网络接口的发送和接收字节数
-    net_io_counters = psutil.net_io_counters(pernic=True)
-    total_sent = sum(nic.bytes_sent for nic in net_io_counters.values())
-    total_recv = sum(nic.bytes_recv for nic in net_io_counters.values())
-    # 计算总带宽（发送和接收），并转换为MB/s
-    network_usage = (total_sent + total_recv) / (1024 * 1024)
-    # 检查是否超过了阈值
-    if network_usage > NETWORK_THRESHOLD:
+def check_network_usage() -> None:
+    """检查网络带宽使用情况"""
+    net_io = psutil.net_io_counters(pernic=True)
+    total_bytes = sum(nic.bytes_sent + nic.bytes_recv for nic in net_io.values())
+    network_usage = total_bytes / (1024 * 1024)  # Convert to MB
+    
+    if network_usage > THRESHOLDS['network']:
         logger.error(
-            f"Warning: Network usage is above {NETWORK_THRESHOLD / (1024 * 1024)} MB/s. Current usage: {network_usage / (1024 * 1024)} MB/s")
-    last_network_usage = network_usage
-
+            f"Warning: Network usage is above {THRESHOLDS['network']/(1024*1024)} MB/s. "
+            f"Current usage: {network_usage/(1024*1024)} MB/s"
+        )
+    MONITOR_STATE['network'] = network_usage
 
 @logger.catch
-def check_internet_connection():
+def check_internet_connection() -> bool:
+    """检查互联网连接状态
+    
+    Returns:
+        是否连接正常
     """
-
-    :return:
-    """
-
     try:
-        # 尝试访问 Google 的主页，检查网络连接
         response = requests.get('https://www.baidu.com')
-
-        # 如果状态码是200，说明连接成功
         if response.status_code == 200:
-            logger.info("Internet connect normal.")
+            logger.info("Internet connection normal")
             constants.internet_connect_status = True
             return True
-    except Exception as e:
-        # 如果发生任何异常（例如连接错误），则输出错误
-        # logger.error(f"Internet connect Error: {e}")
+    except Exception:
         constants.internet_connect_status = False
         return False
-
-
-# 检查网络连接
-# check_internet_connection()
-
+    return False
 
 @logger.catch
-def check_top_processes():
-    """
-    检查系统中CPU、内存和网络I/O占用率最高的前10个进程的详情。
-    """
-    # 获取所有进程，并计算CPU和内存占用率
+def check_top_processes() -> bool:
+    """检查系统资源占用最高的进程"""
     processes = psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent'])
-    # 对进程按CPU占用率进行排序
     sorted_processes = sorted(processes, key=lambda p: p.info['cpu_percent'], reverse=True)
-
-    # 初始化一个空的列表来存储前10个进程的详情
+    
     top_processes = []
-
-    # 遍历进程，收集前10个的详细信息
-    for process in sorted_processes:
+    for process in sorted_processes[:PROCESS_COUNT]:
         try:
-            # 获取进程的PID和名称
             pid = process.info['pid']
             name = process.info['name']
-
             cpu_percent = process.cpu_percent()
-            # 获取进程的CPU和内存占用率
             memory_info = process.memory_info()
-            memory_percent = memory_info.rss / (1024 * 1024)
-
-            # 尝试获取网络I/O统计信息
+            memory_mb = memory_info.rss / (1024 * 1024)
+            
             try:
-                net_io_counters = process.io_counters()
-
-                send_bytes = net_io_counters.write_bytes / 1024 / 1024
-                receive_bytes = net_io_counters.read_bytes / 1024 / 1024
-                # 注意：这里提供的是总的网络I/O，不是实时的带宽占用
-                net_io = send_bytes + receive_bytes
-            except AttributeError:
-                net_io = 0  # 如果无法获取，则设为0
-
-            # 将进程详情添加到列表中
+                io_counters = process.io_counters()
+                net_io = (io_counters.write_bytes + io_counters.read_bytes) / (1024 * 1024)
+            except (psutil.AccessDenied, AttributeError):
+                net_io = 0
+                
             top_processes.append({
                 'PID': pid,
                 'Name': name,
                 'CPU Usage': cpu_percent,
-                'Memory Usage': memory_percent,
-                'Network IO': net_io
+                'Memory Usage (MB)': memory_mb,
+                'Network IO (MB)': net_io
             })
-
-            if len(top_processes) >= process_count:
-                break
-
+            
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            # 进程可能已经结束，或者我们没有权限访问它
             continue
-    logger.warning("-----------------Start output system resources msg---------------------------------")
+            
+    logger.warning("----- System Resource Usage -----")
     for proc in top_processes:
         logger.info(proc)
-    logger.warning("-----------------End output system resources msg------------------------------------")
+    logger.warning("--------------------------------")
+    
     return True
 
-
-# 示例使用
-
 @logger.catch
-def sys_mon():
-    """
-
-    :return:
-    """
-    logger.info("System monitor start...")
-
-    logger.info(f"Current system resource detect time: {constants.detect_timeout_auto} s.")
-
+def sys_mon() -> None:
+    """系统资源监控主函数"""
+    logger.info("System monitor starting...")
+    logger.info(f"Resource detection interval: {constants.detect_timeout_auto}s")
+    
     while True:
-        # 等待一段时间再次检查（例如，每秒检查一次）
         time.sleep(constants.detect_timeout_auto)
-
-        # 检查CPU使用率
+        
         check_cpu_usage()
-
-        # 检查网络带宽
-        check_network_usage()
-
+        check_network_usage() 
         check_memory_usage()
-
         check_disk_usage()
-
         check_top_processes()
-
-#
-#
-# if __name__ == '__main__':
-#     kill_process_win("tasklist")

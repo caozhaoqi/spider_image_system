@@ -1,36 +1,29 @@
-"""
-
-"""
+"""Image model class for storing image metadata and download information"""
 import os
 import sys
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
+@dataclass
 class ImageModel:
+    """Class representing an image with its metadata"""
+    image_index: int
+    txt_name: str 
+    image_url: str
+    image_name: str
+    download_date: datetime
+    txt_index: int
+    continue_flag: bool = False
 
-    def __init__(self, image_index, txt_name, image_url, image_name, download_date, txt_index, continue_flag):
-        """
-
-        :param image_index:
-        :param txt_name:
-        :param image_url:
-        :param image_name:
-        :param download_date:
-        :param txt_index:
-        """
-        self.image_index = image_index
-        self.txt_name = txt_name
-        self.image_url = image_url
-        self.image_name = image_name
-        self.download_date = download_date
-        self.txt_index = txt_index
-        self.continue_flag = continue_flag
-
-    image_index = 0
-    txt_index = 0
-    txt_name = ''
-    image_url = ''
-    image_name = ''
-    download_date = ''
-    continue_flag = False
+    def __post_init__(self):
+        """Validate data after initialization"""
+        if not isinstance(self.image_index, int):
+            raise TypeError("image_index must be an integer")
+        if not isinstance(self.txt_index, int):
+            raise TypeError("txt_index must be an integer")
+        if not isinstance(self.continue_flag, bool):
+            raise TypeError("continue_flag must be a boolean")

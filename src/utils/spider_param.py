@@ -1,160 +1,213 @@
 import os
 import sys
+from pathlib import Path
+from typing import Optional, List, Tuple, Dict, Any
 
-from selenium.webdriver.edge.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-
-from utils.os_environment_check import get_system_info_sim
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import random
-from webdriver_manager.microsoft import  EdgeChromiumDriverManager
-from http_tools.proxy_request import get_proxy_item
-import requests
 from loguru import logger
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
+
+sys.path.append(str(Path(__file__).parent.parent))
+
+import random
+import requests
+
+from http_tools.proxy_request import get_proxy_item
 from image.img_switch import find_images, image_exists
 from image.spider_gif_url import spider_gif_images
 from run import constants
-from run.constants import proxy_flag, r18_mode, visit_url, all_show, allow_replace_domain_flag, \
-    search_delta_time
-from selenium import webdriver
 from ui_event.get_url import open_look_all, slider_page_down, filter_not_use
 from utils.http_utils import image_url_re
+from utils.os_environment_check import get_system_info_sim
 from file.user_agent import read_user_agent
 from utils.spider_operate import filter_not_use_url, artwork_filter
 from utils.time_utils import sys_sleep_time
 
 
 @logger.catch
-def user_save_artwork(driver):
+def user_save_artwork(driver: WebDriver) -> Optional[List[str]]:
+    """获取用户作品URL列表
+    
+    Args:
+        driver: WebDriver实例
+        
+    Returns:
+        作品URL列表,失败返回None
     """
-
-    :param driver:
-    :return:
-    """
-    artwork_urls_list = []
+    artwork_urls = []
     try:
-        image_elements = driver.find_elements(By.CSS_SELECTOR, "a")
-        for image_element in image_elements:
-            if not constants.stop_spider_url_flag:
-                image_url = image_element.get_attribute("href")
-                if image_url is None:
-                    break
-                if filter_not_use_url(image_url) or artwork_filter(image_url):
-                    continue
-                driver.execute_script("return arguments[0].href;", image_element)
-                artwork_urls_list.append(image_url)
-        return artwork_urls_list
-    except Exception as un_e:
-        logger.error("Error, unknown error, detail:" + str(un_e))
+        for element in driver.find_elements(By.CSS_SELECTOR, "a"):
+            if constants.stop_spider_url_flag:
+                break
+                
+            url = element.get_attribute("href")
+            if not url:
+                break
+                
+            if filter_not_use_url(url) or artwork_filter(url):
+                continue
+                
+            driver.execute_script("return arguments[0].href;", element)
+            artwork_urls.append(url)
+            
+        return artwork_urls
+        
+    except Exception as e:
+        logger.error(f"获取作品URL失败: {e}")
         return None
 
 
 @logger.catch
-def is_keyword_num(driver_keyword, key_word):
+def is_keyword_num(driver: WebDriver, keyword: str) -> bool:
+    """检查关键词是否包含特殊标记
+    
+    Args:
+        driver: WebDriver实例
+        keyword: 搜索关键词
+        
+    Returns:
+        是否包含特殊标记
     """
-
-    :param driver_keyword:
-    :param key_word:
-    :return:
-    """
-    if "," not in key_word:
+    if "," not in keyword:
         if constants.spider_mode == "manual":
             constants.scheduled_download_program_flag = False
-            logger.warning(f"You input keyword not contain ',' in spilt keyword: {key_word}.")
+            logger.warning(f"关键词不包含分隔符',': {keyword}")
         return False
+        
     constants.scheduled_download_program_flag = False
-    key_word_list = key_word.split(',')
-    special_spider(driver_keyword, key_word_list)
+    keyword_list = keyword.split(',')
+    special_spider(driver, keyword_list)
     return True
 
 
 @logger.catch
-def special_spider(driver_keyword, key_word_list):
+def special_spider(driver: WebDriver, keyword_list: List[str]) -> Optional[bool]:
+    """处理特殊关键词爬取
+    
+    Args:
+        driver: WebDriver实例
+        keyword_list: 关键词列表
+        
+    Returns:
+        爬取是否成功
     """
-
-    :param driver_keyword:
-    :param key_word_list:
-    :return:
-    """
-    keyword_content = key_word_list[0]
-    keyword_cat = key_word_list[1]
-    # key_word = keyword_content
-    if keyword_cat == 'pid':
-        return spider_pid_image(driver_keyword, keyword_content)
-    elif keyword_cat == 'users':
-        return spider_users_images(driver_keyword, keyword_content, keyword_cat)
+    content, category = keyword_list[0], keyword_list[1]
+    
+    if category == 'pid':
+        return spider_pid_image(driver, content)
+    elif category == 'users':
+        return spider_users_images(driver, content, category)
+    
+    return None
 
 
 @logger.catch
-def spider_users_images(driver_user, key_word, keyword_cat):
+def spider_users_images(driver: WebDriver, keyword: str, category: str) -> bool:
+    """爬取用户作品
+    
+    Args:
+        driver: WebDriver实例
+        keyword: 用户ID
+        category: 类别标记
+        
+    Returns:
+        爬取是否成功
     """
-
-    :param driver_user:
-    :param key_word:
-    :param keyword_cat:
-    :return:
-    """
-    logger.info("Input keyword is users, start process")
+    logger.info("开始爬取用户作品")
+    page = 1
+    
     while True:
-        cur_page = 1
-        url = "https://" + visit_url + "/users/" + key_word + "/artworks?p=" + str(cur_page)
-        driver_user.get(url)
-        # driver_user.implicitly_wait(search_delta_time)
-        sys_sleep_time(driver_user, search_delta_time, True)
-        logger.info(f"Cur spider users artwork cur_page: {cur_page}")
-        artwork_list = user_save_artwork(driver_user)
+        url = f"https://{constants.visit_url}/users/{keyword}/artworks?p={page}"
+        driver.get(url)
+        sys_sleep_time(driver, constants.search_delta_time, True)
+        logger.info(f"当前页码: {page}")
+        
+        artwork_list = user_save_artwork(driver)
+        
         if constants.stop_spider_url_flag:
-            logger.warning("Stop spider url, get users url spider artwork url.")
+            logger.warning("停止爬取")
             break
-        if not artwork_list or driver_user.title == constants.ban_content or driver_user.title == constants.visit_url \
-                or driver_user.title == '':
-            logger.warning(
-                f"Users: {keyword_cat}, spider image no artwork or ban content:{driver_user.title}, skip loop")
+            
+        if not artwork_list or driver.title in [constants.ban_content, constants.visit_url, '']:
+            logger.warning(f"用户 {category} 无作品或被禁止访问: {driver.title}")
             constants.firewall_flag = True
             break
+            
         for artwork_url in artwork_list:
-            image_list = artwork_single_image(key_word, driver_user, artwork_url)
-            if not image_list:
-                logger.warning(f"Users: {keyword_cat}, spider image:{artwork_url}, no image.")
+            images = artwork_single_image(keyword, driver, artwork_url)
+            if not images:
+                logger.warning(f"作品 {artwork_url} 无图片")
                 continue
-            else:
-                logger.success("Spider success, start download.")
-                for image_url in image_list:
-                    download_single_image(key_word, image_url)
-        cur_page += 1
-    logger.info("Spider users end.")
+                
+            logger.success("爬取成功,开始下载")
+            for image_url in images:
+                download_single_image(keyword, image_url)
+                
+        page += 1
+        
+    logger.info("用户作品爬取完成")
     return True
 
 
 @logger.catch
-def spider_pid_image(driver_pid, key_word):
+def spider_pid_image(driver: WebDriver, pid: str) -> bool:
+    """爬取单个作品
+    
+    Args:
+        driver: WebDriver实例
+        pid: 作品ID
+        
+    Returns:
+        爬取是否成功
     """
-
-    :param driver_pid:
-    :param key_word:
-    :return:
-    """
-    logger.info("Input keyword is num, start process.")
-    url = "https://" + visit_url + "/artworks/" + key_word
-    image_list = artwork_single_image(key_word, driver_pid, url)
-    if not image_list:
-        logger.warning("Pid spider image no image.")
+    logger.info("开始爬取单个作品")
+    url = f"https://{constants.visit_url}/artworks/{pid}"
+    
+    images = artwork_single_image(pid, driver, url)
+    if not images:
+        logger.warning("作品无图片")
         return False
-    else:
-        logger.success("Spider success, start download.")
-        for image_url in image_list:
-            download_single_image(key_word, image_url)
+        
+    logger.success("爬取成功,开始下载")
+    for image_url in images:
+        download_single_image(pid, image_url)
+        
     return True
 
 
 @logger.catch
-def set_proxy(proxy_flag):
+def set_proxy(proxy_flag: str) -> Optional[Dict[str, str]]:
+    """设置代理配置
+    
+    Args:
+        proxy_flag: 是否启用代理
+        
+    Returns:
+        代理配置字典
     """
-
-    """
-    """设置代理"""
+    if proxy_flag != 'True':
+        return None
+        
+    if constants.proxy_mode == 'auto':
+        logger.info("使用自动代理模式")
+        proxy_item = get_proxy_item()
+        if not proxy_item:
+            logger.error("获取代理失败")
+            return None
+            
+        return {
+            "proxyType": "manual",
+            "httpProxy": f"http://{proxy_item}",
+            "ftpProxy": f"ftp://{proxy_item}", 
+            "sslProxy": f"https://{proxy_item}",
+            "noProxy": "",
+            "proxyAutoconfigUrl": ""
+        }
+        
     proxy = {
         "proxyType": "manual",
         "httpProxy": f"http://{constants.proxy_server_ip}:{constants.proxy_server_port}",
@@ -163,280 +216,290 @@ def set_proxy(proxy_flag):
         "noProxy": "",
         "proxyAutoconfigUrl": ""
     }
-
-    if proxy_flag == 'True':
-        if constants.proxy_mode == 'auto':
-            logger.info("Using auto select proxy model.")
-            proxy_item = get_proxy_item()
-            if not proxy_item:
-                logger.error("Proxy item is None, quitting spider.")
-                return None
-            proxy = {
-                "proxyType": "manual",
-                "httpProxy": f"http://{proxy_item}",
-                "ftpProxy": f"ftp://{proxy_item}",
-                "sslProxy": f"https://{proxy_item}",
-                "noProxy": "",
-                "proxyAutoconfigUrl": ""
-            }
-        logger.info(f"Using proxy: {proxy['httpProxy']}")
-        return proxy
-    return None
+    
+    logger.info(f"使用代理: {proxy['httpProxy']}")
+    return proxy
 
 
 @logger.catch
-def configure_browser_options():
-    """根据操作系统配置浏览器选项"""
-    system_info = get_system_info_sim()  # 获取系统信息
+def configure_browser_options() -> webdriver.ChromeOptions:
+    """配置浏览器选项
+    
+    Returns:
+        浏览器选项对象
+    """
+    system_info = get_system_info_sim()
     user_agents = read_user_agent()
 
     if not user_agents:
-        # 如果没有用户代理文件，使用默认值
-        user_agents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36']
-        logger.warning("No user-agent file found, using default user-agent.")
+        user_agents = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36']
+        logger.warning("未找到user-agent文件,使用默认值")
 
-    # 随机选择一个 user-agent
-    cur_user_agents = random.choice(user_agents).strip()
-    logger.info(f"Current user-agent: {cur_user_agents}")
+    cur_user_agent = random.choice(user_agents).strip()
+    logger.info(f"当前user-agent: {cur_user_agent}")
 
-    # 根据系统设置浏览器选项
-    if system_info == 'Linux':
-        options = webdriver.ChromeOptions()
-        logger.debug("Using Chrome browser on Linux.")
-    elif system_info == 'Windows':
-        options = webdriver.EdgeOptions()
-        logger.debug("Using Edge browser on Windows.")
-    else:
-        options = webdriver.SafariOptions()
-        logger.debug("Using Safari browser.")
+    options = {
+        'Linux': webdriver.ChromeOptions,
+        'Windows': webdriver.EdgeOptions,
+    }.get(system_info, webdriver.SafariOptions)()
+    
+    logger.debug(f"使用{system_info}浏览器")
 
-    # 配置浏览器选项
-    options.add_argument(f"user-agent={cur_user_agents}")
-    options = chrome_options(options)  # 应用任何额外的浏览器配置
+    options.add_argument(f"user-agent={cur_user_agent}")
+    options = chrome_options(options)
 
     return options
 
 
 @logger.catch
-def initialize_driver(options_explore, system_info):
-    """初始化并返回浏览器驱动"""
+def initialize_driver(options: webdriver.ChromeOptions, system_info: str) -> Optional[WebDriver]:
+    """初始化浏览器驱动
+    
+    Args:
+        options: 浏览器选项
+        system_info: 系统信息
+        
+    Returns:
+        WebDriver实例
+    """
     try:
-        # 如果有自定义的浏览器路径
         if constants.chrome_path != 'None':
-            driver_service = get_driver_service(system_info)
-            driver_service.path = constants.chrome_path
-            options_explore.binary_location = constants.chrome_exe_path
-            driver = create_driver(system_info, options_explore, driver_service)
+            service = get_driver_service(system_info)
+            service.path = constants.chrome_path
+            options.binary_location = constants.chrome_exe_path
+            driver = create_driver(system_info, options, service)
         else:
-            driver = create_driver(system_info, options_explore)
+            driver = create_driver(system_info, options)
 
-        logger.info(
-            f"Driver initialized with executable path: {constants.chrome_path}, exe path: {constants.chrome_exe_path}")
+        logger.info(f"驱动初始化成功: {constants.chrome_path}, {constants.chrome_exe_path}")
         return driver
+        
     except Exception as e:
-        logger.warning(f"Error initializing driver: {type(e).__name__}, {e}")
+        logger.warning(f"驱动初始化失败: {type(e).__name__}, {e}")
         return None
 
 
 @logger.catch
-def get_driver_service(system_info):
-    """根据操作系统返回相应的驱动服务"""
+def get_driver_service(system_info: str) -> Service:
+    """获取驱动服务
+    
+    Args:
+        system_info: 系统信息
+        
+    Returns:
+        Service实例
+    """
     if system_info == 'Linux':
         return Service(ChromeDriverManager().install())
     elif system_info == 'Windows':
         return Service(EdgeChromiumDriverManager().install())
-    else:
-        return Service()
+    return Service()
 
 
 @logger.catch
-def create_driver(system_info, options_explore, service=None):
-    """根据操作系统创建相应的浏览器驱动"""
-    if system_info == 'Linux':
-        return webdriver.Chrome(service=service, options=options_explore) if service else webdriver.Chrome(
-            options=options_explore)
-    elif system_info == 'Windows':
-        return webdriver.Edge(service=service, options=options_explore) if service else webdriver.Edge(
-            options=options_explore)
-    else:
-        return webdriver.Safari(service=service, options=options_explore) if service else webdriver.Safari(
-            options=options_explore)
+def create_driver(system_info: str, options: webdriver.ChromeOptions, service: Optional[Service] = None) -> WebDriver:
+    """创建浏览器驱动
+    
+    Args:
+        system_info: 系统信息
+        options: 浏览器选项
+        service: 驱动服务
+        
+    Returns:
+        WebDriver实例
+    """
+    drivers = {
+        'Linux': webdriver.Chrome,
+        'Windows': webdriver.Edge,
+        'default': webdriver.Safari
+    }
+    
+    driver_class = drivers.get(system_info, drivers['default'])
+    return driver_class(service=service, options=options) if service else driver_class(options=options)
 
 
 @logger.catch
-def spider_param_config(key_word):
+def spider_param_config(keyword: str) -> Tuple[Optional[WebDriver], Optional[str], Optional[int]]:
+    """配置爬虫参数
+    
+    Args:
+        keyword: 搜索关键词
+        
+    Returns:
+        驱动实例、URL和页码
     """
-    Spider param configuration for initializing the driver and handling proxy setup
-    :param key_word: Keyword to be used in the search
-    :return: driver, url, cur_page
-    """
-    driver = None
-    options_explore = configure_browser_options()  # 配置浏览器选项
-
-    # 设置代理
-    proxy = set_proxy(proxy_flag)
+    options = configure_browser_options()
+    proxy = set_proxy(constants.proxy_flag)
 
     if proxy:
-        options_explore.add_argument(f"--proxy-server={proxy['httpProxy']}")
-        logger.info(f"Using internal proxy: {proxy['httpProxy']}")
+        options.add_argument(f"--proxy-server={proxy['httpProxy']}")
+        logger.info(f"使用代理: {proxy['httpProxy']}")
 
-    # 初始化浏览器驱动
     system_info = get_system_info_sim()
-    driver = initialize_driver(options_explore, system_info)
+    driver = initialize_driver(options, system_info)
 
-    if driver is None:
+    if not driver:
         return None, None, None
 
-    mode = ''
-    if r18_mode == 'True':
-        mode = 'mode=r18&'
-        logger.debug("R18 mode enabled.")
+    mode = 'mode=r18&' if constants.r18_mode == 'True' else ''
+    
+    if constants.r18_mode == 'True':
+        logger.debug("启用R18模式")
 
-    if allow_replace_domain_flag:
-        logger.debug(f"Replacing image domain, flag: {allow_replace_domain_flag}")
+    if constants.allow_replace_domain_flag:
+        logger.debug(f"替换图片域名: {constants.allow_replace_domain_flag}")
 
-    cur_page = 1
-    if is_keyword_num(driver, key_word):
+    if is_keyword_num(driver, keyword):
         driver.quit()
         return None, None, None
-    else:
-        url = f"https://{visit_url}/tags/{key_word}/artworks?{mode}"
 
-    if all_show != 'False':
-        url = all_show
+    url = f"https://{constants.visit_url}/tags/{keyword}/artworks?{mode}"
+    
+    if constants.all_show != 'False':
+        url = constants.all_show
 
-    return driver, url, cur_page
+    return driver, url, 1
 
 
 @logger.catch
-def chrome_options(options):
-    """
-
-    :param options:
-    :return:
+def chrome_options(options: webdriver.ChromeOptions) -> webdriver.ChromeOptions:
+    """配置Chrome选项
+    
+    Args:
+        options: Chrome选项对象
+        
+    Returns:
+        配置后的选项对象
     """
     if constants.spider_mode == 'auto':
-        options.add_argument('--headless')
-        options.add_argument("--disable-gpu")
-        options.add_argument("--disable-javascript")
-        options.add_argument("--disable-plugins")
-        options.add_argument('--disable-extensions')
-        options.add_argument('--disable-java')
-        options.add_argument('--mute-audio')
-        options.add_argument('--single-process')
-        options.add_argument("--disable-software-rasterizer")
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        logger.debug("Current spider mode: auto spider image mode!")
-    # open dev tools
+        auto_options = [
+            '--headless',
+            '--disable-gpu',
+            '--disable-javascript',
+            '--disable-plugins',
+            '--disable-extensions',
+            '--disable-java',
+            '--mute-audio',
+            '--single-process',
+            '--disable-software-rasterizer',
+            '--no-sandbox',
+            '--disable-dev-shm-usage'
+        ]
+        for opt in auto_options:
+            options.add_argument(opt)
+        logger.debug("自动爬取模式")
+
     options.add_argument("--auto-open-devtools-for-tabs")
-    # 接受不安全证书
     options.add_argument("--ignore-certificate-errors")
-    # 设置日志偏好，禁用所有日志
     options = disabled_log_browser(options)
-    # 去除 “Chrome正受到自动化测试软件的控制”
     options.add_experimental_option('excludeSwitches', ['enable-automation'])
-    # 添加浏览器特征
     options.add_argument("--disable-blink-features")
     options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument('--disable-application-cache')  # 禁用应用程序缓存
-    options.add_argument('--disable-cache')  # 禁用浏览器缓存
-    options.page_load_strategy = 'none'  # 加载策略
-    random_boolean = random.choice([True, False])
-    if random_boolean:
-        # 无痕模式 减少被追踪风险
-        options.add_argument("--incognito")  # 启动无痕模式
-        logger.info("Cur enable incognito mode spider image!")
+    options.add_argument('--disable-application-cache')
+    options.add_argument('--disable-cache')
+    options.page_load_strategy = 'none'
+
+    if random.choice([True, False]):
+        options.add_argument("--incognito")
+        logger.info("启用无痕模式")
+
     return options
 
 
 @logger.catch
-def download_single_image(key_word, url):
+def download_single_image(keyword: str, url: str) -> None:
+    """下载单张图片
+    
+    Args:
+        keyword: 关键词
+        url: 图片URL
     """
-    download single image
-    :param key_word:
-    :param url:
-    :return:
-    """
-    now_image_list = find_images(constants.data_path)
+    image_list = find_images(constants.data_path)
     image_name = image_url_re(url)
-    if now_image_list is None:
-        # 无数据 自动置位false
+    
+    if image_list is None:
         image_exists_flag = False
     else:
-        image_exists_flag = image_exists(image_name, now_image_list)
-    if not image_exists_flag:
-        file_dir = constants.data_path + "/according_pid_download_image/" + key_word + "/images"
-        if not os.path.exists(file_dir):
-            logger.warning("Single save dir not exists, will create!")
-            os.makedirs(file_dir)
-        filename = os.path.join(file_dir, f"{os.path.basename(url)}")
-        try:
-            response = requests.get(url, stream=True)
-            if response.status_code == 200:
-                with open(filename, 'wb') as f:
-                    f.write(response.content)
-                logger.debug(f"Image saved as {filename} success! ")
-            else:
-                logger.error("Save fail!")
-        except Exception as e:
-            logger.error(f"Save error, detail: {e}.")
-    else:
-        logger.warning("Image already exists, will skip!")
+        image_exists_flag = image_exists(image_name, image_list)
+        
+    if image_exists_flag:
+        logger.warning("图片已存在,跳过")
+        return
+
+    file_dir = Path(constants.data_path) / "according_pid_download_image" / keyword / "images"
+    file_dir.mkdir(parents=True, exist_ok=True)
+    
+    filename = file_dir / os.path.basename(url)
+    
+    try:
+        response = requests.get(url, stream=True)
+        if response.status_code == 200:
+            with open(filename, 'wb') as f:
+                f.write(response.content)
+            logger.debug(f"图片保存成功: {filename}")
+        else:
+            logger.error("保存失败")
+    except Exception as e:
+        logger.error(f"保存出错: {e}")
 
 
 @logger.catch
-def artwork_single_image(key_word_pinyin, driver, url):
+def artwork_single_image(keyword: str, driver: WebDriver, url: str) -> Optional[List[str]]:
+    """获取单个作品的图片URL
+    
+    Args:
+        keyword: 关键词
+        driver: WebDriver实例
+        url: 作品URL
+        
+    Returns:
+        图片URL列表
     """
-    spider point url image from url
-    :param key_word_pinyin:
-    :param driver:
-    :param url:
-    :return:
-    """
-    image_url_list = []
     try:
         driver.get(url)
         sys_sleep_time(driver, constants.detail_delta_time, True)
-        if driver.title == constants.ban_content or driver.title == constants.visit_url \
-                or driver.title == '':
-            logger.warning(f"Error! will exit: cur visit domain blocked, title: {driver.title}")
+        
+        if driver.title in [constants.ban_content, constants.visit_url, '']:
+            logger.warning(f"访问受限: {driver.title}")
             constants.firewall_flag = True
-            return False
+            return None
+            
     except Exception as e:
-        logger.warning(f"Unknown error: type: {type(e).__name__}.")
+        logger.warning(f"访问出错: {type(e).__name__}")
+        return None
+
     if open_look_all(driver):
-        logger.success(f"Click look all success! pid: {url[-9:]}")
-    # 抓取动图link
+        logger.success(f"展开全部成功: {url[-9:]}")
+
     if constants.spider_mode == 'manual':
-        # 手动模式滑动页面 自动模式不滑动
         slider_page_down(driver)
-    spider_gif_images(key_word_pinyin, driver)
-    # logger.success("gif url txt save success!")
-    image_elements = driver.find_elements(By.CSS_SELECTOR, "img")
-    for image_element in image_elements:
-        image_url = image_element.get_attribute("src")
-        if filter_not_use(image_url):
-            continue
-        else:
-            driver.execute_script("return arguments[0].src;", image_element)
-            image_url_list.append(image_url)
-            logger.debug(f"Single pid spider, save: {image_url}.")
-    return image_url_list
+
+    spider_gif_images(keyword, driver)
+
+    image_urls = []
+    for element in driver.find_elements(By.CSS_SELECTOR, "img"):
+        image_url = element.get_attribute("src")
+        if not filter_not_use(image_url):
+            driver.execute_script("return arguments[0].src;", element)
+            image_urls.append(image_url)
+            logger.debug(f"获取图片URL: {image_url}")
+
+    return image_urls
 
 
 @logger.catch
-def disabled_log_browser(options):
-    """
-
+def disabled_log_browser(options: webdriver.ChromeOptions) -> webdriver.ChromeOptions:
+    """禁用浏览器日志
+    
+    Args:
+        options: Chrome选项对象
+        
+    Returns:
+        配置后的选项对象
     """
     options.logging_prefs = {'performance': 'DISABLED', 'browser': 'DISABLED'}
-    # 尝试减少日志输出的命令行参数
-    options.add_argument("--log-level=3")  # 设置日志级别为最低（0-3），3表示最少日志
-    options.add_argument("--disable-gpu")  # 在无头模式下通常使用
-    options.add_argument("--silent")  # 尝试使Chrome更安静，但此参数可能不被所有版本支持
-
-    # 如果你确定不需要性能日志，也可以尝试禁用它
+    options.add_argument("--log-level=3")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--silent")
     options.add_argument("--disable-performance-logging")
     return options

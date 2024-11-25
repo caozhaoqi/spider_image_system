@@ -1,10 +1,11 @@
 import os
 import sys
+from pathlib import Path
+from typing import Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import logging
-import sys
 import uvicorn
 from fastapi import FastAPI, applications
 from loguru import logger
@@ -16,60 +17,81 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from log.log_record import check_version
 
 
-@logger.catch
-def swagger_monkey_patch(*args, **kwargs):
-    """
-    Wrap the function which is generating the HTML for the /docs endpoint and
-    overwrite the default values for the swagger js and css.
+def swagger_monkey_patch(*args: Any, **kwargs: Any) -> Any:
+    """Customize Swagger UI assets with CDN versions
+    
+    Returns:
+        HTML response with custom Swagger UI assets
     """
     return get_swagger_ui_html(
-        *args, **kwargs,
+        *args, 
+        **kwargs,
         swagger_js_url="https://cdn.staticfile.org/swagger-ui/4.15.5/swagger-ui-bundle.min.js",
-        swagger_css_url="https://cdn.staticfile.org/swagger-ui/4.15.5/swagger-ui.min.css")
+        swagger_css_url="https://cdn.staticfile.org/swagger-ui/4.15.5/swagger-ui.min.css"
+    )
 
 
-# Actual monkey patch
+# Apply monkey patch
 applications.get_swagger_ui_html = swagger_monkey_patch
 
 
-@logger.catch
-def init_app():
-    """
-    APP init : log router ...
-    :return:
-    """
-    # fast api app 启动项配置与启动
-    app = FastAPI(title="Spider Image System", version=sis_server_version,
-                  description="API version", debug=True)
-    # 路由引入
-    app.include_router(router=api_router, prefix="/api/" + sis_server_version)
-    # 日志配置与捕获
+def init_logging() -> None:
+    """Configure logging with loguru and file rotation"""
     logging.getLogger().handlers = [InterceptHandler()]
-    logger.configure(
-        handlers=[{"sink": sys.stdout, "level": logging.DEBUG, "format": format_record}])
-    logger.add(LOG_DIR, encoding='utf-8', rotation="00:00", retention="30 days", compression="zip")
-    logger.debug('SIS log loaded, log path: ' + LOG_DIR)
+    logger.configure(handlers=[{
+        "sink": sys.stdout,
+        "level": logging.DEBUG,
+        "format": format_record
+    }])
+    logger.add(
+        LOG_DIR,
+        encoding='utf-8',
+        rotation="00:00",
+        retention="30 days",
+        compression="zip"
+    )
+    logger.debug(f'SIS log loaded, log path: {LOG_DIR}')
     logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
+
+
+def create_app() -> FastAPI:
+    """Initialize and configure FastAPI application
+    
+    Returns:
+        Configured FastAPI application instance
+    """
+    app = FastAPI(
+        title="Spider Image System",
+        version=sis_server_version,
+        description="API version",
+        debug=True
+    )
+    app.include_router(
+        router=api_router,
+        prefix=f"/api/{sis_server_version}"
+    )
+    init_logging()
+    app.openapi_version = "3.0.0"
     return app
 
 
-app = init_app()
-app.openapi_version = "3.0.0"
+app = create_app()
 
 
-@logger.catch
-def api_main():
-    """
-
-    :return:
-    """
+def start_api_server() -> None:
+    """Start the API server if not already running"""
     if not web_flag_start:
         check_version()
-        uvicorn.run(app='sis_main_process:app', host='0.0.0.0', port=app_port, reload=False)
-        logger.success("Web api starting!")
+        uvicorn.run(
+            app='sis_main_process:app',
+            host='0.0.0.0',
+            port=app_port,
+            reload=False
+        )
+        logger.success("Web API started successfully!")
     else:
-        logger.error("Web api already start!")
+        logger.error("Web API is already running!")
 
 
 if __name__ == "__main__":
-    api_main()
+    start_api_server()

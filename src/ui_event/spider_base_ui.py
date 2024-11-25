@@ -1,185 +1,169 @@
-import os
 import sys
+from pathlib import Path
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(str(Path(__file__).parent.parent))
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLineEdit, QPushButton, QHBoxLayout, \
-    QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider, QListWidget, QSizePolicy
+from PyQt5.QtWidgets import (QMenuBar, QMenu, QAction, QTabWidget, QWidget, QLineEdit, QPushButton, QHBoxLayout,
+    QLabel, QVBoxLayout, QScrollArea, QGridLayout, QSlider, QListWidget, QSizePolicy)
 from loguru import logger
-from ui_event.base_event import auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg, \
-    visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image, \
-    log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag, \
-    user_upload_image, user_download_image, unzip_file_method, add_keyword_alert, img_category_ana, model_detect_img, \
-    start_download_jm, jm_domain_test_method, jm_automatic_method, stop_jm_spider, jm_category_image_method, \
+
+from ui_event.base_event import (
+    auto_start_spider_image, stop_spider_image, stop_download_image, edit_config_msg,
+    visit_web, about_message_lookup, online_look_image, performance_monitor, auto_play_image,
+    log_analyze_ui, face_detect_action, convert_folder_name, encoding_tools_convert, detect_installed_flag,
+    user_upload_image, user_download_image, unzip_file_method, add_keyword_alert, img_category_ana, model_detect_img,
+    start_download_jm, jm_domain_test_method, jm_automatic_method, stop_jm_spider, jm_category_image_method,
     go_file_upload_all
+)
 
 
 @logger.catch
 def base_menu(self):
-    """
-    基础菜单
-    :return:
-    """
-    self.menu_bar = QMenuBar()
-    self.image_menu = QMenu('图像', self.menu_bar)
-    self.start_spider_action = QAction('自动爬取', self.image_menu)
-    self.start_spider_action.triggered.connect(lambda: auto_start_spider_image(self))
-    self.add_keyword_action = QAction('关键字', self.image_menu)
-    self.add_keyword_action.triggered.connect(lambda: add_keyword_alert())
-    self.stop_spider_action = QAction('停止爬取', self.image_menu)
-    self.stop_spider_action.triggered.connect(lambda: stop_spider_image())
-    self.stop_download_action = QAction('停止下载', self.image_menu)
-    self.stop_download_action.triggered.connect(lambda: stop_download_image())
-    self.online_look_action = QAction('在线查看', self.image_menu)
-    self.online_look_action.triggered.connect(lambda: online_look_image())
-    self.auto_all_image_action = QAction('自动浏览', self.image_menu)
-    self.auto_all_image_action.triggered.connect(lambda: auto_play_image())
-    self.image_face_detect_action = QAction('人脸识别', self.image_menu)
-    self.image_face_detect_action.triggered.connect(lambda: face_detect_action())
-    self.user_upload_image_action = QAction("手动上传", self.image_menu)
-    self.user_upload_image_action.triggered.connect(lambda: user_upload_image())
-    self.go_file_upload_action = QAction('gofile上传', self.image_menu)
-    self.go_file_upload_action.triggered.connect(lambda: go_file_upload_all())
-    self.user_download_re_action = QAction("重新下载", self.image_menu)
-    self.user_download_re_action.triggered.connect(lambda: user_download_image())
-    self.detect_model_img_action = QAction("AI鉴图", self.image_menu)
-    self.detect_model_img_action.triggered.connect(lambda: model_detect_img())
-    self.image_menu.addAction(self.start_spider_action)
-    self.image_menu.addAction(self.add_keyword_action)
-    self.image_menu.addAction(self.stop_spider_action)
-    self.image_menu.addAction(self.stop_download_action)
-    self.image_menu.addAction(self.online_look_action)
-    self.image_menu.addAction(self.auto_all_image_action)
-    self.image_menu.addAction(self.image_face_detect_action)
-    self.image_menu.addAction(self.user_upload_image_action)
-    self.image_menu.addAction(self.user_download_re_action)
-    self.image_menu.addAction(self.detect_model_img_action)
-    self.image_menu.addAction(self.go_file_upload_action)
+    """Create and return the main menu bar"""
+    menu_bar = QMenuBar()
+    
+    # Image Menu
+    image_menu = QMenu('图像', menu_bar)
+    image_actions = {
+        '自动爬取': lambda: auto_start_spider_image(self),
+        '关键字': add_keyword_alert,
+        '停止爬取': stop_spider_image,
+        '停止下载': stop_download_image,
+        '在线查看': online_look_image,
+        '自动浏览': auto_play_image,
+        '人脸识别': face_detect_action,
+        '手动上传': user_upload_image,
+        'gofile上传': go_file_upload_all,
+        '重新下载': user_download_image,
+        'AI鉴图': model_detect_img
+    }
+    
+    for name, handler in image_actions.items():
+        action = QAction(name, image_menu)
+        action.triggered.connect(handler)
+        image_menu.addAction(action)
 
-    self.video_menu = QMenu('视频', self.menu_bar)
-    self.start_generate_action = QAction('开始生成', self.video_menu)
-    self.stop_generate_action = QAction('停止生成', self.video_menu)
-    self.video_other_action = QAction('其他', self.video_menu)
-    self.video_menu.addAction(self.start_generate_action)
-    self.video_menu.addAction(self.stop_generate_action)
-    self.video_menu.addAction(self.video_other_action)
+    # Video Menu  
+    video_menu = QMenu('视频', menu_bar)
+    video_actions = ['开始生成', '停止生成', '其他']
+    for name in video_actions:
+        video_menu.addAction(QAction(name, video_menu))
 
-    self.JM_menu = QMenu('JM', self.menu_bar)
-    self.log_analyze = QAction('日志分析', self.JM_menu)
-    self.jm_tools = QAction("JM下载", self.JM_menu)
-    self.jm_domain_test = QAction("JM检测", self.JM_menu)
-    self.jm_automatic = QAction("JM自动", self.JM_menu)
-    self.jm_stop_automatic = QAction("停止JM", self.JM_menu)
-    self.jm_image_category = QAction("JM处理", self.JM_menu)
-    self.jm_tools.triggered.connect(lambda: start_download_jm())
-    self.jm_domain_test.triggered.connect(lambda: jm_domain_test_method())
-    self.jm_automatic.triggered.connect(lambda: jm_automatic_method())
-    self.jm_stop_automatic.triggered.connect(lambda: stop_jm_spider())
-    self.jm_image_category.triggered.connect(lambda: jm_category_image_method())
-    self.JM_menu.addAction(self.jm_tools)
-    self.JM_menu.addAction(self.jm_domain_test)
-    self.JM_menu.addAction(self.jm_automatic)
-    self.JM_menu.addAction(self.jm_stop_automatic)
-    self.JM_menu.addAction(self.jm_image_category)
+    # JM Menu
+    jm_menu = QMenu('JM', menu_bar)
+    jm_actions = {
+        'JM下载': start_download_jm,
+        'JM检测': jm_domain_test_method,
+        'JM自动': jm_automatic_method,
+        '停止JM': stop_jm_spider,
+        'JM处理': jm_category_image_method
+    }
+    
+    for name, handler in jm_actions.items():
+        action = QAction(name, jm_menu)
+        action.triggered.connect(handler)
+        jm_menu.addAction(action)
 
-    self.performance_menu = QMenu('性能', self.menu_bar)
-    self.look_performance = QAction('性能监视', self.performance_menu)
-    self.look_performance.triggered.connect(lambda: performance_monitor())
-    self.performance_menu.addAction(self.look_performance)
+    # Performance Menu
+    performance_menu = QMenu('性能', menu_bar)
+    perf_action = QAction('性能监视', performance_menu)
+    perf_action.triggered.connect(performance_monitor)
+    performance_menu.addAction(perf_action)
 
-    self.tools_menu = QMenu('工具', self.menu_bar)
-    self.img_ana = QAction('图片分析', self.tools_menu)
-    self.folder_name = QAction('名称转换', self.tools_menu)
-    self.encoding_tools = QAction('编码转换', self.tools_menu)
-    self.test_driver = QAction('驱动检测', self.tools_menu)
-    self.unzip_file_menu = QAction('解压文件', self.tools_menu)
-    self.img_ana.triggered.connect(lambda: img_category_ana())
-    self.log_analyze.triggered.connect(lambda: log_analyze_ui())
-    self.folder_name.triggered.connect(lambda: convert_folder_name())
-    self.encoding_tools.triggered.connect(lambda: encoding_tools_convert())
-    self.test_driver.triggered.connect(lambda: detect_installed_flag())
-    self.unzip_file_menu.triggered.connect(lambda: unzip_file_method())
-    self.tools_menu.addAction(self.img_ana)
-    self.tools_menu.addAction(self.log_analyze)
-    self.tools_menu.addAction(self.folder_name)
-    self.tools_menu.addAction(self.encoding_tools)
-    self.tools_menu.addAction(self.test_driver)
-    self.tools_menu.addAction(self.unzip_file_menu)
+    # Tools Menu
+    tools_menu = QMenu('工具', menu_bar)
+    tools_actions = {
+        '图片分析': img_category_ana,
+        '日志分析': log_analyze_ui,
+        '名称转换': convert_folder_name,
+        '编码转换': encoding_tools_convert,
+        '驱动检测': detect_installed_flag,
+        '解压文件': unzip_file_method
+    }
+    
+    for name, handler in tools_actions.items():
+        action = QAction(name, tools_menu)
+        action.triggered.connect(handler)
+        tools_menu.addAction(action)
 
-    self.settings_menu = QMenu('设置', self.menu_bar)
-    self.edit_settings_action = QAction('编辑配置', self.settings_menu)
-    self.edit_settings_action.triggered.connect(lambda: edit_config_msg())
-    self.settings_menu.addAction(self.edit_settings_action)
-    self.help_menu = QMenu('帮助', self.menu_bar)
-    self.help_web = QAction('访问网站', self.help_menu)
-    self.help_menu.addAction(self.help_web)
-    self.help_web.triggered.connect(lambda: visit_web())
-    self.about_menu = QMenu('关于', self.menu_bar)
-    self.about_msg = QAction('版本信息', self.about_menu)
-    self.about_msg.triggered.connect(lambda: about_message_lookup())
-    self.about_menu.addAction(self.about_msg)
+    # Settings Menu
+    settings_menu = QMenu('设置', menu_bar)
+    settings_action = QAction('编辑配置', settings_menu)
+    settings_action.triggered.connect(edit_config_msg)
+    settings_menu.addAction(settings_action)
 
-    self.menu_bar.addMenu(self.image_menu)
-    self.menu_bar.addMenu(self.video_menu)
-    self.menu_bar.addMenu(self.JM_menu)
-    self.menu_bar.addMenu(self.performance_menu)
-    self.menu_bar.addMenu(self.tools_menu)
-    self.menu_bar.addMenu(self.settings_menu)
-    self.menu_bar.addMenu(self.help_menu)
-    self.menu_bar.addMenu(self.about_menu)
-    return self.menu_bar
+    # Help Menu
+    help_menu = QMenu('帮助', menu_bar)
+    help_action = QAction('访问网站', help_menu)
+    help_action.triggered.connect(visit_web)
+    help_menu.addAction(help_action)
+
+    # About Menu
+    about_menu = QMenu('关于', menu_bar)
+    about_action = QAction('版本信息', about_menu)
+    about_action.triggered.connect(about_message_lookup)
+    about_menu.addAction(about_action)
+
+    # Add all menus to menu bar
+    menus = [image_menu, video_menu, jm_menu, performance_menu, 
+             tools_menu, settings_menu, help_menu, about_menu]
+    for menu in menus:
+        menu_bar.addMenu(menu)
+
+    return menu_bar
 
 
 @logger.catch
 def tab_ui_tab(self):
-    """
-    选项卡生成
-    :return:
-    """
-    self.tab_widget = QTabWidget()
-    self.tab1 = QWidget()
-    self.tab2 = QWidget()
-    self.tab3 = QWidget()
-    self.tab_widget.addTab(self.tab1, '图像')
-    self.tab_widget.addTab(self.tab2, '视频')
-    self.tab_widget.addTab(self.tab3, '其他')
-    return self.tab1, self.tab2, self.tab3, self.tab_widget
+    """Create and return the main tab widget with three tabs"""
+    tab_widget = QTabWidget()
+    tab1 = QWidget()
+    tab2 = QWidget()
+    tab3 = QWidget()
+    
+    tab_widget.addTab(tab1, '图像')
+    tab_widget.addTab(tab2, '视频') 
+    tab_widget.addTab(tab3, '其他')
+    
+    return tab1, tab2, tab3, tab_widget
 
 
 @logger.catch
 def tab_1_ui_paint(self):
-    """
-    tab1 ui paint
-    :param self:
-    :return:
-    """
+    """Paint UI for tab 1 (Image tab)"""
     search_item_paint(self)
 
-    self.h_box_2 = QHBoxLayout()
+    # Create scroll area for image display
+    h_box_2 = QHBoxLayout()
+    label = QLabel(self)
+    scroll_area = QScrollArea()
+    scroll_area.setWidget(label)
+    scroll_area.setParent(self.tab1)
+    h_box_2.addWidget(scroll_area)
 
-    self.label = QLabel(self)
-    self.scroll_area = QScrollArea()
-    self.scroll_area.setWidget(self.label)
-    self.scroll_area.setParent(self.tab1)
-    self.h_box_2.addWidget(self.scroll_area)
+    # Create button row
+    h_box_3 = QHBoxLayout()
+    buttons = {
+        'before_button': '上一张',
+        'download_video_button': '开始下载',
+        'next_button': '下一张'
+    }
+    
+    for btn_name, btn_text in buttons.items():
+        setattr(self, btn_name, QPushButton(btn_text))
+        h_box_3.addWidget(getattr(self, btn_name))
 
-    self.download_video_button = QPushButton(u"开始下载")
-    self.next_button = QPushButton(u"下一张")
-    self.before_button = QPushButton(u"上一张")
-    self.h_box_3 = QHBoxLayout()
-    self.h_box_3.addWidget(self.before_button)
-    self.h_box_3.addWidget(self.download_video_button)
-    self.h_box_3.addWidget(self.next_button)
+    # Layout everything vertically
+    vbox = QVBoxLayout()
+    vbox.addLayout(self.grid_layout)
+    vbox.addLayout(h_box_2)
+    vbox.addLayout(h_box_3)
 
-    self.vbox = QVBoxLayout()
-    self.vbox.addLayout(self.grid_layout)
-    self.vbox.addLayout(self.h_box_2)
-    self.vbox.addLayout(self.h_box_3)
-
-    self.tab1.setLayout(self.vbox)
+    self.tab1.setLayout(vbox)
     self.setCentralWidget(self.tab_widget)
 
+    # Connect signals
     self.input_file.clicked.connect(self.input_keyword_process)
     self.download_video_button.clicked.connect(self.download_file_thread)
     self.next_button.clicked.connect(self.next_img)
@@ -189,225 +173,237 @@ def tab_1_ui_paint(self):
     self.btn_zoom_out.clicked.connect(self.zoom_out_method)
     self.btn_open_data.clicked.connect(self.open_data_dir)
     self.btn_show_log.clicked.connect(self.show_log_output)
+
     return True
 
 
-@logger.catch
+@logger.catch 
 def tab_2_ui_paint(self):
-    """
-    tab2 ui paint
-    :param self:
-    :return:
-    """
+    """Paint UI for tab 2 (Video tab)"""
     search_item_paint_tab2(self)
 
-    self.h_box_2_video = QHBoxLayout()
-    self.h_box_1_list = QHBoxLayout()
-    self.listWidget_1 = QListWidget(self)
-    self.listWidget_2 = QListWidget(self)
-    self.listWidget_3 = QListWidget(self)
-    self.listWidget_4 = QListWidget(self)
-    self.listWidget_5 = QListWidget(self)
-    self.listWidget_6 = QListWidget(self)
-    self.h_box_1_list.addWidget(self.listWidget_1, 15)
-    self.h_box_1_list.addWidget(self.listWidget_2, 2)
-    self.h_box_1_list.addWidget(self.listWidget_3, 12)
-    self.h_box_1_list.addWidget(self.listWidget_4, 56)
-    self.h_box_1_list.addWidget(self.listWidget_5, 8)
-    self.h_box_1_list.addWidget(self.listWidget_6, 8)
+    # Create list widgets layout
+    h_box_1_list = QHBoxLayout()
+    list_widgets = []
+    list_widths = [15, 2, 12, 56, 8, 8]
+    
+    for i, width in enumerate(list_widths):
+        list_widget = QListWidget(self)
+        list_widgets.append(list_widget)
+        h_box_1_list.addWidget(list_widget, width)
+        setattr(self, f'listWidget_{i+1}', list_widget)
 
-    self.scroll_area_video = QScrollArea()
-    self.scroll_area_video.setLayout(self.h_box_1_list)
+    # Create scroll area
+    scroll_area_video = QScrollArea()
+    scroll_area_video.setLayout(h_box_1_list)
+    scroll_area_video.setParent(self.tab2)
+    scroll_area_video.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+    
+    h_box_2_video = QHBoxLayout()
+    h_box_2_video.addWidget(scroll_area_video)
 
-    self.scroll_area_video.setParent(self.tab2)
-    self.scroll_area_video.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-    self.h_box_2_video.addWidget(self.scroll_area_video)
-    self.play_video_button = QPushButton(u"播放")
-    self.pause_button_video = QPushButton(u"暂停")
-    self.generate_button_video = QPushButton(u"生成")
+    # Create buttons
+    buttons = {
+        'play_video_button': '播放',
+        'pause_button_video': '暂停', 
+        'generate_button_video': '生成'
+    }
+    
+    for btn_name, btn_text in buttons.items():
+        setattr(self, btn_name, QPushButton(btn_text))
 
-    self.slider = QSlider(Qt.Horizontal)
-    self.slider.setRange(0, 200)
-    self.slider.setValue(0)
-    self.slider.setTickPosition(QSlider.TicksBelow)
-    self.slider.setTickInterval(20)
+    # Create slider
+    slider = QSlider(Qt.Horizontal)
+    slider.setRange(0, 200)
+    slider.setValue(0)
+    slider.setTickPosition(QSlider.TicksBelow)
+    slider.setTickInterval(20)
+    self.slider = slider
 
-    self.v_box_video_slider_layout = QVBoxLayout()
-    self.v_box_video_slider_layout.addLayout(self.h_box_2_video)
-    self.v_box_video_slider_layout.addWidget(self.slider)
+    # Layout everything
+    v_box_video_slider_layout = QVBoxLayout()
+    v_box_video_slider_layout.addLayout(h_box_2_video)
+    v_box_video_slider_layout.addWidget(slider)
 
-    self.h_box_3_video = QHBoxLayout()
-    self.h_box_3_video.addWidget(self.generate_button_video)
-    self.h_box_3_video.addWidget(self.play_video_button)
+    h_box_3_video = QHBoxLayout()
+    h_box_3_video.addWidget(self.generate_button_video)
+    h_box_3_video.addWidget(self.play_video_button)
 
-    self.vbox_video = QVBoxLayout()
-    self.vbox_video.addLayout(self.grid_layout_video)
-    self.vbox_video.addLayout(self.v_box_video_slider_layout)
-    self.vbox_video.addLayout(self.h_box_3_video)
+    vbox_video = QVBoxLayout()
+    vbox_video.addLayout(self.grid_layout_video)
+    vbox_video.addLayout(v_box_video_slider_layout)
+    vbox_video.addLayout(h_box_3_video)
 
-    self.tab2.setLayout(self.vbox_video)
+    self.tab2.setLayout(vbox_video)
     self.setCentralWidget(self.tab_widget)
 
+    # Connect signals
     self.play_video_button.clicked.connect(self.play_video)
     self.pause_button_video.clicked.connect(self.pause_video)
     self.generate_button_video.clicked.connect(self.image_video_click)
-    self.slider.valueChanged[int].connect(self.set_video_position_click)  # 连接滑块值变化信号和视频位置设置槽函数
-    pass
+    self.slider.valueChanged[int].connect(self.set_video_position_click)
 
 
 @logger.catch
 def search_item_paint(self):
-    """
-    search item ui add
-    :param self:
-    :return:
-    """
-    self.grid_layout = QGridLayout()
-    self.setLayout(self.grid_layout)
+    """Paint search items UI"""
+    grid_layout = QGridLayout()
+    self.setLayout(grid_layout)
+    self.grid_layout = grid_layout
 
-    row = 0
-    col = 0
+    # Create search input
+    file_text = QLineEdit()
+    grid_layout.addWidget(QLabel("关键字:"), 0, 0)
+    grid_layout.addWidget(file_text, 0, 1)
+    self.file_text = file_text
 
-    self.file_text = QLineEdit()
-    self.grid_layout.addWidget(QLabel("关键字:"), row, col)
-    self.grid_layout.addWidget(self.file_text, row, col + 1)  # 0 1
-    row += 1
-    col = 0
+    # Create search button
+    input_file = QPushButton("开始抓取")
+    grid_layout.addWidget(input_file, 0, 2)
+    self.input_file = input_file
 
-    self.input_file = QPushButton("开始抓取")
-    self.grid_layout.addWidget(self.input_file, row - 1, col + 2)  # 0 3
-    row += 1
-    col += 1
+    # Create filename labels
+    grid_layout.addWidget(QLabel("文件名:"), 1, 0)
+    file_name_label = QLabel("file_name")
+    grid_layout.addWidget(file_name_label, 1, 1)
+    self.file_name_label = file_name_label
 
-    self.file_name_show_label = QLabel("文件名:")
-    self.grid_layout.addWidget(self.file_name_show_label, row - 1, col - 1)
+    show_page_label = QLabel("0/0")
+    grid_layout.addWidget(show_page_label, 1, 2)
+    self.show_page_label = show_page_label
 
-    self.file_name_label = QLabel("file_name")
-    self.grid_layout.addWidget(self.file_name_label, 1, 1)
+    # Create image search
+    grid_layout.addWidget(QLabel("图片搜索:"), 2, 0)
+    image_page = QLineEdit()
+    grid_layout.addWidget(image_page, 2, 1)
+    self.image_page = image_page
 
-    self.show_page_label = QLabel("0/0")
-    self.grid_layout.addWidget(self.show_page_label, 1, 2)
+    jump_point_image = QPushButton("跳转搜索")
+    grid_layout.addWidget(jump_point_image, 2, 2)
+    self.jump_point_image = jump_point_image
 
-    self.image_search_label = QLabel("图片搜索:")
-    self.grid_layout.addWidget(self.image_search_label, 2, 0)
-
-    self.image_page = QLineEdit()
-    self.grid_layout.addWidget(self.image_page, 2, 1)
-
-    self.jump_point_image = QPushButton("跳转搜索")
-    self.grid_layout.addWidget(self.jump_point_image, 2, 2)
-
+    # Create spider status layout
     h_layout_spider = QHBoxLayout()
-
     h_layout_spider.addStretch()
 
-    self.spider_mode_label = QLabel('抓取模式: ', self)
-    h_layout_spider.addWidget(self.spider_mode_label)
+    spider_labels = [
+        ('spider_mode_label', '抓取模式: '),
+        ('spider_mode_show_label', '自动模式 '),
+        ('spider_progress_label', '抓取进度: '),
+        ('spider_progress_show_label', '0/0 ')
+    ]
 
-    self.spider_mode_show_label = QLabel('自动模式 ', self)
-    h_layout_spider.addWidget(self.spider_mode_show_label)
+    for name, text in spider_labels:
+        label = QLabel(text, self)
+        h_layout_spider.addWidget(label)
+        setattr(self, name, label)
 
-    self.spider_progress_label = QLabel('抓取进度: ', self)
-    h_layout_spider.addWidget(self.spider_progress_label)
+    grid_layout.addLayout(h_layout_spider, 3, 1, 1, 3)
 
-    self.spider_progress_show_label = QLabel('0/0 ', self)
-    h_layout_spider.addWidget(self.spider_progress_show_label)
-
-    self.grid_layout.addLayout(h_layout_spider, 3, 1, 1, 3)
-
+    # Create download status layout
     h_layout_download = QHBoxLayout()
-
     h_layout_download.addStretch()
 
-    self.download_img_label = QLabel('下载进度: ', self)
-    h_layout_download.addWidget(self.download_img_label)
+    download_labels = [
+        ('download_img_label', '下载进度: '),
+        ('download_show_label', '0/0 ')
+    ]
 
-    self.download_show_label = QLabel('0/0 ', self)
-    h_layout_download.addWidget(self.download_show_label)
+    for name, text in download_labels:
+        label = QLabel(text, self)
+        h_layout_download.addWidget(label)
+        setattr(self, name, label)
 
-    self.grid_layout.addLayout(h_layout_download, 4, 1, 1, 3)
+    grid_layout.addLayout(h_layout_download, 4, 1, 1, 3)
 
+    # Create bottom button layout
     h_layout = QHBoxLayout()
-
     h_layout.addStretch()
 
-    self.sys_status_label = QLabel('等待操作中... ', self)
-    h_layout.addWidget(self.sys_status_label)
+    sys_status_label = QLabel('等待操作中... ', self)
+    h_layout.addWidget(sys_status_label)
+    self.sys_status_label = sys_status_label
 
-    self.btn_show_log = QPushButton('显示日志输出', self)
-    h_layout.addWidget(self.btn_show_log)
+    buttons = [
+        ('btn_show_log', '显示日志输出'),
+        ('btn_open_data', '打开数据目录'),
+        ('btn_zoom_in', '放大'),
+        ('btn_zoom_out', '缩小')
+    ]
 
-    # h_layout.addStretch()
-    self.btn_open_data = QPushButton('打开数据目录', self)
-    h_layout.addWidget(self.btn_open_data)
+    for name, text in buttons:
+        button = QPushButton(text, self)
+        h_layout.addWidget(button)
+        setattr(self, name, button)
 
-    self.btn_zoom_in = QPushButton('放大', self)
-    h_layout.addWidget(self.btn_zoom_in)
-
-    self.btn_zoom_out = QPushButton('缩小', self)
-    h_layout.addWidget(self.btn_zoom_out)
-    self.grid_layout.addLayout(h_layout, 5, 1, 1, 3)
+    grid_layout.addLayout(h_layout, 5, 1, 1, 3)
 
 
 @logger.catch
 def search_item_paint_tab2(self):
-    """
-
-    :param self:
-    :return:
-    """
-    self.grid_layout_video = QGridLayout()
-    self.setLayout(self.grid_layout_video)
+    """Paint search items UI for tab 2"""
+    grid_layout_video = QGridLayout()
+    self.setLayout(grid_layout_video)
+    self.grid_layout_video = grid_layout_video
 
 
 @logger.catch
 def tab_3_ui_paint(self):
-    """
+    """Paint UI for tab 3"""
+    # Create file input section
+    edt_input_file_text_3 = QLineEdit(str(Path(__file__).parent))
+    btn_input_file_3 = QPushButton("选择文件夹")
+    
+    h_box_3 = QHBoxLayout()
+    h_box_3.addWidget(QLabel("数据路径:"))
+    h_box_3.addWidget(edt_input_file_text_3)
+    h_box_3.addWidget(btn_input_file_3)
 
-    :param self:
-    :return:
-    """
-    self.edt_input_file_text_3 = QLineEdit(
-        os.path.join(os.path.dirname(__file__), ""))
-    self.btn_input_file_3 = QPushButton(u"选择文件夹")
-    self.h_box_3 = QHBoxLayout()
-    self.h_box_3.addWidget(QLabel(u"数据路径:"))
-    self.h_box_3.addWidget(self.edt_input_file_text_3)
-    self.h_box_3.addWidget(self.btn_input_file_3)
+    self.edt_input_file_text_3 = edt_input_file_text_3
+    self.btn_input_file_3 = btn_input_file_3
 
-    self.h_box_2_3 = QHBoxLayout()
-    self.label_3 = QLabel(self)
-    self.scroll_area_3 = QScrollArea()
-    self.scroll_area_3.setWidget(self.label_3)
-    self.scroll_area_3.setParent(self.tab3)
-    self.h_box_2_3.addWidget(self.scroll_area_3)
+    # Create scroll area
+    label_3 = QLabel(self)
+    scroll_area_3 = QScrollArea()
+    scroll_area_3.setWidget(label_3)
+    scroll_area_3.setParent(self.tab3)
+    
+    h_box_2_3 = QHBoxLayout()
+    h_box_2_3.addWidget(scroll_area_3)
 
-    self.un_normal_img_button = QPushButton(u"剔除异常图片")
-    self.img_category_button = QPushButton(u"分类图片")
-    self.h_box_3_3 = QHBoxLayout()
-    self.h_box_3_3.addWidget(self.un_normal_img_button)
-    self.h_box_3_3.addWidget(self.img_category_button)
+    self.label_3 = label_3
 
-    self.download_gif_zip = QPushButton(u"下载压缩包")
-    self.unzip_generate_video = QPushButton(u"解压生成视频")
-    self.h_box_3_3.addWidget(self.download_gif_zip)
-    self.h_box_3_3.addWidget(self.unzip_generate_video)
+    # Create button row
+    buttons = [
+        ('un_normal_img_button', '剔除异常图片'),
+        ('img_category_button', '分类图片'),
+        ('download_gif_zip', '下载压缩包'),
+        ('unzip_generate_video', '解压生成视频'),
+        ('download_video_zip', '下载内容')
+    ]
 
-    self.download_video_zip = QPushButton(u"下载内容")
-    self.h_box_3_3.addWidget(self.download_video_zip)
+    h_box_3_3 = QHBoxLayout()
+    
+    for name, text in buttons:
+        button = QPushButton(text)
+        h_box_3_3.addWidget(button)
+        setattr(self, name, button)
 
-    self.vbox_3 = QVBoxLayout()
-    self.vbox_3.addLayout(self.h_box_3)
-    self.vbox_3.addLayout(self.h_box_2_3)
-    self.vbox_3.addLayout(self.h_box_3_3)
+    # Layout everything vertically
+    vbox_3 = QVBoxLayout()
+    vbox_3.addLayout(h_box_3)
+    vbox_3.addLayout(h_box_2_3)
+    vbox_3.addLayout(h_box_3_3)
 
-    self.tab3.setLayout(self.vbox_3)
+    self.tab3.setLayout(vbox_3)
     self.setCentralWidget(self.tab_widget)
 
+    # Connect signals
     self.btn_input_file_3.clicked.connect(self.input_keyword_process_3)
     self.un_normal_img_button.clicked.connect(self.remove_error_image_click)
     self.img_category_button.clicked.connect(self.img_category_button_click)
     self.download_gif_zip.clicked.connect(self.download_gif_zip_click)
     self.unzip_generate_video.clicked.connect(self.unzip_generate_video_click)
     self.download_video_zip.clicked.connect(self.download_video_zip_click)
+
     return True

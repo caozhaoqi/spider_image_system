@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import List, Optional
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -7,63 +8,69 @@ import shutil
 from PyQt5.QtGui import QPixmap
 from loguru import logger
 from PIL import Image
-import os
 from run import constants
 from run.constants import data_path
 
-# data path image
+# Data path for images
 folder_path = os.path.realpath(os.path.join(os.getcwd(), data_path))
 
 
 @logger.catch
-def find_images(directory):
+def find_images(directory: str) -> List[str]:
+    """Find image files in the given directory
+    
+    Args:
+        directory: Directory path to search for images
+        
+    Returns:
+        List[str]: List of image file paths found
     """
-    find image from current dir data
-    :param directory:
-    :return:
-    """
-    image_files_lists = []
     if not os.path.exists(directory):
         os.makedirs(directory)
-        logger.info("Dir not exists, create dir: " + str(directory))
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if "img_url" in root or "according_pid_download_image" in root:
-                if file.endswith('.jpg') or file.endswith('.png'):
-                    image_files_lists.append(os.path.join(root, file))
-    return image_files_lists
+        logger.info(f"Created directory: {directory}")
+        
+    image_files = []
+    for root, _, files in os.walk(directory):
+        if any(x in root for x in ["img_url", "according_pid_download_image"]):
+            for file in files:
+                if file.endswith(('.jpg', '.png')):
+                    image_files.append(os.path.join(root, file))
+    return image_files
 
 
 @logger.catch
-def image_exists(image_path, image_list):
+def image_exists(image_path: str, image_list: List[str]) -> bool:
+    """Check if image exists in the list
+    
+    Args:
+        image_path: Path of image to check
+        image_list: List of existing image paths
+        
+    Returns:
+        bool: True if image exists, False otherwise
     """
-    判断图片是否存在
-    :param image_path:预下载图片名
-    :param image_list:已下载图片list
-    :return:
-    """
-    for image_detail in image_list:
-        if image_path in image_detail:
-            return True
-    return False
+    return any(image_path in img for img in image_list)
 
 
 @logger.catch
-def show_filter_image(images_list):
+def show_filter_image(images_list: List[str]) -> List[str]:
+    """Filter out small images and special categories
+    
+    Args:
+        images_list: List of image paths to filter
+        
+    Returns:
+        List[str]: Filtered list of image paths
     """
-    过滤过小图片不显示到首页
-    :param images_list:
-    :return:
-    """
-    filter_result_images = []
-    for filter_image in images_list:
-        filter_path, filter_name = os.path.split(filter_image)
-        if "square" in filter_name or "custom" in filter_name or "square" in filter_path or "custom" in filter_path \
-                or "error_images" in filter_path or "small_images" in filter_path:
-            continue
-        else:
-            filter_result_images.append(filter_image)
-    return filter_result_images
+    filtered_images = []
+    excluded_terms = ["square", "custom", "error_images", "small_images"]
+    
+    for image in images_list:
+        path, name = os.path.split(image)
+        if not any(term in name or term in path for term in excluded_terms):
+            filtered_images.append(image)
+            
+    return filtered_images
 
 
 current_image_index = 0
@@ -71,207 +78,184 @@ image_files = show_filter_image(find_images(folder_path))
 
 
 @logger.catch
-def show_next_image(self):
-    """
-    show next image to ui
-    :param self:
-    :return:
-    """
+def show_next_image(self) -> None:
+    """Show next image in UI"""
     try:
         global current_image_index, image_files
         current_image_index = (current_image_index + 1) % len(image_files)
         show_image(self, image_files[current_image_index])
-        self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
+        self.show_page_label.setText(f"{current_image_index}/{len(image_files)}")
 
     except Exception as e:
-        logger.warning("Dir not image, or other err! detail: " + str(e))
+        logger.warning(f"Failed to show next image: {e}")
 
 
 @logger.catch
-def show_image(self, image_file):
+def show_image(self, image_file: str) -> None:
+    """Display image in UI
+    
+    Args:
+        image_file: Path of image to display
     """
-    shou first image to ui
-    :param self:
-    :param image_file:
-    :return:
-    """
-    self.file_name_label.setText(os.path.join(folder_path, image_file))
-    self.pixmap_image_tab1 = QPixmap(os.path.join(folder_path, image_file))  # 创建新的QPixmap实例
-    self.label.setPixmap(self.pixmap_image_tab1)  # 更新QLabel的显示内容
+    full_path = os.path.join(folder_path, image_file)
+    self.file_name_label.setText(full_path)
+    self.pixmap_image_tab1 = QPixmap(full_path)
+    self.label.setPixmap(self.pixmap_image_tab1)
     self.label.resize(self.pixmap_image_tab1.width(), self.pixmap_image_tab1.height())
-    logger.info("Current show image name and path: " + str(os.path.join(folder_path, image_file)))
+    logger.info(f"Showing image: {full_path}")
 
 
 @logger.catch
-def show_current_file_name(image_file):
+def show_current_file_name(image_file: str) -> str:
+    """Get filename from full path
+    
+    Args:
+        image_file: Full image file path
+        
+    Returns:
+        str: Image filename
     """
-    show current file name
-    :param image_file:
-    :return:
-    """
-    _, file_name = os.path.split(image_file)
-    return file_name
+    return os.path.split(image_file)[1]
 
 
 @logger.catch
-def check_images(self, image_path):
+def check_images(self, image_path: str) -> None:
+    """Check images for errors and small sizes
+    
+    Args:
+        image_path: Directory containing images to check
     """
-    检查现有图片是否正常
-    :param self:
-    :param image_path: 数据路径
-    :return:
-    """
-    # constants.check_images_flag = True
     image_lists = find_images(image_path)
-    small_image_lists = []
-    error_image_lists = []
-    for filename in image_lists:
-        if filename.endswith(".jpg") or filename.endswith(".png"):  # 只处理jpg和png格式的图片
-            filepath = os.path.join(image_path, filename)
-            if "error_images" in filepath or "small_images" in filepath:
-                continue
-            else:
-                try:
-                    image = Image.open(filepath)
-                    width, height = image.size
-                    if width <= 250 and height <= 250:  # 图片尺寸小于250*250
-                        # logger.warning(f"Image {filename} size small, move small images folder.")
-                        small_image_lists.append(filepath)
-                except Exception as e:
-                    # logger.warning(f"Can't open {filename}, detail :{e}, move error_images folder.")
-                    error_image_lists.append(filepath)
-    for error_images in error_image_lists:
+    small_images = []
+    error_images = []
+
+    for filepath in image_lists:
+        if not filepath.endswith(('.jpg', '.png')):
+            continue
+            
+        if any(x in filepath for x in ["error_images", "small_images"]):
+            continue
+
         try:
-            with open(image_path + '/error_image_txt.txt', 'a', encoding='utf-8', errors='replace') as f:
-                if not os.path.exists(image_path + "/error_images/"):
-                    os.makedirs(image_path + "/error_images/")
-                file_path, file_name = os.path.split(error_images)
-                if 'error_images' in file_path:
-                    continue
-                else:
-                    f.write(error_images + "\n")
-                    shutil.move(error_images, image_path + "/error_images/" + file_name)
-                    f.close()
+            with Image.open(filepath) as img:
+                width, height = img.size
+                if width <= 250 and height <= 250:
+                    small_images.append(filepath)
         except Exception as e:
-            # logger.warning(f"Unknown error, detail: {e}")
-            ...
-    for small_image in small_image_lists:
+            error_images.append(filepath)
+
+    # Process error images
+    error_dir = os.path.join(image_path, "error_images")
+    os.makedirs(error_dir, exist_ok=True)
+    
+    error_txt = os.path.join(image_path, 'error_image_txt.txt')
+    for img in error_images:
         try:
-            with open(image_path + '/small_image_txt.txt', 'a', encoding='utf-8', errors='replace') as f:
-                if not os.path.exists(image_path + "/small_images/"):
-                    os.makedirs(image_path + "/small_images/")
-                file_path, file_name = os.path.split(small_image)
-                if 'small_images' in file_path:
-                    continue
-                else:
-                    f.write(small_image + "\n")
-                    shutil.move(small_image, image_path + "/small_images/" + file_name)
-                    f.close()
-        except Exception as e:
-            # logger.warning(f"Unknown error, detail: {e}")
-            ...
+            if 'error_images' not in img:
+                with open(error_txt, 'a', encoding='utf-8', errors='replace') as f:
+                    f.write(f"{img}\n")
+                shutil.move(img, os.path.join(error_dir, os.path.basename(img)))
+        except Exception:
+            logger.warning(f"Failed to process error image: {img}")
+
+    # Process small images            
+    small_dir = os.path.join(image_path, "small_images")
+    os.makedirs(small_dir, exist_ok=True)
+    
+    small_txt = os.path.join(image_path, 'small_image_txt.txt')
+    for img in small_images:
+        try:
+            if 'small_images' not in img:
+                with open(small_txt, 'a', encoding='utf-8', errors='replace') as f:
+                    f.write(f"{img}\n")
+                shutil.move(img, os.path.join(small_dir, os.path.basename(img)))
+        except Exception:
+            logger.warning(f"Failed to process small image: {img}")
+
     if constants.check_images_flag:
         constants.check_images_flag = False
-        logger.success(f"Finished check! flag: {constants.check_images_flag}")
-    # constants.check_images_flag = False
+        logger.success("Image check completed")
+        
     if constants.single_flag:
-        logger.success(
-            f"Scan end, flag: {constants.check_images_flag}, images moved error_images and small_images folder!")
+        logger.success("Single image scan completed")
         constants.single_flag = False
 
 
 @logger.catch
-def img_category_images(self, image_path):
+def img_category_images(self, image_path: str) -> None:
+    """Categorize images into custom/square/master folders
+    
+    Args:
+        image_path: Directory containing images to categorize
     """
-    分类现有图片
-    :param self:
-    :param image_path:
-    :return:
-    """
-    # constants.category_image_flag = True
     image_lists = find_images(image_path)
-    custom_image_lists = []
-    square_image_lists = []
-    master_image_lists = []
-    # 遍历目录中的所有图片文件 分类存储至集合
-    for filename in image_lists:
-        if filename.endswith(".jpg") or filename.endswith(".png"):  # 只处理jpg和png格式的图片
-            filepath = os.path.join(image_path, filename)
-            img_path, _ = os.path.split(filepath)
-            if "square" in img_path or "custom" in img_path or "master" in img_path:
-                continue
-            elif "square" in filename:
-                square_image_lists.append(filename)
-            elif "master" in filename:
-                master_image_lists.append(filename)
-            elif "custom" in filename:
-                custom_image_lists.append(filename)
-            # else:
-            # logger.warning("Unknown category image: " + str(filename))
-    for square_image in square_image_lists:
-        dir_path, file_name = os.path.split(square_image)
-        if not os.path.exists(dir_path + "/square/"):
-            os.makedirs(dir_path + "/square/")
-        try:
-            with open(dir_path + '/square_image_txt.txt', 'a', encoding='utf-8', errors='replace') as f:
-                f.write(square_image + "\n")
-            shutil.move(square_image, dir_path + "/square/" + file_name)
-            f.close()
-        except Exception as e:
-            # logger.warning(f"Unknown error, detail: {e}")
-            ...
-    for custom_image in custom_image_lists:
-        dir_path, file_name = os.path.split(custom_image)
-        if not os.path.exists(dir_path + "/custom/"):
-            os.makedirs(dir_path + "/custom/")
-        try:
-            with open(dir_path + '/custom_image_txt.txt', 'a', encoding='utf-8', errors='replace') as f:
-                f.write(custom_image + "\n")
-            shutil.move(custom_image, dir_path + "/custom/" + file_name)
-            f.close()
-        except Exception as e:
-            logger.warning(f"Unknown error, detail: {e}")
-    for master_image in master_image_lists:
-        dir_path, file_name = os.path.split(master_image)
-        if not os.path.exists(dir_path + "/master/"):
-            os.makedirs(dir_path + "/master/")
-        try:
-            with open(dir_path + '/master_image_txt.txt', 'a', encoding='utf-8', errors='replace') as f:
-                f.write(master_image + "\n")
-            shutil.move(master_image, dir_path + "/master/" + file_name)
-            f.close()
-        except Exception as e:
-            # logger.warning(f"Unknown error, detail: {e}")
-            ...
+    categories = {
+        'custom': [],
+        'square': [], 
+        'master': []
+    }
+
+    for filepath in image_lists:
+        if not filepath.endswith(('.jpg', '.png')):
+            continue
+            
+        path, name = os.path.split(filepath)
+        if any(x in path for x in categories.keys()):
+            continue
+            
+        for category in categories:
+            if category in name:
+                categories[category].append(filepath)
+                break
+
+    for category, images in categories.items():
+        for img in images:
+            try:
+                dir_path, file_name = os.path.split(img)
+                category_dir = os.path.join(dir_path, category)
+                os.makedirs(category_dir, exist_ok=True)
+                
+                txt_path = os.path.join(dir_path, f'{category}_image_txt.txt')
+                with open(txt_path, 'a', encoding='utf-8', errors='replace') as f:
+                    f.write(f"{img}\n")
+                shutil.move(img, os.path.join(category_dir, file_name))
+            except Exception:
+                logger.warning(f"Failed to categorize image: {img}")
 
     if constants.category_image_flag:
         constants.category_image_flag = False
-        logger.success(f"Finished category! flag: {constants.category_image_flag}")
+        logger.success("Image categorization completed")
+        
     if constants.single_flag:
-        logger.success(f"Img category success! flag: {constants.category_image_flag}")
+        logger.success("Single image categorization completed")
         constants.single_flag = False
 
 
 @logger.catch
-def error_img_update(url):
+def error_img_update(url: str) -> bool:
+    """Update error image list by removing fixed URL
+    
+    Args:
+        url: URL to remove from error list
+        
+    Returns:
+        bool: True if URL was found and removed, False otherwise
     """
-    error_img_txt update
-    :param url:
-    :return:
-    """
-    exists_error_url_flag = False
-    error_img_txt_path = constants.data_path + "\\download_fail_image.txt"
-    if os.path.exists(error_img_txt_path):
-        with open(error_img_txt_path, "r", encoding='utf-8', errors='replace') as f:
-            error_img_list = f.readlines()
-        for error_img in error_img_list:
-            if error_img is url:
-                error_img_list.remove(error_img)
-                exists_error_url_flag = True
-        if exists_error_url_flag:
-            for error_img_new in error_img_list:
-                # 打开文件并写入元素
-                with open(error_img_txt_path, 'w', encoding='utf-8', errors='replace') as file:
-                    file.write(str(error_img_new + "\n"))
+    error_txt = os.path.join(constants.data_path, "download_fail_image.txt")
+    if not os.path.exists(error_txt):
+        return False
+        
+    try:
+        with open(error_txt, "r", encoding='utf-8', errors='replace') as f:
+            error_urls = f.readlines()
+            
+        if url in error_urls:
+            error_urls.remove(url)
+            with open(error_txt, 'w', encoding='utf-8', errors='replace') as f:
+                f.writelines(f"{u}\n" for u in error_urls)
             return True
+            
+    except Exception as e:
+        logger.error(f"Failed to update error image list: {e}")
+        
     return False

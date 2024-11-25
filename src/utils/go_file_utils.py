@@ -1,188 +1,221 @@
 """
-go file upload to server
-file: go_file_utils.py
-author: zq.c
-modify time: 2024/8/1 12:00
-create time: 2024/7/24 12:00
+GoFile文件上传工具
+
+用于将文件上传到GoFile服务器的工具函数集合。
+
+Author: zq.c
+Modified: 2024/8/1
+Created: 2024/7/24
 """
 
 import json
 import os
+from pathlib import Path
+from typing import List, Dict, Optional
 
 import requests
 from loguru import logger
 from run import constants
 
-"""
-
-token: sz6exDf8GuR0yuB38GOerYDspmY5qB7F
-id: e6b6dd7f-a89a-4165-af70-9674aab82c18
-folderId: f5822db9-1046-4a41-b6f1-3ad3aee6e8fe
-
-"""
+# GoFile API配置
+GO_FILE_CONFIG = {
+    "token": "sz6exDf8GuR0yuB38GOerYDspmY5qB7F",
+    "id": "e6b6dd7f-a89a-4165-af70-9674aab82c18", 
+    "folder_id": "f5822db9-1046-4a41-b6f1-3ad3aee6e8fe"
+}
 
 
 @logger.catch
-def http_upload(file_path):
+def http_upload(file_path: str) -> bool:
     """
-
-    :param file_path:
-    :return:
+    上传文件到GoFile服务器
+    
+    Args:
+        file_path: 要上传的文件路径
+        
+    Returns:
+        bool: 上传是否成功
     """
     server_list = detect_go_server()
+    if not server_list:
+        logger.error("无法获取GoFile服务器列表")
+        return False
+        
     server_name = server_list[0]['name']
-    upload_api_go = f'https://{server_name}.gofile.io/contents/uploadfile'
-    # multipart
-    # formData = ["file", open(file_path), "folderId", "5e042945-0e5c-4c1d-9293-4574d376e496"]
+    upload_url = f'https://{server_name}.gofile.io/contents/uploadfile'
+    
     headers = {
-        "Authorization": "Bearer sz6exDf8GuR0yuB38GOerYDspmY5qB7F"
+        "Authorization": f"Bearer {GO_FILE_CONFIG['token']}"
     }
     data = {
-        "folderId": "f5822db9-1046-4a41-b6f1-3ad3aee6e8fe"
+        "folderId": GO_FILE_CONFIG['folder_id']
     }
-    ret = '!!!No Response!!!'
-    files = {"file": open(file_path, "rb")}
+    
     try:
-        ret = requests.post(upload_api_go, files=files, data=data, headers=headers)
-    except Exception as e:
-        logger.error(f"Error, detail: {e}")
-        ...
-    if not ret:
-        logger.warning(f"Unknown Error: {ret}")
-        return False
-    try:
-        res = json.loads(ret.content)
-        if res['status'] == 'ok':
-            logger.success(res['data'])
+        with open(file_path, "rb") as f:
+            files = {"file": f}
+            response = requests.post(upload_url, files=files, data=data, headers=headers)
+            response.raise_for_status()
+            
+        result = response.json()
+        if result['status'] == 'ok':
+            logger.success(f"文件上传成功: {result['data']}")
+            return True
         else:
-            logger.warning(f"File {file_path} upload gofile server fail!!! detail: {res}")
+            logger.warning(f"文件上传失败: {result}")
+            return False
+            
     except Exception as e:
-        logger.warning(f"Warning: unknown. {e}")
-    # print(file.page_link)  # View and download file at this link
-    ...
+        logger.error(f"上传过程出错: {e}")
+        return False
 
 
 @logger.catch
-def detect_go_server():
+def detect_go_server() -> List[Dict]:
     """
-
-    :return:
+    获取可用的GoFile服务器列表
+    
+    Returns:
+        List[Dict]: 服务器信息列表
     """
-    api_server_go = 'https://api.gofile.io/servers'
-    server_list = []
-    method = 'get'
+    api_url = 'https://api.gofile.io/servers'
+    
     try:
-        ret = json.loads(requests.get(api_server_go).content)
-        if ret['status'] == 'ok':
-            server_list = ret['data']['servers']
+        response = requests.get(api_url)
+        response.raise_for_status()
+        result = response.json()
+        
+        if result['status'] == 'ok':
+            return result['data']['servers']
+        return []
+        
     except Exception as e:
-        logger.error(f"Error, detail: {e}")
-        ...
-    return server_list
-
-
-@logger.catch
-def scan_files_go(directory):
-    """
-
-    :param directory:
-    :return:
-    """
-    file_list = []
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            file_name_path = os.path.join(root, file)
-            if os.stat(file_name_path).st_size > 0:
-                file_list.append(os.path.join(root, file))
-    return file_list
-
-
-@logger.catch
-def save_upload_already(txt_data_path, file_path):
-    """
-
-    :param txt_data_path:
-    :param file_path:
-    :return:
-    """
-    # file_name = "go_file_img_upload.txt"
-    file_name = os.path.join(txt_data_path, "go_file_img_upload.txt")
-    with open(file_name, 'a', encoding='utf-8', errors='replace') as f:
-        f.write(file_path + "\n")
-    logger.success(f"save {file_path} finished, will write txt.")
-    return True
-
-
-@logger.catch
-def exists_upload_gofile(txt_path):
-    """
-
-    :param txt_path:
-    :return:
-    """
-
-    file_name = 'go_file_img_upload.txt'
-    full_file_path = os.path.join(txt_path, file_name)
-    if not os.path.exists(full_file_path):
-        # 如果文件不存在，创建它
-        with open(full_file_path, 'w', encoding='utf-8', errors='replace') as f:
-            logger.warning(f"Current {full_file_path} not exists, will create demo txt!")
-    try:
-        with open(full_file_path, 'r', encoding='utf-8', errors='replace') as f:
-            exists_go_file_img = f.readlines()
-        return exists_go_file_img
-    except Exception as e:
-        logger.error(f"Unknown error, detail {e}")
+        logger.error(f"获取服务器列表失败: {e}")
         return []
 
 
 @logger.catch
-def exists_gofile_img(file_name, txt_list):
+def scan_files_go(directory: str) -> List[str]:
     """
-
-    :param file_name:
-    :param txt_list:
-    :return:
+    扫描目录下的所有非空文件
+    
+    Args:
+        directory: 要扫描的目录路径
+        
+    Returns:
+        List[str]: 文件路径列表
     """
-    file_name = os.path.basename(file_name)
-    for txt in txt_list:
-        if file_name in txt:
-            return True
-    return False
+    file_list = []
+    for path in Path(directory).rglob('*'):
+        if path.is_file() and path.stat().st_size > 0:
+            file_list.append(str(path))
+    return file_list
 
 
 @logger.catch
-def upload_all_gofile(data_path):
+def save_upload_already(txt_data_path: str, file_path: str) -> bool:
     """
-
-    :param data_path:
-    :return:
+    记录已上传的文件
+    
+    Args:
+        txt_data_path: 记录文件所在目录
+        file_path: 已上传的文件路径
+        
+    Returns:
+        bool: 记录是否成功
     """
-    go_file_config_str = """
-    token: sz6exDf8GuR0yuB38GOerYDspmY5qB7F
-id: e6b6dd7f-a89a-4165-af70-9674aab82c18
-folderId: f5822db9-1046-4a41-b6f1-3ad3aee6e8fe
-    """
-    logger.info(f"Start input gofile server info: \n {go_file_config_str}")
+    record_file = Path(txt_data_path) / "go_file_img_upload.txt"
     try:
-        list_img_txt = exists_upload_gofile(data_path)
-        list_file = scan_files_go(data_path)
-        if not list_file:
-            logger.warning(f"Current path: {data_path} no files, detail: {list_file}")
-            return False
-        # 使用示例
-        for file in list_file:
-            if not exists_gofile_img(file, list_img_txt):
-                http_upload(file)
-                save_upload_already(data_path, file)
-            else:
-                logger.warning(f"File: {file} Already upload gofile server, skip upload.")
-        constants.GO_FILE_UPLOAD_FLAG = False
-        logger.success("Upload file success to gofile.")
+        with open(record_file, 'a', encoding='utf-8', errors='replace') as f:
+            f.write(f"{file_path}\n")
+        logger.success(f"记录已上传文件: {file_path}")
+        return True
     except Exception as e:
-        logger.error(f"ERROR!!! detail: {e}")
+        logger.error(f"记录文件失败: {e}")
+        return False
+
+
+@logger.catch
+def exists_upload_gofile(txt_path: str) -> List[str]:
+    """
+    获取已上传文件记录
+    
+    Args:
+        txt_path: 记录文件所在目录
+        
+    Returns:
+        List[str]: 已上传文件列表
+    """
+    record_file = Path(txt_path) / "go_file_img_upload.txt"
+    
+    try:
+        if not record_file.exists():
+            record_file.touch()
+            logger.warning(f"创建记录文件: {record_file}")
+            return []
+            
+        with open(record_file, 'r', encoding='utf-8', errors='replace') as f:
+            return f.readlines()
+            
+    except Exception as e:
+        logger.error(f"读取记录文件失败: {e}")
+        return []
+
+
+@logger.catch
+def exists_gofile_img(file_path: str, uploaded_files: List[str]) -> bool:
+    """
+    检查文件是否已上传
+    
+    Args:
+        file_path: 要检查的文件路径
+        uploaded_files: 已上传文件列表
+        
+    Returns:
+        bool: 文件是否已上传
+    """
+    file_name = Path(file_path).name
+    return any(file_name in uploaded for uploaded in uploaded_files)
+
+
+@logger.catch
+def upload_all_gofile(data_path: str) -> bool:
+    """
+    上传目录下的所有文件
+    
+    Args:
+        data_path: 要上传的目录路径
+        
+    Returns:
+        bool: 上传是否全部成功
+    """
+    logger.info(f"开始上传文件到GoFile服务器，配置信息:\n{json.dumps(GO_FILE_CONFIG, indent=2)}")
+    
+    try:
+        uploaded_files = exists_upload_gofile(data_path)
+        files_to_upload = scan_files_go(data_path)
+        
+        if not files_to_upload:
+            logger.warning(f"目录 {data_path} 中没有找到文件")
+            return False
+            
+        for file_path in files_to_upload:
+            if exists_gofile_img(file_path, uploaded_files):
+                logger.warning(f"文件已上传，跳过: {file_path}")
+                continue
+                
+            if http_upload(file_path):
+                save_upload_already(data_path, file_path)
+                
+        constants.GO_FILE_UPLOAD_FLAG = False
+        logger.success("所有文件上传完成")
+        return True
+        
+    except Exception as e:
+        logger.error(f"上传过程出错: {e}")
+        return False
 
 
 if __name__ == '__main__':
-    path = r'./'
+    path = './'
     upload_all_gofile(path)

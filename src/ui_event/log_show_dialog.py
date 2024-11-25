@@ -1,138 +1,108 @@
-#!coding: utf - 8
-import os
 import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 
 from PyQt5.QtWidgets import QVBoxLayout, QTextEdit, QLabel, QDialog
 from PyQt5.QtCore import QTimer, QFile, QTextStream, Qt
-from run import constants
-from utils.log_monitor import find_latest_log_file
 from loguru import logger
 
+from run import constants
+from utils.log_monitor import find_latest_log_file
+
 LOG_FILE_PATTERN = 'sis_v*.log'
-LOG_DIR = os.path.join(constants.basic_path, "log_dir")  # 日志文件所在的目录
+LOG_DIR = Path(constants.basic_path) / "log_dir"
 
 
 class LogDisplayDialog(QDialog):
-    """
-    实时日志查看器窗口类
-    """
+    """Real-time log viewer dialog"""
 
     def __init__(self):
-        """
-        初始化窗口
-        """
         super().__init__()
-
         self.log_file_name_label = None
         self.timer = None
-        self.logTextEdit = None
+        self.log_text_edit = None
         self.init_ui()
         self.setup_timer()
 
     @logger.catch
-    def init_ui(self, _=None):
-        """
-        初始化UI界面
-        """
-        self.setWindowTitle('Log check')
+    def init_ui(self):
+        """Initialize the UI components"""
+        self.setWindowTitle('Log Viewer')
         self.resize(800, 600)
 
         layout = QVBoxLayout()
-
-        # 使用QTextEdit代替QLabel，因为它支持滚动条
-        self.logTextEdit = QTextEdit(self)
-        self.logTextEdit.setReadOnly(True)  # 设置为只读，防止用户编辑
-        self.logTextEdit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # 始终显示垂直滚动条
-        self.log_file_name_label = QLabel(self)
-
-        layout.addWidget(self.log_file_name_label)
-
-        layout.addWidget(self.logTextEdit)
-
         self.setLayout(layout)
 
+        # Add file name label
+        self.log_file_name_label = QLabel()
+        layout.addWidget(self.log_file_name_label)
+
+        # Add scrollable text area
+        self.log_text_edit = QTextEdit()
+        self.log_text_edit.setReadOnly(True)
+        self.log_text_edit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        layout.addWidget(self.log_text_edit)
+
     @logger.catch
-    def setup_timer(self, _=None):
-        """
-        设置定时器以定期更新日志
-        """
-        self.timer = QTimer(self)
+    def setup_timer(self):
+        """Set up timer for periodic log updates"""
+        self.timer = QTimer()
         self.timer.timeout.connect(self.update_log)
-        self.timer.start(2500)  # 每秒更新一次
+        self.timer.start(2500)
 
     @logger.catch
-    def update_log(self, _=None):
-        """
-        更新日志内容
-        """
-        if constants.log_check_visible:
-            log_file_path = find_latest_log_file(LOG_FILE_PATTERN, LOG_DIR)
-            self.log_file_name_label.setText(log_file_path)
-            file = QFile(log_file_path)
-            if file.exists():
-                if file.open(QFile.ReadOnly | QFile.Text):
-                    stream = QTextStream(file)
-                    # 设置QTextStream使用UTF-8编码
-                    stream.setCodec('UTF-8')
-                    content = stream.readAll()
+    def update_log(self):
+        """Update log content"""
+        if not constants.log_check_visible:
+            return
 
-                    # 更新日志内容并滚动到底部
-                    self.logTextEdit.append(content)
-                    # self.scrollToBottom()
+        log_file_path = find_latest_log_file(LOG_FILE_PATTERN, str(LOG_DIR))
+        self.log_file_name_label.setText(log_file_path)
 
-                file.close()
-            else:
-                self.logTextEdit.append("日志文件不存在")
+        log_file = QFile(log_file_path)
+        if not log_file.exists():
+            self.log_text_edit.append("Log file does not exist")
+            return
+
+        if log_file.open(QFile.ReadOnly | QFile.Text):
+            stream = QTextStream(log_file)
+            stream.setCodec('UTF-8')
+            content = stream.readAll()
+            self.log_text_edit.append(content)
+            log_file.close()
 
     @logger.catch
-    def scroll_to_bottom(self, _=None):
-        """
-        滚动到底部的方法
-        """
-        cursor = self.logTextEdit.textCursor()
+    def scroll_to_bottom(self):
+        """Scroll text edit to bottom"""
+        cursor = self.log_text_edit.textCursor()
         cursor.movePosition(cursor.End)
-        self.logTextEdit.setTextCursor(cursor)
+        self.log_text_edit.setTextCursor(cursor)
 
     @logger.catch
-    def stop_timer(self, _=None):
-        """
-        stop play picture
-        :return:
-        """
-        # if constants.start_auto_play_flag:
-        # constants.start_auto_play_flag = False
+    def stop_timer(self):
+        """Stop the update timer"""
         self.timer.stop()
-        logger.debug("Log check timer stop.")
+        logger.debug("Log viewer timer stopped")
         constants.log_check_visible = False
 
     @logger.catch
-    def closeEvent(self, event, _=None):
-        """
-        对话框关闭
-        :param event:
-        :return:
-        """
-        logger.debug('Log_check Dialog is closing!')
+    def closeEvent(self, event):
+        """Handle dialog close event"""
+        logger.debug('Log viewer dialog closing')
         constants.log_check_visible = False
         self.stop_timer()
-        super(LogDisplayDialog, self).closeEvent(event)
+        super().closeEvent(event)
 
 
 @logger.catch
 def show_log_output_method():
-    """
-
-    :return:
-    """
+    """Show the log viewer dialog"""
     if not constants.log_check_visible:
         dialog = LogDisplayDialog()
         dialog.showMaximized()
-        dialog.show()
         dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        logger.info("Log_check show!")
         constants.log_check_visible = True
+        logger.info("Log viewer shown")
         dialog.exec_()
     else:
-        logger.warning("Log_check already show!")
+        logger.warning("Log viewer already shown")

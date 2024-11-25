@@ -1,17 +1,25 @@
-# 导入OS模块
+"""Base logging configuration and constants"""
 import os
 import sys
-
-# 把当前文件所在文件夹的父文件夹路径加入到PYTHONPATH
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from pathlib import Path
 import time
 from run import constants
 
-# -----------------------系统调试------------------------------------
+# Add parent directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Debug flag
 DEBUG = True
-# -----------------------日志-----------------------------------------
-LOG_DIR = os.path.join(os.path.join(os.getcwd(), 'log_dir'),
-                       f'sis_{constants.sis_server_version}_{time.strftime("%Y-%m-%d")}.log')
-LOG_FORMAT = '<level>{level: <8}</level>  <green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> - <cyan>{name}</cyan>:<cyan>{' \
-             'function}</cyan> - <level>{message}</level> '
+
+# Log configuration
+LOG_DIR = Path.cwd().joinpath(
+    'log_dir', 
+    f'sis_{constants.sis_server_version}_{time.strftime("%Y-%m-%d")}.log'
+)
+
+LOG_FORMAT = (
+    '<level>{level: <8}</level>  '
+    '<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> - '
+    '<cyan>{name}</cyan>:<cyan>{function}</cyan> - '
+    '<level>{message}</level> '
+)

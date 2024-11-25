@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import List
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -7,27 +8,32 @@ from loguru import logger
 
 
 @logger.catch
-def scan_img_txt(path):
+def scan_img_txt(path: str) -> List[str]:
     """
-    sacn img txt from point path
-    :param path:
-    :return:
+    Scan image text files from given path and return unique image URLs
+    
+    Args:
+        path: Directory path to scan for image text files
+        
+    Returns:
+        List[str]: List of unique image URLs found in text files
     """
-
-    # txt
+    # Find all image text files
     img_txt_files = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith('_img.txt') or file.endswith('_img_result.txt'):
-                img_txt_files.append(os.path.join(root, file))
-    # single txt
-    img_list_set = []
+    for root, _, files in os.walk(path):
+        img_txt_files.extend(
+            os.path.join(root, file) for file in files
+            if file.endswith(('_img.txt', '_img_result.txt'))
+        )
+
+    # Read all image URLs from files
+    img_urls = set()
     for img_txt in img_txt_files:
-        with open(img_txt, 'r', encoding='utf-8', errors='replace') as f:
-            img_list_set.append(f.readlines())
-    # img
-    img_list = []
-    for img in img_list_set:
-        for img_detail in img:
-            img_list.append(img_detail)
-    return list(set(img_list))
+        try:
+            with open(img_txt, 'r', encoding='utf-8', errors='replace') as f:
+                img_urls.update(f.readlines())
+        except Exception as e:
+            logger.error(f"Failed to read {img_txt}: {e}")
+            continue
+
+    return list(img_urls)

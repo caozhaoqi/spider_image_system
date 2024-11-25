@@ -1,196 +1,152 @@
 import os
 import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import List
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from file.ini_file_spider import check_ini_config, read_ini_config, ini_file_path
+from file.ini_file_spider import check_ini_config, read_ini_config, INI_FILE_PATH
 from image.image_scan import scan_img_txt
 
-# 检查默认配置项
+# Check default configuration
 check_ini_config()
 
-# web port
-app_port = 33333
-# web_start_flag
-web_flag_start = False
-# spider image url 图片抓取进程是否停止工作
-stop_spider_url_flag = True
-# download_image_flag
-stop_download_image_flag = True
-# dialog show
-edit_config_msg_visible = False
-# about
-about_message_lookup_visible = False
-# explore image
-online_look_image_visible = False
-# auto play image
-auto_play_image_visible = False
-# log check
-log_check_visible = False
-# auto play flag
-start_auto_play_flag = False
-# per monitor
-performance_monitor_visible = False
-# log ana
-log_analyze_visible = False
-# dialog_jm
-jm_dialog_visible = False
-# jm_domain_detect_flag
-jm_domain_detect_flag = False
-# img ana
-img_analyze_visible = False
-# face detect
-face_detect_flag = False
-# txt convert
-convert_folder_name_flag = False
-# online explore image
-online_show_image = False
-# firewall_flag
-firewall_flag = False
+@dataclass
+class SpiderConfig:
+    """Spider configuration settings"""
+    app_port: int = 33333
+    web_flag_start: bool = False
+    stop_spider_url_flag: bool = True
+    stop_download_image_flag: bool = True
+    spider_mode: str = 'manual'
+    process_image_flag: bool = False
+    download_finish_flag: bool = True
+    download_video_link_flag: bool = False
+    download_gif_zip_flag: bool = False
+    unzip_generate_video_flag: bool = False
+    uploading_image_flag: bool = False
+    download_image_re_flag: bool = False
+    unzip_file_flag: bool = False
 
-# spider mode
-spider_mode = 'manual'
-# process image
-process_image_flag = False
-# zip download flag
-download_finish_flag = True
-# download link
-download_video_link_flag = False
-# download_gif_zip_flag
-download_gif_zip_flag = False
-# unzip_generate_video_flag
-unzip_generate_video_flag = False
-# upload image
-uploading_image_flag = False
-# download image
-download_image_re_flag = False
-# unzip file
-unzip_file_flag = False
+@dataclass 
+class UIConfig:
+    """UI visibility configuration"""
+    edit_config_msg_visible: bool = False
+    about_message_lookup_visible: bool = False
+    online_look_image_visible: bool = False
+    auto_play_image_visible: bool = False
+    log_check_visible: bool = False
+    start_auto_play_flag: bool = False
+    performance_monitor_visible: bool = False
+    log_analyze_visible: bool = False
+    jm_dialog_visible: bool = False
+    img_analyze_visible: bool = False
 
-# 数据存储路径
-data_path = os.path.realpath('./data')
-# 基础路径
-basic_path = os.path.realpath('./')
-# online img list
-online_img_list = scan_img_txt(data_path)
-# online cur show img index
+@dataclass
+class ProcessingConfig:
+    """Image processing configuration"""
+    face_detect_flag: bool = False
+    convert_folder_name_flag: bool = False
+    online_show_image: bool = False
+    firewall_flag: bool = False
+    check_images_flag: bool = False
+    category_image_flag: bool = False
+    single_flag: bool = False
+    add_keyword_finish_flag: bool = False
+    log_no_output_flag: bool = False
+    detect_model_flag: bool = False
+    JM_SD_auto_flag: bool = False
+    internet_connect_status: bool = False
+    process_jm_image_category_flag: bool = False
+    GO_FILE_UPLOAD_FLAG: bool = False
+
+# Path configurations
+data_path = Path('./data').resolve()
+basic_path = Path('.').resolve()
+
+# Image tracking
+online_img_list = scan_img_txt(str(data_path))
 cur_show_img_index = 0
-# 抓取总图片数目 实时统计
 spider_images_current_count = 0
-# remove error image
-check_images_flag = False
-# split image category
-category_image_flag = False
-# single process image
-single_flag = False
-# keyword add finish flag
-add_keyword_finish_flag = False
-# ban content
-ban_content = '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'
-# no putput
-log_no_output_flag = False
-# detect model percent
-# detect_model_per = 0.1
-# detect_model_flag
-detect_model_flag = False
-# JM auto search and download flag
-JM_SD_auto_flag = False
-# internet_connect_status
-internet_connect_status = False
-# process image jm category
-process_jm_image_category_flag = False
-GO_FILE_UPLOAD_FLAG = False
-# 输出 video 帧率
-output_video_fps = int(read_ini_config(ini_file_path, "spider_config", "output_video_fps"))
-# 输出 video 宽度
-output_video_width = int(read_ini_config(ini_file_path, "spider_config", "output_video_width"))
-# 输出 video 高度
-output_video_height = int(read_ini_config(ini_file_path, "spider_config", "output_video_height"))
-# 抓取图片最大值
-spider_images_max_count = int(read_ini_config(ini_file_path, "spider_config", "spider_images_max_count"))
-# log level
-sis_log_level = read_ini_config(ini_file_path, "spider_config", "sis_log_level")
-# 访问网址
-visit_url = read_ini_config(ini_file_path, "spider_config", "visit_url")
-# 图片服务器地址
-s1_url = read_ini_config(ini_file_path, "spider_config", "s1_url")
-# 备份图片服务器地址
-s2_url = read_ini_config(ini_file_path, "spider_config", "s2_url")
-# mirror url
-target_url = read_ini_config(ini_file_path, "spider_config", "target_url")
-# search keyword and mode
-r18_mode = read_ini_config(ini_file_path, "spider_config", "r18_mode")
-# all show
-all_show = read_ini_config(ini_file_path, "spider_config", "all_show")
-# proxy config
-proxy_flag = read_ini_config(ini_file_path, "spider_config", "proxy_flag")
-# proxy website
-proxy_website = read_ini_config(ini_file_path, "spider_config", "proxy_website")
-# proxy mode
-proxy_mode = read_ini_config(ini_file_path, "spider_config", "proxy_mode")
-# 代理服务器地址
-proxy_server_ip = read_ini_config(ini_file_path, "spider_config", "proxy_server_ip")
-# 代理服务器端口
-proxy_server_port = int(read_ini_config(ini_file_path, "spider_config", "proxy_server_port"))
-# 搜索延迟时间
-search_delta_time = int(read_ini_config(ini_file_path, "spider_config", "search_delta_time"))
-# 详情页等待时间
-detail_delta_time = int(read_ini_config(ini_file_path, "spider_config", "detail_delta_time"))
-# 当前图片名
-filter_http_url = read_ini_config(ini_file_path, "automatic_config", "filter_http_url")
-# filter image url
-filter_image_url = read_ini_config(ini_file_path, "automatic_config", "filter_image_url")
-# image zoom in
-zoom_in_scale = float(read_ini_config(ini_file_path, "automatic_config", "zoom_in_scale"))
-# zoom_out_scale
-zoom_out_scale = float(read_ini_config(ini_file_path, "automatic_config", "zoom_out_scale"))
-# 定时启动下载flag
-scheduled_download_program_flag = read_ini_config(ini_file_path, "automatic_config", "scheduled_download_program_flag")
-# chrome path
-chrome_path = read_ini_config(ini_file_path, "automatic_config", "chrome_path")
-# chrome_exe_path
-chrome_exe_path = read_ini_config(ini_file_path, "automatic_config", "chrome_exe_path")
-# Google Chrome version match
-chrome_version = read_ini_config(ini_file_path, "automatic_config", "chrome_version")
-# upload_minio_image_Flag
-upload_minio_image_Flag = read_ini_config(ini_file_path, "automatic_config", "upload_minio_image_Flag")
-# allow re place image domain
-allow_replace_domain_flag = read_ini_config(ini_file_path, "automatic_config", "allow_replace_domain_flag")
-# fire_wall_delay_time
-fire_wall_delay_time = int(read_ini_config(ini_file_path, "automatic_config", "fire_wall_delay_time"))
-# download image fail retry times
-download_img_retry_times = int(read_ini_config(ini_file_path, "automatic_config", "download_img_retry_times"))
-# retry time out
-download_img_time_out = int(read_ini_config(ini_file_path, "automatic_config", "download_img_time_out"))
-# detect time out
-detect_timeout_auto = int(read_ini_config(ini_file_path, "automatic_config", "detect_timeout_auto"))
-# WeChat push flag
-WeChat_push_flag = read_ini_config(ini_file_path, "automatic_config", "WeChat_push_flag")
-# search_content
-search_content = read_ini_config(ini_file_path, "automatic_config", "search_content")
-# detect model img api server
-dmi_api_server = read_ini_config(ini_file_path, "automatic_config", "dmi_api_server")
-# detect_img_model
-detect_img_model = read_ini_config(ini_file_path, "automatic_config", "detect_img_model")
-# minio config id
-minio_config_id = read_ini_config(ini_file_path, "minio_config_selected", "minio_config_id")
-# minio server ip address
-minio_server_ip = read_ini_config(ini_file_path, "minio_config_selected", "minio_server_ip")
-# minio server port
-minio_server_port = read_ini_config(ini_file_path, "minio_config_selected", "minio_server_port")
-# login in minio server account
-minio_account = read_ini_config(ini_file_path, "minio_config_selected", "minio_account")
-# login minio server password
-minio_password = read_ini_config(ini_file_path, "minio_config_selected", "minio_password")
-# mark msg
-mark_msg = read_ini_config(ini_file_path, "minio_config_selected", "mark_msg")
-# enable minio config
-enable = read_ini_config(ini_file_path, "minio_config_selected", "enable")
-# seven zip path
-SEVEN_ZIP_PATH = read_ini_config(ini_file_path, "unzip_config", "SEVEN_ZIP_PATH")
-# unzip zip file password
-PASSWORD = read_ini_config(ini_file_path, "unzip_config", "PASSWORD")
 
+# Content filtering
+ban_content = '【国家反诈中心、工信部反诈中心、中国电信、中国联通、中国移动联合提醒】'
+
+# Read configuration from INI file
+def read_config_int(section: str, key: str) -> int:
+    return int(read_ini_config(INI_FILE_PATH, section, key))
+
+def read_config_float(section: str, key: str) -> float:
+    return float(read_ini_config(INI_FILE_PATH, section, key))
+
+def read_config_str(section: str, key: str) -> str:
+    return read_ini_config(INI_FILE_PATH, section, key)
+
+# Video output settings
+output_video_fps = read_config_int("spider_config", "output_video_fps")
+output_video_width = read_config_int("spider_config", "output_video_width") 
+output_video_height = read_config_int("spider_config", "output_video_height")
+spider_images_max_count = read_config_int("spider_config", "spider_images_max_count")
+
+# Spider configuration
+sis_log_level = read_config_str("spider_config", "sis_log_level")
+visit_url = read_config_str("spider_config", "visit_url")
+s1_url = read_config_str("spider_config", "s1_url")
+s2_url = read_config_str("spider_config", "s2_url")
+target_url = read_config_str("spider_config", "target_url")
+r18_mode = read_config_str("spider_config", "r18_mode")
+all_show = read_config_str("spider_config", "all_show")
+
+# Proxy settings
+proxy_flag = read_config_str("spider_config", "proxy_flag")
+proxy_website = read_config_str("spider_config", "proxy_website")
+proxy_mode = read_config_str("spider_config", "proxy_mode")
+proxy_server_ip = read_config_str("spider_config", "proxy_server_ip")
+proxy_server_port = read_config_int("spider_config", "proxy_server_port")
+
+# Timing settings
+search_delta_time = read_config_int("spider_config", "search_delta_time")
+detail_delta_time = read_config_int("spider_config", "detail_delta_time")
+
+# Automatic configuration
+filter_http_url = read_config_str("automatic_config", "filter_http_url")
+filter_image_url = read_config_str("automatic_config", "filter_image_url")
+zoom_in_scale = read_config_float("automatic_config", "zoom_in_scale")
+zoom_out_scale = read_config_float("automatic_config", "zoom_out_scale")
+scheduled_download_program_flag = read_config_str("automatic_config", "scheduled_download_program_flag")
+
+# Chrome settings
+chrome_path = read_config_str("automatic_config", "chrome_path")
+chrome_exe_path = read_config_str("automatic_config", "chrome_exe_path")
+chrome_version = read_config_str("automatic_config", "chrome_version")
+
+# Additional settings
+upload_minio_image_Flag = read_config_str("automatic_config", "upload_minio_image_Flag")
+allow_replace_domain_flag = read_config_str("automatic_config", "allow_replace_domain_flag")
+fire_wall_delay_time = read_config_int("automatic_config", "fire_wall_delay_time")
+download_img_retry_times = read_config_int("automatic_config", "download_img_retry_times")
+download_img_time_out = read_config_int("automatic_config", "download_img_time_out")
+detect_timeout_auto = read_config_int("automatic_config", "detect_timeout_auto")
+WeChat_push_flag = read_config_str("automatic_config", "WeChat_push_flag")
+search_content = read_config_str("automatic_config", "search_content")
+dmi_api_server = read_config_str("automatic_config", "dmi_api_server")
+detect_img_model = read_config_str("automatic_config", "detect_img_model")
+
+# MinIO configuration
+minio_config_id = read_config_str("minio_config_selected", "minio_config_id")
+minio_server_ip = read_config_str("minio_config_selected", "minio_server_ip")
+minio_server_port = read_config_str("minio_config_selected", "minio_server_port")
+minio_account = read_config_str("minio_config_selected", "minio_account")
+minio_password = read_config_str("minio_config_selected", "minio_password")
+mark_msg = read_config_str("minio_config_selected", "mark_msg")
+enable = read_config_str("minio_config_selected", "enable")
+
+# Unzip configuration
+SEVEN_ZIP_PATH = read_config_str("unzip_config", "SEVEN_ZIP_PATH")
+PASSWORD = read_config_str("unzip_config", "PASSWORD")
+
+# Version information
 sis_server_version = "v1.2.3.241119"
 build_date = "2024-11-19 18:00"
 publish_date = "2024-11-19 18:30"

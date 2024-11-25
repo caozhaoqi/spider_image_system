@@ -1,105 +1,80 @@
 import os
 import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import threading
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QVBoxLayout, QDialog
+from PyQt5.QtCore import Qt
 from loguru import logger
+from threading import Thread
 
 from run import constants
 import jmcomic
 
 
 class JMDialog(QDialog):
+    """Dialog for downloading JM comics by ID"""
+    
     def __init__(self):
         super().__init__()
         self.download_button = None
-        self.jm_id_label = None
+        self.jm_id_label = None 
         self.jm_id_input = None
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
-        # 创建布局
-        vbox = QVBoxLayout()
-
-        # 创建标签显示jm_id
-        self.jm_id_label = QLabel('jm_id:')
-        vbox.addWidget(self.jm_id_label)
-
-        # 创建输入框用于输入jm_id
-        self.jm_id_input = QLineEdit()
-        vbox.addWidget(self.jm_id_input)
-
-        # 创建下载按钮
-        self.download_button = QPushButton('下载')
-        self.download_button.clicked.connect(self.on_download_clicked)
-        vbox.addWidget(self.download_button)
-
-        # 设置窗口的布局
-        self.setLayout(vbox)
-
-        # 设置窗口标题和位置
-        self.setWindowTitle('JM ID 下载器')
+    def init_ui(self):
+        """Initialize the UI components"""
+        self.setWindowTitle('JM ID Downloader')
         self.setGeometry(300, 300, 450, 150)
+        
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        # Create input widgets
+        self.jm_id_label = QLabel('JM ID:')
+        self.jm_id_input = QLineEdit()
+        self.download_button = QPushButton('Download')
+        
+        # Add widgets to layout
+        layout.addWidget(self.jm_id_label)
+        layout.addWidget(self.jm_id_input)
+        layout.addWidget(self.download_button)
+        
+        # Connect signals
+        self.download_button.clicked.connect(self.on_download_clicked)
+        
         self.show()
 
     @logger.catch
-    def on_download_clicked(self, _=None):
-        """
-
-        :param _:
-        :return:
-        """
-        # 读取输入框中的jm_id
-        jm_id = self.jm_id_input.text()
-        if jm_id and jm_id != "":
-            # logger.debug(f'Download jm_id: {jm_id} s')
-            download_jm_thread_obj = threading.Thread(
-                target=download_jm_thread,
-                args=(jm_id,))
-            download_jm_thread_obj.start()
+    def on_download_clicked(self):
+        """Handle download button click"""
+        jm_id = self.jm_id_input.text().strip()
+        if jm_id:
+            Thread(target=download_jm_thread, args=(jm_id,)).start()
         else:
-            logger.warning("You input jm_id is empty.")
+            logger.warning("JM ID input is empty")
 
     def reject(self):
-        """
-
-        :return:
-        """
-        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
-        logger.debug('JM_dialog is cancel closing!')
+        """Handle dialog rejection"""
+        logger.debug('JM dialog is cancel closing!')
         constants.jm_dialog_visible = False
-        # 调用基类的 closeEvent 方法以确保对话框正常关闭
-        super(JMDialog, self).reject()
+        super().reject()
 
     def closeEvent(self, event):
-        """
-        对话框关闭
-        :param event:
-        :return:
-        """
-        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
-        logger.debug('JM_dialog is close closing!')
+        """Handle dialog close event"""
+        logger.debug('JM dialog is close closing!')
         constants.jm_dialog_visible = False
-        # 调用基类的 closeEvent 方法以确保对话框正常关闭
-        super(JMDialog, self).closeEvent(event)
+        super().closeEvent(event)
 
 
 @logger.catch
-def download_jm_thread(jm_id):
+def download_jm_thread(jm_id: str) -> None:
+    """Download JM comic in a separate thread
+    
+    Args:
+        jm_id: The ID of the JM comic to download
     """
-
-    :param jm_id:
-    :return:
-    """
-    logger.debug(f"Start download jm_id: {jm_id}")
+    logger.debug(f"Start downloading JM ID: {jm_id}")
     jmcomic.download_album(jm_id)
     constants.jm_dialog_visible = False
-    logger.success(f"Download jm {jm_id} finish.")
-
-#
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     ex = JMDialog()
-#     sys.exit(app.exec_())
+    logger.success(f"Download JM {jm_id} finished")

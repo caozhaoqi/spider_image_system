@@ -1,183 +1,159 @@
 import os
 import sys
+from pathlib import Path
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(str(Path(__file__).parent.parent))
 
 import subprocess
 from loguru import logger
 import re
-import stat, zipfile, os, psutil
+import stat
+import zipfile
+import psutil
 import requests
 from lxml import etree
 import time
 
 
-class AutoDownloadChromeDrive(object):
-    """
-
-    """
+class ChromeDriverDownloader:
+    """Downloads and manages ChromeDriver that matches local Chrome version"""
 
     def __init__(self):
         self.chrome_drive_url = "https://chromedriver.chromium.org/downloads"
-        self.local_chrome_paths = [r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-                                   r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"]
-
-        self.headers = {'content-type': 'application/json',
-                        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'}
+        self.headers = {
+            'content-type': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'
+        }
+        self.driver_path = Path.cwd() / "chromedriver_win32"
+        self.zip_path = Path.cwd() / "chromedriver_win32.zip"
 
     @logger.catch
-    def get_chromedriver_urls(self, _=None):
-        """
-
-        :return:
-        """
+    def get_chromedriver_urls(self):
+        """Get list of available ChromeDriver versions"""
         try:
-            r = requests.Session()
-            response = r.get(self.chrome_drive_url, headers=self.headers, verify=False)
-            logger.debug(response.status_code, response.encoding)
-            html = etree.HTML(response.text, etree.HTMLParser())  # 解析HTML文本内容
-            version_href = html.xpath(".//strong//..//@href")
-            logger.debug("All chrome browser versions can be chose:")
-            for href in version_href:
-                logger.debug(href)
-
-            return version_href
-        except Exception:
+            with requests.Session() as session:
+                response = session.get(self.chrome_drive_url, headers=self.headers, verify=False)
+                html = etree.HTML(response.text)
+                version_hrefs = html.xpath(".//strong//..//@href")
+                logger.debug("Available Chrome versions:")
+                for href in version_hrefs:
+                    logger.debug(href)
+                return version_hrefs
+        except Exception as e:
+            logger.error(f"Failed to get ChromeDriver versions: {e}")
             return None
 
-    @logger.catch
-    def download_chrome_drive(self, url, _=None):
-        """
-
-        :param _:
-        :param url:
-        :return:
-        """
+    @logger.catch 
+    def download_chrome_drive(self, url):
+        """Download ChromeDriver zip file"""
         try:
-            r = requests.Session()
-            response = r.get(url, headers=self.headers, verify=False)
-            if response.status_code == 200:
-                with open("chromedriver_win32.zip", "wb") as f:
-                    f.write(response.content)
-                    logger.debug("下载完成")
-                    return 1
-            else:
-                logger.warning('Url请求返回错误，错误码为： %d' % response.status_code)
-                return None
-        except Exception:
-            logger.warning("Request download chromedriver_win32.zip failed!")
-            return None
+            with requests.Session() as session:
+                response = session.get(url, headers=self.headers, verify=False)
+                if response.status_code == 200:
+                    with open(self.zip_path, "wb") as f:
+                        f.write(response.content)
+                    logger.debug("Download completed")
+                    return True
+                logger.warning(f'Request failed with status code: {response.status_code}')
+                return False
+        except Exception as e:
+            logger.warning(f"Failed to download ChromeDriver: {e}")
+            return False
 
     @logger.catch
-    def find_local_version(self, loc_ver, all_ver, _=None):
-        """
-        :param _:
-        :param loc_ver: 本地浏览器的版本
-        :param all_ver: 下载的所有版本浏览器版本
-        :return: 找到匹配的，return url,否则return None
-        """
-        for href in all_ver:
+    def find_matching_version(self, local_version, available_versions):
+        """Find matching ChromeDriver version"""
+        local_major = local_version.split(".")[0]
+        for href in available_versions:
             try:
-                res = re.search(r"path=(.*?)/", href)
-                find_ver = res.group(1).split(".")[0]  # 截取大版本
-                if loc_ver == find_ver:
-                    return href
+                version_match = re.search(r"path=(.*?)/", href)
+                if version_match:
+                    driver_major = version_match.group(1).split(".")[0]
+                    if local_major == driver_major:
+                        return href
             except Exception:
                 continue
-
-        logger.debug("Not find match chrome browser{} version!".format(loc_ver))
+        logger.debug(f"No matching ChromeDriver found for Chrome {local_version}")
         return None
 
     @logger.catch
-    def kill_process(self, process_name, _=None):
-        """
-
-        :param _:
-        :param process_name:
-        :return:
-        """
-        logger.debug("检测{}进程是否存在，存在则杀掉。".format(process_name))
-        pl = psutil.pids()
-        for pid in pl:
-            if psutil.Process(pid).name() == process_name:
-                logger.debug('{} 存在进程中,杀掉'.format(process_name))
-                os.popen('taskkill /f /im %s' % process_name)
-                return pid
-        logger.debug('{} 不存在进程中。'.format(process_name))
-        return None
+    def kill_chromedriver_process(self):
+        """Kill any running ChromeDriver processes"""
+        logger.debug("Checking for running ChromeDriver processes")
+        for proc in psutil.process_iter(['name']):
+            try:
+                if proc.name() == "chromedriver.exe":
+                    proc.kill()
+                    logger.debug('Killed ChromeDriver process')
+                    return True
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        logger.debug('No ChromeDriver process found')
+        return False
 
     @logger.catch
-    def unzip(self, _=None):
-        """
-
-        :return:
-        """
-        self.kill_process("chromedriver.exe")
-        logger.debug("去除旧版本chromedriver_win32文件夹内文件的只读属性(如果是只读)")
-        old_driver_path = os.path.join(os.getcwd(), "chromedriver_win32")
-        if os.path.exists(old_driver_path):
-            for sub_file in os.listdir(old_driver_path):
-                os.chmod(os.path.join(old_driver_path, sub_file), stat.S_IRWXU)
-        time.sleep(1)  # 这个delay必须要有，os操作还是需要时间的
-        logger.debug('''解压 chromedriver_win32.zip, 覆盖旧版本''')
-        zFile = zipfile.ZipFile(os.path.join(os.getcwd(), "chromedriver_win32.zip"), "r")
-        for fileM in zFile.namelist():
-            zFile.extract(fileM, old_driver_path)
-        zFile.close()
-        logger.success(f"Download webdriver success, path: {zFile.filename}")
+    def unzip_driver(self):
+        """Extract ChromeDriver zip file"""
+        self.kill_chromedriver_process()
+        
+        if self.driver_path.exists():
+            for file in self.driver_path.iterdir():
+                file.chmod(stat.S_IRWXU)
+                
+        time.sleep(1)
+        
+        with zipfile.ZipFile(self.zip_path) as zf:
+            zf.extractall(self.driver_path)
+            
+        logger.success(f"ChromeDriver extracted to: {self.driver_path}")
 
     @logger.catch
-    def start(self, _=None):
-        """
-                读取本地chrome version
-
-        :return:
-        """
-        version = get_chrome_version_from_executable()
+    def start(self):
+        """Main execution flow"""
+        version = get_chrome_version()
         if not version:
-            logger.debug("Check chrome browser version failed!")
-            return None
-        logger.debug("Chrome browser version:", version)
-        '''下载网页端与本地匹配的chromedriver.exe'''
-        version_href = self.get_chromedriver_urls()
-        if not version_href:
-            logger.debug("Request %s failed!" % self.chrome_drive_url)
-            return None
+            logger.error("Failed to detect Chrome version")
+            return False
 
-        find_url = self.find_local_version(version.split(".")[0], version_href)
-        logger.debug("找到匹配的版本:\n%s" % find_url)
-        if not find_url:
-            return None
-        version_num = re.search(r"path=(.*?)/", find_url).group(1)
-        find_url_2 = find_url.rsplit('/', 2)[0]
-        new_url = "{}/{}/chromedriver_win32.zip".format(find_url_2, version_num)
-        logger.debug("Downloading......\n%s" % new_url)
-        ret = self.download_chrome_drive(new_url)
-        if not ret:
-            return None
-        self.unzip()
+        logger.debug(f"Chrome version: {version}")
+
+        version_urls = self.get_chromedriver_urls()
+        if not version_urls:
+            return False
+
+        matching_url = self.find_matching_version(version, version_urls)
+        if not matching_url:
+            return False
+
+        logger.debug(f"Found matching version: {matching_url}")
+        
+        version_num = re.search(r"path=(.*?)/", matching_url).group(1)
+        base_url = matching_url.rsplit('/', 2)[0]
+        download_url = f"{base_url}/{version_num}/chromedriver_win32.zip"
+        
+        logger.debug(f"Downloading from: {download_url}")
+        
+        if not self.download_chrome_drive(download_url):
+            return False
+            
+        self.unzip_driver()
+        return True
 
 
 @logger.catch
-def get_chrome_version_from_executable():
-    """
-
-    :return:
-    """
+def get_chrome_version():
+    """Get installed Chrome version"""
+    chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
     try:
-        file_path = r"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-
-        # WMI命令字符串
-        command = f'wmic datafile where name="{file_path}" get Version'
-        # 执行命令并捕获输出
-        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        # 从输出中提取版本信息
+        command = f'wmic datafile where name="{chrome_path}" get Version'
+        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        
         if result.returncode == 0:
-            version_line = [line for line in result.stdout.split('\n\n')]
-            if version_line:
-                return version_line[1].strip()
-        else:
-            logger.warning(f"Command failed with return code {result.returncode}: {result.stderr}")
+            version_lines = result.stdout.strip().split('\n\n')
+            if len(version_lines) > 1:
+                return version_lines[1].strip()
+                
+        logger.warning(f"Command failed: {result.stderr}")
     except Exception as e:
-        logger.warning(f"Error reading file version: {e}")
+        logger.error(f"Failed to get Chrome version: {e}")
     return None

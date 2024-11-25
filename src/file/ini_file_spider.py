@@ -1,267 +1,193 @@
 import os
 import sys
+from pathlib import Path
+from typing import Dict, Any, Optional
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import configparser
-from model.SpiderConfigModel import SpiderConfigModel
 from loguru import logger
+from model.SpiderConfigModel import SpiderConfigModel
 from utils.sys_info import get_cur_os
-import json
 
-ini_path = os.path.join(os.getcwd(), 'config')
-ini_file_path = os.path.join(ini_path, 'config.ini')
+INI_PATH = os.path.join(os.getcwd(), 'config')
+INI_FILE_PATH = os.path.join(INI_PATH, 'config.ini')
 
 
 @logger.catch
-def read_config_all():
-    """
-    ini file select all
-    :return:
-    """
-
+def read_config_all() -> Dict[str, Dict[str, str]]:
+    """Read all sections from config file and return as dictionary"""
     config = configparser.ConfigParser()
-
-    # 读取配置文件
-    iniPath = os.path.realpath(ini_file_path)
-    config.read(iniPath)
-
-    # 将配置项保存到列表中
-    # 将配置转换为字典
-    ini_dict = {section: dict(config.items(section)) for section in config.sections()}
-
-    # 将字典转换为JSON字符串
-    json_data = json.dumps(ini_dict, indent=4)
-    # 打印结果
-    # print(tolist)
-    return ini_dict
+    config.read(os.path.realpath(INI_FILE_PATH))
+    return {section: dict(config.items(section)) for section in config.sections()}
 
 
 @logger.catch
-def spider_config():
-    """
-    ini 配置文件查询
-    :return:
-    """
+def spider_config() -> SpiderConfigModel:
+    """Read spider configuration from ini file"""
     entity = SpiderConfigModel()
-    entity.s2_url = read_ini_config(ini_file_path, "spider_config", "s2_url")
-    entity.visit_url = read_ini_config(ini_file_path, "spider_config", "visit_url")
-    entity.s1_url = read_ini_config(ini_file_path, "spider_config", 's1_url')
-    entity.target_url = read_ini_config(ini_file_path, "spider_config", 'target_url')
-    entity.r18_mode = read_ini_config(ini_file_path, "spider_config", 'r18_mode')
-    entity.all_show = read_ini_config(ini_file_path, "spider_config", 'all_show')
-    entity.proxy_flag = read_ini_config(ini_file_path, "spider_config", 'proxy_flag')
-    entity.search_delta_time = read_ini_config(ini_file_path, "spider_config", 'search_delta_time')
-    entity.detail_delta_time = read_ini_config(ini_file_path, "spider_config", 'detail_delta_time')
-    entity.sis_log_level = read_ini_config(ini_file_path, "spider_config", 'sis_log_level')
-    entity.spider_images_max_count = read_ini_config(ini_file_path, "spider_config", "spider_images_max_count")
-    entity.output_video_fps = read_ini_config(ini_file_path, "spider_config", "output_video_fps")
-    entity.output_video_width = read_ini_config(ini_file_path, "spider_config", "output_video_width")
-    entity.output_video_height = read_ini_config(ini_file_path, "spider_config", "output_video_height")
-    entity.proxy_server_ip = read_ini_config(ini_file_path, "spider_config", "proxy_server_ip")
-    entity.proxy_server_port = read_ini_config(ini_file_path, "spider_config", "proxy_server_port")
+    
+    # Spider config section
+    spider_section = "spider_config"
+    entity.s2_url = read_ini_config(INI_FILE_PATH, spider_section, "s2_url")
+    entity.visit_url = read_ini_config(INI_FILE_PATH, spider_section, "visit_url") 
+    entity.s1_url = read_ini_config(INI_FILE_PATH, spider_section, "s1_url")
+    entity.target_url = read_ini_config(INI_FILE_PATH, spider_section, "target_url")
+    entity.r18_mode = read_ini_config(INI_FILE_PATH, spider_section, "r18_mode")
+    entity.all_show = read_ini_config(INI_FILE_PATH, spider_section, "all_show")
+    entity.proxy_flag = read_ini_config(INI_FILE_PATH, spider_section, "proxy_flag")
+    entity.search_delta_time = read_ini_config(INI_FILE_PATH, spider_section, "search_delta_time")
+    entity.detail_delta_time = read_ini_config(INI_FILE_PATH, spider_section, "detail_delta_time")
+    entity.sis_log_level = read_ini_config(INI_FILE_PATH, spider_section, "sis_log_level")
+    entity.spider_images_max_count = read_ini_config(INI_FILE_PATH, spider_section, "spider_images_max_count")
+    entity.output_video_fps = read_ini_config(INI_FILE_PATH, spider_section, "output_video_fps")
+    entity.output_video_width = read_ini_config(INI_FILE_PATH, spider_section, "output_video_width")
+    entity.output_video_height = read_ini_config(INI_FILE_PATH, spider_section, "output_video_height")
+    entity.proxy_server_ip = read_ini_config(INI_FILE_PATH, spider_section, "proxy_server_ip")
+    entity.proxy_server_port = read_ini_config(INI_FILE_PATH, spider_section, "proxy_server_port")
 
-    entity.minio_config_id = read_ini_config(ini_file_path, "minio_config_selected", 'minio_config_id')
-    entity.minio_server_ip = read_ini_config(ini_file_path, "minio_config_selected", 'minio_server_ip')
-    entity.minio_server_port = read_ini_config(ini_file_path, "minio_config_selected", 'minio_server_port')
-    entity.minio_account = read_ini_config(ini_file_path, "minio_config_selected", 'minio_account')
-    entity.minio_password = read_ini_config(ini_file_path, "minio_config_selected", 'minio_password')
-    entity.enable = read_ini_config(ini_file_path, "minio_config_selected", 'enable')
+    # Minio config section
+    minio_section = "minio_config_selected"
+    entity.minio_config_id = read_ini_config(INI_FILE_PATH, minio_section, "minio_config_id")
+    entity.minio_server_ip = read_ini_config(INI_FILE_PATH, minio_section, "minio_server_ip")
+    entity.minio_server_port = read_ini_config(INI_FILE_PATH, minio_section, "minio_server_port")
+    entity.minio_account = read_ini_config(INI_FILE_PATH, minio_section, "minio_account")
+    entity.minio_password = read_ini_config(INI_FILE_PATH, minio_section, "minio_password")
+    entity.enable = read_ini_config(INI_FILE_PATH, minio_section, "enable")
+
     return entity
 
 
 @logger.catch
-def write_minio_config_to_file(minio_config):
-    """
-    ini config write
-    :param minio_config: [] notice
-    :return:
-    """
-    iniPath = os.path.realpath(ini_file_path)
-    logger.info("Generate file path: " + iniPath)
+def write_minio_config_to_file(minio_config: SpiderConfigModel) -> bool:
+    """Write minio configuration to ini file"""
+    ini_path = os.path.realpath(INI_FILE_PATH)
+    logger.info(f"Generate file path: {ini_path}")
+
+    # Create config directory if not exists
+    os.makedirs(os.path.dirname(ini_path), exist_ok=True)
+
+    # Remove existing file
+    try:
+        if os.path.exists(ini_path):
+            os.remove(ini_path)
+    except PermissionError as pe:
+        logger.error(f"Permission error: {pe}")
+        return False
+    except Exception as e:
+        logger.error(f"Unknown error: {e}")
+        return False
+
     conf = configparser.ConfigParser()
-    if os.path.exists(iniPath):
-        try:
-            os.remove(iniPath)
-        except PermissionError as pe:
-            logger.error("Permission error, ini file only read mode, please update config.ini file permission! detail: " + str(pe))
-            return False
-        except Exception as e:
-            logger.error("Unknown error, detail: " + str(e))
-            return False
-    logger.warning("Not Found config ini file , creating ini file ....")
-    if not os.path.exists(ini_path):
-        os.makedirs(ini_path)
-        logger.debug("Dir not exists, create dir")
-    conf.read(iniPath, 'utf-8')
-    logger.info("Start generate config ini file.")
 
+    # Spider config section
     conf.add_section("spider_config")
-    conf.set("spider_config", "s2_url", minio_config.s2_url)
-    conf.set("spider_config", "visit_url", minio_config.visit_url)
-    conf.set("spider_config", "s1_url", minio_config.s1_url)
-    conf.set("spider_config", "target_url", minio_config.target_url)  # 写入配置参数
-    conf.set("spider_config", "r18_mode", str(minio_config.r18_mode))
-    conf.set("spider_config", "all_show", str(minio_config.all_show))
-    conf.set("spider_config", "proxy_flag", str(minio_config.proxy_flag))
-    conf.set("spider_config", "proxy_website", 'http://demo.spiderpy.cn')
-    conf.set("spider_config", "proxy_mode", 'auto')
-    conf.set("spider_config", "search_delta_time", str(minio_config.search_delta_time))
-    conf.set("spider_config", "detail_delta_time", str(minio_config.detail_delta_time))
-    conf.set("spider_config", "sis_log_level", minio_config.sis_log_level)
-    conf.set("spider_config", "spider_images_max_count", str(minio_config.spider_images_max_count))
-    conf.set("spider_config", "output_video_fps", str(minio_config.output_video_fps))
-    conf.set("spider_config", "output_video_width", str(minio_config.output_video_width))
-    conf.set("spider_config", "output_video_height", str(minio_config.output_video_height))
-    conf.set("spider_config", "proxy_server_ip", minio_config.proxy_server_ip)
-    conf.set("spider_config", "proxy_server_port", str(minio_config.proxy_server_port))
+    spider_config = {
+        "s2_url": minio_config.s2_url,
+        "visit_url": minio_config.visit_url,
+        "s1_url": minio_config.s1_url,
+        "target_url": minio_config.target_url,
+        "r18_mode": str(minio_config.r18_mode),
+        "all_show": str(minio_config.all_show),
+        "proxy_flag": str(minio_config.proxy_flag),
+        "proxy_website": "http://demo.spiderpy.cn",
+        "proxy_mode": "auto",
+        "search_delta_time": str(minio_config.search_delta_time),
+        "detail_delta_time": str(minio_config.detail_delta_time),
+        "sis_log_level": minio_config.sis_log_level,
+        "spider_images_max_count": str(minio_config.spider_images_max_count),
+        "output_video_fps": str(minio_config.output_video_fps),
+        "output_video_width": str(minio_config.output_video_width),
+        "output_video_height": str(minio_config.output_video_height),
+        "proxy_server_ip": minio_config.proxy_server_ip,
+        "proxy_server_port": str(minio_config.proxy_server_port)
+    }
+    for key, value in spider_config.items():
+        conf.set("spider_config", key, value)
 
+    # Automatic config section
     conf.add_section("automatic_config")
-    conf.set("automatic_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
-                                                    "square,custom,_50.gif,data:image/png,no_profile.png,common")
-    conf.set("automatic_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
-                                                     "50.gif,data:image/png,no_profile.png,common")
-    conf.set("automatic_config", "zoom_out_scale", "0.9")
-    conf.set("automatic_config", "zoom_in_scale", "1.1")
-    conf.set("automatic_config", "fire_wall_delay_time", "60")
-    conf.set("automatic_config", "download_img_retry_times", "2")
-    conf.set("automatic_config", "download_img_time_out", "10")
-    conf.set("automatic_config", "detect_timeout_auto", "300")
-    conf.set("automatic_config", "chrome_path", "None")
-    conf.set("automatic_config", "chrome_exe_path", "None")
-    conf.set("automatic_config", "chrome_version", "1")
-    conf.set("automatic_config", "upload_minio_image_Flag", "False")
-    conf.set("automatic_config", "allow_replace_domain_flag", 'True')
-    conf.set("automatic_config", "scheduled_download_program_flag", 'True')
-    conf.set("automatic_config", "dmi_api_server", '192.168.163.129:8888')
-    conf.set("automatic_config", "detect_img_model", "python")
-    conf.set("automatic_config", "WeChat_push_flag", 'True')
-    conf.set("automatic_config", "search_content", "site")
+    automatic_config = {
+        "filter_http_url": "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,square,custom,_50.gif,data:image/png,no_profile.png,common",
+        "filter_image_url": "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,50.gif,data:image/png,no_profile.png,common",
+        "zoom_out_scale": "0.9",
+        "zoom_in_scale": "1.1",
+        "fire_wall_delay_time": "60",
+        "download_img_retry_times": "2", 
+        "download_img_time_out": "10",
+        "detect_timeout_auto": "300",
+        "chrome_path": "None",
+        "chrome_exe_path": "None",
+        "chrome_version": "1",
+        "upload_minio_image_Flag": "False",
+        "allow_replace_domain_flag": "True",
+        "scheduled_download_program_flag": "True",
+        "dmi_api_server": "192.168.163.129:8888",
+        "detect_img_model": "python",
+        "WeChat_push_flag": "True",
+        "search_content": "site"
+    }
+    for key, value in automatic_config.items():
+        conf.set("automatic_config", key, value)
 
+    # Minio config section
     conf.add_section("minio_config_selected")
-    conf.set("minio_config_selected", "minio_config_id", "1")
-    conf.set("minio_config_selected", "minio_server_ip", "121.36.66.145")  # 写入配置参数
-    conf.set("minio_config_selected", "minio_server_port", "9000")
-    conf.set("minio_config_selected", "minio_account", "minioadmin")
-    conf.set("minio_config_selected", "minio_password", "minioadmin")
-    conf.set("minio_config_selected", "mark_msg", "minio_config['mark_msg']")
-    conf.set("minio_config_selected", "enable", '1')
+    minio_config_selected = {
+        "minio_config_id": "1",
+        "minio_server_ip": "121.36.66.145",
+        "minio_server_port": "9000", 
+        "minio_account": "minioadmin",
+        "minio_password": "minioadmin",
+        "mark_msg": "minio_config['mark_msg']",
+        "enable": "1"
+    }
+    for key, value in minio_config_selected.items():
+        conf.set("minio_config_selected", key, value)
 
+    # Unzip config section
     conf.add_section("unzip_config")
     conf.set("unzip_config", "SEVEN_ZIP_PATH", "C:/Program Files/7-Zip/7z.exe")
     conf.set("unzip_config", "PASSWORD", "1204")
 
-    conf.write(open(iniPath, 'a+', encoding="utf-8"))
-    conf.read(iniPath, 'utf-8')
-    logger.info("Config write finished, read test, current use visit url: " + conf.get("spider_config", "visit_url"))
+    with open(ini_path, 'a+', encoding="utf-8") as f:
+        conf.write(f)
+
+    logger.info(f"Config write finished, using visit url: {conf.get('spider_config', 'visit_url')}")
     return True
 
 
 @logger.catch
-def read_ini_config(file_name, section, value_key):
-    """
-    读取指定配置文件
-    :param file_name: ini file name
-    :param section: ini file section name
-    :param value_key: ini file content name
-    :return: select value
-    """
+def read_ini_config(file_name: str, section: str, value_key: str) -> str:
+    """Read value from ini config file"""
     config = configparser.ConfigParser()
-
     config.read(file_name, encoding="utf-8")
 
     try:
-        value = config.get(section, value_key)
-        return value
+        return config.get(section, value_key)
     except configparser.NoSectionError as e:
-        logger.error("Error! section: " + section + ", value_key: " + value_key + ", value error content: " + str(e))
+        logger.error(f"Section error: {section}, key: {value_key}, error: {e}")
         return "log_dir"
     except configparser.NoOptionError:
-        logger.error(f"No option '{section}' in section, please retry input config key!''" + value_key)
+        logger.error(f"No option '{value_key}' in section '{section}'")
         return ""
 
 
 @logger.catch
-def check_ini_config():
-    """
-    系统启动引入默认配置
-    :return:
-    """
-    iniPath = os.path.realpath(os.path.join("config", "config.ini"))
-    # logger.info("detect config file, path: " + iniPath)
-    conf = configparser.ConfigParser()
-    if os.path.exists(iniPath):
+def check_ini_config() -> bool:
+    """Initialize default configuration if not exists"""
+    ini_path = os.path.realpath(os.path.join("config", "config.ini"))
+    
+    if os.path.exists(ini_path):
         return True
-    else:
-        # logger.warning("Not Found config ini file, creating ini file....")
-        # config_folder_name = ""
-        if get_cur_os() == "win32":
-            config_folder_name = ".\\config"
-        else:
-            config_folder_name = "./config"
-        if not os.path.exists(config_folder_name):
-            os.makedirs(config_folder_name)
-            logger.debug("Dir not exists, creating dir")
-        conf.read(iniPath, 'utf-8')
-        # logger.info("start generate config ini file: ")
-        conf.add_section("spider_config")
-        conf.set("spider_config", "visit_url", "sd.vv50.de")
-        conf.set("spider_config", "s1_url", "pixiv.srpr.cc")
-        conf.set("spider_config", "s2_url", "pixiv.888718.xyz")
-        conf.set("spider_config", "target_url", "pximg.lolicon.run")  # 写入配置参数
-        conf.set("spider_config", "r18_mode", 'True')
-        conf.set("spider_config", "all_show", 'False')
-        conf.set("spider_config", "proxy_flag", 'False')
-        conf.set("spider_config", "proxy_website", 'http://demo.spiderpy.cn')
-        conf.set("spider_config", "proxy_mode", 'auto')
-        conf.set("spider_config", "search_delta_time", '3')
-        conf.set("spider_config", "detail_delta_time", '2')
-        conf.set("spider_config", "sis_log_level", 'DEBUG')
-        conf.set("spider_config", "spider_images_max_count", '1000')
-        conf.set("spider_config", "output_video_fps", "24")
-        conf.set("spider_config", "output_video_width", "2560")
-        conf.set("spider_config", "output_video_height", "1440")
-        conf.set("spider_config", "proxy_server_ip", "192.168.199.26")
-        conf.set("spider_config", "proxy_server_port", "8080")
 
-        conf.add_section("automatic_config")
-        conf.set("automatic_config", "filter_http_url", "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,"
-                                                        "square,custom,_50.gif,data:image/png,no_profile.png,common")
-        conf.set("automatic_config", "filter_image_url", "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,"
-                                                         "50.gif,data:image/png,no_profile.png,common")
-        conf.set("automatic_config", "zoom_out_scale", "0.9")
-        conf.set("automatic_config", "zoom_in_scale", "1.1")
-        conf.set("automatic_config", "fire_wall_delay_time", "60")
-        conf.set("automatic_config", "download_img_retry_times", "2")
-        conf.set("automatic_config", "download_img_time_out", "10")
-        conf.set("automatic_config", "detect_timeout_auto", "300")
-        conf.set("automatic_config", "chrome_path", "None")
-        conf.set("automatic_config", "chrome_exe_path", "None")
-        conf.set("automatic_config", "chrome_version", "1")
-        conf.set("automatic_config", "upload_minio_image_Flag", "False")
-        conf.set("automatic_config", "allow_replace_domain_flag", 'True')
-        # scheduled_download_program_flag
-        conf.set("automatic_config", "scheduled_download_program_flag", 'True')
-        # dmi_api_server
-        conf.set("automatic_config", "dmi_api_server", '192.168.163.129:8888')
-        conf.set("automatic_config", "detect_img_model", "python")
-        conf.set("automatic_config", "WeChat_push_flag", 'True')
-        conf.set("automatic_config", "search_content", "site")
+    config_folder = ".\\config" if get_cur_os() == "win32" else "./config"
+    os.makedirs(config_folder, exist_ok=True)
 
-        conf.add_section("minio_config_selected")
-        conf.set("minio_config_selected", "minio_config_id", "1")
-        conf.set("minio_config_selected", "minio_server_ip", "121.36.66.145")  # 写入配置参数
-        conf.set("minio_config_selected", "minio_server_port", "9000")
-        conf.set("minio_config_selected", "minio_account", "minioadmin")
-        conf.set("minio_config_selected", "minio_password", "minioadmin")
-        conf.set("minio_config_selected", "mark_msg", "minio_config['mark_msg']")
-        conf.set("minio_config_selected", "enable", '1')
+    # Create default config
+    entity = SpiderConfigModel()
+    entity.visit_url = "sd.vv50.de"
+    entity.s1_url = "pixiv.srpr.cc"
+    entity.s2_url = "pixiv.888718.xyz"
+    entity.target_url = "pximg.lolicon.run"
 
-        conf.add_section("unzip_config")
-        conf.set("unzip_config", "SEVEN_ZIP_PATH", "C:/Program Files/7-Zip/7z.exe")
-        conf.set("unzip_config", "PASSWORD", "1204")
-
-        conf.write(open(iniPath, 'a+', encoding="utf-8"))
-        conf.read(iniPath, 'utf-8')
-        # logger.info("config write finished, read test: " + conf.get("spider_config", "visit_url"))
-        return True
+    return write_minio_config_to_file(entity)

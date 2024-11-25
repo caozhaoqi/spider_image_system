@@ -9,30 +9,42 @@ from image.gif_img_process import read_gif_url
 
 
 @logger.catch
-def spider_gif_images(keyword, chrome_driver):
+def spider_gif_images(keyword: str, chrome_driver) -> bool:
+    """Extract GIF/animation URLs from browser resources
+    
+    Args:
+        keyword: Search keyword for naming output file
+        chrome_driver: Selenium Chrome WebDriver instance
+        
+    Returns:
+        bool: True if URLs were found and saved successfully
     """
-    抓取动态资源
-    :param keyword:
-    :param chrome_driver:  chrome驱动
-    :return:
-    """
-    api_urls = []
     try:
-        requests = chrome_driver.execute_script("return window.performance.getEntriesByType('resource')")
+        # Get network requests from browser performance data
+        requests = chrome_driver.execute_script(
+            "return window.performance.getEntriesByType('resource')"
+        )
+        
+        # Find animation zip file URLs
+        api_urls = []
         for request in requests:
             if request['initiatorType'] == 'fetch' and "img-zip-ugoira" in request['name']:
                 api_urls.append(request['name'])
-                logger.success(f"Found gif url: {request['name'][-27:]}")  # 116320185_ugoira600x600.zip
+                logger.success(f"Found gif url: {request['name'][-27:]}")
                 break
-        txt_path_name = os.path.join(constants.data_path, "href_url")
-        if not os.path.exists(txt_path_name):
-            os.makedirs(txt_path_name)
-        if len(api_urls) == 0:
+                
+        if not api_urls:
             return False
-        if read_gif_url(txt_path_name + "/" + keyword + "_zip.txt", api_urls):
-            return True
+            
+        # Create output directory
+        txt_path_name = os.path.join(constants.data_path, "href_url")
+        os.makedirs(txt_path_name, exist_ok=True)
+        
+        # Save URLs to file
+        zip_txt_path = os.path.join(txt_path_name, f"{keyword}_zip.txt")
+        return read_gif_url(zip_txt_path, api_urls)
+        
     except Exception as e:
-        logger.warning(f"Unknown error, drive will quit! type: {type(e).__name__}")
+        logger.warning(f"Failed to extract GIF URLs: {type(e).__name__}")
         chrome_driver.quit()
         return False
-    return False

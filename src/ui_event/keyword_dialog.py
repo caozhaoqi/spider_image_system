@@ -1,117 +1,95 @@
 import os
 import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QLabel, QHBoxLayout, QWidget, QTextEdit
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QPushButton, QLabel, 
+    QHBoxLayout, QWidget, QTextEdit
+)
 from loguru import logger
 from run import constants
 
 
 class KeywordDialog(QDialog):
     def __init__(self):
-        """
-
-        """
         super().__init__()
         self.keyword_label = None
         self.keyword_edt = None
-
         self.init_ui()
 
     @logger.catch
     def init_ui(self):
-        """
-
-        :return:
-        """
-        self.setWindowTitle('添加关键字(以,分割)')
+        """Initialize the UI components"""
+        self.setWindowTitle('Add Keywords (Comma Separated)')
         self.setFixedSize(600, 400)
 
-        self.keyword_label = QLabel('关键字:')
+        # Create widgets
+        self.keyword_label = QLabel('Keywords:')
         self.keyword_edt = QTextEdit()
+        save_button = QPushButton('Save')
+        cancel_button = QPushButton('Cancel')
 
-        # 创建保存和取消按钮
-        save_button = QPushButton('保存')
-        cancel_button = QPushButton('取消')
-
-        # 布局设置
+        # Create layouts
         layout = QVBoxLayout()
+        input_widget = QWidget()
+        input_layout = QHBoxLayout(input_widget)
+        button_layout = QHBoxLayout()
 
-        window_video = QWidget()
-        h_layout_video = QHBoxLayout(window_video)
-        h_layout_video.addWidget(self.keyword_label)
-        h_layout_video.addWidget(self.keyword_edt)
-        h_lay = QHBoxLayout(window_video)
-        h_lay.addWidget(save_button)
-        h_lay.addWidget(cancel_button)
-        # layout.addWidget(save_button)
-        # layout.addWidget(cancel_button)
-        layout.addWidget(window_video)
-        layout.addLayout(h_lay)
+        # Add widgets to layouts
+        input_layout.addWidget(self.keyword_label)
+        input_layout.addWidget(self.keyword_edt)
+        button_layout.addWidget(save_button)
+        button_layout.addWidget(cancel_button)
+
+        layout.addWidget(input_widget)
+        layout.addLayout(button_layout)
         self.setLayout(layout)
 
-        # 连接信号和槽
-        save_button.clicked.connect(lambda: save_data(self))
+        # Connect signals
+        save_button.clicked.connect(lambda: self.save_data())
         cancel_button.clicked.connect(self.reject)
 
     @logger.catch
-    def closeEvent(self, event, _=None):
-        """
-        对话框关闭
-        :param _:
-        :param event:
-        :return:
-        """
-        # 在这里你可以添加任何你需要在对话框关闭时执行的代码
+    def closeEvent(self, event):
+        """Handle dialog close event"""
         logger.debug('Keyword Dialog is closing!')
-        # constants.edit_config_msg_visible = False
-        # 调用基类的 closeEvent 方法以确保对话框正常关闭
-        super(KeywordDialog, self).closeEvent(event)
+        super().closeEvent(event)
 
+    @logger.catch
+    def save_data(self):
+        """Save keywords to file"""
+        keyword_txt = self.keyword_edt.toPlainText()
+        keywords = [k.strip() for k in keyword_txt.split(',') if k.strip()]
+        
+        if not keywords:
+            logger.warning(f"No valid keywords entered: {keyword_txt}")
+            return False
 
-@logger.catch
-def save_data(self):
-    """
-    save data ini file
-    :param self:
-    :return:
-    """
-    #
-    keyword_txt = self.keyword_edt.toPlainText()
-    auto_spider_file_path = os.path.join(constants.data_path, "auto_spider_img")
+        # Create output directory if needed
+        spider_dir = Path(constants.data_path) / "auto_spider_img"
+        spider_dir.mkdir(exist_ok=True)
+        
+        keyword_file = spider_dir / "spider_img_keyword.txt"
 
-    if not os.path.exists(auto_spider_file_path):
-        os.makedirs(auto_spider_file_path)
+        # Create file if it doesn't exist
+        if not keyword_file.exists():
+            keyword_file.write_text("", encoding='utf-8')
+            logger.warning(f"Created new keyword file: {keyword_file}")
 
-    file_name = 'spider_img_keyword.txt'
+        # Read existing keywords
+        existing_keywords = []
+        if keyword_file.stat().st_size > 0:
+            existing_keywords = keyword_file.read_text(encoding='utf-8').splitlines()
 
-    # 使用split()方法按','切割字符串
-    split_string = keyword_txt.split(',')
-    if not split_string or split_string == ['']:
-        logger.warning(f"Not input keyword: {keyword_txt}")
-        return False
-    full_file_path = os.path.join(auto_spider_file_path, file_name)
+        # Add new keywords
+        all_keywords = existing_keywords + keywords
 
-    # 确保文件存在
-    if not os.path.exists(full_file_path):
-        with open(full_file_path, 'w', encoding='utf-8') as file:
-            file.write("")
-            logger.warning(f"Not found {full_file_path}, start create file and write.")
+        # Write back to file
+        keyword_file.write_text(
+            "\n".join(k.strip() for k in all_keywords), 
+            encoding='utf-8'
+        )
 
-    # 读入已保存keyword
-    with open(full_file_path, 'r', encoding='utf-8') as file:
-        saved_content_list = file.readlines()
-
-    if len(split_string) > 0:
-        for item in split_string:
-            saved_content_list.append(item)
-
-    with open(full_file_path, 'w', encoding='utf-8') as file:
-        # 将切割后的字符串逐行写入文件
-        for item in saved_content_list:
-            file.write("%s\n" % item.strip())
-
-    logger.success(f"Add success, please re click spider menu start spider: {keyword_txt}")
-    # super(KeywordDialog, self).closeEvent(event)
-    self.close()
+        logger.success(f"Successfully added keywords: {keyword_txt}")
+        self.close()

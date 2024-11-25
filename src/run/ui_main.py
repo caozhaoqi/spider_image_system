@@ -1,52 +1,44 @@
 import os
 import sys
+from pathlib import Path
+from threading import Thread
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(str(Path(__file__).parent.parent))
 
 from PyQt5.QtWidgets import QApplication
 from loguru import logger
 from log.log_record import log_record, check_version
 from ui_event.pyqt_main_ui import UIMainWindows
 from utils.system_monitor import sys_mon
-import threading
 
 
 @logger.catch
-def ui_paint():
-    """
-    ui paint from pyqt5
-    :return:
-    """
+def ui_paint() -> None:
+    """Initialize and run the PyQt5 UI application"""
     app = QApplication(sys.argv)
-
-    # 单次点击close不退出
-    app.setQuitOnLastWindowClosed(False)
-
-    w = UIMainWindows()
-    w.show()
+    app.setQuitOnLastWindowClosed(False)  # Don't quit on window close
+    
+    window = UIMainWindows()
+    window.show()
     app.exec_()
 
 
 @logger.catch
-def start_sys_mon():
+def start_sys_mon() -> bool:
+    """Start system monitoring in a background thread
+    
+    Returns:
+        bool: True if monitor thread started successfully
     """
-
-    :return:
-    """
-    sys_mon_thread_obj = threading.Thread(
-        target=sys_mon,
-        args=())
-    sys_mon_thread_obj.start()
+    monitor_thread = Thread(target=sys_mon, daemon=True)
+    monitor_thread.start()
     return True
 
 
 @logger.catch
-def run_main_py():
-    """
-
-    :return:
-    """
-    if log_record() and check_version() and start_sys_mon():
+def run_main_py() -> None:
+    """Main entry point - initialize logging, check version and start UI"""
+    if all([log_record(), check_version(), start_sys_mon()]):
         ui_paint()
 
 

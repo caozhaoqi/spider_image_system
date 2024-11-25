@@ -1,177 +1,161 @@
 import os
 import sys
+from pathlib import Path
+from typing import Optional
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(str(Path(__file__).parent.parent))
 
 import random
 from loguru import logger
 from selenium.webdriver import ActionChains, Keys
+from selenium.webdriver.remote.webdriver import WebDriver
 from run import constants
 from utils.time_utils import sys_sleep_time
 
 
 @logger.catch
-def filter_not_use(url):
+def filter_not_use(url: str) -> bool:
+    """过滤不需要的URL
+    
+    Args:
+        url: 要过滤的URL
+        
+    Returns:
+        是否需要过滤
     """
-    filter not need url
-    :param url:
-    :return:
-    """
-    filter_url_http = constants.filter_http_url.split(',')
+    filter_urls = constants.filter_http_url.split(',')
     try:
-        for filter_url_http_content in filter_url_http:
-            if filter_url_http_content in url:
-                return True
+        return any(filter_url in url for filter_url in filter_urls)
     except Exception as e:
-        # 遇到异常跳过该url
-        logger.warning("Unknown error, detail: " + str(e))
+        logger.warning(f"URL过滤出错: {e}")
+        return True
+
+
+@logger.catch 
+def filter_not_use_url(image_url: str) -> bool:
+    """过滤不需要的图片URL
+    
+    Args:
+        image_url: 要过滤的图片URL
+        
+    Returns:
+        是否需要过滤
+    """
+    filter_urls = constants.filter_image_url.split(',')
+    try:
+        return any(filter_url in image_url for filter_url in filter_urls) or "artworks" not in image_url
+    except Exception as e:
+        logger.warning(f"图片URL过滤出错: {e}")
         return True
 
 
 @logger.catch
-def filter_not_use_url(image_url):
-    """
-    filter not need http_tools url
-    :param image_url: filter url
-    :return:
-    """
-    filter_url_image = constants.filter_image_url.split(',')
-    try:
-        for filter_url_image_content in filter_url_image:
-            if filter_url_image_content in image_url or "artworks" not in image_url:
-                return True
-    except Exception as e:
-        logger.warning("Unknown error, detail: " + str(e))
-        return True
-
-
-@logger.catch
-def artwork_filter(url):
-    """
-    artwork url filter for users image spider
-    :param url: spider url
-    :return: compare result
+def artwork_filter(url: str) -> bool:
+    """过滤用户图片爬取的URL
+    
+    Args:
+        url: 要过滤的URL
+        
+    Returns:
+        是否需要过滤
     """
     parts = url.split("/artworks/")
     if len(parts) > 1:
-        content_after_artworks = parts[1]
-        if content_after_artworks.isdigit():
-            return False
+        return not parts[1].isdigit()
     return True
 
 
 @logger.catch
-def url_process_page(url, current_page):
+def url_process_page(url: str, current_page: int) -> str:
+    """处理分页URL
+    
+    Args:
+        url: 基础URL
+        current_page: 当前页码
+        
+    Returns:
+        处理后的URL
     """
-    split page from point url
-    :param current_page:
-    :param url:
-    :return:
-    """
-    page_url = url + "p=" + str(current_page) + "&s_mode=s_tag"
-    return page_url
+    return f"{url}p={current_page}&s_mode=s_tag"
 
 
 @logger.catch
-def open_look_all(driver):
+def open_look_all(driver: WebDriver) -> bool:
+    """点击"查看全部"或"阅读作品"按钮
+    
+    Args:
+        driver: WebDriver实例
+        
+    Returns:
+        是否点击成功
     """
-    点击查看全部 按钮模拟点击
-    :param driver:
-    :return:
-    """
-    """
-    """
-
     try:
         button = driver.execute_script("""
-        var buttons = document.getElementsByTagName('button');
-        for (var i = 0; i < buttons.length; i++) {
-          var button = buttons[i];
-          if (button.textContent.includes('查看全部') || button.textContent.includes('阅读作品')) {
-            return button;
-          }
-        }
+        return Array.from(document.getElementsByTagName('button'))
+            .find(button => ['查看全部', '阅读作品'].some(text => button.textContent.includes(text)));
         """)
+        
         if button:
             button.click()
-            # driver.implicitly_wait(detail_delta_time)
             sys_sleep_time(driver, constants.detail_delta_time, False)
             random_action(driver)
             return True
+            
     except Exception as e:
-        logger.warning(f"Unknown error, MaxRetryError!!! detail: {e}")
-        # driver.quit()
-        return False
+        logger.warning(f"点击按钮失败: {e}")
+        
     return False
 
 
 @logger.catch
-def slider_page_down(driver):
-    """
-
-    :param driver:
-    :return:
+def slider_page_down(driver: WebDriver) -> None:
+    """页面滑动操作
+    
+    Args:
+        driver: WebDriver实例
     """
     try:
         page_height = driver.execute_script("return document.body.scrollHeight")
-
         actions = ActionChains(driver)
 
-        actions.send_keys(Keys.END).perform()
-        actions.send_keys(Keys.PAGE_DOWN).perform()
+        for key in [Keys.END, Keys.PAGE_DOWN, Keys.HOME, Keys.PAGE_DOWN]:
+            actions.send_keys(key).perform()
+            sys_sleep_time(driver, constants.detail_delta_time, False)
 
-        sys_sleep_time(driver, constants.detail_delta_time, False)
-        # driver.implicitly_wait(detail_delta_time)
-
-        actions.send_keys(Keys.HOME).perform()
-        actions.send_keys(Keys.PAGE_DOWN).perform()
-
-        sys_sleep_time(driver, constants.detail_delta_time, False)
-        # driver.implicitly_wait(detail_delta_time)
-
-        logger.info(f"Slider page down! page height {page_height}px")
+        logger.info(f"页面滑动完成,页面高度: {page_height}px")
         random_action(driver)
-
-        sys_sleep_time(driver, constants.detail_delta_time, False)
-        # driver.implicitly_wait(detail_delta_time)
+        
     except Exception as e:
-        logger.warning(f"Unknown error, type: {type(e).__name__}")
+        logger.warning(f"页面滑动失败: {type(e).__name__}")
 
 
 @logger.catch
-def random_action(driver):
+def random_action(driver: WebDriver) -> None:
+    """执行随机页面操作
+    
+    Args:
+        driver: WebDriver实例
     """
-
-    :param driver:
-    :return:
-    """
-    # # 假设 driver 已经初始化
     try:
-        # 获取页面高度
         page_height = driver.execute_script("return document.body.scrollHeight")
-
-        # 定义一些随机时间和动作
-        random_delay = random.randint(1, 5)  # 随机延迟1到3秒
-        random_keys = [Keys.END, Keys.PAGE_DOWN, Keys.HOME]  # 可能的按键列表
-        random_key_order = random.sample(random_keys, len(random_keys))  # 随机选择按键顺序
-        random_key_repeats = random.randint(1, 5)  # 每个按键随机重复1到3次
-
-        # 执行随机动作
         actions = ActionChains(driver)
+        
+        random_delay = random.uniform(1, 5)
+        random_keys = [Keys.END, Keys.PAGE_DOWN, Keys.HOME]
+        random_key_order = random.sample(random_keys, len(random_keys))
+        random_key_repeats = random.randint(1, 5)
+
         for key in random_key_order:
             for _ in range(random_key_repeats):
                 actions.send_keys(key).perform()
-                # driver.implicitly_wait(random.random() * random_delay)  # 在每个动作之间添加随机延迟
                 sys_sleep_time(driver, random.random() * random_delay, False)
 
-        # 执行最终的页面滚动和延迟
-        # driver.implicitly_wait(random.random() * random_delay)
         sys_sleep_time(driver, random.random() * random_delay, False)
         actions.send_keys(Keys.HOME).perform()
         actions.send_keys(Keys.PAGE_DOWN).perform()
-        # driver.implicitly_wait(random.random() * random_delay)
         sys_sleep_time(driver, random.random() * random_delay, False)
-        # 记录日志
-        logger.info(f"Random slider page down! page height {page_height}px")
+        
+        logger.info(f"随机页面操作完成,页面高度: {page_height}px")
+        
     except Exception as e:
-        logger.warning(f"Unknown error, type: {type(e).__name__}")
+        logger.warning(f"随机操作失败: {type(e).__name__}")

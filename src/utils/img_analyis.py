@@ -1,7 +1,8 @@
-import os
 import sys
+from pathlib import Path
+from typing import Tuple, List
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(str(Path(__file__).parent.parent))
 
 from loguru import logger
 from run import constants
@@ -10,28 +11,29 @@ from utils.http_utils import match_img_result
 
 
 @logger.catch
-def img_analyze_data_output_new():
+def img_analyze_data_output_new() -> Tuple[List[str], List[int]]:
+    """分析图片数据并统计各类别数量
+    
+    Returns:
+        Tuple[List[str], List[int]]: 包含类别名称列表和对应数量列表的元组
     """
-    log analyze data analyze
-    :return:
-    """
-
     category_counts = {}
-    data = find_images(constants.data_path)
-    for img_path in data:
+    
+    # 获取所有图片路径
+    image_paths = find_images(constants.data_path)
+    
+    # 统计各类别数量
+    for img_path in image_paths:
         category = match_img_result(img_path)
+        category_counts[category] = category_counts.get(category, 0) + 1
 
-        if category not in category_counts:
-            category_counts[category] = 0
-
-        category_counts[category] += 1
-
+    # 分离类别和数量
     categories = list(category_counts.keys())
-
     counts = list(category_counts.values())
 
     return categories, counts
 
-#
-# if __name__ == '__main__':
-#     img_analyze_data_output_new()
+
+if __name__ == '__main__':
+    categories, counts = img_analyze_data_output_new()
+    logger.info(f"图片类别统计:\n{dict(zip(categories, counts))}")

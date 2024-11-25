@@ -1,8 +1,9 @@
-#!coding: utf - 8
+#!coding: utf-8
 import os
 import sys
+from pathlib import Path
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(str(Path(__file__).parent.parent))
 
 import re
 import threading
@@ -12,20 +13,20 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QMainWindow, QFileDialog, QSystemTrayIcon
 from PyQt5 import QtWidgets, QtGui, QtCore
 from loguru import logger
+
 from file.file_process import scan_directory_zip_txt
 from file.gofile_downloader import start_download_file_link
 from run import constants
 from run.constants import sis_server_version, zoom_out_scale, zoom_in_scale
 from http_tools.http_request import url_zip_all_process, unzip_generate_gif
 from image.img_switch import show_filter_image, folder_path, find_images, show_image
-from image.spider_img_save import download_img_txt, remove_error_image, img_category_button
+from image.spider_img_save import download_img_txt
 from image.video_process import play_video_process, process_images_thread
-from ui_event.base_event import scan_populate_mp4_list, exit_save_data
+from ui_event.base_event import scan_populate_mp4_list, exit_save_data, on_last_window_closed
 from ui_event.get_url import spider_artworks_url
 from ui_event.spider_base_ui import base_menu, tab_1_ui_paint, tab_2_ui_paint, tab_3_ui_paint, tab_ui_tab
 from ui_event.log_show_dialog import show_log_output_method
 from utils.time_utils import get_cur_time
-from ui_event.base_event import on_last_window_closed
 from utils.wx_push import wx_push_content
 
 current_image_index = 0
@@ -34,10 +35,7 @@ image_files = show_filter_image(find_images(folder_path))
 
 @logger.catch
 def open_data_path_method():
-    """
-
-    :return:
-    """
+    """Opens the data directory in the system file explorer"""
     try:
         if os.name == 'nt':  # Windows
             os.startfile(constants.data_path)
@@ -45,19 +43,19 @@ def open_data_path_method():
             import subprocess
             subprocess.Popen(['xdg-open', constants.data_path])
 
-        logger.success(f"Open data path: {constants.data_path} success!")
+        logger.success(f"Opened data path: {constants.data_path}")
     except Exception as e:
-        logger.error(f"Open data path: {constants.data_path} fail, detail: {e}")
+        logger.error(f"Failed to open data path: {constants.data_path}, error: {e}")
 
 
 class UIMainWindows(QMainWindow):
 
-    @logger.catch
+    @logger.catch 
     def __init__(self):
-        """
-
-        """
+        """Initialize the main UI window"""
         QWidget.__init__(self)
+        
+        # Initialize instance variables
         self.trayIcon = None
         self.trayIconMenu = None
         self.quitAppAction = None
@@ -73,12 +71,14 @@ class UIMainWindows(QMainWindow):
         self.show_page_label = None
         self.spider_mode_show_label = None
         self.index_1_show_flag = False
-        self.setWindowTitle(u"Spider Image System (" + sis_server_version + ")")
+
+        # Setup window properties
+        self.setWindowTitle(f"Spider Image System ({sis_server_version})")
         icon = QIcon()
-        icon.addPixmap(
-            QPixmap("../run/favicon.ico"), QIcon.Normal, QIcon.Off)
+        icon.addPixmap(QPixmap("../run/favicon.ico"), QIcon.Normal, QIcon.Off)
         self.setWindowIcon(icon)
 
+        # Setup UI components
         self.setMenuBar(base_menu(self))
         self.tab1, self.tab2, self.tab3, self.tab_widget = tab_ui_tab(self)
 
@@ -86,504 +86,436 @@ class UIMainWindows(QMainWindow):
         tab_2_ui_paint(self)
         tab_3_ui_paint(self)
 
-        # 连接 currentChanged 信号到槽函数
+        # Connect tab change signal
         self.tab_widget.currentChanged.connect(self.on_tab_changed)
 
+        # Setup image interaction properties
         self.isDragging = False
         self.dragStartPos = None
         self.lastMousePos = None
         self.scaleFactor = 1.0
         self.label.installEventFilter(self)
+
+        # Show maximized window
         self.showMaximized()
-        # init ui show
+        
+        # Initialize UI state
         self.spider_mode_show_label.setText(constants.spider_mode)
 
-        # 配置最小化
+        # Setup system tray
         self.set_tray_icon()
 
     def on_tab_changed(self, index, _=None):
-        """
-        tab change
-        :param _:
-        :param index:
-        :return:
-        """
+        """Handle tab change events"""
         if index == 1 and not self.index_1_show_flag:
             scan_populate_mp4_list(self)
-            logger.info("Video clicked, loading mp4 data.")
+            logger.info("Video tab clicked, loading mp4 data")
             self.index_1_show_flag = True
-            # index = 0
 
     @logger.catch
     def jump_point_image_click(self, _=None):
-        """
-        跳转指定页面
-        :return:
-        """
+        """Jump to specified image page"""
         images_list = find_images(constants.data_path)
-        if len(images_list) == 0:
-            logger.warning("Jump image error, no image!")
+        if not images_list:
+            logger.warning("Cannot jump - no images found")
             return False
+
         image_keyword = self.image_page.text()
-        if image_keyword == '' or image_keyword is None:
-            logger.warning("Input keyword error!")
+        if not image_keyword:
+            logger.warning("No keyword entered")
             return False
+
         numbers = re.findall(r'\d+', image_keyword)
         letters = re.findall('[a-zA-Z]+', image_keyword)
-        logger.info(f"You input search keyword: {numbers}, {letters}")
-        if numbers[0] and len(letters) == 0:
-            # 存在数字 并且不存在字母
-            logger.info(f"Start jump image page: {image_keyword}")
-            self.jump_point_image_page(int(image_keyword))
+        logger.info(f"Search keyword: {numbers}, {letters}")
+
+        if numbers and not letters:
+            # Jump to page number
+            logger.info(f"Jumping to image page: {image_keyword}")
+            self.jump_point_image_page(int(numbers[0]))
         else:
-            logger.info(f"Start jump image page, image name keyword {image_keyword}")
+            # Search by name
+            logger.info(f"Searching for image with keyword: {image_keyword}")
             for index, image_content in enumerate(images_list):
                 if image_keyword in image_content:
                     self.jump_point_image_page(index)
                     break
-        logger.info(f"Jump success! current page {numbers[0]}")
 
-    # @staticmethod
+        logger.info(f"Jump successful - current page {numbers[0]}")
+
     @logger.catch
     def next_img(self, _=None):
-        """
-        跳转下一页
-        :return:
-        """
+        """Show next image"""
         try:
             global current_image_index, image_files
             current_image_index = (current_image_index + 1) % len(image_files)
             show_image(self, image_files[current_image_index])
-            self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
-            logger.info("Next image show, current page: " + str(current_image_index) + ", count page: " + str(
-                len(image_files)))
+            self.show_page_label.setText(f"{current_image_index}/{len(image_files)}")
+            logger.info(f"Showing next image - page {current_image_index}/{len(image_files)}")
         except Exception as e:
-            logger.warning("Dir not image, or other err! detail: " + str(e))
+            logger.warning(f"Error showing next image: {e}")
 
     @logger.catch
     def before_img(self, _=None):
-        """
-        跳转前一页面
-        :return:
-        """
+        """Show previous image"""
         try:
             global current_image_index, image_files
             current_image_index = (current_image_index - 1 + len(image_files)) % len(image_files)
             show_image(self, image_files[current_image_index])
-            self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
-            logger.info("After image show, current page: " + str(current_image_index) + ", count page: " + str(
-                len(image_files)))
+            self.show_page_label.setText(f"{current_image_index}/{len(image_files)}")
+            logger.info(f"Showing previous image - page {current_image_index}/{len(image_files)}")
         except Exception as e:
-            logger.warning("Dir not image, or other err! detail: " + str(e))
+            logger.warning(f"Error showing previous image: {e}")
 
     @logger.catch
     def jump_point_image_page(self, index, _=None):
-        """
-        跳转指定页面
-        :param _:
-        :param index:
-        :param self:
-        :return:
-        """
+        """Jump to specific image index"""
         try:
             global image_files, current_image_index
             current_image_index = index
             show_image(self, image_files[current_image_index])
-            self.show_page_label.setText(str(current_image_index) + "/" + str(len(image_files)))
-            logger.info("After image show, current page: " + str(current_image_index) + ", count page: " + str(
-                len(image_files)))
+            self.show_page_label.setText(f"{current_image_index}/{len(image_files)}")
+            logger.info(f"Jumped to image - page {current_image_index}/{len(image_files)}")
         except Exception as e:
-            logger.warning("Dir not image, or other err! detail: " + str(e))
+            logger.warning(f"Error jumping to image: {e}")
 
     @logger.catch
     def input_keyword_process(self, _=None):
-        """
-        选择数据路径
-        :return:
-        """
+        """Process keyword input for spider"""
         if not constants.stop_spider_url_flag:
             self.error_tips("爬取操作")
-        else:
-            constants.spider_mode = 'manual'
-            key_word = self.file_text.text()
-            if key_word == '' or key_word is None:
-                logger.warning("Input keyword empty or error!")
-                return False
-            logger.debug("You input keyword is: " + str(key_word))
-            spider_thread_obj = threading.Thread(
-                target=spider_artworks_url,
-                args=(self, key_word,))
-            spider_thread_obj.start()
-            constants.stop_spider_url_flag = False
-            logger.info("Spider img thread starting... ")
+            return
+
+        constants.spider_mode = 'manual'
+        key_word = self.file_text.text()
+        
+        if not key_word:
+            logger.warning("Empty keyword entered")
+            return False
+
+        logger.debug(f"Processing keyword: {key_word}")
+        spider_thread = threading.Thread(
+            target=spider_artworks_url,
+            args=(self, key_word,)
+        )
+        spider_thread.start()
+        constants.stop_spider_url_flag = False
+        logger.info("Spider image thread started")
 
     @logger.catch
     def input_keyword_process_3(self, _=None):
-        """
-        选中指定文件夹tab 3
-        :return:
-        """
-        self.edt_input_file_text_3_str = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
-        if self.edt_input_file_text_3_str:
-            logger.debug('Selected folder:' + self.edt_input_file_text_3_str)
-        self.edt_input_file_text_3.setText(self.edt_input_file_text_3_str)
+        """Select folder for tab 3"""
+        folder = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
+        if folder:
+            logger.debug(f'Selected folder: {folder}')
+            self.edt_input_file_text_3_str = folder
+            self.edt_input_file_text_3.setText(folder)
 
     @logger.catch
     def remove_error_image_click(self, _=None):
-        """
-        下载指定txt中url对应images
-        :return:
-        """
+        """Remove error images"""
         if constants.single_flag:
             self.error_tips("删除错误图片操作")
             return
+            
         constants.single_flag = True
         remove_error_image(self)
 
     @logger.catch
     def img_category_button_click(self, _=None):
-        """
-        图片分类
-        :return:
-        """
+        """Categorize images"""
         if constants.single_flag:
             self.error_tips("图片分类操作")
             return
+            
         constants.single_flag = True
         img_category_button(self)
 
     @logger.catch
     def success_tips(self, operate_name, _=None):
-        """
-        success tips
-        :param _:
-        :param operate_name
-        :return:
-        """
-        # show_toast_thread("操作完成(*^▽^*)!")
-        self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作完成! (*^▽^*)")
+        """Show success notification"""
+        message = f"{get_cur_time()}: {operate_name}, 操作完成! (*^▽^*)"
+        self.sys_status_label.setText(message)
+        
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("成功提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
-            wx_push_content(f"{get_cur_time()}: {operate_name}, 操作完成! (*^▽^*)")
+            wx_push_content(message)
         else:
-            logger.warning("ERROR: windowsMessage()")
-        logger.success('Show success tips.')
+            logger.warning("System tray message not supported")
+            
+        logger.success('Success notification shown')
 
     @logger.catch
     def error_tips(self, operate_name, _=None):
-        """
-        error tips
-        :param _:
-        :param operate_name
-        :return:
-        """
-        # show_toast_thread("操作失败o(╥﹏╥)o!")
-        self.sys_status_label.setText(f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o")
+        """Show error notification"""
+        message = f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o"
+        self.sys_status_label.setText(message)
+        
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("错误提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
-            wx_push_content(f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o")
+            wx_push_content(message)
         else:
-            logger.warning("ERROR: windowsMessage()")
-        logger.error('Show error tips.')
+            logger.warning("System tray message not supported")
+            
+        logger.error('Error notification shown')
 
     @logger.catch
     def sys_tips(self, content, _=None):
-        """
-        show sys tips
-        :param _:
-        :param content:
-        :return:
-        """
-        self.sys_status_label.setText(f"{get_cur_time()}: {content}")
+        """Show system notification"""
+        message = f"{get_cur_time()}: {content}"
+        self.sys_status_label.setText(message)
+        
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("系统提示", content, QtGui.QIcon("./favicon.ico"), 10000)
             wx_push_content(content)
         else:
-            logger.warning("ERROR: windowsMessage()")
-        logger.warning('Show sys tips.')
+            logger.warning("System tray message not supported")
+            
+        logger.warning('System notification shown')
 
     @logger.catch
     def download_file_thread(self, _=None):
-        """
-        下载所有图片进程
-        :return:
-        """
+        """Start download thread for all images"""
         if not constants.stop_download_image_flag:
             self.error_tips("下载图片操作")
-        else:
-            spider_thread_obj = threading.Thread(
-                target=download_img_txt,
-                args=(self,))
-            spider_thread_obj.start()
-            constants.stop_download_image_flag = False
-            logger.info("Download img thread starting... ")
+            return
+            
+        spider_thread = threading.Thread(
+            target=download_img_txt,
+            args=(self,)
+        )
+        spider_thread.start()
+        constants.stop_download_image_flag = False
+        logger.info("Download image thread started")
 
     @logger.catch
     def set_video_position_click(self, position, _=None):
-        """
-        更改设置视频播放位置
-        unuse
-        @:parameter position 位置
-        """
+        """Set video playback position"""
         try:
             cv2.setTrackbarPos('Position', 'Video', position)
-            logger.info("Current position: " + str(position * 1000))
+            logger.info(f"Video position set to: {position * 1000}")
         except Exception as e:
-            logger.error("Error, detail: " + str(e))
+            logger.error(f"Error setting video position: {e}")
             self.error_tips("快进视频操作")
 
     @logger.catch
     def play_video(self, _=None):
-        """
-        播放指定视频
-        :return:
-        """
+        """Play selected video"""
         play_video_process(self)
 
     @logger.catch
     def pause_video(self, _=None):
-        """
-
-        :return:
-        """
-        if cv2.getTrackbarPos('Position', 'Video') > 0:
+        """Pause/resume video playback"""
+        current_pos = cv2.getTrackbarPos('Position', 'Video')
+        if current_pos > 0:
             cv2.setTrackbarPos('Position', 'Video', 0)
         else:
-            cv2.setTrackbarPos('Position', 'Video', cv2.getTrackbarPos('Position', 'Video'))
+            cv2.setTrackbarPos('Position', 'Video', current_pos)
             cv2.waitKey(1)
             cv2.setTrackbarPos('Position', 'Video', 0)
             cv2.waitKey(1000)
 
     @logger.catch
     def image_video_click(self, _=None):
-        """
-        image 生成视频
-        :return:
-        """
+        """Convert images to video"""
         if constants.process_image_flag:
             self.error_tips("生成视频操作")
-        else:
-            self.images_convert_thread = threading.Thread(
-                target=process_images_thread,
-                args=(self,))
-            self.images_convert_thread.start()
-            logger.success("Spider image process starting. ")
-            constants.process_image_flag = True
-        pass
+            return
+            
+        self.images_convert_thread = threading.Thread(
+            target=process_images_thread,
+            args=(self,)
+        )
+        self.images_convert_thread.start()
+        constants.process_image_flag = True
+        logger.success("Image processing thread started")
 
     @logger.catch
     def zoom_in_method(self, _=None):
-        """
-        放大
-        :return:
-        """
+        """Zoom in on image"""
         try:
             new_size = self.pixmap_image_tab1.size() * float(zoom_in_scale)
-            self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio,
-                                                                   Qt.SmoothTransformation)
+            self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(
+                new_size, 
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
             self.label.setPixmap(self.pixmap_image_tab1)
-            logger.info(f"Scale zoom in new_size: {new_size}")
+            logger.info(f"Image zoomed in to size: {new_size}")
         except Exception as e:
-            logger.warning(f"Unknown error! detail: {e}")
+            logger.warning(f"Zoom in failed: {e}")
 
     @logger.catch
     def zoom_out_method(self, _=None):
-        """
-        缩小
-        :return:
-        """
+        """Zoom out on image"""
         try:
             new_size = self.pixmap_image_tab1.size() * float(zoom_out_scale)
-            self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(new_size, Qt.KeepAspectRatio,
-                                                                   Qt.SmoothTransformation)
+            self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(
+                new_size,
+                Qt.KeepAspectRatio, 
+                Qt.SmoothTransformation
+            )
             self.label.setPixmap(self.pixmap_image_tab1)
-            logger.info(f"Scale zoom out new_size: {new_size}")
+            logger.info(f"Image zoomed out to size: {new_size}")
         except Exception as e:
-            logger.warning(f"Unknown error! detail: {e}")
+            logger.warning(f"Zoom out failed: {e}")
 
     @logger.catch
     def eventFilter(self, obj, event, _=None):
-        """
-        拖动控制
-        :param _:
-        :param obj:
-        :param event:
-        :return:
-        """
+        """Handle mouse events for image dragging"""
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
                 self.isDragging = True
                 self.dragStartPos = event.pos() - self.label.pos()
                 self.lastMousePos = event.pos()
+                
         elif event.type() == QEvent.MouseMove and self.isDragging:
             dx = event.pos().x() - self.lastMousePos.x()
             dy = event.pos().y() - self.lastMousePos.y()
             newPos = self.label.pos() + QPoint(dx, dy)
             self.label.move(newPos)
             self.lastMousePos = event.pos()
+            
         elif event.type() == QEvent.MouseButtonRelease and event.button() == Qt.LeftButton:
             self.isDragging = False
+            
         return super().eventFilter(obj, event)
 
     @logger.catch
     def download_gif_zip_click(self, _=None):
-        """
-        Download file from point url
-        :return:
-        """
+        """Download and process GIF zip files"""
         if constants.download_gif_zip_flag:
-            logger.warning("Download_gif_zip ing.")
+            logger.warning("GIF zip download already in progress")
             self.error_tips("下载动态操作")
-        else:
-            self.download_gif_zip_thread = threading.Thread(
-                target=url_zip_all_process,
-                args=(scan_directory_zip_txt(constants.data_path),))
-            self.download_gif_zip_thread.start()
-            constants.download_gif_zip_flag = True
-            logger.success("Success download zip file thread start")
+            return
+            
+        self.download_gif_zip_thread = threading.Thread(
+            target=url_zip_all_process,
+            args=(scan_directory_zip_txt(constants.data_path),)
+        )
+        self.download_gif_zip_thread.start()
+        constants.download_gif_zip_flag = True
+        logger.success("GIF zip download thread started")
 
     @logger.catch
     def unzip_generate_video_click(self, _=None):
-        """
-        unzip file generate video from file.
-        :return:
-        """
+        """Unzip files and generate videos"""
         if constants.unzip_generate_video_flag:
-            logger.warning("FILE len(zip_url_txt) is null.")
+            logger.warning("Video generation already in progress")
             self.error_tips("解压生成gif视频操作")
-        else:
-            self.unzip_generate_video_thread = threading.Thread(
-                target=unzip_generate_gif,
-                args=())
-            self.unzip_generate_video_thread.start()
-            constants.unzip_generate_video_flag = True
-            logger.success("Success unzip generate file thread start")
+            return
+            
+        self.unzip_generate_video_thread = threading.Thread(
+            target=unzip_generate_gif,
+            args=()
+        )
+        self.unzip_generate_video_thread.start()
+        constants.unzip_generate_video_flag = True
+        logger.success("Video generation thread started")
 
     @logger.catch
     def download_video_zip_click(self, _=None):
-        """
-        download video zip file from link
-        :return:
-        """
+        """Download video zip file from link"""
         if constants.download_video_link_flag:
-            logger.warning("Already downloading file, please wait!")
+            logger.warning("Video download already in progress")
             self.error_tips("下载gif压缩包操作")
-        else:
-            logger.info("start download file!")
-            link = self.edt_input_file_text_3.text()
-            logger.info(f"You input link: {link}")
-            self.start_download_file_link_thread = threading.Thread(
-                target=start_download_file_link,
-                args=(link,))
-            constants.download_video_link_flag = True
-            self.start_download_file_link_thread.start()
-            logger.success("Success download file thread start")
+            return
+            
+        link = self.edt_input_file_text_3.text()
+        logger.info(f"Starting download from link: {link}")
+        
+        self.start_download_file_link_thread = threading.Thread(
+            target=start_download_file_link,
+            args=(link,)
+        )
+        constants.download_video_link_flag = True
+        self.start_download_file_link_thread.start()
+        logger.success("Video download thread started")
 
     def closeEvent(self, event):
-        """
-
-        :param event:
-        :return:
-        """
-        logger.warning("User click main ui close button, exe main ui will closing ...")
+        """Handle application close event"""
+        logger.warning("Main UI close button clicked - application closing...")
         self.quit_app()
 
     @logger.catch
     def open_data_dir(self, _=None):
-        """
-        open sys data dir
-        :return:
-        """
+        """Open data directory in file explorer"""
         self.open_data_path_thread = threading.Thread(
             target=open_data_path_method,
-            args=())
+            args=()
+        )
         self.open_data_path_thread.start()
-        logger.success("Success open data path start")
+        logger.success("Data directory opened")
 
     @logger.catch
     def show_log_output(self, _=None):
-        """
-
-        :return:
-        """
+        """Show log output dialog"""
         show_log_output_method()
 
     @logger.catch
     def re_translate_ui(self, _=None):
-        """
-        设置主界面
-        :return:
-        """
+        """Retranslate UI elements"""
         _translate = QtCore.QCoreApplication.translate
         self.ui.setWindowTitle(_translate("MainWindow", "USB Listen"))
         self.ui.setWindowIcon(QtGui.QIcon("./favicon.ico"))
 
     @logger.catch
     def set_tray_icon(self, _=None):
-        """
-        最小化右键菜单
-        :return:
-        """
-        # 初始化菜单单项
+        """Setup system tray icon and menu"""
+        # Create actions
         self.openMainWindowAction = QtWidgets.QAction("模拟系统消息")
         self.quitAppAction = QtWidgets.QAction("退出")
 
-        # 菜单单项连接方法
+        # Connect actions
         self.openMainWindowAction.triggered.connect(self.windows_message)
         self.quitAppAction.triggered.connect(self.quit_app)
 
-        # 初始化菜单列表
+        # Create tray menu
         self.trayIconMenu = QtWidgets.QMenu()
         self.trayIconMenu.addAction(self.openMainWindowAction)
         self.trayIconMenu.addSeparator()
         self.trayIconMenu.addAction(self.quitAppAction)
 
-        # 构建菜单UI
+        # Setup tray icon
         self.trayIcon = QtWidgets.QSystemTrayIcon()
         self.trayIcon.setContextMenu(self.trayIconMenu)
         self.trayIcon.setIcon(QtGui.QIcon("./favicon.ico"))
         self.trayIcon.setToolTip("Spider Image System")
-        # 左键双击打开主界面
         self.trayIcon.activated[QtWidgets.QSystemTrayIcon.ActivationReason].connect(self.open_main_window)
-        # 允许托盘菜单显示
         self.trayIcon.show()
 
     @logger.catch
     def open_main_window(self, reason, _=None):
-        """
-        双击打开主界面并使其活动
-        :param _:
-        :param reason:
-        :return:
-        """
+        """Handle tray icon activation"""
         if reason == QSystemTrayIcon.DoubleClick:
             self.showNormal()
             self.activateWindow()
 
     @logger.catch
     def windows_message(self, _=None):
-        """
-        配置显示 windows 系统消息通知
-        :return:
-        """
-        # print("example")
+        """Show system tray message"""
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
-            self.trayIcon.showMessage("系统提示", "模拟系统提示!", QtGui.QIcon("./favicon.ico"), 10000)
+            self.trayIcon.showMessage(
+                "系统提示",
+                "模拟系统提示!",
+                QtGui.QIcon("./favicon.ico"),
+                10000
+            )
         else:
-            logger.warning("ERROR: windowsMessage()")
+            logger.warning("System tray messages not supported")
 
     @logger.catch
     def quit_app(self, _=None):
-        """
-        包含二次确认的退出
-        :return:
-        """
-        checkFlag = QtWidgets.QMessageBox.information(self, "退出确认", "是否确认退出？",
-                                                      QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        if checkFlag == QtWidgets.QMessageBox.Yes:
+        """Handle application quit with confirmation"""
+        reply = QtWidgets.QMessageBox.information(
+            self,
+            "退出确认",
+            "是否确认退出？",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+        )
+        
+        if reply == QtWidgets.QMessageBox.Yes:
             on_last_window_closed()
-            logger.success(f"Spider image system {constants.sis_server_version} will quit!")
+            logger.success(f"Spider image system {constants.sis_server_version} shutting down")
             logger.info("------------------------------Log end record-------------------------------")
             QtWidgets.qApp.quit()
-        else:
-            pass

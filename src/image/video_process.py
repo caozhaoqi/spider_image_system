@@ -1,9 +1,12 @@
 import os
 import sys
+from pathlib import Path
+from typing import Optional, List
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import cv2
+import numpy as np
 from loguru import logger
 from run import constants
 from run.constants import output_video_fps, output_video_height, output_video_width
@@ -11,327 +14,282 @@ from utils.time_utils import id_generate_time
 
 
 @logger.catch
-def generate_video_from_images(images_input_path, video_out_path):
+def generate_video_from_images(images_input_path: str, video_out_path: str) -> Optional[str]:
+    """Generate video from a directory of images
+    
+    Args:
+        images_input_path: Input directory containing images
+        video_out_path: Output directory for video
+        
+    Returns:
+        str: Path to generated video file, or None if failed
     """
-    generate video from images list
-    :param images_input_path:
-    :param video_out_path:
-    :return:
-    """
+    # Find valid image files
     image_paths = []
-    for root, dirs, files in os.walk(images_input_path):
+    for root, _, files in os.walk(images_input_path):
         for file in files:
-            if "square" in file or "custom" in file or "error_images" in root or "small_images" in root \
-                    or "gif_unzip" in root:
-                logger.warning(f"Skip file, because images error or small, name: {file}")
+            # Skip invalid images
+            if any(x in file or x in root for x in ["square", "custom", "error_images", "small_images", "gif_unzip"]):
+                logger.warning(f"Skipping invalid image: {file}")
                 continue
-            elif file.endswith('.jpg') or file.endswith('.png'):  # 仅处理jpg和png图片文件
+                
+            if file.endswith(('.jpg', '.png')):
                 image_paths.append(os.path.join(root, file))
-    logger.debug(
-        "Scan image coule use image length: " + str(len(image_paths)) + ", scan dir: " + str(constants.data_path))
-    if len(image_paths) <= 0:
-        return False
-    width = 0
-    height = 0
+                
+    if not image_paths:
+        logger.warning("No valid images found")
+        return None
+        
+    logger.debug(f"Found {len(image_paths)} valid images in {constants.data_path}")
 
-    for image_path in image_paths:
+    # Get dimensions from first valid image
+    width = height = 0
+    for img_path in image_paths:
         try:
-            image = cv2.imread(image_path)
-            if width == 0:
-                width = image.shape[1]
-            height = image.shape[0]
+            img = cv2.imread(img_path)
+            if img is not None:
+                height, width = img.shape[:2]
+                break
         except Exception as e:
-            logger.error("Error! detail: " + "file name or path: " + image_path + ", error detail: " + str(e))
+            logger.error(f"Failed to read image {img_path}: {e}")
             continue
+            
+    if not width or not height:
+        logger.error("Could not determine video dimensions")
+        return None
 
-        # 检查输出路径是否存在，如果不存在则创建目录
-    if not os.path.exists(video_out_path):
-        os.makedirs(video_out_path)
+    # Create output directory
+    os.makedirs(video_out_path, exist_ok=True)
 
-    fourcc = cv2.VideoWriter.fourcc(*'MJPG')
-    # 创建VideoWriter对象
-    video_name = video_out_path + id_generate_time() + "test.mp4"
-    video = cv2.VideoWriter(video_name, fourcc, int(output_video_fps), (width, height))  # 设置视频帧率、输出视频大小
+    # Initialize video writer
+    video_path = os.path.join(video_out_path, f"{id_generate_time()}test.mp4")
+    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+    video = cv2.VideoWriter(video_path, fourcc, int(output_video_fps), (width, height))
+
     if not video.isOpened():
-        logger.error("Not open video watch!")
-        return False
+        logger.error("Failed to create video writer")
+        return None
 
     try:
-        export_index = 0
-        image_size_len = len(image_paths)
-        for image_path in os.listdir(images_input_path):
-            export_index += 1
-            percent_cur = int((export_index / image_size_len) * 100)
-            image = cv2.imread(os.path.join(images_input_path, image_path))
-            if image is None:  # 增加对图像是否正确读取的检查
-                logger.error("Image not loaded: " + image_path)
+        # Write frames
+        for i, img_path in enumerate(image_paths, 1):
+            img = cv2.imread(img_path)
+            if img is None:
+                logger.error(f"Failed to read image: {img_path}")
                 continue
-            resized_image = cv2.resize(image, (width, height))  # 将图像的宽度和高度设置为适合MPEG-4的尺寸
-            if image is not None:
-                video.write(resized_image)
-            if percent_cur % 10 == 0:
-                logger.info(f"Export process to export_index / image_size_len: {export_index} / {image_size_len} * "
-                            f"100%10: {percent_cur}%")
+                
+            resized = cv2.resize(img, (width, height))
+            video.write(resized)
+            
+            if i % 10 == 0:
+                progress = (i / len(image_paths)) * 100
+                logger.info(f"Export progress: {i}/{len(image_paths)} ({progress:.1f}%)")
+                
     finally:
         video.release()
-    return video_name
+        
+    return video_path
 
 
 @logger.catch
-def convert_image(images_input_path, target_dir):
+def convert_image(images_input_path: str, target_dir: str) -> bool:
+    """Convert images to uniform size
+    
+    Args:
+        images_input_path: Input directory containing images
+        target_dir: Output directory for converted images
+        
+    Returns:
+        bool: True if successful, False otherwise
     """
-    convert images to universal size
-    :param images_input_path:
-    :param target_dir:
-    :return:
-    """
-    # 确保目标目录存在
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
+    os.makedirs(target_dir, exist_ok=True)
 
-    # 遍历源目录中的所有文件
+    # Find valid images
     image_paths = []
-    for root, dirs, files in os.walk(images_input_path):
+    for root, _, files in os.walk(images_input_path):
         for file in files:
             if "result" in file:
                 continue
-            elif file.endswith('.jpg') or file.endswith('.png'):  # 仅处理jpg和png图片文件
+            if file.endswith(('.jpg', '.png')):
                 image_paths.append(os.path.join(root, file))
-                # 检查文件是否为图片
-    if len(image_paths) == 0:
-        logger.warning("Convert image no image!")
+
+    if not image_paths:
+        logger.warning("No images found to convert")
         return False
-    logger.debug("Convert_image: scan result, need convert images count: " + str(len(image_paths)))
-    for filename in image_paths:
-        result = image_fill_black(target_dir, filename)
-        if not result:
-            continue
-    return True
+        
+    logger.debug(f"Found {len(image_paths)} images to convert")
+
+    # Process each image
+    success = True
+    for img_path in image_paths:
+        if not image_fill_black(target_dir, img_path):
+            success = False
+            
+    return success
 
 
 @logger.catch
-def image_fill_black(target_dir, image_path):
+def image_fill_black(target_dir: str, image_path: str) -> bool:
+    """Resize and pad image with black borders to target size
+    
+    Args:
+        target_dir: Output directory
+        image_path: Input image path
+        
+    Returns:
+        bool: True if successful, False otherwise
     """
-    循环处理输入图像：如果输入尺寸大于输出尺寸则：缩小；如果输入尺寸小于输出尺寸，则用黑边填充。尺寸相等 输出图像
-    :param target_dir:输出图像路径
-    :param image_path:输入图像路径
-    :return:是否转换成功
-    """
-    # Step 1： import opencv lib
-    import cv2
     try:
-        # Step 2: Define the target size
-        target_size = (output_video_width, output_video_height)
-        # 读取图片
         img = cv2.imread(image_path)
-        # 检查图片尺寸
+        if img is None:
+            raise ValueError("Failed to read image")
+            
         height, width = img.shape[:2]
-        border_width = 0
-        border_height = 0
-        grap_width = 0
-        grap_height = 0
-        while True:
-            if width < target_size[0] and height < target_size[1]:
-                if width < target_size[0]:
-                    border_width = abs(target_size[0] - width) // 2
-                    grap_width = output_video_width - (border_width * 2) - width
-                elif width == target_size[0]:
-                    border_width = 0
-                    grap_width = 0
-                if height < target_size[1]:
-                    border_height = abs(target_size[1] - height) // 2
-                    grap_height = output_video_height - (border_height * 2) - height
-                elif height == target_size[1]:
-                    border_height = 0
-                    grap_height = 0
-                border = border_width, border_height
-                img = cv2.copyMakeBorder(img, border[1], border[1] + grap_height, border[0], border[0] + grap_width,
-                                         cv2.BORDER_CONSTANT, value=[0, 0, 0])
-                out_height, out_width = img.shape[:2]
-                if out_height == output_video_height and out_width == output_video_width:
-                    break
-                else:
-                    continue
-            elif width > target_size[0] or height > target_size[1]:
-                img = cv2.resize(img, target_size, interpolation=cv2.INTER_LINEAR)
-                out_height, out_width = img.shape[:2]
-                if out_height == output_video_height and out_width == output_video_width:
-                    break
-                else:
-                    continue
-            else:
-                logger.info(f"Image size matches the target size: {image_path}")
-                break
-        file_path, file_name = os.path.split(image_path)
-        cv2.imwrite(os.path.join(target_dir, "result_" + file_name), img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-    except AttributeError as uie:
-        logger.error("Error, AttributeError: 'NoneType' object has no attribute 'shape'! detail: " + str(uie) +
-                     ", ""file_name or path: " + str(image_path))
-        return False
+        target_size = (output_video_width, output_video_height)
+
+        # Calculate borders and gaps
+        border_w = max(0, (target_size[0] - width) // 2)
+        border_h = max(0, (target_size[1] - height) // 2)
+        
+        gap_w = output_video_width - (border_w * 2) - width
+        gap_h = output_video_height - (border_h * 2) - height
+
+        # Resize if too large
+        if width > target_size[0] or height > target_size[1]:
+            img = cv2.resize(img, target_size, interpolation=cv2.INTER_LINEAR)
+            
+        # Pad if too small
+        elif width < target_size[0] or height < target_size[1]:
+            img = cv2.copyMakeBorder(
+                img, 
+                border_h, border_h + gap_h,
+                border_w, border_w + gap_w,
+                cv2.BORDER_CONSTANT,
+                value=[0, 0, 0]
+            )
+
+        # Save result
+        output_path = os.path.join(target_dir, f"result_{os.path.basename(image_path)}")
+        cv2.imwrite(output_path, img)
+        
+        return True
+        
     except Exception as e:
-        logger.error("Error, unknown error! detail: " + str(e) + ", file_name or path: " + str(image_path))
+        logger.error(f"Failed to process {image_path}: {e}")
         return False
-    return True
 
 
 @logger.catch
 def process_images_thread(self):
-    """
-    process image to video thread
-    :param self:
-    :return:
-    """
-    #  step <1> 处理不同尺寸照片，将其尺寸一直化
-    result = convert_image(constants.data_path, constants.data_path + "/img_result")
-    #  step <2> 根据处理后的图像，尝试生成视频
-    if result:
-        process_ret = generate_video_from_images(constants.data_path + "/img_result", constants.data_path + "/video/")
-        if process_ret:
-            logger.success("Out video success! file_name: " + process_ret)
-        constants.process_image_flag = False
+    """Process images to video in a thread"""
+    # Convert images to uniform size
+    if not convert_image(constants.data_path, os.path.join(constants.data_path, "img_result")):
+        logger.error("Image conversion failed")
+        return
+
+    # Generate video from converted images
+    video_path = generate_video_from_images(
+        os.path.join(constants.data_path, "img_result"),
+        os.path.join(constants.data_path, "video")
+    )
+    
+    if video_path:
+        logger.success(f"Video generated successfully: {video_path}")
         self.success_tips("图片处理操作")
+        
+    constants.process_image_flag = False
 
 
 @logger.catch
 def play_video_process(self):
-    """
-    播放视频进程
-    :param self:
-    :return:
-    """
+    """Play selected video with controls"""
+    if not self.listWidget_4.selectedItems():
+        logger.warning("No video selected")
+        return
+        
+    video_path = self.listWidget_4.selectedItems()[0].text()
+    cap = cv2.VideoCapture(video_path)
+    
+    if not cap.isOpened():
+        logger.error(f"Failed to open video: {video_path}")
+        return
+
+    cv2.namedWindow('Video', cv2.WINDOW_NORMAL)
+    
+    play_speed = 1.0
+    last_time = 0
+    paused = False
+
     try:
-        if self.listWidget_4.selectedItems():
-            selectedItem = self.listWidget_4.selectedItems()[0]
-            selectedFilename = selectedItem.text()
-            cap = cv2.VideoCapture(selectedFilename)
-            # 创建窗口
-            cv2.namedWindow('Video', cv2.WINDOW_NORMAL)
+        while True:
+            if not paused:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                    
+                current_time = int(cap.get(cv2.CAP_PROP_POS_MSEC)) // 1000
+                
+                # Add overlay text
+                cv2.putText(
+                    frame,
+                    f"Time: {current_time}s Speed: {play_speed:.1f}x", 
+                    (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1,
+                    (0, 255, 0),
+                    2
+                )
+                
+                cv2.imshow(f'Video: {video_path}', frame)
 
-            # 初始化时间戳和播放速度
-            last_time = 0
-            play_speed = 1.0
-
-            # 创建跟踪条
-            # 第一个参数是跟踪条的名称，第二个参数是窗口的名称，第三个参数是跟踪条的默认位置（0-100），第四个参数是跟踪条的长度
-            if cap.isOpened():
-                while True:
-                    ret, frame = cap.read()
-                    if not ret:  # 视频结束或出错
-                        break
-                    cv2.imshow('Video: ' + selectedFilename, frame)
-                    # position = cv2.getTrackbarPos('Position', 'Video')
-                    # 获取当前时间戳
-                    current_time = int(cap.get(cv2.CAP_PROP_POS_MSEC)) // 1000
-
-                    # 处理暂停/继续播放
-                    if cv2.waitKey(1) & 0xFF == ord('p'):  # 按p键暂停/继续播放
-                        if current_time > last_time:  # 如果当前时间大于上次时间，说明视频在播放，暂停播放
-                            cap.set(cv2.CAP_PROP_POS_FRAMES, last_time)
-                            logger.info("P pause or play video up!")
-                        else:  # 否则，恢复播放
-                            cap.set(cv2.CAP_PROP_POS_FRAMES, current_time)
-                            logger.info("P replay video up!")
-                        last_time = current_time  # 更新上次时间
-
-                    # 处理前进/后退
-                    if cv2.waitKey(1) & 0xFF == ord('f'):  # 按f键快进
-                        if current_time > last_time:  # 如果当前时间大于上次时间，说明视频在播放，快进到指定位置
-                            cap.set(cv2.CAP_PROP_POS_MSEC, (last_time + 1000) * 1000)  # 快进10秒
-                            logger.info("F video speed up!")
-                        else:  # 否则，快退到指定位置
-                            cap.set(cv2.CAP_PROP_POS_MSEC, last_time * 1000)  # 退后1秒
-                            logger.info("F video speed down!")
-
-                        last_time = current_time  # 更新上次时间
-
-                    # 处理倍速播放
-                    if cv2.waitKey(1) & 0xFF == ord('+'):  # 按+键增加播放速度
-                        play_speed += 0.1
-                        cap.set(cv2.CAP_PROP_SPEED, play_speed)  # 设置新的播放速度
-                        logger.info("+ play video speed up!")
-                    if cv2.waitKey(1) & 0xFF == ord('-'):  # 按-键减少播放速度
-                        play_speed -= 0.1
-                        logger.info("- play video speed down!")
-                        if play_speed < 0:  # 防止速度过小导致播放出现问题
-                            play_speed = 0.1
-                            logger.info("- play video speed < min reset play_speed = 0.1!")
-                        cap.set(cv2.CAP_PROP_SPEED, play_speed)  # 设置新的播放速度
-
-                    # 在视频帧上显示当前播放位置和播放速度（可选）
-                    cv2.putText(frame, f"Pos: {current_time}ms, Speed: {play_speed}", (10, 30),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    if cv2.waitKey(1) & 0xFF == ord('q'):  # 按q退出播放
-                        break
-                cap.release()
-                cv2.destroyAllWindows()
-            else:
-                logger.error("Error opening video file: " + selectedFilename)
-        else:
-            logger.warning("Please select a video file.")
-    except Exception as e:
-        logger.error("Error, detail: " + str(e))
-
-
-"""
-video process
-split video
-test data fxs video
-spider data: fu_fu
-"""
+            # Handle keyboard controls
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
+            elif key == ord('p'):
+                paused = not paused
+            elif key == ord('f'):
+                cap.set(cv2.CAP_PROP_POS_MSEC, (current_time + 1) * 1000)
+            elif key == ord('+'):
+                play_speed = min(play_speed + 0.1, 2.0)
+            elif key == ord('-'):
+                play_speed = max(play_speed - 0.1, 0.1)
+                
+    finally:
+        cap.release()
+        cv2.destroyAllWindows()
 
 
 @logger.catch
-def video_process(video_path, output_directory):
+def video_process(video_path: str, output_directory: str) -> None:
+    """Extract frames from video at regular intervals
+    
+    Args:
+        video_path: Input video file path
+        output_directory: Output directory for frames
     """
-    split video to image from point frame
-    :param output_directory: out dir
-    :param video_path: input video path
-    :return:
-    """
-    import cv2
-    import os
-
-    # 确保输出目录存在
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory)
-
-    # 使用OpenCV打开视频文件
+    os.makedirs(output_directory, exist_ok=True)
+    
     cap = cv2.VideoCapture(video_path)
-
-    # 检查视频是否成功打开
     if not cap.isOpened():
-        logger.error("Error: Could not open video.")
-        exit()
+        logger.error("Failed to open video")
+        return
 
-    # 设置保存图像的间隔（例如，每10帧保存一次）
-    frame_interval = 60
-    frame_count = 0
-
-    # 读取视频的每一帧
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            # 视频结束，退出循环
-            break
-
-        frame_count += 1
-        # 检查是否到达保存图像的间隔
-        if frame_count % frame_interval == 0:
-            # 构造图像保存路径
-            image_path = os.path.join(output_directory, f'frame_{frame_count // frame_interval}.jpg')
-            # 保存当前帧为图像
-            cv2.imwrite(image_path, frame)
-            logger.debug(f"Saved frame {frame_count // frame_interval} to {image_path}")
-
-    # 释放视频资源
-    cap.release()
-    cv2.destroyAllWindows()
-
-# if __name__ == '__main__':
-#     # https://file2.gofile.io/download/web/78704bae-ff7e-409b-a751-6cc84a848c33/FxS_Full_1080_WM_h264.mp4
-#     # start_download_file_link("https://gofile.io/d/MRAkaW")
-#     video_process(r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\video_gofile'
-#                   r'\FxS_Full_1080_WM_h264.mp4',
-#                   r'C:\Users\Administrator\PycharmProjects\spider_image_system\src\run\data\video_gofile\out_dir')
+    try:
+        frame_interval = 60
+        frame_count = 0
+        
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+                
+            frame_count += 1
+            if frame_count % frame_interval == 0:
+                frame_num = frame_count // frame_interval
+                output_path = os.path.join(output_directory, f'frame_{frame_num}.jpg')
+                cv2.imwrite(output_path, frame)
+                logger.debug(f"Saved frame {frame_num}")
+                
+    finally:
+        cap.release()

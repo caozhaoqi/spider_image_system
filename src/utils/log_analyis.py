@@ -1,269 +1,220 @@
 import os
-import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-import os
 import re
+import sys
+from pathlib import Path
 from collections import Counter
+from typing import List, Tuple, Dict
 from loguru import logger
 
-# 错误信息正则表达式
-connection_broken_error_pattern = r'ERROR.*unknown error.*Connection broken: IncompleteRead'
-remote_disconnected_error_pattern = r'ERROR.*unknown error.*Connection aborted\. RemoteDisconnected'
-not_found_error_pattern = r'ERROR.*Failed to download image from'
-nginx_502_error_pattern = r'ERROR.*Failed to download image from'
-connection_error_pattern = r'ERROR.*error, connect point url error, cur images index'
-success_download_pattern = r'DEBUG.*Image saved as'
-cannot_open_image_pattern = r'ERROR.*无法打开图片'
-unknown_image_category_pattern = r'WARNING.*未知种类图片，待定:'
-establish_error_pattern = 'ERROR.*unknown error'
+sys.path.append(str(Path(__file__).parent.parent))
 
-# 解析错误详情的正则表达式
-connection_broken_detail_pattern = r'detail: \((.*? bytes read, .*? more expected)\)'
-remote_disconnected_detail_pattern = r'detail: \(Remote end closed connection without response\)'
-not_found_detail_pattern = r'detail: <!DOCTYPE html>\n<html>\n\s*<h1>404 Not Found</h1>\n</html>\n'
-nginx_502_detail_pattern = r'detail: <html>\r\n<head><title>502 Bad ' \
-                           r'Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad ' \
-                           r'Gateway</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n '
-connection_detail_pattern = r'detail:(.+)'
-success_detail_pattern = r'cur txt images download count: (\d+)'
-cannot_open_image_detail_pattern = r'错误信息:*(\d+)'
-unknown_image_category_detail_pattern = r'(\d{4}\.jpg|png|gif)$'
-establish_error_detail_pattern = r'detail:(.+)'
+# Error patterns
+ERROR_PATTERNS = {
+    'connection_broken': {
+        'pattern': r'ERROR.*unknown error.*Connection broken: IncompleteRead',
+        'detail': r'detail: \((.*? bytes read, .*? more expected)\)'
+    },
+    'remote_disconnected': {
+        'pattern': r'ERROR.*unknown error.*Connection aborted\. RemoteDisconnected', 
+        'detail': r'detail: \(Remote end closed connection without response\)'
+    },
+    'not_found': {
+        'pattern': r'ERROR.*Failed to download image from',
+        'detail': r'detail: <!DOCTYPE html>\n<html>\n\s*<h1>404 Not Found</h1>\n</html>\n'
+    },
+    'nginx_502': {
+        'pattern': r'ERROR.*Failed to download image from',
+        'detail': r'detail: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n '
+    },
+    'connection': {
+        'pattern': r'ERROR.*error, connect point url error, cur images index',
+        'detail': r'detail:(.+)'
+    },
+    'success_download': {
+        'pattern': r'DEBUG.*Image saved as',
+        'detail': r'cur txt images download count: (\d+)'
+    },
+    'cannot_open_image': {
+        'pattern': r'ERROR.*无法打开图片',
+        'detail': r'错误信息:*(\d+)'
+    },
+    'unknown_category': {
+        'pattern': r'WARNING.*未知种类图片，待定:',
+        'detail': r'(\d{4}\.jpg|png|gif)$'
+    },
+    'establish': {
+        'pattern': 'ERROR.*unknown error',
+        'detail': r'detail:(.+)'
+    }
+}
 
-
-# 读取日志文件并统计错误次数及解析原因
 @logger.catch
-def analyze_log_errors(file_path, error_pattern, detail_pattern):
-    """
-
-    :param file_path:
-    :param error_pattern:
-    :param detail_pattern:
-    :return:
+def analyze_log_errors(file_path: str, error_pattern: str, detail_pattern: str) -> Tuple[Counter, str]:
+    """Analyze log file for errors and their details
+    
+    Args:
+        file_path: Path to log file
+        error_pattern: Regex pattern to match errors
+        detail_pattern: Regex pattern to match error details
+        
+    Returns:
+        Tuple containing error counts and error pattern
     """
     error_counts = Counter()
-    detail_causes = {}
+    detail_causes: Dict[str, int] = {}
 
-    with open(file_path, 'r', encoding='utf-8', errors='replace') as file:
-        for line in file:
+    with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+        for line in f:
             if re.search(error_pattern, line):
-                # 匹配到错误行，增加错误计数
                 error_counts['error'] += 1
-
-                # 提取错误详情
-                detail_match = re.search(detail_pattern, line)
-                if detail_match:
-                    detail = detail_match.group(1)
-                    # 分析错误原因并增加对应原因的计数
-                    parse_error_cause(detail, detail_causes)
+                if detail_match := re.search(detail_pattern, line):
+                    detail = detail_match.group(1).strip()
+                    detail_causes[detail] = detail_causes.get(detail, 0) + 1
 
     return error_counts, error_pattern
 
-
 @logger.catch
-def parse_error_cause(detail, detail_causes):
-    """
-
-    :param detail:
-    :param detail_causes:
-    :return:
-    """
-    cause = detail.strip()
-    detail_causes[cause] = detail_causes.get(cause, 0) + 1
-
-
-@logger.catch
-def log_analyze(log_file_path):
-    """
-
-    :param log_file_path:
-    :return:
+def log_analyze(log_file_path: str) -> Tuple[List, List]:
+    """Analyze a log file for all error types
+    
+    Args:
+        log_file_path: Path to log file
+        
+    Returns:
+        Tuple containing lists of error counts and error details
     """
     error_list = []
     error_detail_list = []
-    connection_broken_error_counts, connection_broken_error_detail = analyze_log_errors(
-        log_file_path,
-        connection_broken_error_pattern,
-        connection_broken_detail_pattern)
-    connection_disconnection_error_counts, connection_disconnection_error_detail = analyze_log_errors(
-        log_file_path,
-        remote_disconnected_error_pattern,
-        remote_disconnected_detail_pattern)
-    not_found_error_counts, not_found_error_detail = analyze_log_errors(log_file_path, not_found_error_pattern,
-                                                                        not_found_detail_pattern)
-    nginx_502_error_counts, nginx_502_error_detail = analyze_log_errors(log_file_path, nginx_502_error_pattern,
-                                                                        nginx_502_detail_pattern)
-    connection_error_counts, connection_error_detail = analyze_log_errors(log_file_path, connection_error_pattern,
-                                                                          connection_detail_pattern)
-    success_download_counts, success_download_detail = analyze_log_errors(log_file_path, success_download_pattern,
-                                                                          success_detail_pattern)
-    establish_error_counts, establish_error_detail = analyze_log_errors(log_file_path, establish_error_pattern,
-                                                                        establish_error_detail_pattern)
-    error_list.append(connection_broken_error_counts)
-    error_list.append(connection_disconnection_error_counts)
-    error_list.append(not_found_error_counts)
-    error_list.append(nginx_502_error_counts)
-    error_list.append(connection_error_counts)
-    error_list.append(success_download_counts)
-    error_list.append(establish_error_counts)
-    error_detail_list.append(connection_broken_error_detail)
-    error_detail_list.append(connection_disconnection_error_detail)
-    error_detail_list.append(not_found_error_detail)
-    error_detail_list.append(nginx_502_error_detail)
-    error_detail_list.append(connection_error_detail)
-    error_detail_list.append(success_download_detail)
-    error_detail_list.append(establish_error_detail)
+    
+    for error_type in ERROR_PATTERNS.values():
+        counts, details = analyze_log_errors(
+            log_file_path,
+            error_type['pattern'],
+            error_type['detail']
+        )
+        error_list.append(counts)
+        error_detail_list.append(details)
+        
     return error_list, error_detail_list
 
+@logger.catch
+def find_log(directory: str) -> List[str]:
+    """Find all log files in directory
+    
+    Args:
+        directory: Directory to search
+        
+    Returns:
+        List of log file paths
+    """
+    log_dir = Path(directory)
+    if not log_dir.exists():
+        log_dir.mkdir(parents=True)
+        logger.info(f"Created directory: {log_dir}")
+        
+    return [str(f) for f in log_dir.rglob('*.log')]
 
 @logger.catch
-def find_log(directory):
+def log_data_analyze() -> List[List]:
+    """Analyze all logs in log directory
+    
+    Returns:
+        List of analysis results for each log
     """
-    find image from current dir data
-    :param directory:
-    :return:
-    """
-    log_files_lists = []
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-        logger.info("dir not exists, create dir: " + str(directory))
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if file.endswith('.log'):
-                log_files_lists.append(os.path.join(root, file))
-    return log_files_lists
-
-
-@logger.catch
-def log_data_analyze():
-    """
-
-    :return:
-    """
+    log_dir = Path('./log_dir').resolve()
+    log_files = find_log(str(log_dir))
+    
     log_analyze_data = []
-    log_dir = os.path.realpath('./log_dir')
-    log_list = find_log(log_dir)
-    for log_index, log_content in enumerate(log_list):
-        log_list_content = []
-        result_count_list, result_detail_list = log_analyze(log_content)
-        log_list_content.append(result_count_list)
-        log_list_content.append(result_detail_list)
-        log_list_content.append(log_content)
-        log_analyze_data.append(log_list_content)
-    logger.info(f"Scan log end finish, scan result log length: {len(log_list)}")
+    for log_file in log_files:
+        result_counts, result_details = log_analyze(log_file)
+        log_analyze_data.append([
+            result_counts,
+            result_details,
+            log_file
+        ])
+        
+    logger.info(f"Scanned {len(log_files)} log files")
     return log_analyze_data
 
-
 @logger.catch
-def log_analyze_data_output():
-    """
-    log analyze data analyze
-    :return:
+def log_analyze_data_output() -> List[List]:
+    """Process and format log analysis data
+    
+    Returns:
+        Formatted analysis results
     """
     data = log_data_analyze()
-    data_list = []
-    data_list_set = []
-    for line in data:
-        file_name = line[2]
-        error_count = line[0]
-        error_name_list = []
-        error_count_list = []
-        error_count_zero_list = []
-        for index, error_detail_count in enumerate(error_count):
-            if error_detail_count['error']:
-                error_count_list.append(error_detail_count['error'])
+    results = []
+    
+    for log_data in data:
+        file_name = log_data[2]
+        error_counts = log_data[0]
+        error_details = log_data[1]
+        
+        error_names = []
+        error_counts_list = []
+        skip_indices = []
+        
+        for i, count in enumerate(error_counts):
+            if count['error']:
+                error_counts_list.append(count['error'])
             else:
-                error_count_zero_list.append(index)
-
-        error_details = line[1]
-        for index, error_details_d in enumerate(error_details):
-            if index in error_count_zero_list:
-                continue
-            else:
-                error_name_list.append(error_details_d[7:])
-        error_count_list, error_name_list = mege_same_value(error_name_list, error_count_list)
-        if error_count_list != [] and error_count_list != []:
-            data_list_set.append(error_name_list)
-            data_list_set.append(error_count_list)
-        if file_name != '' and file_name:
-            data_list_set.append(file_name)
-        data_list.append(data_list_set)
-        error_count_zero_list.clear()
-    return data_list
-
+                skip_indices.append(i)
+                
+        for i, detail in enumerate(error_details):
+            if i not in skip_indices and detail:
+                error_names.append(detail[7:])
+                
+        if error_counts_list and error_names:
+            names, counts = merge_same_value(error_names, error_counts_list)
+            result = [names, counts]
+            if file_name:
+                result.append(file_name)
+            results.append(result)
+            
+    return results
 
 @logger.catch
-def log_analyze_data_output_new():
-    """
-    log andlyze data analyze
-    :return:
+def log_analyze_data_output_new() -> Tuple[List, List]:
+    """Alternative analysis output format
+    
+    Returns:
+        Tuple of error counts and names
     """
     data = log_data_analyze()
-    error_name_list = []
-    error_count_list = []
-    error_count_zero_list = []
-    for line in data:
-        file_name = line[2]
-        error_count = line[0]
-
-        for index, error_detail_count in enumerate(error_count):
-            if error_detail_count['error']:
-                error_count_list.append(error_detail_count['error'])
+    error_names = []
+    error_counts = []
+    skip_indices = []
+    
+    for log_data in data:
+        for i, count in enumerate(log_data[0]):
+            if count['error']:
+                error_counts.append(count['error'])
             else:
-                error_count_zero_list.append(index)
-
-        error_details = line[1]
-        for index, error_details_d in enumerate(error_details):
-            if index in error_count_zero_list:
-                continue
-            else:
-                if error_details_d and error_details_d != '':
-                    error_name_list.append(error_details_d)
-        error_count_zero_list.clear()
-    error_count_new_list, error_name_list_new = mege_same_value(error_name_list, error_count_list)
-    return error_count_new_list, error_name_list_new
-
+                skip_indices.append(i)
+                
+        for i, detail in enumerate(log_data[1]):
+            if i not in skip_indices and detail:
+                error_names.append(detail)
+                
+    return merge_same_value(error_names, error_counts)
 
 @logger.catch
-def find_duplicates_indices(list_data):
+def merge_same_value(labels: List[str], values: List[int]) -> Tuple[List, List]:
+    """Merge duplicate labels and sum their values
+    
+    Args:
+        labels: List of labels
+        values: List of corresponding values
+        
+    Returns:
+        Tuple of merged labels and values
     """
-
-    :param list_data:
-    :return:
-    """
-
-    indices_dict = {}
-    duplicates_indices = []
-
-    for i, val in enumerate(list_data):
-        if val in indices_dict:
-            duplicates_indices.append((indices_dict[val], i))
-            indices_dict[val].append(i)
-        else:
-            indices_dict[val] = [i]
-
-    return duplicates_indices
-
-
-@logger.catch
-def mege_same_value(labels, values):
-    """
-
-    :param labels:
-    :param values:
-    :return:
-    """
-    assert len(labels) == len(values), "Labels and values lists must have the same length"
-
-    merged_dict = {}
+    if len(labels) != len(values):
+        raise ValueError("Labels and values must have same length")
+        
+    merged = {}
     for label, value in zip(labels, values):
-        if label in merged_dict:
-            merged_dict[label] += value
-        else:
-            merged_dict[label] = value
-
-    new_labels = list(merged_dict.keys())
-    new_values = list(merged_dict.values())
-    return new_labels, new_values
+        merged[label] = merged.get(label, 0) + value
+        
+    return list(merged.keys()), list(merged.values())

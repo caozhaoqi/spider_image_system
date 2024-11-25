@@ -1,275 +1,284 @@
 import os
 import sys
+from pathlib import Path
+from typing import List, Optional
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from file.file_process import scan_directory_zip
-from utils.file_utils import remove_duplicates_from_txt
 import threading
 import urllib.request
 import cv2
 import zipfile
-import os
-import urllib.request
 import time
 from loguru import logger
 from requests import HTTPError, Timeout, TooManyRedirects
+
+from file.file_process import scan_directory_zip
+from utils.file_utils import remove_duplicates_from_txt
 from run import constants
 from run.constants import output_video_fps
 
 
 @logger.catch
-def download_all_zip(url, save_dir):
-    """
-    下载指定url zip 文件
-    :param url: 下载地址
-    :param save_dir: 保存路径
-    :return:
+def download_all_zip(url: str, save_dir: str) -> bool:
+    """Download zip file from URL to specified directory
+    
+    Args:
+        url: Download URL
+        save_dir: Save directory path
+        
+    Returns:
+        bool: True if download successful, False otherwise
     """
     try:
-        file_name = url.split("/")[-1]  # 获取文件名
-        save_path = os.path.join(save_dir, "gif_zip")  # 构建保存路径
-        if not os.path.exists(save_path):  # 如果目录不存在则创建目录
-            os.makedirs(save_path)
-        download_file_gif_thread_obj = threading.Thread(
+        file_name = url.split("/")[-1]
+        save_path = os.path.join(save_dir, "gif_zip")
+        Path(save_path).mkdir(parents=True, exist_ok=True)
+        
+        download_thread = threading.Thread(
             target=download_file_fun,
-            args=(url, os.path.join(save_path, file_name),))
-        download_file_gif_thread_obj.start()
-        if constants.download_finish_flag:
-            return True
-        return False
-    except FileNotFoundError as fnee:  # 处理文件不存在错误
-        logger.warning(f"Target file not exists: {fnee}")
-        return False
-    except HTTPError as errh:  # 处理HTTP错误
-        logger.error(f"Http error: {errh}")
-        return False
-    except Timeout:  # 处理请求超时错误
-        logger.error("Connection time out.")
-        return False
-    except TooManyRedirects:  # 处理过多重定向错误
-        logger.error("Max redirects.")
-        return False
-    except Exception as e:  # 处理其他未知错误
-        logger.error(f"Unknown error, detail: {e}")
-        return False
+            args=(url, os.path.join(save_path, file_name))
+        )
+        download_thread.start()
+        
+        return constants.download_finish_flag
+        
+    except FileNotFoundError as e:
+        logger.warning(f"Target file not exists: {e}")
+    except HTTPError as e:
+        logger.error(f"HTTP error: {e}")
+    except Timeout:
+        logger.error("Connection timeout")
+    except TooManyRedirects:
+        logger.error("Too many redirects")
+    except Exception as e:
+        logger.error(f"Unknown error: {e}")
+        
+    return False
 
 
-@logger.catch
-def extract_file(save_path, file_name):
+@logger.catch 
+def extract_file(save_path: str, file_name: str) -> Optional[str]:
+    """Extract zip file and verify extracted file size
+    
+    Args:
+        save_path: Directory to save extracted files
+        file_name: Zip file name
+        
+    Returns:
+        str: Path to extracted files if successful, None otherwise
     """
-    解压指定zip文件并检查解压出的文件大小是否符合预期
-    :param save_path: 保存路径
-    :param file_name: 文件名
-    :return: 提取路径或None（如果未找到符合预期的文件）
-    """
-    result_path = os.path.join(save_path, "gif_unzip")  # 构建提取路径
-    _, result_name = os.path.split(file_name)
-    result_name, ext = os.path.splitext(result_name)
-    result_path = os.path.join(result_path, result_name)
-    if not os.path.exists(result_path):  # 如果目录不存在则创建目录
-        os.makedirs(result_path)
+    result_path = Path(save_path) / "gif_unzip" / Path(file_name).stem
+    result_path.mkdir(parents=True, exist_ok=True)
 
     zip_size = os.path.getsize(file_name)
-    expected_size = zip_size
 
-    if zip_size == expected_size:
-        logger.debug(f"Zip file size is {zip_size} bytes, which matches the expected size of {expected_size} bytes.")
+    if zip_size > 0:
         try:
-            with zipfile.ZipFile(file_name, 'r') as zip_ref:
-                zip_ref.extractall(result_path)  # 解压到指定目录
-                logger.debug(f"Files extracted to {result_path}")
-                return result_path
+            with zipfile.ZipFile(file_name) as zip_ref:
+                zip_ref.extractall(str(result_path))
+            logger.debug(f"Files extracted to {result_path}")
+            return str(result_path)
         except Exception as e:
-            logger.warning(f"Unknown error! detail: {e}")
-            return None
+            logger.warning(f"Extraction error: {e}")
     else:
-        logger.debug(
-            f"Zip file size is {zip_size} bytes, which does not match the expected size of {expected_size} bytes.")
-        return None
+        logger.debug(f"Invalid zip file size: {zip_size} bytes")
+        
+    return None
 
 
 @logger.catch
-def generate_gif_video(zip_file_list):
+def generate_gif_video(zip_file_list: List[str]) -> bool:
+    """Extract zips and generate videos from images
+    
+    Args:
+        zip_file_list: List of zip file paths
+        
+    Returns:
+        bool: True if successful, False otherwise
     """
-    解压压缩包并生成video
-    :param zip_file_list:
-    :return:
-    """
-    result_path_list = []
-    for zip_file_name_detail in zip_file_list:
-        folder_path, folder_name = os.path.split(zip_file_name_detail)
-        folder_path = folder_path.replace("gif_zip", "")
-        unzip_path = extract_file(folder_path, zip_file_name_detail)
-        if unzip_path is None:
-            logger.error(f"Failed to extract the file: {unzip_path}")
+    result_paths = []
+    output_video_path = Path(constants.data_path) / zip_file_list[0].replace("zip", "video")
+    output_video_path.mkdir(parents=True, exist_ok=True)
+
+    for zip_file in zip_file_list:
+        folder_path = Path(zip_file).parent.parent
+        unzip_path = extract_file(str(folder_path), zip_file)
+        
+        if unzip_path:
+            result_paths.append(unzip_path)
+            logger.success(f"Extracted to {unzip_path}")
         else:
-            result_path_list.append(unzip_path)
-            logger.success(f"File extracted successfully to {unzip_path}.")
-    logger.info("Start scan zip unzip img file.")
-    output_video_path = os.path.join(constants.data_path, zip_file_list[0].replace("zip", "video"))
-    if not os.path.exists(output_video_path):
-        logger.warning("Output video exists not, creating.")
-        os.makedirs(output_video_path)
-    for result_path_list_detail in result_path_list:
-        img_list = []
-        files_and_dirs = os.listdir(result_path_list_detail)
-        # 遍历文件和子目录
-        for img_path in files_and_dirs:
-            # 获取文件的完整路径
-            full_path = os.path.join(result_path_list_detail, img_path)
-            # print(full_path)
-            if img_path.endswith(".jpg") or img_path.endswith(".png"):
-                img_list.append(full_path)
-        if len(img_list) > 0:
-            point_path, point_gif_name = os.path.split(result_path_list_detail)
-            point_gif_video_name, ext = os.path.splitext(point_gif_name)
-            logger.info(f"Start generate mp4 video. folder name: {point_gif_video_name}")
-            video_name = img_video_convert(img_list, output_video_path, point_gif_video_name)
-            logger.success(f"video generate success! flag {video_name}")
+            logger.error(f"Failed to extract {zip_file}")
+
+    logger.info("Scanning unzipped image files")
+    
+    for result_path in result_paths:
+        img_files = [
+            str(f) for f in Path(result_path).glob("*")
+            if f.suffix.lower() in (".jpg", ".png")
+        ]
+        
+        if img_files:
+            video_name = Path(result_path).name
+            logger.info(f"Generating video for {video_name}")
+            if img_video_convert(img_files, str(output_video_path), video_name):
+                logger.success(f"Video generated: {video_name}")
+
     constants.unzip_generate_video_flag = False
-    logger.success(f"Generate gif video success! file length: {len(result_path_list)}")
+    logger.success(f"Generated videos from {len(result_paths)} zip files")
     return True
 
 
 @logger.catch
-def img_video_convert(image_path_list, video_out_path, point_gif_video_name):
+def img_video_convert(image_paths: List[str], video_out_path: str, video_name: str) -> bool:
+    """Convert image sequence to video
+    
+    Args:
+        image_paths: List of image file paths
+        video_out_path: Output directory for video
+        video_name: Name for output video file
+        
+    Returns:
+        bool: True if successful, False otherwise
     """
-    img to video
-    :param point_gif_video_name:
-    :param video_out_path:
-    :param image_path_list:
-    :return:
-    """
-    width = 0
-    height = 0
-    for image_path in image_path_list:
+    # Get dimensions from first valid image
+    width = height = 0
+    for img_path in image_paths:
         try:
-            image = cv2.imread(image_path)
-            if width == 0:
-                width = image.shape[1]
-            height = image.shape[0]
+            img = cv2.imread(img_path)
+            if img is not None:
+                height, width = img.shape[:2]
+                break
         except Exception as e:
-            logger.error("Error! detail: " + "file name or path: " + image_path + ", error detail: " + str(e))
+            logger.error(f"Error reading {img_path}: {e}")
             continue
+            
+    if not width or not height:
+        logger.error("No valid images found")
+        return False
 
-    if not os.path.exists(video_out_path):
-        os.makedirs(video_out_path)
+    video_path = os.path.join(video_out_path, f"{video_name}_test.mp4")
+    if os.path.exists(video_path):
+        logger.warning(f"Video already exists: {video_path}")
+        return False
 
     fourcc = cv2.VideoWriter.fourcc(*'MJPG')
-    video_name = video_out_path + "/" + point_gif_video_name + "_test.mp4"
-    if os.path.exists(video_name):
-        logger.warning(f"Video exists! name and path: {video_name}")
-        return False
-    video = cv2.VideoWriter(video_name, fourcc, int(output_video_fps), (width, height))  # 设置视频帧率、输出视频大小
+    video = cv2.VideoWriter(video_path, fourcc, int(output_video_fps), (width, height))
+
     if not video.isOpened():
-        logger.debug("Can't open video writer!")
+        logger.error("Failed to open video writer")
         return False
 
     try:
-        export_index = 0
-        # image_size_len = len(image_path_list)
-        for image_path in image_path_list:
-            export_index += 1
-            # percent_cur = int((export_index / image_size_len) * 100)
-            image = cv2.imread(image_path)
-            if image is None:  # 增加对图像是否正确读取的检查
-                logger.error("Image not loaded:" + image_path)
+        for i, img_path in enumerate(image_paths, 1):
+            img = cv2.imread(img_path)
+            if img is None:
+                logger.error(f"Failed to load image: {img_path}")
                 continue
-            resized_image = cv2.resize(image, (width, height))  # 将图像的宽度和高度设置为适合MPEG-4的尺寸
-            if image is not None:
-                video.write(resized_image)
+                
+            resized = cv2.resize(img, (width, height))
+            video.write(resized)
+            
     finally:
         video.release()
-    return video_name
-
-
-@logger.catch
-def download_file_fun(url, filename):
-    """
-    download file from url save point folder
-    :param url:
-    :param filename:
-    :return:
-    """
-    url = url.replace("\n", "")
-    filename = filename.replace("\n", "")
-    # 记录开始时间
-    start_time = time.time()
-    constants.download_finish_flag = False
-    if os.path.exists(filename):
-        logger.warning(f"Zip file already download! skip file name: {filename}")
-        constants.download_finish_flag = True
-        return True
-    try:
-        with urllib.request.urlopen(url, timeout=10) as response:  # Add timeout parameter for https connections
-            with open(filename, 'wb') as out_file:
-                chunk_size = 1024  # Adjust chunk size as needed
-                while True:
-                    chunk = response.read(chunk_size)
-                    if not chunk:
-                        break
-                    out_file.write(chunk)
-                    out_file.flush()
-        file_size = os.path.getsize(filename)
-        end_time = time.time()
-        download_time = end_time - start_time
-        logger.info(f"Download of {filename} completed in {download_time:.2f} seconds, size: {file_size}")
-        constants.download_finish_flag = True
-        return True
-    except Exception as e:
-        logger.warning(f"Error downloading {filename}: {e}")
-        return False
-
-
-@logger.catch
-def url_zip_all_process(zip_url_txt_list):
-    """
-    zip url process : download zip to local file dir
-    :param zip_url_txt_list:
-    :return:
-    """
-    logger.info("Get zip url txt in zip url.")
-    if len(zip_url_txt_list) == 0:
-        logger.warning("Current data path null zip_txt file!")
-        return False
-    for zip_url_detail in zip_url_txt_list:
-        txt_path, txt_name = os.path.split(zip_url_detail)
-        txt_file_name, ext = os.path.splitext(zip_url_detail)
-        # 去重
-        old_file_name = os.path.join(txt_path, zip_url_detail)
-        if "_result" not in txt_file_name:
-            new_file_name = os.path.join(txt_path, txt_file_name + "_result" + ext)
-            logger.warning(f"File: {new_file_name} not exists, create it.")
-
-        else:
-            new_file_name = txt_file_name + ext
-
-        remove_duplicates_from_txt(old_file_name, new_file_name)
-        logger.success(f"Remove duplicate file success: {zip_url_detail}")
-        with open(new_file_name, 'r', encoding='utf-8', errors='replace') as f:
-            zip_url_list = f.readlines()
-        if len(zip_url_list) == 0:
-            logger.warning(f"Txt file null, name：{zip_url_detail}")
-            continue
-        logger.info(f"Start download all zip file! txt file name: {zip_url_detail}")
-        for zip_url in zip_url_list:
-            if not download_all_zip(zip_url, txt_path):
-                continue
-    constants.download_gif_zip_flag = False
-    logger.success(f"Zip download file success! zip file length: {len(zip_url_txt_list)}")
+        
     return True
 
 
 @logger.catch
-def unzip_generate_gif():
+def download_file_fun(url: str, filename: str) -> bool:
+    """Download file from URL
+    
+    Args:
+        url: Download URL
+        filename: Output filename
+        
+    Returns:
+        bool: True if successful, False otherwise
     """
-    unzip file from zip file
-    :param :
-    :return:
-    """
-    zip_file_list = scan_directory_zip(constants.data_path)
-    if len(zip_file_list) == 0:
-        logger.warning("Zip file not exists.")
+    url = url.strip()
+    filename = filename.strip()
+    
+    if os.path.exists(filename):
+        logger.warning(f"File already exists: {filename}")
+        constants.download_finish_flag = True
+        return True
+
+    start_time = time.time()
+    constants.download_finish_flag = False
+
+    try:
+        with urllib.request.urlopen(url, timeout=10) as response:
+            with open(filename, 'wb') as out_file:
+                while chunk := response.read(1024):
+                    out_file.write(chunk)
+                    out_file.flush()
+
+        download_time = time.time() - start_time
+        file_size = os.path.getsize(filename)
+        logger.info(f"Downloaded {filename} ({file_size} bytes) in {download_time:.2f}s")
+        
+        constants.download_finish_flag = True
+        return True
+        
+    except Exception as e:
+        logger.warning(f"Download failed: {e}")
         return False
-    return generate_gif_video(zip_file_list)
+
+
+@logger.catch
+def url_zip_all_process(zip_url_txt_list: List[str]) -> bool:
+    """Process zip URLs from text files
+    
+    Args:
+        zip_url_txt_list: List of text files containing zip URLs
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    if not zip_url_txt_list:
+        logger.warning("No zip URL text files found")
+        return False
+
+    for txt_file in zip_url_txt_list:
+        txt_path = Path(txt_file)
+        new_file = txt_path.parent / f"{txt_path.stem}_result{txt_path.suffix}"
+        
+        if "_result" not in txt_path.stem:
+            logger.warning(f"Creating result file: {new_file}")
+            remove_duplicates_from_txt(str(txt_path), str(new_file))
+            logger.success(f"Removed duplicates from {txt_path}")
+            
+        try:
+            urls = new_file.read_text(encoding='utf-8').splitlines()
+        except Exception as e:
+            logger.error(f"Failed to read {new_file}: {e}")
+            continue
+            
+        if not urls:
+            logger.warning(f"No URLs found in {txt_file}")
+            continue
+            
+        logger.info(f"Downloading zips from {txt_file}")
+        for url in urls:
+            download_all_zip(url, str(txt_path.parent))
+
+    constants.download_gif_zip_flag = False
+    logger.success(f"Processed {len(zip_url_txt_list)} URL files")
+    return True
+
+
+@logger.catch
+def unzip_generate_gif() -> bool:
+    """Unzip files and generate GIF videos
+    
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    zip_files = scan_directory_zip(constants.data_path)
+    if not zip_files:
+        logger.warning("No zip files found")
+        return False
+        
+    return generate_gif_video(zip_files)

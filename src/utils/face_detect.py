@@ -1,9 +1,9 @@
 import os
 import sys
+from pathlib import Path
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(str(Path(__file__).parent.parent))
 
-import os.path
 import cv2
 import numpy as np
 from loguru import logger
@@ -14,151 +14,132 @@ import time
 
 
 @logger.catch
-def face_detect(path, image_path):
+def face_detect(base_path: str, image_path: str) -> bool:
     """
-    使用OpenCV进行人脸和眼睛检测。
+    使用OpenCV进行人脸和眼睛检测
 
-    :param path:
-    :param image_path: 图像文件的路径。
-    :return: None
+    Args:
+        base_path: 基础路径
+        image_path: 图像文件路径
+        
+    Returns:
+        bool: 检测是否成功
     """
-    file_path, file_name = os.path.split(image_path)
-    folder_name = find_img_result(image_path)
+    # 获取文件夹名称
+    folder_name = find_img_result(image_path) or 'unknown_name'
+    
+    # 构建输出路径
+    output_base = Path(base_path) / "face_detect_result" / folder_name
+    face_output_dir = output_base / "split_face" 
+    line_output_dir = output_base / "red_line"
+    
+    face_output_path = face_output_dir / Path(image_path).name
+    line_output_path = line_output_dir / Path(image_path).name
 
-    if folder_name is None:
-        folder_name = 'unknown_name'
-        logger.warning('Folder_name is None, default use unknown_name.')
+    # 创建输出目录
+    face_output_dir.mkdir(parents=True, exist_ok=True)
+    line_output_dir.mkdir(parents=True, exist_ok=True)
 
-    base_path = os.path.join(path, "face_detect_result")
-    base_path = os.path.join(base_path, folder_name)
-    img_file_path = os.path.join(base_path, "split_face")
-    img_file_path_line = os.path.join(base_path, "red_line")
-    img_file_name = os.path.join(img_file_path, file_name)
-    img_file_name_line = os.path.join(img_file_path_line, file_name)
-
-    if not os.path.exists(img_file_path):
-        os.makedirs(img_file_path)
-        logger.warning("Face detect split_face dir not exists, create it.")
-    if not os.path.exists(img_file_path_line):
-        os.makedirs(img_file_path_line)
-        logger.warning(f"Face detect red_line dir not exists, create it: {img_file_path}.")
-
-    # 只生成没有的
-    if os.path.exists(img_file_name) or os.path.exists(img_file_name_line):
-        logger.warning(f"FILE {img_file_name} already exists, will skip!")
+    # 检查文件是否已存在
+    if face_output_path.exists() or line_output_path.exists():
+        logger.warning(f"File {face_output_path} already exists, skipping")
         return False
+
     try:
-        face_xml_path = get_data_file("xml_data/haarcascade_frontalface_default.xml")
-        eye_xml_path = get_data_file('xml_data/haarcascade_eye.xml')
         # 加载分类器
-        face_cascade = cv2.CascadeClassifier(face_xml_path)
-        eye_cascade = cv2.CascadeClassifier(eye_xml_path)
+        face_cascade = cv2.CascadeClassifier(get_data_file("xml_data/haarcascade_frontalface_default.xml"))
+        eye_cascade = cv2.CascadeClassifier(get_data_file('xml_data/haarcascade_eye.xml'))
 
-        # 读取图像
-        img = cv2.imread(image_path)
+        # 读取并处理图像
+        img = cv2.imread(str(image_path))
         if img is None:
-            logger.error(f"Error: Unable to load image at {image_path}")
+            logger.error(f"Unable to load image: {image_path}")
             return False
 
-        # 转换为灰度图像
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        # 检测人脸
         faces = face_cascade.detectMultiScale(gray, 1.1, 5)
-        # eye_cascade.detectMultiScale(gray, 1.1, 5)
-        if len(faces) == 0:
-            # logger.warning(f"No faces detected:{image_path}")
+
+        if not faces.any():
             return False
-        else:
-            save_face(img_file_name, img_file_name_line, img, faces, gray, eye_cascade)
-        # 显示结果
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+
+        return save_face(str(face_output_path), str(line_output_path), img, faces, gray, eye_cascade)
 
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        logger.error(f"Error processing image: {e}")
         return False
 
 
 @logger.catch
-def save_face(img_file_name, img_file_name_line, img, faces, gray, eye_cascade):
+def save_face(face_output: str, line_output: str, img: np.ndarray, faces: np.ndarray, 
+             gray: np.ndarray, eye_cascade: cv2.CascadeClassifier) -> bool:
     """
+    保存检测到的人脸图像
     
-    :param eye_cascade:
-    :param gray:
-    :param img_file_name_line:
-    :param img_file_name:
-    :param img:
-    :param faces:
-    :return:
+    Args:
+        face_output: 人脸输出路径
+        line_output: 带标记输出路径
+        img: 原始图像
+        faces: 检测到的人脸
+        gray: 灰度图像
+        eye_cascade: 眼睛检测分类器
+        
+    Returns:
+        bool: 保存是否成功
     """
-
     target_size = (200, 200)
-
-    # Calculate the dimensions of the faces_image based on the number of faces and target size
-    num_faces = len(faces)
-    faces_image_height = num_faces * target_size[0]
-    faces_image_width = target_size[1]  # Assuming we want to fit only one face horizontally for simplicity
+    faces_image = np.zeros((len(faces) * target_size[0], target_size[1], 3), dtype=np.uint8)
 
     try:
-        # Create a blank image to hold the resized faces
-        faces_image = np.zeros((faces_image_height, faces_image_width, 3), dtype=np.uint8)
-
-        for (x, y, w, h) in faces:
+        # 处理每个检测到的人脸
+        for i, (x, y, w, h) in enumerate(faces):
+            # 绘制人脸框
             cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            
+            # 检测眼睛
             roi_gray = gray[y:y + h, x:x + w]
             roi_color = img[y:y + h, x:x + w]
-
-            # 在人脸区域内检测眼睛
-            eyes = eye_cascade.detectMultiScale(roi_gray)
-            for (ex, ey, ew, eh) in eyes:
+            
+            for ex, ey, ew, eh in eye_cascade.detectMultiScale(roi_gray):
                 cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
-
-            # 将绘制了眼睛矩形框的人脸区域放回原图的正确位置
+            
             img[y:y + h, x:x + w] = roi_color
 
-        # Iterate over the detected faces
-        for i, (x, y, w, h) in enumerate(faces):
-            # Resize the face to the target size
+            # 调整人脸大小并保存
             face_resized = cv2.resize(img[y:y + h, x:x + w], target_size)
+            faces_image[i * target_size[0]:(i + 1) * target_size[0], 0:target_size[1]] = face_resized
 
-            row = i
-            col = 0
+        # 保存图像
+        cv2.imwrite(face_output, faces_image)
+        cv2.imwrite(line_output, img)
+        
+        logger.success(f"Successfully saved: {Path(face_output).name}")
+        return True
 
-            # Place the resized face in the faces_image array
-            faces_image[row * target_size[0]:(row + 1) * target_size[0],
-            col * target_size[1]:(col + 1) * target_size[1]] = face_resized
-
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-        cv2.imwrite(img_file_name, faces_image)
-        cv2.imwrite(img_file_name_line, img)
     except Exception as e:
-        logger.error(f"Unknown error, detail: {e}, name: {img_file_name[-27:]}")
+        logger.error(f"Error saving face: {e}, file: {Path(face_output).name}")
         return False
-    logger.success(f"Save success, name: {img_file_name[-27:]}")
-    return True
 
 
 @logger.catch
-def face_detect_result(path):
+def face_detect_result(path: str) -> bool:
     """
-
-    :return:
+    处理目录下所有图像的人脸检测
+    
+    Args:
+        path: 图像目录路径
+        
+    Returns:
+        bool: 处理是否成功
     """
-    # 调用 show_detection() 函数标示检测到的人脸
     start_time = time.time()
-    img_list = find_images(path)  # 10 ms
-    # 2024-03-01 14:12:04.065162
+    
+    img_list = find_images(path)
     if not img_list:
-        logger.warning("Cur dir data path not image!")
+        logger.warning("No images found in directory")
         return False
+
     for img in img_list:
-        if not face_detect(path, img):
-            continue
+        face_detect(path, img)
 
-    end_time = time.time()
-    logger.success(f'Generate finish, data path: {path}, cost time: {int((end_time - start_time))} seconds')
-
+    logger.success(f'Processing complete. Path: {path}, Time: {int(time.time() - start_time)}s')
     constants.face_detect_flag = False

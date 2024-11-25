@@ -1,9 +1,10 @@
-import os
 import sys
+from pathlib import Path
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(str(Path(__file__).parent.parent))
+
 import requests
-from requests.exceptions import ReadTimeout, ChunkedEncodingError, ConnectTimeout, HTTPError
+from requests.exceptions import RequestException
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import time
@@ -12,53 +13,57 @@ from loguru import logger
 import urllib3
 
 urllib3.disable_warnings()
-retries = Retry(
-    total=download_img_retry_times,  # 总重试次数
-    backoff_factor=0.5,  # 重试间隔的倍数，逐渐增加
-    status_forcelist=[500, 502, 503, 504, 408, 429],  # 遇到这些HTTP状态码时重试
-    # method_whitelist=["HEAD", "GET", "OPTIONS"]  # 只对这些方法重试
+
+# 配置重试策略
+retry_strategy = Retry(
+    total=download_img_retry_times,
+    backoff_factor=0.5,
+    status_forcelist=[500, 502, 503, 504, 408, 429]
 )
 
-# 使用重试策略的适配器
-adapter = HTTPAdapter(max_retries=retries)
-
-# 挂载适配器到会话
+# 创建会话并配置重试
 session = requests.Session()
+adapter = HTTPAdapter(max_retries=retry_strategy)
 session.mount('http://', adapter)
 session.mount('https://', adapter)
 
 
 @logger.catch
-def send_request(url, timeout=download_img_time_out):
+def send_request(url: str, timeout: int = download_img_time_out) -> requests.Response | None:
     """
-    发送请求并处理重试和错误
-    :param url: 请求的URL
-    :param timeout: 超时时间（秒）
-    :return: 响应对象或None
+    发送HTTP请求并处理重试和错误
+
+    Args:
+        url: 请求的URL
+        timeout: 超时时间（秒）
+
+    Returns:
+        Response对象，如果请求失败则返回None
     """
-    try:
-        retries_count = 0
-        while retries_count < retries.total:
-            try:
-                start_time = time.time()
-
-                response = session.get(url, stream=True, timeout=timeout)
-
-                # 检查是否超时
-                elapsed_time = time.time() - start_time
-                if elapsed_time >= timeout:
-                    continue  # 如果实际请求时间超过了设定的超时时间，则继续重试
-
-                response.raise_for_status()  # 如果HTTP请求返回了不成功的状态码，将引发HTTPError异常
-                return response
-            except (ReadTimeout, ChunkedEncodingError, ConnectTimeout, HTTPError) as e:
-                time.sleep(retries.backoff_factor * (2 ** retries_count))
-                retries_count += 1
-            except Exception as e:
-                time.sleep(retries.backoff_factor * (2 ** retries_count))
-                retries_count += 1
-                # continue
-    except Exception as e:
-        # logger.warning(e)
-        ...
+    for attempt in range(retry_strategy.total):
+        try:
+            start_time = time.time()
+            
+            response = session.get(url, stream=True, timeout=timeout, verify=False)
+            
+            # 检查是否超时
+            if time.time() - start_time >= timeout:
+                logger.warning(f"Request timed out after {timeout}s")
+                continue
+                
+            response.raise_for_status()
+            return response
+            
+        except RequestException as e:
+            logger.warning(f"Request failed (attempt {attempt + 1}/{retry_strategy.total}): {str(e)}")
+            if attempt < retry_strategy.total - 1:
+                sleep_time = retry_strategy.backoff_factor * (2 ** attempt)
+                time.sleep(sleep_time)
+            
+        except Exception as e:
+            logger.warning(f"Unexpected error (attempt {attempt + 1}/{retry_strategy.total}): {str(e)}")
+            if attempt < retry_strategy.total - 1:
+                sleep_time = retry_strategy.backoff_factor * (2 ** attempt)
+                time.sleep(sleep_time)
+                
     return None

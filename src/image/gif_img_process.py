@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import List
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -7,14 +8,21 @@ from loguru import logger
 
 
 @logger.catch
-def read_gif_url(zip_txt_path, url_list):
+def read_gif_url(zip_txt_path: str, url_list: List[str]) -> bool:
+    """Write GIF URLs to a text file
+    
+    Args:
+        zip_txt_path: Path to save the URL text file
+        url_list: List of URLs to write
+        
+    Returns:
+        bool: True if successful
     """
-    from txt read url download zip to unzip img return img path
-    :param url_list:
-    :param zip_txt_path: zip url txt save
-    :return:
-    """
-    for url_detail in url_list:
+    try:
         with open(zip_txt_path, "a", encoding='utf-8') as f:
-            f.write(url_detail + "\n")
-    return True
+            f.writelines(f"{url}\n" for url in url_list)
+        logger.success(f"Wrote {len(url_list)} URLs to {zip_txt_path}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to write URLs to {zip_txt_path}: {e}")
+        return False
