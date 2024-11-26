@@ -16,51 +16,43 @@ LOG_DIR = Path(constants.basic_path) / "log_dir"
 class LogDisplayDialog(QDialog):
     """Real-time log viewer dialog"""
 
-    def __init__(self):
+    def __init__(self, parent=None):
+        super().__init__(parent)
         logger.debug("Starting LogDisplayDialog initialization")
         try:
-            super().__init__()
-            self.log_file_name_label = None
-            self.timer = None
-            self.log_text_edit = None
-            self.init_ui()
-            self.setup_timer()
+            # 基本设置
+            self.setWindowTitle('Log Viewer')
+            self.resize(800, 600)
+            self.setModal(True)
+            
+            # 初始化UI组件
+            self.log_file_name_label = QLabel(self)
+            self.log_text_edit = QTextEdit(self)
+            self.log_text_edit.setReadOnly(True)
+            
+            # 设置布局
+            layout = QVBoxLayout(self)
+            layout.addWidget(self.log_file_name_label)
+            layout.addWidget(self.log_text_edit)
+            
+            # 添加一些测试文本
+            self.log_text_edit.append("Initializing log viewer...")
+            
+            # 设置定时器
+            self.timer = QTimer(self)
+            self.timer.timeout.connect(self.update_log)
+            self.timer.start(2500)
+            
             logger.debug("LogDisplayDialog initialization complete")
         except Exception as e:
             logger.exception(f"Failed to initialize LogDisplayDialog: {e}")
             raise
 
-    @logger.catch
-    def init_ui(self):
-        """Initialize the UI components"""
-        logger.debug("LogDisplayDialog: Setting up UI")
-        self.setWindowTitle('Log Viewer')
-        self.resize(800, 600)
-        self.setModal(True)
-
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-
-        # Add file name label
-        self.log_file_name_label = QLabel()
-        layout.addWidget(self.log_file_name_label)
-
-        # Add scrollable text area
-        self.log_text_edit = QTextEdit()
-        self.log_text_edit.setReadOnly(True)
-        self.log_text_edit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        layout.addWidget(self.log_text_edit)
-
-        # 添加测试内容
-        self.log_text_edit.append("Testing log viewer...")
-        self.log_text_edit.append("If you can see this, the dialog is working.")
-
-    @logger.catch
-    def setup_timer(self):
-        """Set up timer for periodic log updates"""
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_log)
-        self.timer.start(2500)
+    def closeEvent(self, event):
+        logger.debug("Log dialog closing")
+        if self.timer:
+            self.timer.stop()
+        super().closeEvent(event)
 
     @logger.catch
     def update_log(self):
@@ -96,14 +88,6 @@ class LogDisplayDialog(QDialog):
         self.timer.stop()
         logger.debug("Log viewer timer stopped")
         constants.UIConfig.log_check_visible = False
-
-    @logger.catch
-    def closeEvent(self, event):
-        """Handle dialog close event"""
-        logger.debug('LogDisplayDialog: Closing dialog')
-        self.stop_timer()
-        constants.log_check_visible = False
-        super().closeEvent(event)
 
 
 @logger.catch

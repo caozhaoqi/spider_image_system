@@ -8,7 +8,7 @@ from typing import List, Optional
 sys.path.append(str(Path(__file__).parent.parent))
 
 from selenium.common import StaleElementReferenceException
-from PyQt5.QtCore import QUrl, Qt
+from PyQt5.QtCore import QUrl, Qt, QObject
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QListWidgetItem, QDialog
 from loguru import logger
@@ -47,12 +47,12 @@ def show_dialog(dialog_class: type, visible_flag: str, title: str = None, maximi
     """Generic function to show dialogs"""
     if visible_flag.startswith('.'):
         visible_flag = visible_flag[1:]
-    
+
     parts = visible_flag.split('.')
     obj = constants
     for part in parts:
         obj = getattr(obj, part)
-    
+
     if not obj:
         dialog = dialog_class()
         dialog.setWindowTitle(title)
@@ -230,7 +230,8 @@ def performance_monitor(_=None) -> None:
 @logger.catch
 def log_analyze_ui(_=None) -> None:
     """Show log analysis dialog"""
-    show_dialog(LogAnalyzeHistogram, "UIConfig.log_analyze_visible", "Log_analyze_visible", maximize=True)
+    logger.warning("Function disabled...")
+    # show_dialog(LogAnalyzeHistogram, "UIConfig.log_analyze_visible", "Log_analyze_visible", maximize=True)
 
 
 @logger.catch
@@ -412,14 +413,27 @@ def go_file_upload_all(_=None) -> None:
         logger.error("Gofile uploading file, please wait.")
 
 
-@logger.catch
-def log_check_ui(self) -> None:
-    """日志查看按钮"""
-    logger.debug("Log check button clicked")
-    try:
-        dialog = LogDisplayDialog()
-        dialog.setWindowTitle("Log Viewer")
-        dialog.showMaximized()
-        dialog.exec_()
-    except Exception as e:
-        logger.exception(f"Failed to show log dialog: {e}")
+class BaseEvent(QObject):
+    def __init__(self):
+        super().__init__()
+        self._log_dialog = None  # 添加这个实例变量来保持对话框引用
+
+    @logger.catch
+    def log_check_ui(self) -> None:
+        """日志查看按钮"""
+        logger.debug("Log check button clicked")
+        try:
+            if not self._log_dialog:
+                self._log_dialog = LogDisplayDialog()
+                self._log_dialog.setWindowTitle("Log Viewer")
+                # 设置对话框关闭时的处理
+                self._log_dialog.finished.connect(self._on_log_dialog_closed)
+                self._log_dialog.showMaximized()
+                self._log_dialog.exec_()
+        except Exception as e:
+            logger.exception(f"Failed to show log dialog: {e}")
+
+    def _on_log_dialog_closed(self):
+        """对话框关闭时的处理"""
+        logger.debug("Log dialog closed")
+        self._log_dialog = None

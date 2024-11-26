@@ -163,7 +163,10 @@ def download_img_txt(ui) -> bool:
                     update_download_continue_flag()
                     logger.warning(f"Resuming from {txt_path}, URL: {final_url}")
 
-                processed_path = remove_duplicates_from_txt(txt_path)
+                processed_path = remove_duplicates_from_txt(txt_path, txt_path)
+                if processed_path is None:
+                    logger.error("Failed to process text file")
+                    return
                 download_images_from_file(ui, processed_path, i, final_url, continue_flag)
                 
         except Exception as e:

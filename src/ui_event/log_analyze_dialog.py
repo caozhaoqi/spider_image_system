@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from PyQt5.QtCore import Qt
@@ -32,7 +33,7 @@ class LogAnalyzeHistogram(QDialog):
         self.axis_x = None
         self.axis_y = None
         self.series = None
-        
+
         # Configuration
         self.group_size = 5
         self.current_group = 0
@@ -41,21 +42,29 @@ class LogAnalyzeHistogram(QDialog):
 
         self.setModal(True)
         self.init_ui("Log Analysis")
+        
         if maximize:
             self.showMaximized()
+        else:
+            self.show()
+            
+        logger.debug("ui finish")
 
     @logger.catch
     def init_ui(self, window_title):
         """Initialize the UI components"""
         self.resize(800, 600)
         self.window_title = window_title
-        
-        try:
-            self.error_counts, self.log_item = self.parse_log_data()
-        except ValueError as e:
-            logger.error(f"Failed to parse log data: {e}")
-            self.error_counts, self.log_item = [], []  # 提供默认空值
-            
+
+        # Get initial data
+        self.error_counts, self.log_item = self.parse_log_data()
+
+        # Validate data before proceeding
+        if not self.error_counts or not self.log_item:
+            logger.warning("No log data available for analysis")
+            self.error_counts = [0]  # Default value
+            self.log_item = ["No Data"]  # Default value
+
         # Set up main window
         self.setWindowTitle(self.window_title)
         self.layout = QVBoxLayout()
@@ -63,12 +72,12 @@ class LogAnalyzeHistogram(QDialog):
 
         # Create chart layouts
         self.h_layout = QHBoxLayout()
-        
+
         # Create and setup bar chart
         self.chart = self.create_chart()
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.Antialiasing)
-        
+
         # Create pie chart
         self.pie_chart_view = self.create_pie_chart()
 
@@ -82,10 +91,23 @@ class LogAnalyzeHistogram(QDialog):
         self.layout.addLayout(self.h_layout)
         self.layout.addWidget(self.next_button)
 
+        # Set window flags to prevent immediate closing
+        self.setWindowFlags(
+            Qt.Window |  # Gives the window normal window system frame
+            Qt.WindowMinMaxButtonsHint |  # Add minimize/maximize buttons
+            Qt.WindowCloseButtonHint  # Add close button
+        )
+        
+        logger.debug("init ui ...")
+
+        # Initialize charts with data
+        self.updateChart()
+
     @logger.catch
     def parse_log_data(self):
         """Parse log data for analysis"""
-        return log_analyze_data_output_new()
+        labels, values = log_analyze_data_output_new()
+        return values, labels  # Return values first, then labels
 
     @logger.catch
     def create_chart(self):
@@ -124,6 +146,10 @@ class LogAnalyzeHistogram(QDialog):
     @logger.catch
     def updateChart(self):
         """Update both bar and pie charts with current data"""
+        if not self.error_counts or not self.log_item:
+            logger.error("error, data Null")
+            return
+
         # Clear existing series
         for series in self.chart.series():
             self.chart.removeSeries(series)
@@ -135,20 +161,23 @@ class LogAnalyzeHistogram(QDialog):
         # Get current group data
         start_idx = self.current_group * self.group_size
         end_idx = min(start_idx + self.group_size, len(self.error_counts))
-        current_counts = self.error_counts[start_idx:end_idx]
-        current_items = self.log_item[start_idx:end_idx]
+
+        # self.error_counts contains the numeric values
+        # self.log_item contains the labels
+        current_values = self.error_counts[start_idx:end_idx]  # Numeric values
+        current_labels = self.log_item[start_idx:end_idx]  # String labels
 
         # Update bar chart
-        for item, count in zip(current_items, current_counts):
-            bar_set = QBarSet(item)
-            bar_set.append(count)
+        for label, value in zip(current_labels, current_values):
+            bar_set = QBarSet(str(label))
+            bar_set.append(float(value))  # Now value should be numeric
             self.series.append(bar_set)
 
         self.axis_x.clear()
-        self.axis_x.append(current_items)
+        self.axis_x.append(current_labels)
 
-        if current_counts:
-            self.axis_y.setRange(min(current_counts), max(current_counts))
+        if current_values:
+            self.axis_y.setRange(min(current_values), max(current_values))
 
         # Configure bar chart axes and series
         self.chart.addAxis(self.axis_y, Qt.AlignLeft)
@@ -159,15 +188,17 @@ class LogAnalyzeHistogram(QDialog):
         self.chart.addSeries(self.series)
 
         # Update pie chart
-        total = sum(current_counts)
-        for item, count in zip(current_items, current_counts):
-            slice = self.series_pie.append(item, count)
-            percentage = (count / total) * 100
+        total = sum(current_values)
+        for item, value in zip(current_labels, current_values):
+            slice = self.series_pie.append(item, value)
+            percentage = (value / total) * 100
             slice.setLabel(f"{item[:6]}:{percentage:.1f}%")
             slice.setLabelVisible(True)
 
         self.pie_chart.addSeries(self.series_pie)
         self.pie_chart.setTitle("Error Distribution (Pie)")
+
+        logger.debug("ui paint finish.")
 
     @logger.catch
     def closeEvent(self, event):

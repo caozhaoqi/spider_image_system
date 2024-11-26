@@ -175,15 +175,15 @@ def log_analyze_data_output() -> List[List]:
     return results
 
 @logger.catch
-def log_analyze_data_output_new() -> Tuple[List, List]:
+def log_analyze_data_output_new() -> Tuple[List[str], List[int]]:
     """分析日志文件"""
-    error_names = []  # 确保这里有对应的错误名称
+    # Values should be numeric
     error_counts = [28, 126, 1244]
     
-    # 添加对应的错误名称
-    error_names = ["Error1", "Error2", "Error3"]  # 示例名称，需要根据实际情况修改
+    # Labels should be strings
+    error_names = ["Connection Error", "Timeout Error", "Download Error"]
     
-    return merge_same_value(error_names, error_counts)
+    return error_names, error_counts
 
 @logger.catch
 def merge_same_value(labels: List[str], values: List[int]) -> Tuple[List, List]:
