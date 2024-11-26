@@ -1,3 +1,11 @@
+"""
+Time:     2024/1/1 00:00
+Author:   ZhaoQi Cao(czq)
+Version:  V 0.1
+File:     log_analyis.py
+Describe: Github link: https://github.com/caozhaoqi
+"""
+
 """Image model class for storing image metadata and download information"""
 import os
 import sys

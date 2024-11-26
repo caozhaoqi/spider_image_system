@@ -1,3 +1,11 @@
+"""
+Time:     2024/1/1 00:00
+Author:   ZhaoQi Cao(czq)
+Version:  V 0.1
+File:     log_analyis.py
+Describe: Github link: https://github.com/caozhaoqi
+"""
+
 """SQLite数据库工具模块
 
 数据表结构

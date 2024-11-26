@@ -1,8 +1,15 @@
+"""
+Time:     2024/1/1 00:00
+Author:   ZhaoQi Cao(czq)
+Version:  V 0.1
+File:     log_analyis.py
+Describe: Github link: https://github.com/caozhaoqi
+"""
+
 import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

@@ -6,6 +6,7 @@ GoFile文件上传工具
 Author: zq.c
 Modified: 2024/8/1
 Created: 2024/7/24
+Describe: Github link: https://github.com/caozhaoqi
 """
 
 import json
