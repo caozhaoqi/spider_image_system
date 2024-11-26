@@ -172,11 +172,11 @@ def check_images(self, image_path: str) -> None:
         except Exception:
             logger.warning(f"Failed to process small image: {img}")
 
-    if constants.check_images_flag:
-        constants.check_images_flag = False
+    if constants.ProcessingConfig.check_images_flag:
+        constants.ProcessingConfig.check_images_flag = False
         logger.success("Image check completed")
         
-    if constants.single_flag:
+    if constants.ProcessingConfig.single_flag:
         logger.success("Single image scan completed")
         constants.single_flag = False
 
@@ -222,11 +222,11 @@ def img_category_images(self, image_path: str) -> None:
             except Exception:
                 logger.warning(f"Failed to categorize image: {img}")
 
-    if constants.category_image_flag:
-        constants.category_image_flag = False
+    if constants.ProcessingConfig.category_image_flag:
+        constants.ProcessingConfig.category_image_flag = False
         logger.success("Image categorization completed")
         
-    if constants.single_flag:
+    if constants.ProcessingConfig.single_flag:
         logger.success("Single image categorization completed")
         constants.single_flag = False
 

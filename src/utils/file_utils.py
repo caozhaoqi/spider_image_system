@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Set
 
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -76,7 +76,7 @@ def url_list_save(key_word: str, image_urls_list: List[str]) -> bool:
     Returns:
         bool: 是否保存成功
     """
-    if constants.stop_spider_url_flag:
+    if constants.SpiderConfig.stop_spider_url_flag:
         logger.warning("停止爬取URL,URL列表保存将退出")
         return False
         
@@ -103,7 +103,7 @@ def url_list_save(key_word: str, image_urls_list: List[str]) -> bool:
 
 
 @logger.catch
-def remove_duplicates_from_txt(input_file: str, output_file: str) -> None:
+def remove_duplicates_from_txt(input_file: str, output_file: str) -> str:
     """移除文本文件中的重复内容
     
     Args:
@@ -122,9 +122,11 @@ def remove_duplicates_from_txt(input_file: str, output_file: str) -> None:
             
         with open(output_path, 'w', encoding='utf-8', errors='replace') as f:
             f.writelines(lines)
+            return lines
             
     except Exception as e:
         logger.error(f"移除重复内容失败: {e}")
+        return lines
 
 
 @logger.catch
@@ -201,7 +203,7 @@ def convert_and_move_folder(folder_path: str) -> None:
             elif contains_special_chars(folder):
                 pinyin_convert(folder, folder_path, folder, False)
                 
-        constants.convert_folder_name_flag = False
+        constants.ProcessingConfig.convert_folder_name_flag = False
         logger.success("所有文件夹转换完成!")
         
     except Exception as e:

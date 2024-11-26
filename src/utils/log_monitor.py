@@ -90,7 +90,7 @@ class LogFileHandler(FileSystemEventHandler):
         """
         self.last_modified = get_log_cur_time(self.log_file)
         if time.time() - self.last_modified > timeout:
-            constants.log_no_output_flag = True
+            constants.ProcessingConfig.log_no_output_flag = True
             logger.warning(f"警告：文件 {self.log_file} 已超过 {timeout // 60} 分钟没有输出")
 
 
@@ -167,13 +167,13 @@ def log_mon_war(spider_thread_obj):
             if not check_internet_connection():
                 logger.error("网络连接断开,停止爬虫线程")
                 spider_thread_obj.stop()
-                constants.stop_download_image_flag = True
-                constants.scheduled_download_program_flag = False 
-                constants.JM_SD_auto_flag = False
+                constants.SpiderConfig.stop_download_image_flag = True
+                constants.ProcessingConfig.scheduled_download_program_flag = False
+                constants.ProcessingConfig.JM_SD_auto_flag = False
                 wx_push_content("网络连接断开,停止爬虫线程")
             elif not spider_thread_obj.is_running():
                 logger.success("网络恢复,重启爬虫线程")
-                constants.scheduled_download_program_flag = True
+                constants.ProcessingConfig.scheduled_download_program_flag = True
                 spider_thread_obj.resume()
                 spider_thread_obj.run()
                 wx_push_content("网络恢复,重启爬虫线程")
@@ -181,12 +181,12 @@ def log_mon_war(spider_thread_obj):
             logger.info(f"爬虫线程运行状态: {spider_thread_obj.is_running()}")
             
             # 检查日志输出
-            if constants.log_no_output_flag and constants.internet_connect_status:
+            if constants.ProcessingConfig.log_no_output_flag and constants.ProcessingConfig.internet_connect_status:
                 spider_thread_obj.pause()
                 spider_thread_obj.resume()
                 spider_thread_obj.run()
                 logger.warning(f"日志无输出,重启爬虫线程,状态: {spider_thread_obj.is_running()}")
-                constants.log_no_output_flag = False
+                constants.ProcessingConfig.log_no_output_flag = False
                 
             time.sleep(timeout)
             

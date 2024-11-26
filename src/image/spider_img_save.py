@@ -1,6 +1,5 @@
 import os
 import sys
-from typing import Optional, Tuple
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -17,7 +16,7 @@ from utils.minio_file import upload_image
 from run import constants
 from run.constants import data_path
 from file.file_process import (
-    count_lines, read_end_download_image, save_download_end,
+    read_end_download_image, save_download_end,
     update_download_continue_flag, record_download_finish_txt,
     exists_txt_from_finish, write_error_image
 )
@@ -103,7 +102,7 @@ def download_images_from_file(
                 break
                 
     for i, url in enumerate(urls[start_index:], start_index):
-        if constants.stop_download_image_flag:
+        if constants.SpiderConfig.stop_download_image_flag:
             save_download_end(i, file_path, url.strip(), txt_index)
             break
             
@@ -142,11 +141,11 @@ def download_img_txt(ui) -> bool:
     
     if not txt_files:
         logger.warning("No image text files found")
-        constants.stop_download_image_flag = True
+        constants.SpiderConfig.stop_download_image_flag = True
         return False
         
     for i, txt_path in enumerate(txt_files):
-        if constants.stop_download_image_flag:
+        if constants.SpiderConfig.stop_download_image_flag:
             if ui:
                 ui.download_show_label.setText("0/0")
                 ui.sys_tips("Download stopped")
@@ -172,20 +171,20 @@ def download_img_txt(ui) -> bool:
             
         process_image(ui, txt_path)
         
-        if not constants.stop_download_image_flag:
+        if not constants.SpiderConfig.stop_download_image_flag:
             record_download_finish_txt(txt_path)
             
-        if (constants.upload_minio_image_Flag == 'True' and 
-            not constants.category_image_flag and
-            not constants.check_images_flag):
+        if (constants.upload_minio_image_flag == 'True' and
+            not constants.ProcessingConfig.category_image_flag and
+            not constants.ProcessingConfig.check_images_flag):
             logger.debug("Uploading images to MinIO")
             upload_image(constants.basic_path)
         else:
             logger.warning(
                 f"Skipping MinIO upload: "
-                f"Flag={constants.upload_minio_image_Flag}, "
-                f"Category={constants.category_image_flag}, "
-                f"Check={constants.check_images_flag}"
+                f"Flag={constants.upload_minio_image_flag}, "
+                f"Category={constants.ProcessingConfig.category_image_flag}, "
+                f"Check={constants.ProcessingConfig.check_images_flag}"
             )
             
     if ui:
@@ -193,7 +192,7 @@ def download_img_txt(ui) -> bool:
     else:
         logger.success("Download complete")
         
-    constants.stop_download_image_flag = True
+    constants.SpiderConfig.stop_download_image_flag = True
     return True
 
 
@@ -231,7 +230,7 @@ def download_re_error_image() -> bool:
             filename = os.path.join(save_dir, image_url_re(url))
             download_image(url.strip(), filename, len(error_urls), i)
             
-        constants.download_image_re_flag = False
+        constants.SpiderConfig.download_image_re_flag = False
         logger.success("Retry downloads complete")
         return True
         
@@ -249,14 +248,42 @@ def process_image(ui, txt_path: str) -> None:
         txt_path: Path to image text file
     """
     logger.debug("Checking for errors")
-    constants.check_images_flag = True
+    constants.ProcessingConfig.check_images_flag = True
     threading.Thread(
         target=check_images,
         args=(ui, constants.data_path)
     ).start()
 
     logger.debug("Categorizing images") 
-    constants.category_image_flag = True
+    constants.ProcessingConfig.category_image_flag = True
+    threading.Thread(
+        target=img_category_images,
+        args=(ui, constants.data_path)
+    ).start()
+
+
+@logger.catch
+def remove_error_image(ui) -> None:
+    """Scan and remove error images
+    
+    Args:
+        ui: UI instance for status updates
+    """
+    logger.info("Starting image scan...")
+    threading.Thread(
+        target=check_images,
+        args=(ui, constants.data_path)
+    ).start()
+
+
+@logger.catch
+def img_category_button(ui) -> None:
+    """Start image categorization thread
+    
+    Args:
+        ui: UI instance for status updates
+    """
+    logger.info("Starting image categorization...")
     threading.Thread(
         target=img_category_images,
         args=(ui, constants.data_path)

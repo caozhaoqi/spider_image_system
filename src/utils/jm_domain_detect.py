@@ -258,7 +258,7 @@ def search_download_jm(actor: str) -> bool:
         page = get_page_content(client, actor, i)
         if page:
             page_list.append(page)
-        if not constants.JM_SD_auto_flag:
+        if not constants.ProcessingConfig.jm_sd_auto_flag:
             return False
 
     aid_list = []
@@ -270,7 +270,7 @@ def search_download_jm(actor: str) -> bool:
             logger.info(f'[角色/{actor}] 发现: [{aid}]: [{title}]')
             aid_list.append(aid)
             a_title_list.append(title)
-            if not constants.JM_SD_auto_flag:
+            if not constants.ProcessingConfig:
                 return False
                 
     logger.debug("开始下载")
@@ -286,7 +286,7 @@ def search_download_jm(actor: str) -> bool:
         except Exception as e:
             logger.warning(f"下载失败: {e}")
             
-        if not constants.JM_SD_auto_flag:
+        if not constants.ProcessingConfig.jm_sd_auto_flag:
             return False
 
     try:
@@ -321,13 +321,13 @@ def jm_auto_spider_img_thread() -> bool:
                     
                 if not search_download_jm(keyword):
                     logger.success("停止爬取")
-                    constants.JM_SD_auto_flag = False
+                    constants.ProcessingConfig.jm_sd_auto_flag = False
                     return False
                     
             except Exception as e:
                 logger.error(f"爬取失败: {e}")
 
-    constants.JM_SD_auto_flag = False
+    constants.ProcessingConfig.jm_sd_auto_flag = False
     logger.success("全部下载完成")
     return True
 
@@ -403,7 +403,7 @@ def process_jm_image_category() -> None:
             
         jm_move_category(keyword, category, jm_already_keyword)
         
-    constants.process_jm_image_category_flag = False
+    constants.ProcessingConfig.process_jm_image_category_flag = False
     logger.success("分类处理完成")
 
 @logger.catch

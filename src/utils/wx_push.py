@@ -27,7 +27,7 @@ def wx_push_content(content: str) -> bool:
     Returns:
         bool: 推送是否成功
     """
-    if not constants.WeChat_push_flag:
+    if not constants.wechat_push_flag:
         logger.warning("微信消息推送功能未开启,跳过推送")
         return False
 

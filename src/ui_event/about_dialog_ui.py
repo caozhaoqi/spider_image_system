@@ -55,5 +55,5 @@ class InformationDialog(QDialog):
             event: Close event object
         """
         logger.debug('About_message_lookup_visible Dialog is closing!')
-        constants.about_message_lookup_visible = False
+        constants.UIConfig.about_message_lookup_visible = False
         super(InformationDialog, self).closeEvent(event)

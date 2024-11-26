@@ -15,11 +15,12 @@ from PyQt5.QtGui import QPixmap, QImage
 
 
 class ImageDialog(QDialog):
-    def __init__(self):
+    def __init__(self, maximize: bool = True):
         super().__init__()
-        self.setWindowTitle("SIS Online Image Viewer")
+        self.setModal(True)
         self.init_ui()
-        self.load_initial_image()
+        if maximize:
+            self.showMaximized()
 
     def init_ui(self):
         """Initialize the UI components"""
@@ -55,6 +56,17 @@ class ImageDialog(QDialog):
         
         button_layout.addWidget(self.show_page_label_online)
         layout.addLayout(button_layout)
+    
+    @logger.catch
+    def showEvent(self, event):
+        """重写显示事件"""
+        super().showEvent(event)
+        self.load_initial_image()
+
+    @logger.catch
+    def show(self):
+        """重写 show 方法，使用 exec_ 代替"""
+        return self.exec_()
 
     def load_initial_image(self):
         """Load the first image on dialog creation"""
@@ -99,10 +111,10 @@ class ImageDialog(QDialog):
 
     def can_change_image(self):
         """Check if image can be changed"""
-        if not constants.online_show_image:
+        if not constants.UIConfig.online_look_image_visible:
             logger.warning("Loading image, please wait.")
             return False
-        if not constants.online_img_list:
+        if not constants.UIConfig.online_look_image_visible:
             logger.warning("No images available")
             return False
         return True
@@ -150,5 +162,5 @@ class ImageDialog(QDialog):
     def closeEvent(self, event):
         """Handle dialog close event"""
         logger.debug('Image Dialog closing')
-        constants.online_look_image_visible = False
+        constants.UIConfig.online_look_image_visible = False
         super().closeEvent(event)

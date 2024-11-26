@@ -14,7 +14,7 @@ from utils.log_analyis import log_analyze_data_output_new
 class LogAnalyzeHistogram(QDialog):
     """Dialog for displaying log analysis histograms and pie charts"""
 
-    def __init__(self):
+    def __init__(self, maximize: bool = True):
         super().__init__()
         # Initialize instance variables
         self.pie_chart = None
@@ -39,17 +39,23 @@ class LogAnalyzeHistogram(QDialog):
         self.log_data = None
         self.log_item = None
 
-        # Initialize UI
+        self.setModal(True)
         self.init_ui("Log Analysis")
-        self.updateChart()
+        if maximize:
+            self.showMaximized()
 
     @logger.catch
     def init_ui(self, window_title):
         """Initialize the UI components"""
         self.resize(800, 600)
         self.window_title = window_title
-        self.error_counts, self.log_item = self.parse_log_data()
-
+        
+        try:
+            self.error_counts, self.log_item = self.parse_log_data()
+        except ValueError as e:
+            logger.error(f"Failed to parse log data: {e}")
+            self.error_counts, self.log_item = [], []  # 提供默认空值
+            
         # Set up main window
         self.setWindowTitle(self.window_title)
         self.layout = QVBoxLayout()
@@ -167,5 +173,5 @@ class LogAnalyzeHistogram(QDialog):
     def closeEvent(self, event):
         """Handle dialog close event"""
         logger.debug('Log Analysis Dialog closing')
-        constants.log_analyze_visible = False
+        constants.UIConfig.log_analyze_visible = False
         super().closeEvent(event)

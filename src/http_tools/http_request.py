@@ -41,7 +41,7 @@ def download_all_zip(url: str, save_dir: str) -> bool:
         )
         download_thread.start()
         
-        return constants.download_finish_flag
+        return constants.SpiderConfig.download_finish_flag
         
     except FileNotFoundError as e:
         logger.warning(f"Target file not exists: {e}")
@@ -125,7 +125,7 @@ def generate_gif_video(zip_file_list: List[str]) -> bool:
             if img_video_convert(img_files, str(output_video_path), video_name):
                 logger.success(f"Video generated: {video_name}")
 
-    constants.unzip_generate_video_flag = False
+    constants.SpiderConfig.unzip_generate_video_flag = False
     logger.success(f"Generated videos from {len(result_paths)} zip files")
     return True
 
@@ -202,11 +202,11 @@ def download_file_fun(url: str, filename: str) -> bool:
     
     if os.path.exists(filename):
         logger.warning(f"File already exists: {filename}")
-        constants.download_finish_flag = True
+        constants.SpiderConfig.process_image_flag = True
         return True
 
     start_time = time.time()
-    constants.download_finish_flag = False
+    constants.SpiderConfig.process_image_flag = False
 
     try:
         with urllib.request.urlopen(url, timeout=10) as response:
@@ -219,7 +219,7 @@ def download_file_fun(url: str, filename: str) -> bool:
         file_size = os.path.getsize(filename)
         logger.info(f"Downloaded {filename} ({file_size} bytes) in {download_time:.2f}s")
         
-        constants.download_finish_flag = True
+        constants.SpiderConfig.process_image_flag = True
         return True
         
     except Exception as e:
@@ -264,7 +264,7 @@ def url_zip_all_process(zip_url_txt_list: List[str]) -> bool:
         for url in urls:
             download_all_zip(url, str(txt_path.parent))
 
-    constants.download_gif_zip_flag = False
+    constants.SpiderConfig.download_gif_zip_flag = False
     logger.success(f"Processed {len(zip_url_txt_list)} URL files")
     return True
 

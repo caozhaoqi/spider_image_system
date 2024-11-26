@@ -13,7 +13,7 @@ from run import constants
 from utils.http_utils import image_url_re, match_img_result
 from utils.time_utils import time_to_utc
 from loguru import logger
-from model import SpiderKeywordModel
+from model.SpiderKeywordModel import SpiderKeywordModel
 
 
 @logger.catch
@@ -162,13 +162,13 @@ def exists_txt_from_finish(content: str) -> bool:
 
 
 @logger.catch
-def record_end_spider_image_keyword(key_word: str, cur_page: int) -> bool:
+def record_end_spider_image_keyword(cur_page: str, key_word: str) -> bool:
     """Record end spider image keyword"""
     spider_image_keyword, txt_file_list = get_image_keyword()
-    cur_keyword_txt = find_keyword_txt(key_word, txt_file_list, spider_image_keyword)
+    cur_keyword_txt = find_keyword_txt(str(key_word), txt_file_list, spider_image_keyword)
     
     if cur_keyword_txt:
-        data = SpiderKeywordModel(cur_keyword_txt, key_word, cur_page, True)
+        data = SpiderKeywordModel(cur_keyword_txt, key_word, int(cur_page), True)
         file_name = os.path.join(constants.data_path, 'spider_img_keyword_final.json')
         with open(file_name, 'w', encoding='utf-8', errors='replace') as f:
             json.dump(data.__dict__, f, ensure_ascii=False)
@@ -208,8 +208,11 @@ def get_image_keyword() -> Tuple[List[str], List[str]]:
 
 
 @logger.catch
-def find_keyword_txt(key_word: str, txt_file_list: List[str], spider_image_keyword: List[str]) -> Optional[str]:
+def find_keyword_txt(key_word: str, txt_file_list: List[str], spider_image_keyword: List[List[str]]) -> str:
     """Find keyword in txt files"""
+    if not isinstance(key_word, str):
+        raise TypeError(f"key_word must be string, not {type(key_word)}")
+        
     for txt_file in txt_file_list:
         with open(txt_file, 'r', encoding='utf-8', errors='replace') as f:
             if any(key_word in line for line in f):

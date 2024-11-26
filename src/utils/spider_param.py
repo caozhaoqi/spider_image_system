@@ -41,7 +41,7 @@ def user_save_artwork(driver: WebDriver) -> Optional[List[str]]:
     artwork_urls = []
     try:
         for element in driver.find_elements(By.CSS_SELECTOR, "a"):
-            if constants.stop_spider_url_flag:
+            if constants.SpiderConfig.stop_spider_url_flag:
                 break
                 
             url = element.get_attribute("href")
@@ -73,7 +73,7 @@ def is_keyword_num(driver: WebDriver, keyword: str) -> bool:
         是否包含特殊标记
     """
     if "," not in keyword:
-        if constants.spider_mode == "manual":
+        if constants.SpiderConfig.spider_mode == "manual":
             constants.scheduled_download_program_flag = False
             logger.warning(f"关键词不包含分隔符',': {keyword}")
         return False
@@ -128,13 +128,13 @@ def spider_users_images(driver: WebDriver, keyword: str, category: str) -> bool:
         
         artwork_list = user_save_artwork(driver)
         
-        if constants.stop_spider_url_flag:
+        if constants.SpiderConfig.stop_spider_url_flag:
             logger.warning("停止爬取")
             break
             
         if not artwork_list or driver.title in [constants.ban_content, constants.visit_url, '']:
             logger.warning(f"用户 {category} 无作品或被禁止访问: {driver.title}")
-            constants.firewall_flag = True
+            constants.ProcessingConfig.firewall_flag = True
             break
             
         for artwork_url in artwork_list:
@@ -371,7 +371,7 @@ def chrome_options(options: webdriver.ChromeOptions) -> webdriver.ChromeOptions:
     Returns:
         配置后的选项对象
     """
-    if constants.spider_mode == 'auto':
+    if constants.SpiderConfig.spider_mode == 'auto':
         auto_options = [
             '--headless',
             '--disable-gpu',
@@ -461,7 +461,7 @@ def artwork_single_image(keyword: str, driver: WebDriver, url: str) -> Optional[
         
         if driver.title in [constants.ban_content, constants.visit_url, '']:
             logger.warning(f"访问受限: {driver.title}")
-            constants.firewall_flag = True
+            constants.ProcessingConfig.firewall_flag = True
             return None
             
     except Exception as e:
@@ -471,7 +471,7 @@ def artwork_single_image(keyword: str, driver: WebDriver, url: str) -> Optional[
     if open_look_all(driver):
         logger.success(f"展开全部成功: {url[-9:]}")
 
-    if constants.spider_mode == 'manual':
+    if constants.SpiderConfig.spider_mode == 'manual':
         slider_page_down(driver)
 
     spider_gif_images(keyword, driver)

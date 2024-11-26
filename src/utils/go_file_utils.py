@@ -207,7 +207,7 @@ def upload_all_gofile(data_path: str) -> bool:
             if http_upload(file_path):
                 save_upload_already(data_path, file_path)
                 
-        constants.GO_FILE_UPLOAD_FLAG = False
+        constants.ProcessingConfig.go_file_upload_flag = False
         logger.success("所有文件上传完成")
         return True
         

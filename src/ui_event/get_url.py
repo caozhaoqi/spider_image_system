@@ -50,7 +50,7 @@ def save_img_url(self, driver: WebDriver, key_word: str, cur_page: int) -> bool:
         with open(txt_path, 'r', encoding='utf-8') as f:
             for url in f:
                 url = url.strip()
-                if not url or constants.stop_spider_url_flag:
+                if not url or constants.SpiderConfig.stop_spider_url_flag:
                     logger.warning("Spider URL stopped")
                     return False
 
@@ -77,13 +77,13 @@ def artwork_to_image(key_word_pinyin: str, driver: WebDriver, url: str) -> bool:
         driver.get(url)
         if driver.title == constants.ban_content:
             logger.warning("Domain blocked - exiting")
-            constants.firewall_flag = True
+            constants.ProcessingConfig.firewall_flag = True
             return False
 
         if open_look_all(driver):
             logger.success(f"Opened all images for {key_word_pinyin}, PID: {url[-9:]}")
 
-        if constants.spider_mode == 'manual':
+        if constants.SpiderConfig.spider_mode == 'manual':
             slider_page_down(driver)
 
         sys_sleep_time(driver, detail_delta_time, True)
@@ -165,10 +165,10 @@ def clear_cache_refresh(driver: WebDriver) -> None:
 @logger.catch
 def detect_download_working(self) -> None:
     """Check and start download thread if needed"""
-    if constants.scheduled_download_program_flag and constants.stop_download_image_flag:
+    if constants.scheduled_download_program_flag and constants.SpiderConfig.stop_download_image_flag:
         logger.debug("Starting download thread")
         threading.Thread(target=download_img_txt, args=(None,)).start()
-        constants.stop_download_image_flag = False
+        constants.SpiderConfig.stop_download_image_flag = False
         logger.info("Download thread started")
 
 
@@ -179,7 +179,7 @@ def spider_artworks_url(self, key_word: str) -> bool:
     driver, url, cur_page = spider_param_config(key_word)
 
     if driver is None and url is None and cur_page is None:
-        constants.stop_spider_url_flag = True
+        constants.SpiderConfig.stop_spider_url_flag = True
         logger.info("Spider completed - no more work")
         return True
     elif driver is None:
@@ -190,7 +190,7 @@ def spider_artworks_url(self, key_word: str) -> bool:
 
     try:
         while True:
-            if constants.stop_spider_url_flag:
+            if constants.SpiderConfig.stop_spider_url_flag:
                 break
 
             key_word_flag, last_page = exists_image_keyword(key_word)
@@ -215,7 +215,7 @@ def spider_artworks_url(self, key_word: str) -> bool:
 
                 if driver.title in (constants.ban_content, constants.visit_url, '', '请稍候…'):
                     logger.warning("Page access blocked or invalid")
-                    constants.firewall_flag = True
+                    constants.ProcessingConfig.firewall_flag = True
                     break
 
             except Exception as e:
@@ -246,15 +246,15 @@ def spider_artworks_url(self, key_word: str) -> bool:
         else:
             logger.success("Spider completed successfully")
 
-        if constants.spider_mode == 'manual':
-            constants.stop_spider_url_flag = True
+        if constants.SpiderConfig.spider_mode == 'manual':
+            constants.SpiderConfig.stop_spider_url_flag = True
 
         try:
             logger.warning(f"Closing Chrome ({driver.title})")
         except Exception as e:
             logger.warning(f"Error closing Chrome: {type(e).__name__}")
 
-        record_end_spider_image_keyword(cur_page, key_word)
+        record_end_spider_image_keyword(str(cur_page), key_word)
         clear_cache_refresh(driver)
         driver.quit()
 
@@ -270,7 +270,7 @@ def load_href_save(driver: WebDriver, key_word: str) -> int:
 
     try:
         for link in driver.find_elements(By.CSS_SELECTOR, "a"):
-            if constants.stop_spider_url_flag:
+            if constants.SpiderConfig.stop_spider_url_flag:
                 break
 
             url = link.get_attribute("href")
@@ -286,10 +286,10 @@ def load_href_save(driver: WebDriver, key_word: str) -> int:
             image_urls.append(url)
 
             if (constants.spider_images_current_count >= int(spider_images_max_count) and 
-                constants.spider_mode == 'manual'):
+                constants.SpiderConfig.spider_mode == 'manual'):
                 logger.warning(f"Reached max images: {constants.spider_images_current_count}")
                 constants.spider_images_current_count = 0
-                constants.stop_spider_url_flag = False
+                constants.SpiderConfig.stop_spider_url_flag = False
                 break
 
         if url_list_save(key_word_pinyin, image_urls):

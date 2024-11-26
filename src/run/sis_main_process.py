@@ -12,7 +12,7 @@ from loguru import logger
 from log.log_base import LOG_DIR
 from log.log_config import InterceptHandler, format_record
 from router.router import api_router
-from run.constants import app_port, sis_server_version, web_flag_start
+from run.constants import sis_server_version, SpiderConfig
 from fastapi.openapi.docs import get_swagger_ui_html
 from log.log_record import check_version
 
@@ -80,12 +80,12 @@ app = create_app()
 
 def start_api_server() -> None:
     """Start the API server if not already running"""
-    if not web_flag_start:
+    if not SpiderConfig.web_flag_start:
         check_version()
         uvicorn.run(
             app='sis_main_process:app',
             host='0.0.0.0',
-            port=app_port,
+            port=SpiderConfig.app_port,
             reload=False
         )
         logger.success("Web API started successfully!")

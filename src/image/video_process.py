@@ -197,7 +197,7 @@ def process_images_thread(self):
         logger.success(f"Video generated successfully: {video_path}")
         self.success_tips("图片处理操作")
         
-    constants.process_image_flag = False
+    constants.SpiderConfig.process_image_flag = False
 
 
 @logger.catch

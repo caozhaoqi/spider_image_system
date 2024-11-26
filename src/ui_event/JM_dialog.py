@@ -57,13 +57,13 @@ class JMDialog(QDialog):
     def reject(self):
         """Handle dialog rejection"""
         logger.debug('JM dialog is cancel closing!')
-        constants.jm_dialog_visible = False
+        constants.UIConfig.jm_dialog_visible = False
         super().reject()
 
     def closeEvent(self, event):
         """Handle dialog close event"""
         logger.debug('JM dialog is close closing!')
-        constants.jm_dialog_visible = False
+        constants.UIConfig.jm_dialog_visible = False
         super().closeEvent(event)
 
 

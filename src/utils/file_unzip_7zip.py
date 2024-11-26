@@ -90,7 +90,7 @@ def unzip_file(dir_path: str) -> bool:
         file_list = scan_file_zip(dir_path)
         if not file_list:
             logger.warning(f"{dir_path} 目录下没有找到压缩文件")
-            constants.unzip_file_flag = False
+            constants.SpiderConfig.unzip_file_flag = False
             return False
 
         # 处理.7z.xz文件
@@ -125,10 +125,10 @@ def unzip_file(dir_path: str) -> bool:
                 logger.warning(f"MP4文件已存在，跳过: {file_path.name}")
 
         logger.success("所有文件解压完成!")
-        constants.unzip_file_flag = False
+        constants.SpiderConfig.unzip_file_flag = False
         return True
         
     except Exception as e:
         logger.error(f"解压过程出错: {e}")
-        constants.unzip_file_flag = False
+        constants.SpiderConfig.unzip_file_flag = False
         return False

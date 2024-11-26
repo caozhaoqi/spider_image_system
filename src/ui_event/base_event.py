@@ -40,51 +40,53 @@ from utils.img_detect_ai import all_img_detect
 from ui_event.JM_dialog import JMDialog
 from utils.jm_domain_detect import jm_domain_test, jm_auto_spider_img_thread
 from utils.go_file_utils import upload_all_gofile
+from ui_event.log_show_dialog import LogDisplayDialog
 
 
 def show_dialog(dialog_class: type, visible_flag: str, title: str = None, maximize: bool = False) -> None:
     """Generic function to show dialogs"""
-    if not getattr(constants, visible_flag):
+    if visible_flag.startswith('.'):
+        visible_flag = visible_flag[1:]
+    
+    parts = visible_flag.split('.')
+    obj = constants
+    for part in parts:
+        obj = getattr(obj, part)
+    
+    if not obj:
         dialog = dialog_class()
-        setattr(constants, visible_flag, True)
-        
+        dialog.setWindowTitle(title)
         if maximize:
             dialog.showMaximized()
-        
-        if title:
-            logger.info(f"{title} show!")
-            
-        dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        dialog.exec_()
-    else:
-        logger.warning(f"{title} already open!")
+        else:
+            dialog.show()
 
 
 @logger.catch
-def edit_config_msg() -> None:
+def edit_config_msg(_=None) -> None:
     """Update ini config message"""
-    show_dialog(Dialog, "edit_config_msg_visible", "Config msg dialog")
+    show_dialog(Dialog, ".UIConfig.edit_config_msg_visible", "Config msg dialog")
 
 
 @logger.catch
-def visit_web() -> None:
+def visit_web(_=None) -> None:
     """Visit help website"""
     QDesktopServices.openUrl(QUrl("https://caozhaoqi.github.io/"))
     logger.info("Jump target help web url.")
 
 
 @logger.catch
-def about_message_lookup() -> None:
+def about_message_lookup(_=None) -> None:
     """Show about message dialog"""
-    show_dialog(InformationDialog, "about_message_lookup_visible", "Show sis tools basic info")
+    show_dialog(InformationDialog, ".UIConfig.about_message_lookup_visible", "Show sis tools basic info")
 
 
 @logger.catch
 def scan_populate_mp4_list(self) -> None:
     """Scan and populate video file list"""
     headers = ['文件名', '文件大小', '修改时间', '文件路径', '文件格式', '作者']
-    list_widgets = [self.listWidget_1, self.listWidget_2, self.listWidget_3, 
-                   self.listWidget_4, self.listWidget_5, self.listWidget_6]
+    list_widgets = [self.listWidget_1, self.listWidget_2, self.listWidget_3,
+                    self.listWidget_4, self.listWidget_5, self.listWidget_6]
 
     # Add headers
     for widget, header in zip(list_widgets, headers):
@@ -96,7 +98,7 @@ def scan_populate_mp4_list(self) -> None:
             if file.endswith(('.mp4', '.avi')):
                 file_path = Path(root) / file
                 file_info = file_path.stat()
-                
+
                 file_data = [
                     str(file),
                     f"{int(file_info.st_size / (1024 * 1024))} MB",
@@ -111,10 +113,10 @@ def scan_populate_mp4_list(self) -> None:
 
 
 @logger.catch
-def stop_spider_image() -> bool:
+def stop_spider_image(_=None) -> bool:
     """Stop spider images action"""
-    if not constants.stop_spider_url_flag:
-        constants.stop_spider_url_flag = True
+    if not constants.SpiderConfig.stop_spider_url_flag:
+        constants.SpiderConfig.stop_spider_url_flag = True
         logger.warning("Flag stop_spider_url_flag set true!")
         return True
     logger.warning("Spider url already stop!")
@@ -124,12 +126,12 @@ def stop_spider_image() -> bool:
 @logger.catch
 def auto_start_spider_image(self) -> bool:
     """Start auto spider image thread"""
-    if not constants.stop_spider_url_flag:
+    if not constants.SpiderConfig.stop_spider_url_flag:
         logger.error("Already spider img, please stop here before operate!")
         return False
 
     spider_thread = SISThreading(target=auto_spider_img_thread, args=(self,))
-    constants.stop_spider_url_flag = False
+    constants.SpiderConfig.stop_spider_url_flag = False
     spider_thread.start()
 
     monitor_thread = Thread(target=log_mon_war, args=(spider_thread,))
@@ -138,7 +140,7 @@ def auto_start_spider_image(self) -> bool:
 
 
 @logger.catch
-def add_keyword_alert() -> None:
+def add_keyword_alert(_=None) -> None:
     """Show keyword dialog"""
     dialog = KeywordDialog()
     logger.info("Keyword msg dialog show visible.")
@@ -150,45 +152,45 @@ def auto_spider_img_thread(self) -> bool:
     """Auto spider image thread"""
     logger.info("Auto spider img thread starting...")
 
-    if constants.log_no_output_flag and not constants.stop_spider_url_flag:
-        constants.stop_spider_url_flag = False
+    if constants.ProcessingConfig.log_no_output_flag and not constants.SpiderConfig.stop_spider_url_flag:
+        constants.SpiderConfig.stop_spider_url_flag = False
 
     spider_keywords, txt_files = get_image_keyword()
-    
+
     if not spider_keywords or spider_keywords == [[]]:
         logger.warning("Auto spider image null, please add keyword!")
         if self:
             self.sys_tips("Notice: spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字!")
         return False
 
-    constants.spider_mode = 'auto'
-    
+    constants.SpiderConfig.spider_mode = 'auto'
+
     for txt_index, keywords in enumerate(spider_keywords):
         logger.debug(f"Current spider keyword txt: {keywords}")
-        constants.stop_spider_url_flag = False
-        
+        constants.SpiderConfig.stop_spider_url_flag = False
+
         for keyword in keywords:
             keyword = keyword.strip()
             logger.debug(f"Current spider keyword: {keyword}")
-            
+
             try:
                 spider_artworks_url(self, keyword)
             except StaleElementReferenceException as e:
                 logger.warning(f"Stale element error: {e}")
             except Exception as e:
                 logger.error(f"Unknown error: {e}")
-                
-            if constants.stop_spider_url_flag:
+
+            if constants.SpiderConfig.stop_spider_url_flag:
                 logger.warning(f"Auto spider img stop! Final keyword: {keyword}")
                 break
-                
-            if constants.firewall_flag:
+
+            if constants.ProcessingConfig.firewall_flag:
                 delay = random_fw_time(constants.fire_wall_delay_time)
                 logger.warning(f"Block {constants.visit_url} domain. Retry in {delay} seconds")
                 time.sleep(delay)
                 continue
-                
-        if constants.stop_spider_url_flag:
+
+        if constants.SpiderConfig.stop_spider_url_flag:
             logger.warning(f"Auto spider img stop! End txt file: {txt_files[txt_index]}")
             break
 
@@ -196,60 +198,60 @@ def auto_spider_img_thread(self) -> bool:
 
 
 @logger.catch
-def stop_download_image() -> bool:
+def stop_download_image(_=None) -> bool:
     """Stop downloading images"""
-    if not constants.stop_download_image_flag or not constants.download_image_re_flag:
-        constants.stop_download_image_flag = True
-        constants.download_image_re_flag = False
-        logger.warning("Flag stop_download_image_flag set true!")
+    if not constants.SpiderConfig.stop_download_image_flag or not constants.SpiderConfig.download_image_re_flag:
+        constants.SpiderConfig.stop_download_image_flag = True
+        constants.SpiderConfig.download_image_re_flag = False
+        logger.warning("Flag SpiderConfig.stop_spider_url_flag set true!")
         return True
     logger.warning("Download image already stop or not download image!")
     return False
 
 
 @logger.catch
-def online_look_image() -> None:
+def online_look_image(_=None) -> None:
     """Show online image viewer"""
-    show_dialog(ImageDialog, "online_look_image_visible", "Online image viewer", maximize=True)
+    show_dialog(ImageDialog, "UIConfig.online_look_image_visible", "Online image viewer", maximize=True)
 
 
 @logger.catch
-def auto_play_image() -> None:
+def auto_play_image(_=None) -> None:
     """Show auto image player"""
-    show_dialog(AutoImageDialog, "auto_play_image_visible", "Auto_play_image", maximize=True)
+    show_dialog(AutoImageDialog, "UIConfig.auto_play_image_visible", "Auto_play_image", maximize=True)
 
 
 @logger.catch
-def performance_monitor() -> None:
+def performance_monitor(_=None) -> None:
     """Show system performance monitor"""
-    show_dialog(SystemMonitor, "performance_monitor_visible", "System info", maximize=True)
+    show_dialog(SystemMonitor, "UIConfig.performance_monitor_visible", "System info", maximize=True)
 
 
 @logger.catch
-def log_analyze_ui() -> None:
+def log_analyze_ui(_=None) -> None:
     """Show log analysis dialog"""
-    show_dialog(LogAnalyzeHistogram, "log_analyze_visible", "Log_analyze_visible", maximize=True)
+    show_dialog(LogAnalyzeHistogram, "UIConfig.log_analyze_visible", "Log_analyze_visible", maximize=True)
 
 
 @logger.catch
-def encoding_tools_convert() -> None:
+def encoding_tools_convert(_=None) -> None:
     """Convert text file encodings"""
     scan_txt_file_all(constants.data_path)
     logger.success("Convert point txt finish!")
 
 
 @logger.catch
-def detect_installed_flag() -> None:
+def detect_installed_flag(_=None) -> None:
     """Detect chrome webdriver installation"""
     Thread(target=detect_installed).start()
     logger.debug("Detecting chrome webdriver start!")
 
 
 @logger.catch
-def face_detect_action() -> bool:
+def face_detect_action(_=None) -> bool:
     """Start face detection"""
-    if not constants.face_detect_flag:
-        constants.face_detect_flag = True
+    if not constants.ProcessingConfig.face_detect_flag:
+        constants.ProcessingConfig.face_detect_flag = True
         Thread(target=face_detect_result, args=(constants.data_path,)).start()
         logger.info("Start detect face!")
         return True
@@ -258,11 +260,11 @@ def face_detect_action() -> bool:
 
 
 @logger.catch
-def convert_folder_name() -> None:
+def convert_folder_name(_=None) -> None:
     """Convert folder names"""
-    if not constants.convert_folder_name_flag:
-        constants.convert_folder_name_flag = True
-        Thread(target=convert_and_move_folder, 
+    if not constants.ProcessingConfig.convert_folder_name_flag:
+        constants.ProcessingConfig.convert_folder_name_flag = True
+        Thread(target=convert_and_move_folder,
                args=(Path(constants.data_path) / 'img_url',)).start()
         logger.info("Start convert folder_name!")
     else:
@@ -270,10 +272,10 @@ def convert_folder_name() -> None:
 
 
 @logger.catch
-def user_upload_image() -> bool:
+def user_upload_image(_=None) -> bool:
     """Upload images"""
-    if not constants.uploading_image_flag:
-        constants.uploading_image_flag = True
+    if not constants.SpiderConfig.uploading_image_flag:
+        constants.SpiderConfig.uploading_image_flag = True
         Thread(target=upload_image, args=(constants.basic_path,)).start()
         logger.info("Start upload image!")
         return True
@@ -282,10 +284,10 @@ def user_upload_image() -> bool:
 
 
 @logger.catch
-def user_download_image() -> None:
+def user_download_image(_=None) -> None:
     """Download failed images"""
-    if not constants.download_image_re_flag:
-        constants.download_image_re_flag = True
+    if not constants.SpiderConfig.download_image_re_flag:
+        constants.SpiderConfig.download_image_re_flag = True
         Thread(target=download_re_error_image).start()
         logger.info("Start re error download image!")
     else:
@@ -293,10 +295,10 @@ def user_download_image() -> None:
 
 
 @logger.catch
-def unzip_file_method() -> None:
+def unzip_file_method(_=None) -> None:
     """Unzip files"""
-    if not constants.unzip_file_flag:
-        constants.unzip_file_flag = True
+    if not constants.SpiderConfig.unzip_file_flag:
+        constants.SpiderConfig.unzip_file_flag = True
         Thread(target=unzip_file, args=(constants.data_path,)).start()
         logger.info(f"Start unzip file! path: {constants.data_path}")
     else:
@@ -304,7 +306,7 @@ def unzip_file_method() -> None:
 
 
 @logger.catch
-def exit_save_data() -> None:
+def exit_save_data(_=None) -> None:
     """Save data before exit"""
     logger.warning("-" * 61)
     logger.warning(f"-----SIS-{constants.sis_server_version} exe will quit!-----------------")
@@ -312,7 +314,7 @@ def exit_save_data() -> None:
 
 
 @logger.catch
-def kill_other_close() -> None:
+def kill_other_close(_=None) -> None:
     """Kill other processes"""
     try:
         if get_cur_os() == "win32":
@@ -326,13 +328,17 @@ def kill_other_close() -> None:
 
 
 @logger.catch
-def img_category_ana() -> None:
-    """Show image analysis dialog"""
-    show_dialog(ImgAnalyzeHistogram, "img_analyze_visible", "Img anal dialog", maximize=True)
+def img_category_ana(self, maximize: bool = True) -> None:
+    """图片分析对话框"""
+    dialog = ImgAnalyzeHistogram()
+    dialog.setWindowTitle("Img anal dialog")
+    if maximize:
+        dialog.showMaximized()
+    dialog.exec_()
 
 
 @logger.catch
-def on_last_window_closed() -> None:
+def on_last_window_closed(_=None) -> None:
     """Handle window close"""
     logger.debug("Console window is closing...")
     exit_save_data()
@@ -341,10 +347,10 @@ def on_last_window_closed() -> None:
 
 
 @logger.catch
-def model_detect_img() -> None:
+def model_detect_img(_=None) -> None:
     """Start image detection"""
-    if not constants.detect_model_flag:
-        constants.detect_model_flag = True
+    if not constants.ProcessingConfig.detect_model_flag:
+        constants.ProcessingConfig.detect_model_flag = True
         Thread(target=all_img_detect, args=(constants.data_path,)).start()
         logger.info("Start detect img!")
     else:
@@ -352,16 +358,16 @@ def model_detect_img() -> None:
 
 
 @logger.catch
-def start_download_jm() -> None:
+def start_download_jm(_=None) -> None:
     """Show JM download dialog"""
-    show_dialog(JMDialog, "jm_dialog_visible", "Dialog_jm")
+    show_dialog(JMDialog, "UIConfigjm_dialog_visible", "Dialog_jm")
 
 
 @logger.catch
-def jm_domain_test_method() -> None:
+def jm_domain_test_method(_=None) -> None:
     """Test JM domains"""
-    if not constants.jm_domain_detect_flag:
-        constants.jm_domain_detect_flag = True
+    if not constants.ProcessingConfig.jm_domain_detect_flag:
+        constants.ProcessingConfig.jm_domain_detect_flag = True
         Thread(target=jm_domain_test).start()
         logger.info("Start detect jm domain!")
     else:
@@ -369,10 +375,10 @@ def jm_domain_test_method() -> None:
 
 
 @logger.catch
-def jm_automatic_method() -> None:
+def jm_automatic_method(_=None) -> None:
     """Start automatic JM spider"""
-    if not constants.JM_SD_auto_flag:
-        constants.JM_SD_auto_flag = True
+    if not constants.ProcessingConfig.jm_sd_auto_flag:
+        constants.ProcessingConfig.jm_sd_auto_flag = True
         Thread(target=jm_auto_spider_img_thread).start()
         logger.info("Start automatic spider and download jm image!")
     else:
@@ -380,27 +386,40 @@ def jm_automatic_method() -> None:
 
 
 @logger.catch
-def stop_jm_spider() -> None:
+def stop_jm_spider(_=None) -> None:
     """Stop JM spider"""
-    if constants.JM_SD_auto_flag:
-        constants.JM_SD_auto_flag = False
+    if constants.ProcessingConfig.jm_sd_auto_flag:
+        constants.ProcessingConfig.jm_sd_auto_flag = False
         logger.debug("Start JM auto spider stop.")
     else:
         logger.warning("JM auto already stop.")
 
 
 @logger.catch
-def jm_category_image_method() -> None:
+def jm_category_image_method(_=None) -> None:
     """Process JM image categories"""
     logger.warning("The function disabled.")
 
 
 @logger.catch
-def go_file_upload_all() -> None:
+def go_file_upload_all(_=None) -> None:
     """Upload files to GoFile"""
-    if not constants.GO_FILE_UPLOAD_FLAG:
-        constants.GO_FILE_UPLOAD_FLAG = True
+    if not constants.ProcessingConfig.go_file_upload_flag:
+        constants.ProcessingConfig.go_file_upload_flag = True
         Thread(target=upload_all_gofile, args=(constants.data_path,)).start()
         logger.info("Start gofile upload image!")
     else:
         logger.error("Gofile uploading file, please wait.")
+
+
+@logger.catch
+def log_check_ui(self) -> None:
+    """日志查看按钮"""
+    logger.debug("Log check button clicked")
+    try:
+        dialog = LogDisplayDialog()
+        dialog.setWindowTitle("Log Viewer")
+        dialog.showMaximized()
+        dialog.exec_()
+    except Exception as e:
+        logger.exception(f"Failed to show log dialog: {e}")

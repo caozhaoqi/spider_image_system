@@ -56,10 +56,11 @@ class ProcessingConfig:
     add_keyword_finish_flag: bool = False
     log_no_output_flag: bool = False
     detect_model_flag: bool = False
-    JM_SD_auto_flag: bool = False
+    jm_sd_auto_flag: bool = False
     internet_connect_status: bool = False
     process_jm_image_category_flag: bool = False
-    GO_FILE_UPLOAD_FLAG: bool = False
+    go_file_upload_flag: bool = False
+    jm_domain_detect_flag: bool = False
 
 # Path configurations
 data_path = Path('./data').resolve()
@@ -122,13 +123,13 @@ chrome_exe_path = read_config_str("automatic_config", "chrome_exe_path")
 chrome_version = read_config_str("automatic_config", "chrome_version")
 
 # Additional settings
-upload_minio_image_Flag = read_config_str("automatic_config", "upload_minio_image_Flag")
+upload_minio_image_flag = read_config_str("automatic_config", "upload_minio_image_flag")
 allow_replace_domain_flag = read_config_str("automatic_config", "allow_replace_domain_flag")
 fire_wall_delay_time = read_config_int("automatic_config", "fire_wall_delay_time")
 download_img_retry_times = read_config_int("automatic_config", "download_img_retry_times")
 download_img_time_out = read_config_int("automatic_config", "download_img_time_out")
 detect_timeout_auto = read_config_int("automatic_config", "detect_timeout_auto")
-WeChat_push_flag = read_config_str("automatic_config", "WeChat_push_flag")
+wechat_push_flag = read_config_str("automatic_config", "wechat_push_flag")
 search_content = read_config_str("automatic_config", "search_content")
 dmi_api_server = read_config_str("automatic_config", "dmi_api_server")
 detect_img_model = read_config_str("automatic_config", "detect_img_model")
@@ -143,10 +144,10 @@ mark_msg = read_config_str("minio_config_selected", "mark_msg")
 enable = read_config_str("minio_config_selected", "enable")
 
 # Unzip configuration
-SEVEN_ZIP_PATH = read_config_str("unzip_config", "SEVEN_ZIP_PATH")
-PASSWORD = read_config_str("unzip_config", "PASSWORD")
+seven_zip_path = read_config_str("unzip_config", "seven_zip_path")
+password = read_config_str("unzip_config", "password")
 
 # Version information
-sis_server_version = "v1.2.3.241119"
-build_date = "2024-11-19 18:00"
-publish_date = "2024-11-19 18:30"
+sis_server_version = "v1.2.3.241126"
+build_date = "2024-11-26 18:00"
+publish_date = "2024-11-26 18:30"

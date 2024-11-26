@@ -43,7 +43,7 @@ class SISThreading(threading.Thread):
     def run(self, _: Any = None) -> None:
         """运行线程"""
         while self.__running.is_set():
-            if constants.stop_spider_url_flag:
+            if constants.SpiderConfig.stop_spider_url_flag:
                 logger.warning("停止爬虫线程")
                 break
                 

@@ -17,18 +17,26 @@ class LogDisplayDialog(QDialog):
     """Real-time log viewer dialog"""
 
     def __init__(self):
-        super().__init__()
-        self.log_file_name_label = None
-        self.timer = None
-        self.log_text_edit = None
-        self.init_ui()
-        self.setup_timer()
+        logger.debug("Starting LogDisplayDialog initialization")
+        try:
+            super().__init__()
+            self.log_file_name_label = None
+            self.timer = None
+            self.log_text_edit = None
+            self.init_ui()
+            self.setup_timer()
+            logger.debug("LogDisplayDialog initialization complete")
+        except Exception as e:
+            logger.exception(f"Failed to initialize LogDisplayDialog: {e}")
+            raise
 
     @logger.catch
     def init_ui(self):
         """Initialize the UI components"""
+        logger.debug("LogDisplayDialog: Setting up UI")
         self.setWindowTitle('Log Viewer')
         self.resize(800, 600)
+        self.setModal(True)
 
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -42,6 +50,10 @@ class LogDisplayDialog(QDialog):
         self.log_text_edit.setReadOnly(True)
         self.log_text_edit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         layout.addWidget(self.log_text_edit)
+
+        # 添加测试内容
+        self.log_text_edit.append("Testing log viewer...")
+        self.log_text_edit.append("If you can see this, the dialog is working.")
 
     @logger.catch
     def setup_timer(self):
@@ -83,26 +95,36 @@ class LogDisplayDialog(QDialog):
         """Stop the update timer"""
         self.timer.stop()
         logger.debug("Log viewer timer stopped")
-        constants.log_check_visible = False
+        constants.UIConfig.log_check_visible = False
 
     @logger.catch
     def closeEvent(self, event):
         """Handle dialog close event"""
-        logger.debug('Log viewer dialog closing')
-        constants.log_check_visible = False
+        logger.debug('LogDisplayDialog: Closing dialog')
         self.stop_timer()
+        constants.log_check_visible = False
         super().closeEvent(event)
 
 
 @logger.catch
 def show_log_output_method():
     """Show the log viewer dialog"""
-    if not constants.log_check_visible:
-        dialog = LogDisplayDialog()
-        dialog.showMaximized()
-        dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
-        constants.log_check_visible = True
-        logger.info("Log viewer shown")
-        dialog.exec_()
-    else:
-        logger.warning("Log viewer already shown")
+    try:
+        if not constants.log_check_visible:
+            logger.debug("Creating new LogDisplayDialog instance")
+            dialog = LogDisplayDialog()
+            dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)
+            constants.log_check_visible = True
+            
+            # 保持对话框的引用
+            global current_dialog
+            current_dialog = dialog
+            
+            logger.debug("Showing log viewer dialog")
+            dialog.showMaximized()
+            result = dialog.exec_()
+            logger.debug(f"Dialog closed with result: {result}")
+        else:
+            logger.warning("Log viewer already shown")
+    except Exception as e:
+        logger.exception(f"Error in show_log_output_method: {e}")

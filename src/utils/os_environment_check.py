@@ -13,16 +13,17 @@ from loguru import logger
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
+from utils.download_driver import ChromeDriverDownloader
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from run import constants
-from utils.download_driver import get_chrome_version_from_executable, AutoDownloadChromeDrive
 
 
 @logger.catch
 def auto_download_webdriver() -> None:
     """自动下载Chrome WebDriver"""
-    chrome = AutoDownloadChromeDrive()
+    chrome = ChromeDriverDownloader.download_chrome_drive()
     chrome.start()
 
 
@@ -122,7 +123,7 @@ def detect_installed() -> bool:
         "选择正确版本下载,并在./config/config.ini文件中配置chrome_path"
     )
     
-    chrome_version = get_chrome_version_from_executable()
+    chrome_version = ChromeDriverDownloader.get_chromedriver_urls()
     if chrome_version:
         logger.info(f"当前Chrome版本: {chrome_version}")
         auto_download_webdriver()

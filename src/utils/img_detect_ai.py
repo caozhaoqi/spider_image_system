@@ -182,5 +182,5 @@ def all_img_detect(path: str) -> None:
             
         logger.debug(f"{constants.detect_img_model} detect img: {img_path}, cur {i}/{count}, server response: {ret}")
         
-    constants.detect_model_flag = False
+    constants.ProcessingConfig.detect_model_flag = False
     logger.success("Model detect image all success!")

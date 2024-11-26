@@ -87,7 +87,7 @@ class SystemMonitor(QDialog):
     @logger.catch
     def update_data(self):
         """Update chart data with current system metrics"""
-        if not constants.performance_monitor_visible:
+        if not constants.UIConfig.performance_monitor_visible:
             return
             
         # Get current metrics
@@ -126,5 +126,5 @@ class SystemMonitor(QDialog):
         """Handle dialog close event"""
         logger.debug('System monitor dialog closing')
         self.timer.stop()
-        constants.performance_monitor_visible = False
+        constants.UIConfig.performance_monitor_visible = False
         super().closeEvent(event)

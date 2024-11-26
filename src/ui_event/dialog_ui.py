@@ -218,13 +218,13 @@ class Dialog(QDialog):
     def reject(self):
         """Handle dialog rejection"""
         logger.debug('Config dialog is cancel closing!')
-        constants.edit_config_msg_visible = False
+        constants.UIConfig.edit_config_msg_visible = False
         super().reject()
 
     def closeEvent(self, event):
         """Handle dialog close event"""
         logger.debug('Config dialog is close closing!')
-        constants.edit_config_msg_visible = False
+        constants.UIConfig.edit_config_msg_visible = False
         super().closeEvent(event)
 
 
@@ -259,6 +259,6 @@ def save_data(self):
     if write_minio_config_to_file(minio_config=config):
         QMessageBox(QMessageBox.Information, "保存", "配置写入成功,程序即将退出,请重新启动应用以使配置生效!").exec_()
         self.hide()
-        constants.edit_config_msg_visible = False
+        constants.UIConfig.edit_config_msg_visible = False
     else:
         QMessageBox(QMessageBox.Warning, "错误", "发生未知错误,写入配置失败,请检查log信息!").exec_()

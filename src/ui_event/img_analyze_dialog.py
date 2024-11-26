@@ -40,8 +40,9 @@ class ImgAnalyzeHistogram(QDialog):
         self.log_data = None
         self.log_item = None
 
+        # 设置对话框模态
+        self.setModal(True)
         self.init_ui("Image Category Analysis")
-        self.updateChart()
 
     @logger.catch
     def init_ui(self, window_title):
@@ -115,6 +116,17 @@ class ImgAnalyzeHistogram(QDialog):
             logger.warning(f"Error showing next group: {e}")
 
     @logger.catch
+    def showEvent(self, event):
+        """重写显示事件"""
+        super().showEvent(event)
+        self.updateChart()  # 更新图表
+
+    @logger.catch
+    def show(self):
+        """重写 show 方法，使用 exec_ 代替"""
+        return self.exec_()
+
+    @logger.catch
     def updateChart(self):
         """Update both charts with current data"""
         # Clear existing series
@@ -134,30 +146,27 @@ class ImgAnalyzeHistogram(QDialog):
         ))
 
         # Update bar chart
-        for item, count in update_data:
-            bar_set = QBarSet(item)
-            bar_set.append(count)
-            self.series.append(bar_set)
-
-        # Configure axes
-        self.axis_x.clear()
-        self.axis_x.append([item for item, _ in update_data])
+        series = QBarSeries()
         
+        # Process data for both charts
+        for number, name in update_data:
+            # Bar chart data
+            bar_set = QBarSet(name)
+            bar_set.append(float(number))
+            series.append(bar_set)
+            
+            # Pie chart data
+            self.series_pie.append(name, float(number))  # Use name as label, number as value
+        
+        # Configure axes
+        self.axis_x.append([name for _, name in update_data])
         if update_data:
-            counts = [count for _, count in update_data]
-            self.axis_y.setRange(min(counts), max(counts))
+            self.axis_y.setRange(0, max(float(number) for number, _ in update_data))
 
         # Add series and axes to bar chart
-        self.chart.addAxis(self.axis_y, Qt.AlignLeft)
-        self.chart.setAxisY(self.axis_y, self.series)
-        self.chart.addAxis(self.axis_x, Qt.AlignBottom)
-        self.chart.setAxisX(self.axis_x, self.series)
-        self.series.setBarWidth(0.8)
-        self.chart.addSeries(self.series)
-
-        # Update pie chart
-        for item, count in update_data:
-            self.series_pie.append(item, count)
+        self.chart.addSeries(series)
+        self.chart.setAxisX(self.axis_x, series)
+        self.chart.setAxisY(self.axis_y, series)
 
         # Add percentage labels to pie slices
         total = sum(slice.value() for slice in self.series_pie.slices())
@@ -173,5 +182,5 @@ class ImgAnalyzeHistogram(QDialog):
     def closeEvent(self, event):
         """Handle dialog close event"""
         logger.debug('Image Category Dialog closing')
-        constants.img_analyze_visible = False
+        constants.UIConfig.img_analyze_visible = False
         super().closeEvent(event)

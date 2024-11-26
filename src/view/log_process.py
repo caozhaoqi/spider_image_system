@@ -41,14 +41,14 @@ def lookup_file_config():
     description='开始爬取单个关键字')
 def start_spider_single_image(key_word: Union[str, None] = Query(default=..., alias="key_word")):
     """爬取单个关键字的图片"""
-    if not constants.stop_spider_url_flag:
+    if not constants.SpiderConfig.stop_spider_url_flag:
         return JsonResponse.error("操作进行中!")
 
     if not key_word:
         logger.warning("Input keyword empty or error!")
         return JsonResponse.error("关键词不能为空")
 
-    constants.spider_mode = 'manual'
+    constants.SpiderConfig.spider_mode = 'manual'
     logger.debug(f"You input keyword is: {key_word}")
     
     spider_thread = threading.Thread(
@@ -56,7 +56,7 @@ def start_spider_single_image(key_word: Union[str, None] = Query(default=..., al
         args=(None, key_word,)
     )
     spider_thread.start()
-    constants.stop_spider_url_flag = False
+    constants.SpiderConfig.stop_spider_url_flag = False
     
     logger.info("Spider img thread starting...")
     return JsonResponse.success("success!")
@@ -68,11 +68,11 @@ def start_spider_single_image(key_word: Union[str, None] = Query(default=..., al
     description='开始爬取所有关键字')
 def spider_all_keyword():
     """爬取所有关键字的图片"""
-    if not constants.stop_spider_url_flag:
+    if not constants.SpiderConfig.stop_spider_url_flag:
         return JsonResponse.error("Already spider img, please stop here before operate!")
 
     spider_thread = SISThreading(target=auto_spider_img_thread, args=(None,))
-    constants.stop_spider_url_flag = False
+    constants.SpiderConfig.stop_spider_url_flag = False
 
     spider_thread.start()
 
@@ -82,10 +82,10 @@ def spider_all_keyword():
     )
     monitor_thread.start()
 
-    if constants.log_no_output_flag:
+    if constants.ProcessingConfig.log_no_output_flag:
         spider_thread.start()
         logger.warning("Log no output re start spider ing...")
-        constants.log_no_output_flag = False
+        constants.ProcessingConfig.log_no_output_flag = False
 
     return JsonResponse.success("Start spider all keyword image")
 
@@ -96,7 +96,7 @@ def spider_all_keyword():
     description='下载已爬取的所有图片')
 def download_all_image():
     """下载所有已爬取的图片"""
-    if not constants.stop_download_image_flag:
+    if not constants.SpiderConfig.stop_download_image_flag:
         return JsonResponse.error("操作进行中!")
 
     download_thread = threading.Thread(
@@ -104,7 +104,7 @@ def download_all_image():
         args=(None,)
     )
     download_thread.start()
-    constants.stop_download_image_flag = False
+    constants.SpiderConfig.stop_download_image_flag = False
     
     logger.info("Download img thread starting...")
     return JsonResponse.success("Download img thread starting...")
@@ -160,10 +160,10 @@ def start_face_detect():
     description="nsfw model detect image")
 def detect_image_views():
     """NSFW图片检测"""
-    if constants.detect_model_flag:
+    if constants.ProcessingConfig.detect_model_flag:
         return JsonResponse.error("Detecting img please wait.")
 
-    constants.detect_model_flag = True
+    constants.ProcessingConfig.detect_model_flag = True
     detect_thread = threading.Thread(
         target=all_img_detect,
         args=(constants.data_path,)
@@ -180,10 +180,10 @@ def detect_image_views():
     description='upload gofile file')
 def upload_to_gofile(path: Union[str, None] = Query(default=..., alias="path")):
     """上传文件到GoFile"""
-    if constants.GO_FILE_UPLOAD_FLAG:
+    if constants.ProcessingConfig.go_file_upload_flag:
         return JsonResponse.error("Gofile uploading file, please wait.")
 
-    constants.GO_FILE_UPLOAD_FLAG = True
+    constants.ProcessingConfig.go_file_upload_flag = True
     upload_thread = threading.Thread(
         target=upload_all_gofile,
         args=(path,)
@@ -198,10 +198,10 @@ def upload_to_gofile(path: Union[str, None] = Query(default=..., alias="path")):
 @router.get("/jm/spider/all")
 def jm_auto_spider():
     """自动爬取JM图片"""
-    if constants.JM_SD_auto_flag:
+    if constants.ProcessingConfig.jm_sd_auto_flag:
         return JsonResponse.error("Spider or downloading jm domain, please wait.")
 
-    constants.JM_SD_auto_flag = True
+    constants.ProcessingConfig.jm_sd_auto_flag = True
     jm_thread = threading.Thread(target=jm_auto_spider_img_thread)
     jm_thread.start()
     
@@ -213,10 +213,10 @@ def jm_auto_spider():
 @router.get("/jm/spider/detect")
 def jm_detect_domain():
     """检测JM域名"""
-    if constants.jm_domain_detect_flag:
+    if constants.ProcessingConfig.jm_sd_auto_flag:
         return JsonResponse.error("Detecting jm domain, please wait.")
 
-    constants.jm_domain_detect_flag = True
+    constants.ProcessingConfig.jm_sd_auto_flag = True
     detect_thread = threading.Thread(target=jm_domain_test)
     detect_thread.start()
     

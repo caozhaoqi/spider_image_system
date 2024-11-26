@@ -169,10 +169,10 @@ def check_internet_connection() -> bool:
         response = requests.get('https://www.baidu.com')
         if response.status_code == 200:
             logger.info("Internet connection normal")
-            constants.internet_connect_status = True
+            constants.ProcessingConfig.internet_connect_status = True
             return True
     except Exception:
-        constants.internet_connect_status = False
+        constants.ProcessingConfig.internet_connect_status = False
         return False
     return False
 
