@@ -8,8 +8,6 @@ Describe: Github link: https://github.com/caozhaoqi
 
 import os
 import sys
-from pathlib import Path
-from typing import Optional
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -17,10 +15,8 @@ import logging
 import platform
 from loguru import logger
 from run.constants import (
-    sis_log_level, 
-    build_date,
-    sis_server_version, 
-    publish_date
+    sis_log_level,
+    sis_server_version,
 )
 from log.log_base import LOG_DIR
 from log.log_config import InterceptHandler, format_record
@@ -34,28 +30,32 @@ def log_record() -> bool:
     Returns:
         bool: True if logging setup successful
     """
-    # Configure logging handlers
-    logging.getLogger().handlers = [InterceptHandler()]
-    logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
-    
-    # Configure loguru handlers
-    logger.configure(handlers=[{
-        "sink": sys.stdout,
-        "level": sis_log_level,
-        "format": format_record
-    }])
-    
-    # Add rotating file handler
-    logger.add(
-        LOG_DIR,
-        encoding='utf-8',
-        rotation="00:00",
-        retention="30 days",
-        compression="zip"
-    )
-    
-    logger.info("------------------------------Log start record-------------------------------")
-    logger.debug(f'Current SIS log file path: {LOG_DIR}')
+    try:
+        # Configure logging handlers
+        logging.getLogger().handlers = [InterceptHandler()]
+        logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
+
+        # Configure loguru handlers
+        logger.configure(handlers=[{
+            "sink": sys.stdout,
+            "level": sis_log_level,
+            "format": format_record
+        }])
+
+        # Add rotating file handler
+        logger.add(
+            LOG_DIR,
+            encoding='utf-8',
+            rotation="00:00",
+            retention="30 days",
+            compression="zip"
+        )
+
+        logger.info("------------------------------Log start record-------------------------------")
+        logger.debug(f'Current SIS log file path: {LOG_DIR}')
+    except Exception as e:
+        print(f"Error!!! detail: {e}")
+        return False
     
     return True
 

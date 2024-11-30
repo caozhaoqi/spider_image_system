@@ -180,22 +180,102 @@ def read_ini_config(file_name: str, section: str, value_key: str) -> str:
         return ""
 
 
+# Default configuration constants
+DEFAULT_CONFIG = {
+    "spider_config": {
+        "visit_url": "sd.vv50.de",
+        "s1_url": "pixiv.srpr.cc", 
+        "s2_url": "pixiv.888718.xyz",
+        "target_url": "pximg.lolicon.run",
+        "r18_mode": "True",
+        "all_show": "False",
+        "proxy_flag": "False",
+        "proxy_website": "http://demo.spiderpy.cn",
+        "proxy_mode": "auto",
+        "search_delta_time": "3",
+        "detail_delta_time": "2",
+        "sis_log_level": "DEBUG",
+        "spider_images_max_count": "1000",
+        "output_video_fps": "24",
+        "output_video_width": "2560",
+        "output_video_height": "1440",
+        "proxy_server_ip": "192.168.199.26",
+        "proxy_server_port": "8080"
+    },
+    "automatic_config": {
+        "filter_http_url": "js,emoji,svq,_50.png,_50.jpg,no_profile_s.png,block.vv50.de,square,custom,_50.gif,data:image/png,no_profile.png,common",
+        "filter_image_url": "s_mode=s_tag,block.vv50.de,tags,square,custom,square,custom,50.gif,data:image/png,no_profile.png,common",
+        "zoom_out_scale": "0.9",
+        "zoom_in_scale": "1.1",
+        "fire_wall_delay_time": "60",
+        "download_img_retry_times": "2",
+        "download_img_time_out": "10",
+        "detect_timeout_auto": "300",
+        "chrome_path": "None",
+        "chrome_exe_path": "None",
+        "chrome_version": "1",
+        "upload_minio_image_Flag": "False",
+        "allow_replace_domain_flag": "True",
+        "scheduled_download_program_flag": "True",
+        "dmi_api_server": "192.168.163.129:8888",
+        "detect_img_model": "python",
+        "WeChat_push_flag": "True",
+        "search_content": "site"
+    },
+    "minio_config_selected": {
+        "minio_config_id": "1",
+        "minio_server_ip": "121.36.66.145",
+        "minio_server_port": "9000",
+        "minio_account": "minioadmin",
+        "minio_password": "minioadmin",
+        "mark_msg": "minio_config['mark_msg']",
+        "enable": "1"
+    },
+    "unzip_config": {
+        "SEVEN_ZIP_PATH": "C:/Program Files/7-Zip/7z.exe",
+        "PASSWORD": "1204"
+    }
+}
+
 @logger.catch
 def check_ini_config() -> bool:
-    """Initialize default configuration if not exists"""
+    """
+    Check and create default configuration file if not exists
+    Returns:
+        bool: True if config exists or was created successfully
+    """
     ini_path = os.path.realpath(os.path.join("config", "config.ini"))
-    
+    logger.debug(f"Checking config file at: {ini_path}")
+
     if os.path.exists(ini_path):
+        logger.info("Config file exists")
         return True
 
+    # Create config directory
     config_folder = ".\\config" if get_cur_os() == "win32" else "./config"
-    os.makedirs(config_folder, exist_ok=True)
+    try:
+        os.makedirs(config_folder, exist_ok=True)
+        logger.info(f"Created config directory: {config_folder}")
+    except OSError as e:
+        logger.error(f"Failed to create config directory: {e}")
+        return False
 
-    # Create default config
-    entity = SpiderConfigModel()
-    entity.visit_url = "sd.vv50.de"
-    entity.s1_url = "pixiv.srpr.cc"
-    entity.s2_url = "pixiv.888718.xyz"
-    entity.target_url = "pximg.lolicon.run"
+    # Create and write config file
+    conf = configparser.ConfigParser()
+    try:
+        # Add all sections and their key-value pairs
+        for section, values in DEFAULT_CONFIG.items():
+            conf.add_section(section)
+            for key, value in values.items():
+                conf.set(section, key, value)
 
-    return write_minio_config_to_file(entity)
+        # Write to file
+        with open(ini_path, 'w', encoding="utf-8") as f:
+            conf.write(f)
+        
+        logger.info(f"Created default config file at: {ini_path}")
+        return True
+
+    except (configparser.Error, IOError) as e:
+        logger.error(f"Failed to write config file: {e}")
+        return False
