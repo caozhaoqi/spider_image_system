@@ -103,3 +103,256 @@ python -m nuitka --onefile --mingw64 --standalone --follow-import-to=file,http_t
 - 解决措施
 > 删除所有代码，清除缓存，重新拉取代码，安装第三方库，再次尝试打包，问题解决。
 > 使用命令行模式检查问题，修复后重新打包尝试
+
+
+## 自动模式抓取时，报错；手动模式抓取正常
+
+```log
+2024-12-02 15:28:30.003 | ERROR    | utils.spider_param:initialize_driver:280 - An error has been caught in function 'initialize_driver', process 'MainProcess' (21280), thread 'Thread-3' (30280):
+Traceback (most recent call last):
+
+  File "C:\Python312\Lib\threading.py", line 1032, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x000002576ADBC4A0>
+    └ <SISThreading(Thread-3, started 30280)>
+  File "C:\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
+    self.run()
+    │    └ <function SISThreading.run at 0x00000257185B3380>
+    └ <SISThreading(Thread-3, started 30280)>
+
+  File "D:\pythonProject\spider_image_system\src\utils\sis_therading.py", line 61, in run
+    self.target(*self.args, **self.kwargs)
+    │    │       │    │       │    └ {}
+    │    │       │    │       └ <SISThreading(Thread-3, started 30280)>
+    │    │       │    └ (<ui_event.pyqt_main_ui.UIMainWindows object at 0x00000257187ECDD0>,)
+    │    │       └ <SISThreading(Thread-3, started 30280)>
+    │    └ <function auto_spider_img_thread at 0x000002571876B060>
+    └ <SISThreading(Thread-3, started 30280)>
+
+  File "D:\pythonProject\spider_image_system\src\ui_event\base_event.py", line 185, in auto_spider_img_thread
+    spider_artworks_url(self, keyword)
+    │                   │     └ 'klee'
+    │                   └ <ui_event.pyqt_main_ui.UIMainWindows object at 0x00000257187ECDD0>
+    └ <function spider_artworks_url at 0x0000025718578540>
+
+  File "D:\pythonProject\spider_image_system\src\ui_event\get_url.py", line 187, in spider_artworks_url
+    driver, url, cur_page = spider_param_config(key_word)
+                            │                   └ 'klee'
+                            └ <function spider_param_config at 0x00000257185660C0>
+
+  File "D:\pythonProject\spider_image_system\src\utils\spider_param.py", line 347, in spider_param_config
+    driver = initialize_driver(options, system_info)
+             │                 │        └ 'Windows'
+             │                 └ <selenium.webdriver.edge.options.Options object at 0x000002571862EE40>
+             └ <function initialize_driver at 0x0000025718565580>
+
+> File "D:\pythonProject\spider_image_system\src\utils\spider_param.py", line 280, in initialize_driver
+    driver = create_driver(system_info, options)
+             │             │            └ <selenium.webdriver.edge.options.Options object at 0x000002571862EE40>
+             │             └ 'Windows'
+             └ <function create_driver at 0x0000025718565D00>
+
+  File "D:\pythonProject\spider_image_system\src\utils\spider_param.py", line 326, in create_driver
+    return driver_class(service=service, options=options) if service else driver_class(options=options)
+           │                    │                │           │            │                    └ <selenium.webdriver.edge.options.Options object at 0x000002571862EE40>
+           │                    │                │           │            └ <class 'selenium.webdriver.edge.webdriver.WebDriver'>
+           │                    │                │           └ None
+           │                    │                └ <selenium.webdriver.edge.options.Options object at 0x000002571862EE40>
+           │                    └ None
+           └ <class 'selenium.webdriver.edge.webdriver.WebDriver'>
+
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\edge\webdriver.py", line 45, in __init__
+    super().__init__(
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\chromium\webdriver.py", line 61, in __init__
+    super().__init__(command_executor=executor, options=options)
+                                      │                 └ <selenium.webdriver.edge.options.Options object at 0x000002571862EE40>
+                                      └ <selenium.webdriver.chromium.remote_connection.ChromiumRemoteConnection object at 0x000002571865BBF0>
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 209, in __init__
+    self.start_session(capabilities)
+    │    │             └ {'browserName': 'MicrosoftEdge', 'pageLoadStrategy': 'none', 'browserVersion': None, 'ms:edgeOptions': {'excludeSwitches': ['...
+    │    └ <function WebDriver.start_session at 0x0000025718371760>
+    └ <selenium.webdriver.edge.webdriver.WebDriver (session="None")>
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 293, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               │    │       │       │            └ {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'MicrosoftEdge', 'pageLoadStrategy': 'none', 'browserVer...
+               │    │       │       └ 'newSession'
+               │    │       └ <class 'selenium.webdriver.remote.command.Command'>
+               │    └ <function WebDriver.execute at 0x00000257183719E0>
+               └ <selenium.webdriver.edge.webdriver.WebDriver (session="None")>
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 348, in execute
+    self.error_handler.check_response(response)
+    │    │             │              └ {'status': 500, 'value': '{"value":{"error":"timeout","message":"timeout: Timed out receiving message from renderer: 600.000\...
+    │    │             └ <function ErrorHandler.check_response at 0x0000025718310400>
+    │    └ <selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x0000025717A5A1E0>
+    └ <selenium.webdriver.edge.webdriver.WebDriver (session="None")>
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+          │               │        │       └ ['\t(No symbol) [0x00007FF711796B15]', '\tMicrosoft::Applications::Events::EventProperty::empty [0x00007FF711ABF4A4+1437348]'...
+          │               │        └ None
+          │               └ 'timeout: Timed out receiving message from renderer: 600.000\n  (Session info: MicrosoftEdge=131.0.2903.70)'
+          └ <class 'selenium.common.exceptions.TimeoutException'>
+
+selenium.common.exceptions.TimeoutException: Message: timeout: Timed out receiving message from renderer: 600.000
+  (Session info: MicrosoftEdge=131.0.2903.70)
+Stacktrace:
+	(No symbol) [0x00007FF711796B15]
+	Microsoft::Applications::Events::EventProperty::empty [0x00007FF711ABF4A4+1437348]
+	sqlite3_dbdata_init [0x00007FF711B62DE6+643190]
+	(No symbol) [0x00007FF711667528]
+	(No symbol) [0x00007FF711667278]
+	(No symbol) [0x00007FF7116654BC]
+	(No symbol) [0x00007FF71166591C]
+	(No symbol) [0x00007FF711664636]
+	sqlite3_dbdata_init [0x00007FF711B5D2B1+619841]
+	(No symbol) [0x00007FF7116644C4]
+	(No symbol) [0x00007FF711666FE3]
+	(No symbol) [0x00007FF7116654BC]
+	(No symbol) [0x00007FF71166591C]
+	(No symbol) [0x00007FF711664636]
+	(No symbol) [0x00007FF71165C9DB]
+	(No symbol) [0x00007FF7116644C4]
+	(No symbol) [0x00007FF711663E9D]
+	(No symbol) [0x00007FF711663AD8]
+	(No symbol) [0x00007FF711676FE3]
+	(No symbol) [0x00007FF711656D35]
+	(No symbol) [0x00007FF711656809]
+	(No symbol) [0x00007FF7116E61D7]
+	(No symbol) [0x00007FF7116DBE03]
+	(No symbol) [0x00007FF7116B2984]
+	(No symbol) [0x00007FF7116B1E30]
+	(No symbol) [0x00007FF7116B2571]
+	Microsoft::Applications::Events::EventProperty::empty [0x00007FF711A6BB34+1094964]
+	(No symbol) [0x00007FF7117D32C8]
+	Microsoft::Applications::Events::EventProperty::empty [0x00007FF711A6AF73+1091955]
+	Microsoft::Applications::Events::EventProperty::empty [0x00007FF711A6AAD9+1090777]
+	Microsoft::Applications::Events::ILogConfiguration::operator* [0x00007FF711870CE1+461569]
+	Microsoft::Applications::Events::ILogConfiguration::operator* [0x00007FF71186CA04+444452]
+	Microsoft::Applications::Events::ILogConfiguration::operator* [0x00007FF71186CB49+444777]
+	Microsoft::Applications::Events::ILogConfiguration::operator* [0x00007FF7118621C6+401382]
+	BaseThreadInitThunk [0x00007FFA00A7DBE7+23]
+	RtlUserThreadStart [0x00007FFA0141FBEC+44]
+
+2024-12-02 15:28:33.195 | ERROR    | utils.spider_param:initialize_driver:280 - An error has been caught in function 'initialize_driver', process 'MainProcess' (21280), thread 'Thread-9' (15212):
+Traceback (most recent call last):
+
+  File "C:\Python312\Lib\threading.py", line 1032, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x000002576ADBC4A0>
+    └ <SISThreading(Thread-9, started 15212)>
+  File "C:\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
+    self.run()
+    │    └ <function SISThreading.run at 0x00000257185B3380>
+    └ <SISThreading(Thread-9, started 15212)>
+
+  File "D:\pythonProject\spider_image_system\src\utils\sis_therading.py", line 61, in run
+    self.target(*self.args, **self.kwargs)
+    │    │       │    │       │    └ {}
+    │    │       │    │       └ <SISThreading(Thread-9, started 15212)>
+    │    │       │    └ (<ui_event.pyqt_main_ui.UIMainWindows object at 0x00000257187ECDD0>,)
+    │    │       └ <SISThreading(Thread-9, started 15212)>
+    │    └ <function auto_spider_img_thread at 0x000002571876B060>
+    └ <SISThreading(Thread-9, started 15212)>
+
+  File "D:\pythonProject\spider_image_system\src\ui_event\base_event.py", line 185, in auto_spider_img_thread
+    spider_artworks_url(self, keyword)
+    │                   │     └ 'klee'
+    │                   └ <ui_event.pyqt_main_ui.UIMainWindows object at 0x00000257187ECDD0>
+    └ <function spider_artworks_url at 0x0000025718578540>
+
+  File "D:\pythonProject\spider_image_system\src\ui_event\get_url.py", line 187, in spider_artworks_url
+    driver, url, cur_page = spider_param_config(key_word)
+                            │                   └ 'klee'
+                            └ <function spider_param_config at 0x00000257185660C0>
+
+  File "D:\pythonProject\spider_image_system\src\utils\spider_param.py", line 347, in spider_param_config
+    driver = initialize_driver(options, system_info)
+             │                 │        └ 'Windows'
+             │                 └ <selenium.webdriver.edge.options.Options object at 0x0000025718872DE0>
+             └ <function initialize_driver at 0x0000025718565580>
+
+> File "D:\pythonProject\spider_image_system\src\utils\spider_param.py", line 280, in initialize_driver
+    driver = create_driver(system_info, options)
+             │             │            └ <selenium.webdriver.edge.options.Options object at 0x0000025718872DE0>
+             │             └ 'Windows'
+             └ <function create_driver at 0x0000025718565D00>
+
+  File "D:\pythonProject\spider_image_system\src\utils\spider_param.py", line 326, in create_driver
+    return driver_class(service=service, options=options) if service else driver_class(options=options)
+           │                    │                │           │            │                    └ <selenium.webdriver.edge.options.Options object at 0x0000025718872DE0>
+           │                    │                │           │            └ <class 'selenium.webdriver.edge.webdriver.WebDriver'>
+           │                    │                │           └ None
+           │                    │                └ <selenium.webdriver.edge.options.Options object at 0x0000025718872DE0>
+           │                    └ None
+           └ <class 'selenium.webdriver.edge.webdriver.WebDriver'>
+
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\edge\webdriver.py", line 45, in __init__
+    super().__init__(
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\chromium\webdriver.py", line 61, in __init__
+    super().__init__(command_executor=executor, options=options)
+                                      │                 └ <selenium.webdriver.edge.options.Options object at 0x0000025718872DE0>
+                                      └ <selenium.webdriver.chromium.remote_connection.ChromiumRemoteConnection object at 0x0000025718343D70>
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 209, in __init__
+    self.start_session(capabilities)
+    │    │             └ {'browserName': 'MicrosoftEdge', 'pageLoadStrategy': 'none', 'browserVersion': None, 'ms:edgeOptions': {'excludeSwitches': ['...
+    │    └ <function WebDriver.start_session at 0x0000025718371760>
+    └ <selenium.webdriver.edge.webdriver.WebDriver (session="None")>
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 293, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               │    │       │       │            └ {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'MicrosoftEdge', 'pageLoadStrategy': 'none', 'browserVer...
+               │    │       │       └ 'newSession'
+               │    │       └ <class 'selenium.webdriver.remote.command.Command'>
+               │    └ <function WebDriver.execute at 0x00000257183719E0>
+               └ <selenium.webdriver.edge.webdriver.WebDriver (session="None")>
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 348, in execute
+    self.error_handler.check_response(response)
+    │    │             │              └ {'status': 500, 'value': '{"value":{"error":"timeout","message":"timeout: Timed out receiving message from renderer: 600.000\...
+    │    │             └ <function ErrorHandler.check_response at 0x0000025718310400>
+    │    └ <selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x0000025718873980>
+    └ <selenium.webdriver.edge.webdriver.WebDriver (session="None")>
+  File "D:\pythonProject\spider_image_system\venv\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+          │               │        │       └ ['\t(No symbol) [0x00007FF711796B15]', '\tMicrosoft::Applications::Events::EventProperty::empty [0x00007FF711ABF4A4+1437348]'...
+          │               │        └ None
+          │               └ 'timeout: Timed out receiving message from renderer: 600.000\n  (Session info: MicrosoftEdge=131.0.2903.70)'
+          └ <class 'selenium.common.exceptions.TimeoutException'>
+
+selenium.common.exceptions.TimeoutException: Message: timeout: Timed out receiving message from renderer: 600.000
+  (Session info: MicrosoftEdge=131.0.2903.70)
+Stacktrace:
+	(No symbol) [0x00007FF711796B15]
+	Microsoft::Applications::Events::EventProperty::empty [0x00007FF711ABF4A4+1437348]
+	sqlite3_dbdata_init [0x00007FF711B62DE6+643190]
+	(No symbol) [0x00007FF711667528]
+	(No symbol) [0x00007FF711667278]
+	(No symbol) [0x00007FF7116654BC]
+	(No symbol) [0x00007FF71166591C]
+	(No symbol) [0x00007FF711664636]
+	sqlite3_dbdata_init [0x00007FF711B5D2B1+619841]
+	(No symbol) [0x00007FF7116644C4]
+	(No symbol) [0x00007FF711666FE3]
+	(No symbol) [0x00007FF7116654BC]
+	(No symbol) [0x00007FF71166591C]
+	(No symbol) [0x00007FF711664636]
+	(No symbol) [0x00007FF71165C9DB]
+	(No symbol) [0x00007FF7116644C4]
+	(No symbol) [0x00007FF711663E9D]
+	(No symbol) [0x00007FF711663AD8]
+	(No symbol) [0x00007FF711676FE3]
+	(No symbol) [0x00007FF711656D35]
+	(No symbol) [0x00007FF711656809]
+	(No symbol) [0x00007FF7116E61D7]
+	(No symbol) [0x00007FF7116DBE03]
+	(No symbol) [0x00007FF7116B2984]
+	(No symbol) [0x00007FF7116B1E30]
+	(No symbol) [0x00007FF7116B2571]
+	Microsoft::Applications::Events::EventProperty::empty [0x00007FF711A6BB34+1094964]
+	(No symbol) [0x00007FF7117D32C8]
+	Microsoft::Applications::Events::EventProperty::empty [0x00007FF711A6AF73+1091955]
+	Microsoft::Applications::Events::EventProperty::empty [0x00007FF711A6AAD9+1090777]
+	Microsoft::Applications::Events::ILogConfiguration::operator* [0x00007FF711870CE1+461569]
+	Microsoft::Applications::Events::ILogConfiguration::operator* [0x00007FF71186CA04+444452]
+	Microsoft::Applications::Events::ILogConfiguration::operator* [0x00007FF71186CB49+444777]
+	Microsoft::Applications::Events::ILogConfiguration::operator* [0x00007FF7118621C6+401382]
+	BaseThreadInitThunk [0x00007FFA00A7DBE7+23]
+	RtlUserThreadStart [0x00007FFA0141FBEC+44]
+```

@@ -130,11 +130,11 @@ def remove_duplicates_from_txt(input_file: str, output_file: str) -> str:
             
         with open(output_path, 'w', encoding='utf-8', errors='replace') as f:
             f.writelines(lines)
-            return lines
+        return output_file
             
     except Exception as e:
         logger.error(f"移除重复内容失败: {e}")
-        return lines
+        return input_file
 
 
 @logger.catch

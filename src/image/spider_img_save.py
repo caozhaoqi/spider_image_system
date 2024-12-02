@@ -7,6 +7,7 @@ Describe: Github link: https://github.com/caozhaoqi
 """
 
 import os
+import re
 import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -78,6 +79,17 @@ def download_image(url: str, filename: str, total_count: int, current_index: int
             f"Error: {str(e)}"
         )
 
+@logger.catch
+def sanitize_url(url):
+    """
+       Remove 'https://' and replace any non-alphanumeric characters with underscores
+    Args:
+        url: process images url
+    """
+    if url is None:
+        return ''
+    return re.sub(r'[^a-zA-Z0-9]', '_', url.replace('https://', ''))
+
 
 @logger.catch
 def download_images_from_file(
@@ -88,15 +100,15 @@ def download_images_from_file(
     
     Args:
         ui: UI instance for progress updates
-        file_path: Path to file containing image URLs
+        file_path: image save path
         txt_index: Index of current text file
         final_url: URL to resume from if continuing
         continue_flag: Whether to continue from previous download
     """
-    save_dir = os.path.splitext(file_path.strip().strip())[0] + "/images"
+    save_dir = sanitize_url(final_url) + "/images"
     os.makedirs(save_dir, exist_ok=True)
-
-    with open(file_path, 'r', encoding='utf-8') as f:
+    # for file_path_item in file_path:
+    with open(file_path.strip(), 'r', encoding='utf-8') as f:
         urls = f.readlines()
         
     total_count = len(urls)
