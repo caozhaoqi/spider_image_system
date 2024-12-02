@@ -50,9 +50,18 @@ from utils.jm_domain_detect import jm_domain_test, jm_auto_spider_img_thread
 from utils.go_file_utils import upload_all_gofile
 from ui_event.log_show_dialog import LogDisplayDialog
 
+# 在全局范围内存储对话框引用
+_dialog_references = []
 
 def show_dialog(dialog_class: type, visible_flag: str, title: str = None, maximize: bool = False) -> None:
-    """Generic function to show dialogs"""
+    """Generic function to show dialogs
+    
+    Args:
+        dialog_class: Dialog class to instantiate
+        visible_flag: Visibility flag path in constants
+        title: Window title (optional)
+        maximize: Whether to show maximized (default False)
+    """
     if visible_flag.startswith('.'):
         visible_flag = visible_flag[1:]
 
@@ -62,8 +71,16 @@ def show_dialog(dialog_class: type, visible_flag: str, title: str = None, maximi
         obj = getattr(obj, part)
 
     if not obj:
+        # Create dialog and store reference
         dialog = dialog_class()
-        dialog.setWindowTitle(title)
+        _dialog_references.append(dialog)
+        
+        if title:
+            dialog.setWindowTitle(title)
+            
+        # Connect close event to remove reference
+        dialog.finished.connect(lambda: _dialog_references.remove(dialog))
+        
         if maximize:
             dialog.showMaximized()
         else:
@@ -220,19 +237,19 @@ def stop_download_image(_=None) -> bool:
 @logger.catch
 def online_look_image(_=None) -> None:
     """Show online image viewer"""
-    show_dialog(ImageDialog, "UIConfig.online_look_image_visible", "Online image viewer", maximize=True)
+    show_dialog(ImageDialog, ".UIConfig.online_look_image_visible", "Online image viewer", maximize=True)
 
 
 @logger.catch
 def auto_play_image(_=None) -> None:
     """Show auto image player"""
-    show_dialog(AutoImageDialog, "UIConfig.auto_play_image_visible", "Auto_play_image", maximize=True)
+    show_dialog(AutoImageDialog, ".UIConfig.auto_play_image_visible", "Auto_play_image", maximize=True)
 
 
 @logger.catch
 def performance_monitor(_=None) -> None:
     """Show system performance monitor"""
-    show_dialog(SystemMonitor, "UIConfig.performance_monitor_visible", "System info", maximize=True)
+    show_dialog(SystemMonitor, ".UIConfig.performance_monitor_visible", "System info", maximize=True)
 
 
 @logger.catch
@@ -369,7 +386,7 @@ def model_detect_img(_=None) -> None:
 @logger.catch
 def start_download_jm(_=None) -> None:
     """Show JM download dialog"""
-    show_dialog(JMDialog, "UIConfigjm_dialog_visible", "Dialog_jm")
+    show_dialog(JMDialog, ".UIConfig.jm_dialog_visible", "Dialog_jm")
 
 
 @logger.catch

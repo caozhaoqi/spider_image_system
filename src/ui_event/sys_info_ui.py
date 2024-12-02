@@ -42,9 +42,11 @@ class SystemMonitor(QDialog):
         self.memory_series = None
         self.chart_view = None
         self.chart = None
-        
+
+        constants.UIConfig.performance_monitor_visible = True
+
         self.init_ui()
-        
+
         # Setup update timer
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update_data)
@@ -61,7 +63,7 @@ class SystemMonitor(QDialog):
         self.chart.setTitle("System Resource Usage")
         self.chart_view = QtChart.QChartView(self.chart)
         self.chart_view.setRenderHint(QtGui.QPainter.Antialiasing)
-        
+
         # Setup layout
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.chart_view)
@@ -74,8 +76,8 @@ class SystemMonitor(QDialog):
         self.receive_bytes_series = QtChart.QLineSeries()
 
         # Add series to chart
-        series_list = [self.memory_series, self.cpu_series, 
-                      self.send_bytes_series, self.receive_bytes_series]
+        series_list = [self.memory_series, self.cpu_series,
+                       self.send_bytes_series, self.receive_bytes_series]
         for series in series_list:
             self.chart.addSeries(series)
 
@@ -97,7 +99,7 @@ class SystemMonitor(QDialog):
         """Update chart data with current system metrics"""
         if not constants.UIConfig.performance_monitor_visible:
             return
-            
+
         # Get current metrics
         mem_usage, cpu_usage = look_sys_info()
         send_bytes, receive_bytes = network_usage()

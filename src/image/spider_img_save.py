@@ -93,7 +93,7 @@ def download_images_from_file(
         final_url: URL to resume from if continuing
         continue_flag: Whether to continue from previous download
     """
-    save_dir = os.path.splitext(file_path)[0] + "/images"
+    save_dir = os.path.splitext(file_path.strip().strip())[0] + "/images"
     os.makedirs(save_dir, exist_ok=True)
 
     with open(file_path, 'r', encoding='utf-8') as f:

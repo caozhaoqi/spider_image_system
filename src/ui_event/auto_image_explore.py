@@ -79,7 +79,7 @@ class AutoImageDialog(QDialog):
     @logger.catch
     def start_timer(self, _=None):
         """Start automatic image playback"""
-        if not constants.start_auto_play_flag and self.image_files:
+        if not constants.UIConfig.start_auto_play_flag and self.image_files:
             self.timer = QTimer(self)
             self.timer.timeout.connect(self.show_next_image)
             self.timer.start(self.interval)

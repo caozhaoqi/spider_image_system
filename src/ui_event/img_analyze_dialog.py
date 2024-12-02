@@ -115,7 +115,7 @@ class ImgAnalyzeHistogram(QDialog):
         return chart_view
 
     @logger.catch
-    def showNextGroup(self):
+    def showNextGroup(self, _=None):
         """Show next group of data"""
         try:
             self.current_group = (self.current_group + 1) % (len(self.error_counts) // self.group_size)

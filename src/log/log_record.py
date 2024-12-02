@@ -54,7 +54,7 @@ def log_record() -> bool:
         logger.info("------------------------------Log start record-------------------------------")
         logger.debug(f'Current SIS log file path: {LOG_DIR}')
     except Exception as e:
-        print(f"Error!!! detail: {e}")
+        logger.error(f"Error!!! Log record failed, detail: {e}")
         return False
     
     return True

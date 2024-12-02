@@ -9,6 +9,7 @@ Describe: Github link: https://github.com/caozhaoqi
 import os
 import sys
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QVBoxLayout, QDialog
@@ -22,11 +23,11 @@ import jmcomic
 
 class JMDialog(QDialog):
     """Dialog for downloading JM comics by ID"""
-    
+
     def __init__(self):
         super().__init__()
         self.download_button = None
-        self.jm_id_label = None 
+        self.jm_id_label = None
         self.jm_id_input = None
         self.init_ui()
 
@@ -34,7 +35,7 @@ class JMDialog(QDialog):
         """Initialize the UI components"""
         self.setWindowTitle('JM ID Downloader')
         self.setGeometry(300, 300, 450, 150)
-        
+
         layout = QVBoxLayout()
         self.setLayout(layout)
 
@@ -42,19 +43,19 @@ class JMDialog(QDialog):
         self.jm_id_label = QLabel('JM ID:')
         self.jm_id_input = QLineEdit()
         self.download_button = QPushButton('Download')
-        
+
         # Add widgets to layout
         layout.addWidget(self.jm_id_label)
         layout.addWidget(self.jm_id_input)
         layout.addWidget(self.download_button)
-        
+
         # Connect signals
         self.download_button.clicked.connect(self.on_download_clicked)
-        
+
         self.show()
 
     @logger.catch
-    def on_download_clicked(self):
+    def on_download_clicked(self, _=None):
         """Handle download button click"""
         jm_id = self.jm_id_input.text().strip()
         if jm_id:
