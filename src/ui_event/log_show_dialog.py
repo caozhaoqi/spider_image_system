@@ -51,7 +51,9 @@ class LogDisplayDialog(QDialog):
             self.timer = QTimer(self)
             self.timer.timeout.connect(self.update_log)
             self.timer.start(2500)
-            
+
+            constants.UIConfig.log_check_visible = True
+
             logger.debug("LogDisplayDialog initialization complete")
         except Exception as e:
             logger.exception(f"Failed to initialize LogDisplayDialog: {e}")
@@ -62,17 +64,18 @@ class LogDisplayDialog(QDialog):
         if self.timer:
             self.timer.stop()
         super().closeEvent(event)
+        constants.UIConfig.log_check_visible = False
 
     @logger.catch
     def update_log(self):
         """Update log content"""
-        if not constants.log_check_visible:
+        if not constants.UIConfig.log_check_visible:
             return
 
         log_file_path = find_latest_log_file(LOG_FILE_PATTERN, str(LOG_DIR))
-        self.log_file_name_label.setText(log_file_path)
+        self.log_file_name_label.setText(str(log_file_path))
 
-        log_file = QFile(log_file_path)
+        log_file = QFile(str(log_file_path))
         if not log_file.exists():
             self.log_text_edit.append("Log file does not exist")
             return
@@ -103,7 +106,7 @@ class LogDisplayDialog(QDialog):
 def show_log_output_method():
     """Show the log viewer dialog"""
     try:
-        if not constants.log_check_visible:
+        if not constants.UIConfig.log_check_visible:
             logger.debug("Creating new LogDisplayDialog instance")
             dialog = LogDisplayDialog()
             dialog.setWindowFlag(Qt.WindowMinMaxButtonsHint)

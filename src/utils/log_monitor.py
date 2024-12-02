@@ -30,21 +30,27 @@ LOG_FILE_PATTERN = 'sis_v*.log'
 LOG_DIR = Path(constants.basic_path) / "log_dir"
 
 
+
+from pathlib import Path
+
 @logger.catch
-def find_latest_log_file(pattern: str, directory: Path) -> Optional[Path]:
-    """查找最新的日志文件
-    
-    Args:
-        pattern: 日志文件名匹配模式
-        directory: 日志文件目录
-        
-    Returns:
-        最新日志文件的路径,如果没找到则返回None
+def ensure_path(directory):
     """
+
+    """
+    return Path(directory) if isinstance(directory, str) else directory
+
+@logger.catch
+def find_latest_log_file(pattern, directory):
+    """
+
+    """
+    directory = ensure_path(directory)
     files = list(directory.glob(pattern))
-    if not files:
-        return None
-    return max(files, key=lambda x: x.stat().st_mtime)
+    if files:
+        return max(files, key=lambda f: f.stat().st_mtime)  # 返回最新的文件
+    return None
+
 
 
 @logger.catch 
