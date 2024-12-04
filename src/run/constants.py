@@ -155,6 +155,6 @@ seven_zip_path = read_config_str("unzip_config", "seven_zip_path")
 password = read_config_str("unzip_config", "password")
 
 # Version information
-sis_server_version = "v1.2.3.241126"
+sis_server_version = "v1.2.4.241126"
 build_date = "2024-11-26 18:00"
 publish_date = "2024-11-26 18:30"

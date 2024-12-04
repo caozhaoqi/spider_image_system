@@ -8,6 +8,8 @@ Describe: Github link: https://github.com/caozhaoqi
 
 #!coding: utf-8
 import os
+import platform
+import subprocess
 import sys
 from pathlib import Path
 
@@ -45,11 +47,15 @@ image_files = show_filter_image(find_images(folder_path))
 def open_data_path_method():
     """Opens the data directory in the system file explorer"""
     try:
-        if os.name == 'nt':  # Windows
-            os.startfile(constants.data_path)
-        else:
-            import subprocess
-            subprocess.Popen(['xdg-open', constants.data_path])
+
+        # 判断操作系统
+        if platform.system() == 'Darwin':  # macOS
+            subprocess.run(['open', constants.data_path])
+        elif platform.system() == 'Windows':  # Windows
+            subprocess.run(['start', constants.data_path], shell=True)
+        else:  # Linux
+            subprocess.run(['xdg-open', constants.data_path])
+
 
         logger.success(f"Opened data path: {constants.data_path}")
     except Exception as e:
@@ -58,11 +64,11 @@ def open_data_path_method():
 
 class UIMainWindows(QMainWindow):
 
-    @logger.catch 
+    @logger.catch
     def __init__(self):
         """Initialize the main UI window"""
         QMainWindow.__init__(self)
-        
+
         # Initialize instance variables
         self.trayIcon = None
         self.trayIconMenu = None
@@ -106,7 +112,7 @@ class UIMainWindows(QMainWindow):
 
         # Show maximized window
         self.showMaximized()
-        
+
         # Initialize UI state
         self.spider_mode_show_label.setText(constants.SpiderConfig.spider_mode)
 
@@ -196,7 +202,7 @@ class UIMainWindows(QMainWindow):
 
         constants.SpiderConfig.spider_mode = 'manual'
         key_word = self.file_text.text()
-        
+
         if not key_word:
             logger.warning("Empty keyword entered")
             return False
@@ -225,7 +231,7 @@ class UIMainWindows(QMainWindow):
         if constants.ProcessingConfig.single_flag:
             self.error_tips("删除错误图片操作")
             return
-            
+
         constants.ProcessingConfig.single_flag = True
         remove_error_image(self)
 
@@ -235,7 +241,7 @@ class UIMainWindows(QMainWindow):
         if constants.ProcessingConfig.single_flag:
             self.error_tips("图片分类操作")
             return
-            
+
         constants.single_flag = True
         img_category_button(self)
 
@@ -244,13 +250,13 @@ class UIMainWindows(QMainWindow):
         """Show success notification"""
         message = f"{get_cur_time()}: {operate_name}, 操作完成! (*^▽^*)"
         self.sys_status_label.setText(message)
-        
+
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("成功提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
             wx_push_content(message)
         else:
             logger.warning("System tray message not supported")
-            
+
         logger.success('Success notification shown')
 
     @logger.catch
@@ -258,13 +264,13 @@ class UIMainWindows(QMainWindow):
         """Show error notification"""
         message = f"{get_cur_time()}: {operate_name}, 操作失败! o(╥﹏╥)o"
         self.sys_status_label.setText(message)
-        
+
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("错误提示", operate_name, QtGui.QIcon("./favicon.ico"), 10000)
             wx_push_content(message)
         else:
             logger.warning("System tray message not supported")
-            
+
         logger.error('Error notification shown')
 
     @logger.catch
@@ -272,13 +278,13 @@ class UIMainWindows(QMainWindow):
         """Show system notification"""
         message = f"{get_cur_time()}: {content}"
         self.sys_status_label.setText(message)
-        
+
         if self.trayIcon.supportsMessages() and self.trayIcon.isSystemTrayAvailable():
             self.trayIcon.showMessage("系统提示", content, QtGui.QIcon("./favicon.ico"), 10000)
             wx_push_content(content)
         else:
             logger.warning("System tray message not supported")
-            
+
         logger.warning('System notification shown')
 
     @logger.catch
@@ -287,7 +293,7 @@ class UIMainWindows(QMainWindow):
         if not constants.SpiderConfig.stop_download_image_flag:
             self.error_tips("下载图片操作")
             return
-            
+
         spider_thread = threading.Thread(
             target=download_img_txt,
             args=(self,)
@@ -329,7 +335,7 @@ class UIMainWindows(QMainWindow):
         if constants.SpiderConfig.process_image_flag:
             self.error_tips("生成视频操作")
             return
-            
+
         self.images_convert_thread = threading.Thread(
             target=process_images_thread,
             args=(self,)
@@ -344,7 +350,7 @@ class UIMainWindows(QMainWindow):
         try:
             new_size = self.pixmap_image_tab1.size() * float(zoom_in_scale)
             self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(
-                new_size, 
+                new_size,
                 Qt.KeepAspectRatio,
                 Qt.SmoothTransformation
             )
@@ -360,7 +366,7 @@ class UIMainWindows(QMainWindow):
             new_size = self.pixmap_image_tab1.size() * float(zoom_out_scale)
             self.pixmap_image_tab1 = self.pixmap_image_tab1.scaled(
                 new_size,
-                Qt.KeepAspectRatio, 
+                Qt.KeepAspectRatio,
                 Qt.SmoothTransformation
             )
             self.label.setPixmap(self.pixmap_image_tab1)
@@ -376,17 +382,17 @@ class UIMainWindows(QMainWindow):
                 self.isDragging = True
                 self.dragStartPos = event.pos() - self.label.pos()
                 self.lastMousePos = event.pos()
-                
+
         elif event.type() == QEvent.MouseMove and self.isDragging:
             dx = event.pos().x() - self.lastMousePos.x()
             dy = event.pos().y() - self.lastMousePos.y()
             newPos = self.label.pos() + QPoint(dx, dy)
             self.label.move(newPos)
             self.lastMousePos = event.pos()
-            
+
         elif event.type() == QEvent.MouseButtonRelease and event.button() == Qt.LeftButton:
             self.isDragging = False
-            
+
         return super().eventFilter(obj, event)
 
     @logger.catch
@@ -396,7 +402,7 @@ class UIMainWindows(QMainWindow):
             logger.warning("GIF zip download already in progress")
             self.error_tips("下载动态操作")
             return
-            
+
         self.download_gif_zip_thread = threading.Thread(
             target=url_zip_all_process,
             args=(scan_directory_zip_txt(constants.data_path),)
@@ -412,7 +418,7 @@ class UIMainWindows(QMainWindow):
             logger.warning("Video generation already in progress")
             self.error_tips("解压生成gif视频操作")
             return
-            
+
         self.unzip_generate_video_thread = threading.Thread(
             target=unzip_generate_gif,
             args=()
@@ -428,10 +434,10 @@ class UIMainWindows(QMainWindow):
             logger.warning("Video download already in progress")
             self.error_tips("下载gif压缩包操作")
             return
-            
+
         link = self.edt_input_file_text_3.text()
         logger.info(f"Starting download from link: {link}")
-        
+
         self.start_download_file_link_thread = threading.Thread(
             target=start_download_file_link,
             args=(link,)
@@ -521,7 +527,7 @@ class UIMainWindows(QMainWindow):
             "是否确认退出？",
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
         )
-        
+
         if reply == QtWidgets.QMessageBox.Yes:
             on_last_window_closed()
             logger.success(f"Spider image system {constants.sis_server_version} shutting down")
