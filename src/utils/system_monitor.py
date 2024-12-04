@@ -187,23 +187,38 @@ def check_internet_connection() -> bool:
 def check_top_processes() -> bool:
     """检查系统资源占用最高的进程"""
     processes = psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent'])
-    sorted_processes = sorted(processes, key=lambda p: p.info['cpu_percent'], reverse=True)
-    
+
+    # 处理排序前，确保cpu_percent不为None
+    processes_with_cpu = []
+    for process in processes:
+        try:
+            cpu_percent = process.info['cpu_percent']
+            # 如果cpu_percent为None，则设为0
+            if cpu_percent is None:
+                cpu_percent = 0
+            process.info['cpu_percent'] = cpu_percent
+            processes_with_cpu.append(process)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue
+
+    # 排序：根据CPU占用排序
+    sorted_processes = sorted(processes_with_cpu, key=lambda p: p.info['cpu_percent'], reverse=True)
+
     top_processes = []
     for process in sorted_processes[:PROCESS_COUNT]:
         try:
             pid = process.info['pid']
             name = process.info['name']
-            cpu_percent = process.cpu_percent()
+            cpu_percent = process.cpu_percent()  # 计算该进程的CPU使用率
             memory_info = process.memory_info()
-            memory_mb = memory_info.rss / (1024 * 1024)
-            
+            memory_mb = memory_info.rss / (1024 * 1024)  # 转换为MB
+
             try:
                 io_counters = process.io_counters()
-                net_io = (io_counters.write_bytes + io_counters.read_bytes) / (1024 * 1024)
+                net_io = (io_counters.write_bytes + io_counters.read_bytes) / (1024 * 1024)  # 转换为MB
             except (psutil.AccessDenied, AttributeError):
                 net_io = 0
-                
+
             top_processes.append({
                 'PID': pid,
                 'Name': name,
@@ -211,15 +226,16 @@ def check_top_processes() -> bool:
                 'Memory Usage (MB)': memory_mb,
                 'Network IO (MB)': net_io
             })
-            
+
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             continue
-            
+
+    # 打印日志输出
     logger.warning("----- System Resource Usage -----")
     for proc in top_processes:
         logger.info(proc)
     logger.warning("--------------------------------")
-    
+
     return True
 
 @logger.catch
