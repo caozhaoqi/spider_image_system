@@ -18,6 +18,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
+from selenium.webdriver.safari.options import Options as SafariOptions
+from selenium.webdriver.safari.service import Service as SafariService
 
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -249,12 +251,14 @@ def configure_browser_options() -> webdriver.ChromeOptions:
     options = {
         'Linux': webdriver.ChromeOptions,
         'Windows': webdriver.EdgeOptions,
+        'Darwin': SafariOptions,
     }.get(system_info, webdriver.SafariOptions)()
     
     logger.debug(f"使用{system_info}浏览器")
 
-    options.add_argument(f"user-agent={cur_user_agent}")
-    options = chrome_options(options)
+    if system_info in ['Linux', 'Windows']:
+        options.add_argument(f"user-agent={cur_user_agent}")
+        options = chrome_options(options)
 
     return options
 
@@ -301,6 +305,8 @@ def get_driver_service(system_info: str) -> Service:
         return Service(ChromeDriverManager().install())
     elif system_info == 'Windows':
         return Service(EdgeChromiumDriverManager().install())
+    elif system_info == 'Darwin':
+        return SafariService()
     return Service()
 
 
@@ -319,6 +325,7 @@ def create_driver(system_info: str, options: webdriver.ChromeOptions, service: O
     drivers = {
         'Linux': webdriver.Chrome,
         'Windows': webdriver.Edge,
+        'Darwin': webdriver.Safari,
         'default': webdriver.Safari
     }
     
