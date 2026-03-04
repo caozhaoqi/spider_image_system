@@ -18,6 +18,7 @@ from urllib3.util.retry import Retry
 import time
 from run.constants import download_img_retry_times, download_img_time_out
 from loguru import logger
+from typing import Optional
 import urllib3
 
 urllib3.disable_warnings()
@@ -37,7 +38,7 @@ session.mount('https://', adapter)
 
 
 @logger.catch
-def send_request(url: str, timeout: int = download_img_time_out) -> requests.Response | None:
+def send_request(url: str, timeout: int = download_img_time_out) -> Optional[requests.Response]:
     """
     发送HTTP请求并处理重试和错误
 
