@@ -251,14 +251,14 @@ def configure_browser_options() -> webdriver.ChromeOptions:
     options = {
         'Linux': webdriver.ChromeOptions,
         'Windows': webdriver.EdgeOptions,
-        'Darwin': SafariOptions,
-    }.get(system_info, webdriver.SafariOptions)()
+        'Darwin': webdriver.ChromeOptions,
+    }.get(system_info, webdriver.ChromeOptions)()
     
     logger.debug(f"使用{system_info}浏览器")
 
-    if system_info in ['Linux', 'Windows']:
-        options.add_argument(f"user-agent={cur_user_agent}")
-        options = chrome_options(options)
+    # 为所有系统添加 user-agent
+    options.add_argument(f"user-agent={cur_user_agent}")
+    options = chrome_options(options)
 
     return options
 
@@ -275,19 +275,30 @@ def initialize_driver(options: webdriver.ChromeOptions, system_info: str) -> Opt
         WebDriver实例
     """
     try:
+        service = get_driver_service(system_info)
         if constants.chrome_path != 'None':
-            service = get_driver_service(system_info)
             service.path = constants.chrome_path
             options.binary_location = constants.chrome_exe_path
-            driver = create_driver(system_info, options, service)
-        else:
-            driver = create_driver(system_info, options)
+        driver = create_driver(system_info, options, service)
 
         logger.info(f"驱动初始化成功: {constants.chrome_path}, {constants.chrome_exe_path}")
         return driver
         
     except Exception as e:
         logger.warning(f"驱动初始化失败: {type(e).__name__}, {e}")
+        # 尝试直接使用已安装的 ChromeDriver
+        import os
+        chromedriver_path = '/Users/caozhaoqi/.wdm/drivers/chromedriver/mac64/145.0.7632.117/chromedriver-mac-arm64/chromedriver'
+        if os.path.exists(chromedriver_path):
+            logger.info(f"尝试使用已安装的 ChromeDriver: {chromedriver_path}")
+            try:
+                service = Service(chromedriver_path)
+                driver = create_driver(system_info, options, service)
+                logger.info("驱动初始化成功: 使用已安装的 ChromeDriver")
+                return driver
+            except Exception as e2:
+                logger.warning(f"使用已安装的 ChromeDriver 失败: {type(e2).__name__}, {e2}")
+                return None
         return None
 
 
@@ -301,13 +312,21 @@ def get_driver_service(system_info: str) -> Service:
     Returns:
         Service实例
     """
-    if system_info == 'Linux':
-        return Service(ChromeDriverManager().install())
-    elif system_info == 'Windows':
-        return Service(EdgeChromiumDriverManager().install())
-    elif system_info == 'Darwin':
-        return SafariService()
-    return Service()
+    try:
+        if system_info == 'Linux' or system_info == 'Darwin':
+            return Service(ChromeDriverManager().install())
+        elif system_info == 'Windows':
+            return Service(EdgeChromiumDriverManager().install())
+        return Service()
+    except PermissionError as e:
+        logger.warning(f"设置 ChromeDriver 执行权限失败: {e}")
+        # 尝试直接使用已安装的 ChromeDriver
+        import os
+        chromedriver_path = '/Users/caozhaoqi/.wdm/drivers/chromedriver/mac64/145.0.7632.117/chromedriver-mac-arm64/chromedriver'
+        if os.path.exists(chromedriver_path):
+            logger.info(f"使用已安装的 ChromeDriver: {chromedriver_path}")
+            return Service(chromedriver_path)
+        return Service()
 
 
 @logger.catch
@@ -325,8 +344,8 @@ def create_driver(system_info: str, options: webdriver.ChromeOptions, service: O
     drivers = {
         'Linux': webdriver.Chrome,
         'Windows': webdriver.Edge,
-        'Darwin': webdriver.Safari,
-        'default': webdriver.Safari
+        'Darwin': webdriver.Chrome,  # 改为使用 Chrome
+        'default': webdriver.Chrome  # 改为使用 Chrome
     }
     
     driver_class = drivers.get(system_info, drivers['default'])

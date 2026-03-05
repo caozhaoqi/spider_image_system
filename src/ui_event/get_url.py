@@ -19,7 +19,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common import NoSuchWindowException
 from selenium.webdriver import ActionChains, Keys
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, StaleElementReferenceException
 from loguru import logger
 from pypinyin import lazy_pinyin, Style
 
@@ -35,7 +35,7 @@ from utils.spider_operate import (
     filter_not_use_url, slider_page_down, url_process_page,
     open_look_all, filter_not_use
 )
-from utils.spider_param import spider_param_config
+from utils.spider_param import spider_param_config, configure_browser_options, get_system_info_sim, initialize_driver
 from utils.time_utils import sys_sleep_time
 from image.spider_gif_url import spider_gif_images
 from image.spider_img_save import download_img_txt
@@ -215,8 +215,10 @@ def spider_artworks_url(self, key_word: str) -> bool:
                 self.sys_tips(f"抓取关键词: {key_word}中(*^▽^*)...")
 
             try:
+                logger.info(f"正在访问 URL: {url_detail}")
                 driver.get(url_detail)
                 logger.info(f"Chrome startup took {time.time() - driver_start_time:.2f}s")
+                logger.info(f"当前页面标题: {driver.title}")
                 sys_sleep_time(driver, search_delta_time, True)
 
                 detect_download_working(self)
@@ -227,8 +229,24 @@ def spider_artworks_url(self, key_word: str) -> bool:
                     break
 
             except Exception as e:
-                logger.warning(f"Error accessing URL: {type(e).__name__}")
-                break
+                logger.warning(f"Error accessing URL: {type(e).__name__}, {e}")
+                # 尝试重新初始化驱动
+                try:
+                    logger.info("尝试重新初始化驱动")
+                    driver.quit()
+                    options = configure_browser_options()
+                    system_info = get_system_info_sim()
+                    driver = initialize_driver(options, system_info)
+                    if driver:
+                        logger.info("驱动重新初始化成功")
+                        driver.get(url_detail)
+                        logger.info(f"重新访问 URL 成功: {url_detail}")
+                    else:
+                        logger.warning("驱动重新初始化失败")
+                        break
+                except Exception as e2:
+                    logger.warning(f"重新初始化驱动失败: {type(e2).__name__}, {e2}")
+                    break
 
             load_result = load_href_save(driver, key_word)
             if load_result == 1:
@@ -242,6 +260,10 @@ def spider_artworks_url(self, key_word: str) -> bool:
                 if keyword_times(key_word, cur_page) > 2:
                     logger.warning("Keyword limit reached - moving to next")
                     break
+                else:
+                    cur_page += 1
+                    logger.info(f"Moving to next page: {cur_page}")
+                    continue
 
             else:
                 logger.warning("Skipping spider loop")
@@ -277,29 +299,47 @@ def load_href_save(driver: WebDriver, key_word: str) -> int:
     existing_urls: List[str] = []
 
     try:
-        for link in driver.find_elements(By.CSS_SELECTOR, "a"):
+        # 先获取所有链接元素，然后遍历
+        links = driver.find_elements(By.CSS_SELECTOR, "a")
+        logger.info(f"找到 {len(links)} 个链接元素")
+        
+        for i, link in enumerate(links):
             if constants.SpiderConfig.stop_spider_url_flag:
                 break
 
-            url = link.get_attribute("href")
-            if not url or filter_not_use_url(url):
+            try:
+                url = link.get_attribute("href")
+                if not url or filter_not_use_url(url):
+                    continue
+
+                # 尝试获取 href 属性，添加错误处理
+                try:
+                    url = driver.execute_script("return arguments[0].href;", link)
+                except Exception as e:
+                    logger.warning(f"获取链接 href 时出错: {type(e).__name__}, 使用原始 href")
+
+                if filter_exists_images(key_word_pinyin, url, "_url"):
+                    existing_urls.append(url)
+                    continue
+
+                image_urls.append(url)
+                logger.debug(f"添加链接 {i+1}/{len(links)}: {url[:100]}...")
+
+                if (constants.spider_images_current_count >= int(spider_images_max_count) and 
+                    constants.SpiderConfig.spider_mode == 'manual'):
+                    logger.warning(f"Reached max images: {constants.spider_images_current_count}")
+                    constants.spider_images_current_count = 0
+                    constants.SpiderConfig.stop_spider_url_flag = False
+                    break
+            except StaleElementReferenceException:
+                logger.warning(f"链接元素已失效，跳过: {i+1}/{len(links)}")
+                continue
+            except Exception as e:
+                logger.warning(f"处理链接时出错: {type(e).__name__}, 跳过")
                 continue
 
-            driver.execute_script("return arguments[0].href;", link)
-
-            if filter_exists_images(key_word_pinyin, url, "_url"):
-                existing_urls.append(url)
-                continue
-
-            image_urls.append(url)
-
-            if (constants.spider_images_current_count >= int(spider_images_max_count) and 
-                constants.SpiderConfig.spider_mode == 'manual'):
-                logger.warning(f"Reached max images: {constants.spider_images_current_count}")
-                constants.spider_images_current_count = 0
-                constants.SpiderConfig.stop_spider_url_flag = False
-                break
-
+        logger.info(f"成功处理 {len(image_urls)} 个链接")
+        
         if url_list_save(key_word_pinyin, image_urls):
             logger.success("URLs saved successfully")
             return 1
@@ -310,5 +350,5 @@ def load_href_save(driver: WebDriver, key_word: str) -> int:
             return 3
 
     except Exception as e:
-        logger.warning(f"Error loading URLs: {type(e).__name__}")
+        logger.warning(f"Error loading URLs: {type(e).__name__}, {e}")
         return 0
