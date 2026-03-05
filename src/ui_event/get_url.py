@@ -183,20 +183,26 @@ def detect_download_working(self) -> None:
 @logger.catch
 def spider_artworks_url(self, key_word: str) -> bool:
     """Spider images for given keyword"""
-    driver_start_time = time.time()
-    driver, url, cur_page = spider_param_config(key_word)
-
-    if driver is None and url is None and cur_page is None:
-        constants.SpiderConfig.stop_spider_url_flag = True
-        logger.info("Spider completed - no more work")
-        return True
-    elif driver is None:
-        logger.warning("Driver error - continuing to next keyword")
-        return False
-
-    exists_keyword_finish_txt(key_word)
-
+    # 初始化驱动和URL
+    driver = None
+    url = None
+    cur_page = 1
+    
     try:
+        # 配置爬虫参数
+        driver, url, cur_page = spider_param_config(key_word)
+
+        if driver is None and url is None and cur_page is None:
+            constants.SpiderConfig.stop_spider_url_flag = True
+            logger.info("Spider completed - no more work")
+            return True
+        elif driver is None:
+            logger.warning("Driver error - continuing to next keyword")
+            return False
+
+        exists_keyword_finish_txt(key_word)
+        driver_start_time = time.time()
+
         while True:
             if constants.SpiderConfig.stop_spider_url_flag:
                 break
@@ -218,29 +224,64 @@ def spider_artworks_url(self, key_word: str) -> bool:
                 logger.info(f"正在访问 URL: {url_detail}")
                 driver.get(url_detail)
                 logger.info(f"Chrome startup took {time.time() - driver_start_time:.2f}s")
-                logger.info(f"当前页面标题: {driver.title}")
+                try:
+                    logger.info(f"当前页面标题: {driver.title}")
+                except Exception as e_title:
+                    logger.warning(f"获取页面标题时出错: {type(e_title).__name__}")
                 sys_sleep_time(driver, search_delta_time, True)
 
                 detect_download_working(self)
 
-                if driver.title in (constants.ban_content, constants.visit_url, '', '请稍候…'):
-                    logger.warning("Page access blocked or invalid")
-                    constants.ProcessingConfig.firewall_flag = True
-                    break
+                try:
+                    if driver.title in (constants.ban_content, constants.visit_url, '', '请稍候…'):
+                        logger.warning("Page access blocked or invalid")
+                        constants.ProcessingConfig.firewall_flag = True
+                        break
+                except Exception as e_title:
+                    logger.warning(f"获取页面标题时出错: {type(e_title).__name__}")
 
             except Exception as e:
                 logger.warning(f"Error accessing URL: {type(e).__name__}, {e}")
                 # 尝试重新初始化驱动
                 try:
                     logger.info("尝试重新初始化驱动")
-                    driver.quit()
+                    # 安全关闭驱动
+                    try:
+                        driver.quit()
+                    except Exception as e_quit:
+                        logger.warning(f"关闭驱动时出错: {type(e_quit).__name__}")
+                    
+                    # 重新配置浏览器选项
                     options = configure_browser_options()
                     system_info = get_system_info_sim()
+                    
+                    # 重新初始化驱动
                     driver = initialize_driver(options, system_info)
                     if driver:
                         logger.info("驱动重新初始化成功")
-                        driver.get(url_detail)
-                        logger.info(f"重新访问 URL 成功: {url_detail}")
+                        # 重新设置驱动启动时间
+                        driver_start_time = time.time()
+                        # 等待一段时间，确保驱动完全初始化
+                        time.sleep(3)  # 增加等待时间
+                        # 重新访问URL，添加错误处理
+                        try:
+                            driver.get(url_detail)
+                            logger.info(f"重新访问 URL 成功: {url_detail}")
+                            # 等待页面加载完成
+                            sys_sleep_time(driver, search_delta_time, True)
+                            # 再次检查页面标题
+                            try:
+                                logger.info(f"当前页面标题: {driver.title}")
+                            except Exception as e_title:
+                                logger.warning(f"获取页面标题时出错: {type(e_title).__name__}")
+                        except Exception as e3:
+                            logger.warning(f"重新访问 URL 失败: {type(e3).__name__}, {e3}")
+                            # 再次尝试关闭驱动
+                            try:
+                                driver.quit()
+                            except Exception as e_quit2:
+                                logger.warning(f"再次关闭驱动时出错: {type(e_quit2).__name__}")
+                            break
                     else:
                         logger.warning("驱动重新初始化失败")
                         break
@@ -269,6 +310,8 @@ def spider_artworks_url(self, key_word: str) -> bool:
                 logger.warning("Skipping spider loop")
                 break
 
+    except Exception as e:
+        logger.error(f"Spider error: {type(e).__name__}, {e}")
     finally:
         if self:
             self.spider_progress_show_label.setText("0/0")
@@ -279,14 +322,18 @@ def spider_artworks_url(self, key_word: str) -> bool:
         if constants.SpiderConfig.spider_mode == 'manual':
             constants.SpiderConfig.stop_spider_url_flag = True
 
-        try:
-            logger.warning(f"Closing Chrome ({driver.title})")
-        except Exception as e:
-            logger.warning(f"Error closing Chrome: {type(e).__name__}")
+        # 安全关闭驱动
+        if driver:
+            try:
+                logger.warning("Closing Chrome")
+                # 尝试关闭驱动，不进行其他操作
+                # 因为浏览器会话可能已经关闭，尝试获取标题或清理缓存会导致MaxRetryError
+                driver.quit()
+                logger.info("Chrome closed successfully")
+            except Exception as e:
+                logger.warning(f"Error closing Chrome: {type(e).__name__}")
 
         record_end_spider_image_keyword(str(cur_page), key_word)
-        clear_cache_refresh(driver)
-        driver.quit()
 
     return True
 

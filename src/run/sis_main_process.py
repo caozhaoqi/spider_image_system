@@ -90,7 +90,7 @@ def start_api_server() -> None:
     if not SpiderConfig.web_flag_start:
         check_version()
         uvicorn.run(
-            app='sis_main_process:app',
+            app=app,
             host='0.0.0.0',
             port=SpiderConfig.app_port,
             reload=False

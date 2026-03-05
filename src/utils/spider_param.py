@@ -362,37 +362,46 @@ def spider_param_config(keyword: str) -> Tuple[Optional[WebDriver], Optional[str
     Returns:
         驱动实例、URL和页码
     """
-    options = configure_browser_options()
-    proxy = set_proxy(constants.proxy_flag)
+    try:
+        options = configure_browser_options()
+        proxy = set_proxy(constants.proxy_flag)
 
-    if proxy:
-        options.add_argument(f"--proxy-server={proxy['httpProxy']}")
-        logger.info(f"使用代理: {proxy['httpProxy']}")
+        if proxy:
+            options.add_argument(f"--proxy-server={proxy['httpProxy']}")
+            logger.info(f"使用代理: {proxy['httpProxy']}")
 
-    system_info = get_system_info_sim()
-    driver = initialize_driver(options, system_info)
+        system_info = get_system_info_sim()
+        driver = initialize_driver(options, system_info)
 
-    if not driver:
+        if not driver:
+            logger.warning("驱动初始化失败")
+            return None, None, None
+
+        mode = 'mode=r18&' if constants.r18_mode == 'True' else ''
+        
+        if constants.r18_mode == 'True':
+            logger.debug("启用R18模式")
+
+        if constants.allow_replace_domain_flag:
+            logger.debug(f"替换图片域名: {constants.allow_replace_domain_flag}")
+
+        if is_keyword_num(driver, keyword):
+            try:
+                driver.quit()
+            except Exception as e:
+                logger.warning(f"关闭驱动时出错: {type(e).__name__}")
+            return None, None, None
+
+        url = f"https://{constants.visit_url}/tags/{keyword}/artworks?{mode}"
+        
+        if constants.all_show != 'False':
+            url = constants.all_show
+
+        logger.info(f"配置完成，URL: {url}")
+        return driver, url, 1
+    except Exception as e:
+        logger.error(f"配置爬虫参数时出错: {type(e).__name__}, {e}")
         return None, None, None
-
-    mode = 'mode=r18&' if constants.r18_mode == 'True' else ''
-    
-    if constants.r18_mode == 'True':
-        logger.debug("启用R18模式")
-
-    if constants.allow_replace_domain_flag:
-        logger.debug(f"替换图片域名: {constants.allow_replace_domain_flag}")
-
-    if is_keyword_num(driver, keyword):
-        driver.quit()
-        return None, None, None
-
-    url = f"https://{constants.visit_url}/tags/{keyword}/artworks?{mode}"
-    
-    if constants.all_show != 'False':
-        url = constants.all_show
-
-    return driver, url, 1
 
 
 @logger.catch
