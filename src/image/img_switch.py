@@ -13,7 +13,7 @@ from typing import List, Optional
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import shutil
-from PyQt5.QtGui import QPixmap
+# from PyQt5.QtGui import QPixmap
 from loguru import logger
 from PIL import Image
 from run import constants

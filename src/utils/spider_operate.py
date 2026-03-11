@@ -17,6 +17,9 @@ import random
 from loguru import logger
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 from run import constants
 from utils.time_utils import sys_sleep_time
 
@@ -98,19 +101,74 @@ def open_look_all(driver: WebDriver) -> bool:
         是否点击成功
     """
     try:
-        button = driver.execute_script("""
-        return Array.from(document.getElementsByTagName('button'))
-            .find(button => ['查看全部', '阅读作品'].some(text => button.textContent.includes(text)));
-        """)
+        # 等待页面加载完成
+        WebDriverWait(driver, 10).until(
+            lambda d: d.execute_script("return document.readyState") == "complete"
+        )
+        
+        # 查找按钮的多种策略
+        button_texts = ['查看全部', '阅读作品', '查看更多', '查看全部作品']
+        button = None
+        
+        # 策略1: 使用JavaScript查找
+        for text in button_texts:
+            button = driver.execute_script(f"""
+                return Array.from(document.getElementsByTagName('button'))
+                    .find(btn => btn.textContent && btn.textContent.trim().includes('{text}'));
+            """)
+            if button:
+                logger.info(f"找到按钮（JavaScript）: {text}")
+                break
+        
+        # 策略2: 使用XPath查找
+        if not button:
+            for text in button_texts:
+                try:
+                    button = driver.find_element(By.XPATH, f"//button[contains(text(), '{text}')]")
+                    logger.info(f"找到按钮（XPath）: {text}")
+                    break
+                except:
+                    continue
+        
+        # 策略3: 使用CSS选择器查找包含特定文本的元素
+        if not button:
+            for text in button_texts:
+                try:
+                    elements = driver.find_elements(By.CSS_SELECTOR, "button, a[role='button'], div[role='button']")
+                    for elem in elements:
+                        if text in elem.text:
+                            button = elem
+                            logger.info(f"找到按钮（CSS选择器）: {text}")
+                            break
+                    if button:
+                        break
+                except:
+                    continue
         
         if button:
-            button.click()
+            # 滚动到按钮位置
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button)
+            sys_sleep_time(driver, 1, False)
+            
+            # 使用JavaScript点击
+            driver.execute_script("arguments[0].click();", button)
+            logger.info("按钮点击成功")
+            
             sys_sleep_time(driver, constants.detail_delta_time, False)
             random_action(driver)
             return True
+        else:
+            logger.warning("未找到任何目标按钮")
+            # 调试信息：列出所有按钮
+            all_buttons = driver.execute_script("""
+                return Array.from(document.getElementsByTagName('button'))
+                    .map(btn => btn.textContent.trim()).filter(text => text.length > 0);
+            """)
+            logger.debug(f"页面上的所有按钮文本: {all_buttons}")
             
     except Exception as e:
         logger.warning(f"点击按钮失败: {e}")
+        logger.exception(e)
         
     return False
 

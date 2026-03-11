@@ -59,12 +59,12 @@ def start_spider_single_image(key_word: Union[str, None] = Query(default=..., al
     constants.SpiderConfig.spider_mode = 'manual'
     logger.debug(f"You input keyword is: {key_word}")
     
+    constants.SpiderConfig.stop_spider_url_flag = False
     spider_thread = threading.Thread(
         target=spider_artworks_url,
         args=(None, key_word,)
     )
     spider_thread.start()
-    constants.SpiderConfig.stop_spider_url_flag = False
     
     logger.info("Spider img thread starting...")
     return JsonResponse.success("success!")

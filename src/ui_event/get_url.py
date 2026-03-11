@@ -281,6 +281,7 @@ def spider_artworks_url(self, key_word: str) -> bool:
                                 driver.quit()
                             except Exception as e_quit2:
                                 logger.warning(f"再次关闭驱动时出错: {type(e_quit2).__name__}")
+                            # 直接 break，因为驱动已经关闭，无法继续执行 load_href_save
                             break
                     else:
                         logger.warning("驱动重新初始化失败")

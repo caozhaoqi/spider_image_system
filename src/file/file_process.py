@@ -193,7 +193,7 @@ def get_image_keyword() -> Tuple[List[str], List[str]]:
     auto_spider_path = os.path.join(constants.data_path, "auto_spider_img")
     os.makedirs(auto_spider_path, exist_ok=True)
 
-    txt_files = [f for f in Path(auto_spider_path).rglob('*spider_img_keyword.txt')]
+    txt_files = [f for f in Path(auto_spider_path).rglob('spider_img_keyword.txt')]
     
     default_file = os.path.join(auto_spider_path, 'spider_img_keyword.txt')
     if not os.path.exists(default_file):
