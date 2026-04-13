@@ -182,7 +182,14 @@ def auto_spider_img_thread(self) -> bool:
 
     spider_keywords, txt_files = get_image_keyword()
 
-    if not spider_keywords or spider_keywords == [[]]:
+    # 检查关键词列表是否为空
+    has_keywords = False
+    for keywords in spider_keywords:
+        if keywords:
+            has_keywords = True
+            break
+
+    if not has_keywords:
         logger.warning("Auto spider image null, please add keyword!")
         if self:
             self.sys_tips("Notice: spider_img_keyword.txt文件为空, 请先点击图像->关键字中添加关键字!")

@@ -31,8 +31,11 @@ def exists_keyword_finish_txt(keyword: str) -> bool:
     keyword_pinyin = ''.join(lazy_pinyin(keyword, style=Style.TONE3))
     txt_keyword = f"{keyword_pinyin}_img.txt"
     
-    # 获取文件路径
-    file_path = Path(constants.data_path) / "download_finished_txt.txt"
+    # 使用 spider_image_system/data 目录来检查关键词是否存在
+    import os
+    from pathlib import Path
+    project_root = Path(__file__).parent.parent.parent.parent
+    file_path = project_root / "spider_image_system" / "data" / "download_finished_txt.txt"
     
     try:
         # 读取文件内容

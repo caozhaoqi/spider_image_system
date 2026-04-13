@@ -190,26 +190,27 @@ def record_end_spider_image_keyword(cur_page: str, key_word: str) -> bool:
 @logger.catch
 def get_image_keyword() -> Tuple[List[str], List[str]]:
     """Get image keyword list"""
-    auto_spider_path = os.path.join(constants.data_path, "auto_spider_img")
+    # 直接指定读取 spider_image_system/data/auto_spider_img/spider_img_keyword.txt 文件
+    import os
+    import sys
+    from pathlib import Path
+    
+    # 获取项目根目录
+    project_root = Path(__file__).parent.parent.parent.parent
+    auto_spider_path = os.path.join(project_root, "spider_image_system", "data", "auto_spider_img")
     os.makedirs(auto_spider_path, exist_ok=True)
 
-    txt_files = [f for f in Path(auto_spider_path).rglob('spider_img_keyword.txt')]
+    keyword_file = os.path.join(auto_spider_path, 'spider_img_keyword.txt')
     
-    default_file = os.path.join(auto_spider_path, 'spider_img_keyword.txt')
-    if not os.path.exists(default_file):
-        Path(default_file).touch()
-        logger.warning(f"Created default file: {default_file}")
-
-    if not txt_files:
-        logger.warning("No spider_img_keyword txt files found")
+    if not os.path.exists(keyword_file):
+        Path(keyword_file).touch()
+        logger.warning(f"Created default file: {keyword_file}")
         return [], []
 
     try:
-        keywords = []
-        for txt in txt_files:
-            with open(txt, 'r', encoding='utf-8', errors='replace') as f:
-                keywords.append(f.readlines())
-        return keywords, [str(p) for p in txt_files]
+        with open(keyword_file, 'r', encoding='utf-8', errors='replace') as f:
+            keywords = [f.readlines()]
+        return keywords, [keyword_file]
     except Exception as e:
         logger.error(f"Error reading keywords: {e}")
         return [], []
@@ -231,7 +232,11 @@ def find_keyword_txt(key_word: str, txt_file_list: List[str], spider_image_keywo
 @logger.catch
 def record_finish_keyword(keyword: str, cur_page: int) -> None:
     """Record finished spider keyword and page"""
-    file_name = os.path.join(constants.data_path, "spider_finished_keyword.txt")
+    # 使用 spider_image_system/data 目录来记录完成的关键词
+    import os
+    from pathlib import Path
+    project_root = Path(__file__).parent.parent.parent.parent
+    file_name = os.path.join(project_root, "spider_image_system", "data", "spider_finished_keyword.txt")
     content = f"{keyword},{cur_page}"
 
     if not os.path.exists(file_name):
@@ -246,7 +251,11 @@ def record_finish_keyword(keyword: str, cur_page: int) -> None:
 @logger.catch
 def keyword_times(keyword: str, cur_page: int) -> int:
     """Count keyword occurrences"""
-    file_name = os.path.join(constants.data_path, "spider_finished_keyword.txt")
+    # 使用 spider_image_system/data 目录来检查完成的关键词
+    import os
+    from pathlib import Path
+    project_root = Path(__file__).parent.parent.parent.parent
+    file_name = os.path.join(project_root, "spider_image_system", "data", "spider_finished_keyword.txt")
     content = f"{keyword},{cur_page}"
 
     if not os.path.exists(file_name):
@@ -260,7 +269,11 @@ def keyword_times(keyword: str, cur_page: int) -> int:
 @logger.catch
 def exists_image_keyword(key_word: str) -> Tuple[bool, int]:
     """Check if image keyword exists"""
-    file_name = os.path.join(constants.data_path, 'spider_finished_keyword.txt')
+    # 使用 spider_image_system/data 目录来检查关键词是否存在
+    import os
+    from pathlib import Path
+    project_root = Path(__file__).parent.parent.parent.parent
+    file_name = os.path.join(project_root, "spider_image_system", "data", "spider_finished_keyword.txt")
     
     try:
         if not os.path.exists(file_name):

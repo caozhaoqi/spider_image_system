@@ -33,7 +33,7 @@ from utils.file_utils import (
 from utils.keyword_utils import exists_keyword_finish_txt
 from utils.spider_operate import (
     filter_not_use_url, slider_page_down, url_process_page,
-    open_look_all, filter_not_use
+    open_look_all, filter_not_use, artwork_filter
 )
 from utils.spider_param import spider_param_config, configure_browser_options, get_system_info_sim, initialize_driver
 from utils.time_utils import sys_sleep_time
@@ -50,6 +50,11 @@ from run.constants import (
 def save_img_url(self, driver: WebDriver, key_word: str, cur_page: int) -> bool:
     """Save images from txt file containing artwork URLs"""
     key_word_pinyin = ''.join(lazy_pinyin(key_word, style=Style.TONE3))
+    # 使用 spider_image_system/data 目录来查找 URL 文件
+    import os
+    from pathlib import Path
+    project_root = Path(__file__).parent.parent.parent.parent
+    data_path = project_root / "spider_image_system" / "data"
     txt_files = [os.path.join(root, f) for root, _, files in os.walk(data_path) 
                 for f in files if f.endswith(f"{key_word_pinyin}_result_url.txt")]
 
@@ -65,7 +70,7 @@ def save_img_url(self, driver: WebDriver, key_word: str, cur_page: int) -> bool:
                 pid = url[-9:]
                 logger.info(f"Starting spider PID: {pid}, keyword: {key_word_pinyin}")
 
-                if self:
+                if self and hasattr(self, 'spider_progress_show_label'):
                     self.spider_progress_show_label.setText(
                         f"抓取关键字: {key_word}, 页码: {cur_page},"
                         f" 抓取图片名: {pid},"
@@ -124,6 +129,11 @@ def save_img_element(driver: WebDriver, key_word_pinyin: str) -> None:
                     image_url = image_url.replace(s1_url, target_url).replace(s2_url, target_url)
 
                 constants.spider_images_current_count += 1
+                # 使用 spider_image_system/data 目录来保存图片 URL
+                import os
+                from pathlib import Path
+                project_root = Path(__file__).parent.parent.parent.parent
+                data_path = project_root / "spider_image_system" / "data"
                 write_url_txt(f"{data_path}/img_url/", f"{key_word_pinyin}_img", image_url)
                 logger.debug(f"Saved image {os.path.basename(image_url)}, count: {constants.spider_images_current_count}")
 
@@ -213,7 +223,7 @@ def spider_artworks_url(self, key_word: str) -> bool:
                 logger.warning(f"Continuing from page {cur_page} for {key_word}")
 
             url_detail = url_process_page(url, current_page=cur_page)
-            if self:
+            if self and hasattr(self, 'spider_progress_show_label') and hasattr(self, 'sys_tips'):
                 self.spider_progress_show_label.setText(
                     f"抓取关键字: {key_word}, 页码: {cur_page},"
                     f" 已抓取数目: {constants.spider_images_current_count}"
@@ -314,7 +324,7 @@ def spider_artworks_url(self, key_word: str) -> bool:
     except Exception as e:
         logger.error(f"Spider error: {type(e).__name__}, {e}")
     finally:
-        if self:
+        if self and hasattr(self, 'spider_progress_show_label') and hasattr(self, 'success_tips'):
             self.spider_progress_show_label.setText("0/0")
             self.success_tips(f"关键词: {key_word}, 图片爬取操作")
         else:
@@ -357,7 +367,11 @@ def load_href_save(driver: WebDriver, key_word: str) -> int:
 
             try:
                 url = link.get_attribute("href")
-                if not url or filter_not_use_url(url):
+                if not url:
+                    logger.debug(f"跳过空URL: {i+1}/{len(links)}")
+                    continue
+                if filter_not_use_url(url) or artwork_filter(url):
+                    logger.debug(f"跳过不需要的URL: {i+1}/{len(links)}, {url[:100]}...")
                     continue
 
                 # 尝试获取 href 属性，添加错误处理
@@ -368,10 +382,11 @@ def load_href_save(driver: WebDriver, key_word: str) -> int:
 
                 if filter_exists_images(key_word_pinyin, url, "_url"):
                     existing_urls.append(url)
+                    logger.debug(f"跳过已存在的URL: {i+1}/{len(links)}, {url[:100]}...")
                     continue
 
                 image_urls.append(url)
-                logger.debug(f"添加链接 {i+1}/{len(links)}: {url[:100]}...")
+                logger.info(f"添加链接 {i+1}/{len(links)}: {url[:100]}...")
 
                 if (constants.spider_images_current_count >= int(spider_images_max_count) and 
                     constants.SpiderConfig.spider_mode == 'manual'):
@@ -395,8 +410,9 @@ def load_href_save(driver: WebDriver, key_word: str) -> int:
             logger.warning("All images already saved - moving to next page")
             return 2
         else:
+            logger.warning(f"URL保存失败，image_urls长度: {len(image_urls)}, existing_urls长度: {len(existing_urls)}")
             return 3
 
     except Exception as e:
         logger.warning(f"Error loading URLs: {type(e).__name__}, {e}")
-        return 0
+        return 3

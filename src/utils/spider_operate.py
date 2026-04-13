@@ -54,6 +54,8 @@ def filter_not_use_url(image_url: str) -> bool:
     """
     filter_urls = constants.filter_image_url.split(',')
     try:
+        # 移除 'tags' 和 's_mode=s_tag' 从过滤列表中
+        filter_urls = [url for url in filter_urls if url != 'tags' and url != 's_mode=s_tag']
         return any(filter_url in image_url for filter_url in filter_urls) or "artworks" not in image_url
     except Exception as e:
         logger.warning(f"图片URL过滤出错: {e}")

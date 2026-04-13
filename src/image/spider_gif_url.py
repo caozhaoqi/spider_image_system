@@ -54,5 +54,4 @@ def spider_gif_images(keyword: str, chrome_driver) -> bool:
         
     except Exception as e:
         logger.warning(f"Failed to extract GIF URLs: {type(e).__name__}")
-        chrome_driver.quit()
         return False

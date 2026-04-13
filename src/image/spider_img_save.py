@@ -153,6 +153,11 @@ def download_img_txt(ui) -> bool:
     Returns:
         bool: True if successful, False otherwise
     """
+    # 使用 spider_image_system/data 目录来查找 _img.txt 文件
+    import os
+    from pathlib import Path
+    project_root = Path(__file__).parent.parent.parent.parent
+    data_path = project_root / "spider_image_system" / "data"
     txt_files = [
         os.path.join(root, f) 
         for root, _, files in os.walk(data_path)

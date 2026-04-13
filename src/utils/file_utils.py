@@ -58,7 +58,11 @@ def filter_exists_images(key_word: str, image_url: str, txt_name: str) -> bool:
     if txt_name not in ('_url', '_img'):
         return False
         
-    file_path = Path(data_path)
+    # 使用 spider_image_system/data 目录来检查 URL 是否已经存在
+    import os
+    from pathlib import Path
+    project_root = Path(__file__).parent.parent.parent.parent
+    file_path = project_root / "spider_image_system" / "data"
     if txt_name == '_url':
         file_path = file_path / "href_url" / f"{key_word}_url.txt"
         check_url = f"{image_url}\n"
@@ -92,7 +96,11 @@ def url_list_save(key_word: str, image_urls_list: List[str]) -> bool:
         logger.warning("没有图片URL,不保存到文件")
         return False
         
-    href_path = Path(data_path) / "href_url"
+    # 使用 spider_image_system/data 目录来保存 URL
+    import os
+    from pathlib import Path
+    project_root = Path(__file__).parent.parent.parent.parent
+    href_path = project_root / "spider_image_system" / "data" / "href_url"
     url_file = href_path / f"{key_word}_url.txt"
     result_file = href_path / f"{key_word}_result_url.txt"
     
