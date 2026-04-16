@@ -40,6 +40,11 @@ def image_url_re(image_url: str) -> str:
     Returns:
         str: 图片文件名或原始URL
     """
+    # 过滤SVG格式的图片
+    if image_url.endswith('.svg'):
+        logger.warning(f"忽略SVG格式图片: {image_url}")
+        return None
+    
     result_url = image_url.split('/')[-1]
     if result_url.endswith(('.jpg', '.png')):
         return result_url

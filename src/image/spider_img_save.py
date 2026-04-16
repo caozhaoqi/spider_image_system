@@ -41,7 +41,16 @@ def download_image(url: str, filename: str, total_count: int, current_index: int
         total_count: Total number of images to download
         current_index: Current image index
     """
+    # 过滤SVG格式的图片
+    if url.endswith('.svg'):
+        logger.warning(f"忽略SVG格式图片: {url}")
+        return
+    
     image_name = image_url_re(url)
+    # 如果image_url_re返回None，说明是SVG格式的图片，跳过
+    if image_name is None:
+        return
+    
     image_list = find_images(constants.data_path)
     
     if image_list and image_exists(image_name, image_list):
@@ -105,7 +114,10 @@ def download_images_from_file(
         final_url: URL to resume from if continuing
         continue_flag: Whether to continue from previous download
     """
-    save_dir = sanitize_url(final_url) + "/images"
+    # 从file_path中提取角色名称作为保存目录
+    role_name = os.path.basename(file_path).replace('_img.txt', '')
+    # 使用项目数据目录作为保存路径
+    save_dir = os.path.join(constants.data_path, "downloaded_images", role_name)
     os.makedirs(save_dir, exist_ok=True)
     # for file_path_item in file_path:
     with open(file_path.strip(), 'r', encoding='utf-8') as f:

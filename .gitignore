@@ -10,3 +10,14 @@ src/nuitka-crash-report.xml
 src/dist
 src/sis.egg-info
 src/build
+./src/data/
+./src/run/data/
+./src/run/log_dir/
+./src/out/
+./src/run/config/
+./data/
+./log_dir/
+./config/
+/config/
+/data/
+/log_dir/
