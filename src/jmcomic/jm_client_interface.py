@@ -3,7 +3,11 @@
 #
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from typing import Dict, Any, List, Optional, Type, Generator, Union
 from .jm_toolkit import *
+from .common import field_cache, AdvancedDict, Postman, PostmanProxy, Postmans
+from .jm_entity import JmAlbumDetail, JmPhotoDetail, JmImageDetail, JmSearchPage, JmFavoritePage, JmCategoryPage
+from .jm_config import JmMagicConstants
 
 """
 

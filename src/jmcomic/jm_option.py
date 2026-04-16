@@ -3,7 +3,20 @@
 #
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from .jm_client_impl import *
+from typing import Dict, Union, Callable, List, Tuple, Optional, Type, Any
+import os
+import traceback
+
+from .jm_client_interface import JmcomicClient, JmAlbumDetail, JmPhotoDetail, JmImageDetail
+from .jm_client_impl import JmHtmlClient, JmApiClient, AbstractJmClient
+from .jm_toolkit import JmcomicText
+from .jm_config import JmModuleConfig, jm_log, disable_jm_log
+from .jm_exception import ExceptionTool
+from .common import PackerUtil, str_to_list, field_cache, AdvancedDict, Postmans, fix_filepath, fix_windir_name, traceback_print_exec
+
+
+DetailEntity = JmAlbumDetail
+
 
 
 class CacheRegistry:

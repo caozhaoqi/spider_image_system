@@ -18,10 +18,12 @@ sys.path.append(str(Path(__file__).parent.parent))
 from file.file_process import get_image_keyword
 from run import constants
 from jmcomic import *
+from jmcomic.jm_config import JmModuleConfig
+from jmcomic.jm_entity import JmSearchPage
 from utils.file_utils import move_folder_contents
 from utils.wx_push import wx_push_content
 
-option = JmOption.default()
+option = JmModuleConfig.option_class().default()
 meta_data = {}
 
 @logger.catch
@@ -130,7 +132,7 @@ def search_content_jm(keyword: str, jm_id: Optional[str] = None) -> bool:
         bool: 是否搜索成功
     """
     logger.debug(f"开始搜索: {keyword}")
-    client = JmOption.default().new_jm_client()
+    client = JmModuleConfig.option_class().default().new_jm_client()
 
     page = get_page_content(client, keyword, 1)
     if not page:
@@ -249,7 +251,7 @@ def search_download_jm(actor: str) -> bool:
     """
     logger.debug(f"开始搜索: {actor}")
 
-    jm_option = JmOption.default()
+    jm_option = JmModuleConfig.option_class().default()
     client = jm_option.new_jm_client()
 
     page = get_page_content(client, actor, 1)
@@ -370,7 +372,7 @@ def jm_move_category(actor: str, keyword_cat: str, jm_already_keyword: List[str]
 
     logger.debug(f"开始分类: {actor}")
 
-    jm_option = JmOption.default()
+    jm_option = JmModuleConfig.option_class().default()
     client = jm_option.new_jm_client()
 
     page = client.search_site(actor, page=1)

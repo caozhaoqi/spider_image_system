@@ -4,6 +4,7 @@
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common import time_stamp, str_to_list, field_cache, ProxyBuilder
+from .jm_exception import ExceptionTool
 from loguru import logger
 
 def shuffled(lines):
@@ -267,7 +268,6 @@ class JmModuleConfig:
 
         clazz = clazz_dict.get(client_key, None)
         if clazz is None:
-            from .jm_toolkit import ExceptionTool
             ExceptionTool.raises(f'not found client impl class for key: "{client_key}"')
 
         return clazz
@@ -307,7 +307,6 @@ class JmModuleConfig:
 
         resp = postman.get(cls.JM_PUB_URL)
         if resp.status_code != 200:
-            from .jm_toolkit import ExceptionTool
             ExceptionTool.raises_resp(f'请求失败，访问禁漫发布页获取所有域名，HTTP状态码为: {resp.status_code}', resp)
 
         from .jm_toolkit import JmcomicText
@@ -480,14 +479,12 @@ class JmModuleConfig:
 
     @classmethod
     def register_plugin(cls, plugin_class):
-        from .jm_toolkit import ExceptionTool
         ExceptionTool.require_true(getattr(plugin_class, 'plugin_key', None) is not None,
                                    f'未配置plugin_key, class: {plugin_class}')
         cls.REGISTRY_PLUGIN[plugin_class.plugin_key] = plugin_class
 
     @classmethod
     def register_client(cls, client_class):
-        from .jm_toolkit import ExceptionTool
         ExceptionTool.require_true(getattr(client_class, 'client_key', None) is not None,
                                    f'未配置client_key, class: {client_class}')
         cls.REGISTRY_CLIENT[client_class.client_key] = client_class

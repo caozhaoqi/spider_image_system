@@ -4,7 +4,7 @@
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 该文件存放jmcomic的异常机制设计和实现
-from .jm_entity import *
+from typing import Optional, Type, Callable, Dict, Pattern
 
 
 class JmcomicException(Exception):
@@ -181,6 +181,8 @@ class ExceptionTool:
 
     @classmethod
     def notify_all_listeners(cls, e):
+        # 延迟导入，避免循环导入
+        from .jm_config import JmModuleConfig
         registry: Dict[Type, Callable[Type]] = JmModuleConfig.REGISTRY_EXCEPTION_LISTENER
         if not registry:
             return None
