@@ -341,11 +341,26 @@ def create_driver(system_info: str, options: webdriver.ChromeOptions, service: O
     Returns:
         WebDriver实例
     """
+    if system_info == 'Darwin':
+        # MacOS 使用 Safari
+        logger.info("使用Safari浏览器")
+        try:
+            safari_options = SafariOptions()
+            safari_options.add_argument("--disable-blink-features=AutomationControlled")
+            safari_options.add_argument("--ignore-certificate-errors")
+            return webdriver.Safari(options=safari_options)
+        except Exception as e:
+            if "Allow remote automation" in str(e):
+                logger.error("Safari远程自动化未启用！请打开Safari → 偏好设置 → 高级 → 勾选'在菜单栏中显示开发菜单'，然后：开发 → 允许远程自动化")
+            else:
+                logger.error(f"Safari初始化失败: {e}")
+            # 尝试使用Chrome作为备选
+            logger.info("尝试使用Chrome作为备选")
+    
     drivers = {
         'Linux': webdriver.Chrome,
         'Windows': webdriver.Edge,
-        'Darwin': webdriver.Chrome,  # 改为使用 Chrome
-        'default': webdriver.Chrome  # 改为使用 Chrome
+        'default': webdriver.Chrome
     }
     
     driver_class = drivers.get(system_info, drivers['default'])

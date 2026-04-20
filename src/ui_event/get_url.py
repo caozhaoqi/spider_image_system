@@ -344,6 +344,10 @@ def spider_artworks_url(self, key_word: str) -> bool:
             except Exception as e:
                 logger.warning(f"Error closing Chrome: {type(e).__name__}")
 
+        # 检查cur_page是否为None
+        if cur_page is None:
+            cur_page = 0
+
         record_end_spider_image_keyword(str(cur_page), key_word)
 
     return True
