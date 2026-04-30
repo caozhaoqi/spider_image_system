@@ -35,7 +35,9 @@ class SpiderConfig:
     uploading_image_flag: bool = False
     download_image_re_flag: bool = False
     unzip_file_flag: bool = False
-    max_urls_per_keyword: int = 100  # 每个角色最大采集URL数量
+    max_urls_per_keyword: int = 200  # 每个角色最大采集URL数量
+    current_keyword: str = None        # 当前爬取的关键字
+    current_count: int = 0           # 当前已采集URL数量
 
 # WebSocket connections for real-time progress
 websocket_connections = []  # Store active WebSocket connections

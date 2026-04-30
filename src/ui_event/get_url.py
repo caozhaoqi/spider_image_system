@@ -234,6 +234,10 @@ def spider_artworks_url(self, key_word: str) -> bool:
     keyword_start_url_count = 0
     
     try:
+        # 设置当前爬取状态
+        constants.SpiderConfig.current_keyword = key_word
+        constants.SpiderConfig.current_count = 0
+        
         # 配置爬虫参数
         driver, url, cur_page = spider_param_config(key_word)
 
@@ -286,6 +290,12 @@ def spider_artworks_url(self, key_word: str) -> bool:
                     f" 已抓取数目: {constants.spider_images_current_count}"
                 )
                 self.sys_tips(f"抓取关键词: {key_word}中(*^▽^*)...")
+
+            current_url_count = 0
+            if os.path.exists(url_file_path):
+                with open(url_file_path, 'r', encoding='utf-8') as f:
+                    current_url_count = len([line for line in f if line.strip()])
+            send_spider_progress(key_word, current_url_count, "running", page=cur_page, message=f"爬取中: {current_url_count} URLs")
 
             try:
                 logger.info(f"正在访问 URL: {url_detail}")
@@ -416,8 +426,11 @@ def spider_artworks_url(self, key_word: str) -> bool:
         else:
             logger.success("Spider completed successfully")
 
-        if constants.SpiderConfig.spider_mode == 'manual':
-            constants.SpiderConfig.stop_spider_url_flag = True
+        # 无论什么模式，完成后都重置状态标志
+        constants.SpiderConfig.stop_spider_url_flag = True
+        # 重置当前爬取状态
+        constants.SpiderConfig.current_keyword = ''
+        constants.SpiderConfig.current_count = 0
 
         # 安全关闭驱动
         if driver:

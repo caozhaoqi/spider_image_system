@@ -72,6 +72,33 @@ def start_spider_single_image(key_word: Union[str, None] = Query(default=..., al
 
 
 @logger.catch
+@router.post("/spider/reset",
+    summary="重置爬虫状态",
+    description="重置爬虫状态标志，用于解决服务卡住的问题")
+def reset_spider_status():
+    """重置爬虫状态"""
+    constants.SpiderConfig.stop_spider_url_flag = True
+    logger.info("Spider status reset")
+    return JsonResponse.success("Spider status reset")
+
+
+@logger.catch
+@router.get("/spider/status",
+    summary="获取爬虫状态",
+    description="获取当前爬虫任务的状态信息，包括正在采集的角色、链接数目等")
+def get_spider_status():
+    """获取爬虫状态"""
+    status = {
+        "is_running": not constants.SpiderConfig.stop_spider_url_flag,
+        "spider_mode": constants.SpiderConfig.spider_mode,
+        "current_keyword": getattr(constants.SpiderConfig, 'current_keyword', ''),
+        "current_count": getattr(constants.SpiderConfig, 'current_count', 0),
+        "max_urls": constants.SpiderConfig.max_urls_per_keyword
+    }
+    return JsonResponse.success(status)
+
+
+@logger.catch
 @router.get("/spider_start/all", 
     summary='开始爬取所有关键字',
     description='开始爬取所有关键字')
