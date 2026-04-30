@@ -11,6 +11,7 @@ import sys
 import threading
 from pathlib import Path
 import time
+import asyncio
 from typing import Tuple, Optional, List
 
 sys.path.append(str(Path(__file__).parent.parent))
@@ -37,6 +38,7 @@ from utils.spider_operate import (
 )
 from utils.spider_param import spider_param_config, configure_browser_options, get_system_info_sim, initialize_driver
 from utils.time_utils import sys_sleep_time
+from utils.websocket_utils import send_progress_update
 from image.spider_gif_url import spider_gif_images
 from image.spider_img_save import download_img_txt
 from run import constants
@@ -44,6 +46,36 @@ from run.constants import (
     detail_delta_time, search_delta_time, s1_url, target_url,
     s2_url, data_path, spider_images_max_count, allow_replace_domain_flag
 )
+
+
+def send_spider_progress(key_word, current_count, status, page=None, message=None):
+    """
+    发送爬虫进度到WebSocket客户端
+    
+    :param key_word: 当前爬取的关键词
+    :param current_count: 当前已采集数量
+    :param status: 状态 (running, completed, error, stopped)
+    :param page: 当前页码
+    :param message: 消息内容
+    """
+    progress_data = {
+        "type": "spider_progress",
+        "keyword": key_word,
+        "current_count": current_count,
+        "status": status,
+        "page": page,
+        "message": message,
+        "timestamp": time.time()
+    }
+    
+    # 在新线程中异步发送
+    def async_send():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(send_progress_update(progress_data))
+        loop.close()
+    
+    threading.Thread(target=async_send, daemon=True).start()
 
 
 @logger.catch
@@ -198,6 +230,9 @@ def spider_artworks_url(self, key_word: str) -> bool:
     url = None
     cur_page = 1
     
+    # 记录当前角色开始时的URL数量（用于计算本角色新增数量）
+    keyword_start_url_count = 0
+    
     try:
         # 配置爬虫参数
         driver, url, cur_page = spider_param_config(key_word)
@@ -212,10 +247,32 @@ def spider_artworks_url(self, key_word: str) -> bool:
 
         exists_keyword_finish_txt(key_word)
         driver_start_time = time.time()
+        
+        # 获取当前角色已有的URL数量
+        key_word_pinyin = ''.join(lazy_pinyin(key_word, style=Style.TONE3))
+        url_file_path = os.path.join(data_path, "img_url", f"{key_word_pinyin}_img.txt")
+        if os.path.exists(url_file_path):
+            with open(url_file_path, 'r', encoding='utf-8') as f:
+                keyword_start_url_count = len([line for line in f if line.strip()])
+        logger.info(f"角色 {key_word} 已有 {keyword_start_url_count} 个URL")
+        
+        # 发送爬虫开始进度
+        send_spider_progress(key_word, keyword_start_url_count, "running", page=cur_page, message=f"开始爬取角色: {key_word}")
 
         while True:
             if constants.SpiderConfig.stop_spider_url_flag:
                 break
+
+            # 检查是否达到每个角色的URL数量限制
+            if constants.SpiderConfig.max_urls_per_keyword > 0:
+                current_url_count = 0
+                if os.path.exists(url_file_path):
+                    with open(url_file_path, 'r', encoding='utf-8') as f:
+                        current_url_count = len([line for line in f if line.strip()])
+                added_count = current_url_count - keyword_start_url_count
+                if added_count >= constants.SpiderConfig.max_urls_per_keyword:
+                    logger.info(f"角色 {key_word} 已达到URL数量限制: {added_count}/{constants.SpiderConfig.max_urls_per_keyword}")
+                    break
 
             key_word_flag, last_page = exists_image_keyword(key_word)
             if key_word_flag:
@@ -306,6 +363,24 @@ def spider_artworks_url(self, key_word: str) -> bool:
                     break
                 record_finish_keyword(key_word, cur_page)
                 logger.success(f"Completed page {cur_page}")
+                
+                # 检查是否达到全局最大采集数量限制
+                if spider_images_max_count > 0 and constants.spider_images_current_count >= spider_images_max_count:
+                    logger.info(f"已达到全局最大采集数量限制: {spider_images_max_count}")
+                    constants.SpiderConfig.stop_spider_url_flag = True
+                    break
+                
+                # 检查是否达到每个角色的URL数量限制
+                if constants.SpiderConfig.max_urls_per_keyword > 0:
+                    current_url_count = 0
+                    if os.path.exists(url_file_path):
+                        with open(url_file_path, 'r', encoding='utf-8') as f:
+                            current_url_count = len([line for line in f if line.strip()])
+                    added_count = current_url_count - keyword_start_url_count
+                    if added_count >= constants.SpiderConfig.max_urls_per_keyword:
+                        logger.info(f"角色 {key_word} 已达到URL数量限制: {added_count}/{constants.SpiderConfig.max_urls_per_keyword}")
+                        constants.SpiderConfig.stop_spider_url_flag = True
+                        break
 
             elif load_result == 2:
                 record_finish_keyword(key_word, cur_page)
@@ -323,7 +398,18 @@ def spider_artworks_url(self, key_word: str) -> bool:
 
     except Exception as e:
         logger.error(f"Spider error: {type(e).__name__}, {e}")
+        # 发送错误进度
+        send_spider_progress(key_word, constants.spider_images_current_count, "error", page=cur_page, message=f"爬虫错误: {type(e).__name__}")
     finally:
+        # 获取最终URL数量
+        final_count = 0
+        if os.path.exists(url_file_path):
+            with open(url_file_path, 'r', encoding='utf-8') as f:
+                final_count = len([line for line in f if line.strip()])
+        
+        # 发送完成进度
+        send_spider_progress(key_word, final_count, "completed", page=cur_page, message=f"爬虫完成，共采集 {final_count} 个URL")
+        
         if self and hasattr(self, 'spider_progress_show_label') and hasattr(self, 'success_tips'):
             self.spider_progress_show_label.setText("0/0")
             self.success_tips(f"关键词: {key_word}, 图片爬取操作")

@@ -35,6 +35,10 @@ class SpiderConfig:
     uploading_image_flag: bool = False
     download_image_re_flag: bool = False
     unzip_file_flag: bool = False
+    max_urls_per_keyword: int = 100  # 每个角色最大采集URL数量
+
+# WebSocket connections for real-time progress
+websocket_connections = []  # Store active WebSocket connections
 
 @dataclass 
 class UIConfig:

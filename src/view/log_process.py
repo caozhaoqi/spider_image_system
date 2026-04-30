@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import threading
 from typing import Union
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 from loguru import logger
 
 from http_tools.JsonResponse import JsonResponse
@@ -29,6 +29,7 @@ from utils.img_detect_ai import all_img_detect
 from file.ini_file_spider import read_config_all
 from utils.go_file_utils import upload_all_gofile
 from utils.jm_domain_detect import jm_auto_spider_img_thread, jm_domain_test
+from utils.websocket_utils import add_websocket_connection, remove_websocket_connection
 
 router = APIRouter()
 
@@ -230,3 +231,24 @@ def jm_detect_domain():
     
     logger.info("Start detect jm domain!")
     return JsonResponse.success("Start detect jm domain, please check log get result!!!")
+
+
+@logger.catch
+@router.websocket("/spider/progress/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """WebSocket端点 - 实时推送爬虫进度"""
+    await websocket.accept()
+    add_websocket_connection(websocket)
+    
+    try:
+        while True:
+            # 保持连接活跃
+            data = await websocket.receive_text()
+            if data == "ping":
+                await websocket.send_text("pong")
+    except WebSocketDisconnect:
+        remove_websocket_connection(websocket)
+        logger.info("WebSocket连接断开")
+    except Exception as e:
+        remove_websocket_connection(websocket)
+        logger.warning(f"WebSocket错误: {e}")
