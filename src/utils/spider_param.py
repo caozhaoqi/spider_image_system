@@ -258,7 +258,7 @@ def configure_browser_options() -> webdriver.ChromeOptions:
 
     # 为所有系统添加 user-agent
     options.add_argument(f"user-agent={cur_user_agent}")
-    options = chrome_options(options)
+    options = chrome_options(options, system_info)
 
     return options
 
@@ -288,7 +288,7 @@ def initialize_driver(options: webdriver.ChromeOptions, system_info: str) -> Opt
         logger.warning(f"驱动初始化失败: {type(e).__name__}, {e}")
         # 尝试直接使用已安装的 ChromeDriver
         import os
-        chromedriver_path = '/Users/caozhaoqi/.wdm/drivers/chromedriver/mac64/145.0.7632.117/chromedriver-mac-arm64/chromedriver'
+        chromedriver_path = '/Users/caozhaoqi/.wdm/drivers/chromedriver/mac64/147.0.7727.117/chromedriver-mac-arm64/chromedriver'
         if os.path.exists(chromedriver_path):
             logger.info(f"尝试使用已安装的 ChromeDriver: {chromedriver_path}")
             try:
@@ -312,20 +312,25 @@ def get_driver_service(system_info: str) -> Service:
     Returns:
         Service实例
     """
+    import os
+    
+    # macOS 使用已安装的 ChromeDriver
+    if system_info == 'Darwin':
+        chromedriver_path = '/Users/caozhaoqi/.wdm/drivers/chromedriver/mac64/147.0.7727.117/chromedriver-mac-arm64/chromedriver'
+        if os.path.exists(chromedriver_path):
+            logger.info(f"使用已安装的 ChromeDriver: {chromedriver_path}")
+            return Service(chromedriver_path)
+        else:
+            logger.warning(f"ChromeDriver 不存在: {chromedriver_path}")
+    
     try:
         if system_info == 'Linux' or system_info == 'Darwin':
             return Service(ChromeDriverManager().install())
         elif system_info == 'Windows':
             return Service(EdgeChromiumDriverManager().install())
         return Service()
-    except PermissionError as e:
-        logger.warning(f"设置 ChromeDriver 执行权限失败: {e}")
-        # 尝试直接使用已安装的 ChromeDriver
-        import os
-        chromedriver_path = '/Users/caozhaoqi/.wdm/drivers/chromedriver/mac64/145.0.7632.117/chromedriver-mac-arm64/chromedriver'
-        if os.path.exists(chromedriver_path):
-            logger.info(f"使用已安装的 ChromeDriver: {chromedriver_path}")
-            return Service(chromedriver_path)
+    except Exception as e:
+        logger.warning(f"获取驱动服务失败: {type(e).__name__}, {e}")
         return Service()
 
 
@@ -341,29 +346,21 @@ def create_driver(system_info: str, options: webdriver.ChromeOptions, service: O
     Returns:
         WebDriver实例
     """
-    if system_info == 'Darwin':
-        # MacOS 使用 Safari
-        logger.info("使用Safari浏览器")
-        try:
-            safari_options = SafariOptions()
-            safari_options.add_argument("--disable-blink-features=AutomationControlled")
-            safari_options.add_argument("--ignore-certificate-errors")
-            return webdriver.Safari(options=safari_options)
-        except Exception as e:
-            if "Allow remote automation" in str(e):
-                logger.error("Safari远程自动化未启用！请打开Safari → 偏好设置 → 高级 → 勾选'在菜单栏中显示开发菜单'，然后：开发 → 允许远程自动化")
-            else:
-                logger.error(f"Safari初始化失败: {e}")
-            # 尝试使用Chrome作为备选
-            logger.info("尝试使用Chrome作为备选")
-    
+    # 根据系统选择浏览器，无头模式下统一使用Chrome/Edge
     drivers = {
         'Linux': webdriver.Chrome,
         'Windows': webdriver.Edge,
+        'Darwin': webdriver.Chrome,
         'default': webdriver.Chrome
     }
     
     driver_class = drivers.get(system_info, drivers['default'])
+    
+    if system_info == 'Darwin':
+        logger.info("macOS平台 - 使用Chrome浏览器（无头模式）")
+        return webdriver.Chrome(service=service, options=options)
+    
+    logger.info(f"{system_info}平台 - 使用{driver_class.__name__}浏览器（无头模式）")
     return driver_class(service=service, options=options) if service else driver_class(options=options)
 
 
@@ -420,20 +417,23 @@ def spider_param_config(keyword: str) -> Tuple[Optional[WebDriver], Optional[str
 
 
 @logger.catch
-def chrome_options(options: webdriver.ChromeOptions) -> webdriver.ChromeOptions:
-    """配置Chrome选项
+def chrome_options(options: webdriver.ChromeOptions, system_info: str) -> webdriver.ChromeOptions:
+    """配置浏览器选项，支持不同平台的无头模式
     
     Args:
-        options: Chrome选项对象
+        options: 浏览器选项对象
+        system_info: 系统信息 (Linux/Windows/Darwin)
         
     Returns:
         配置后的选项对象
     """
-    if constants.SpiderConfig.spider_mode == 'auto':
+    # 始终启用无头模式（不依赖spider_mode）
+    # 根据不同平台配置无头模式
+    if system_info == 'Linux':
+        # Linux + Chrome
         auto_options = [
             '--headless',
             '--disable-gpu',
-            '--disable-javascript',
             '--disable-plugins',
             '--disable-extensions',
             '--disable-java',
@@ -441,13 +441,120 @@ def chrome_options(options: webdriver.ChromeOptions) -> webdriver.ChromeOptions:
             '--single-process',
             '--disable-software-rasterizer',
             '--no-sandbox',
-            '--disable-dev-shm-usage'
+            '--disable-dev-shm-usage',
+            '--disable-blink-features=AutomationControlled',
+            '--disable-web-security',
+            '--allow-running-insecure-content',
+            '--disable-infobars',
+            '--disable-notifications',
+            '--disable-popup-blocking',
+            '--disable-default-apps',
+            '--disable-translate',
+            '--disable-background-networking',
+            '--disable-sync',
+            '--metrics-recording-only',
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--disable-logging',
+            '--disable-permissions-api',
+            '--window-size=1920,1080'
         ]
-        for opt in auto_options:
-            options.add_argument(opt)
-        logger.debug("自动爬取模式")
+    elif system_info == 'Windows':
+        # Windows + Edge
+        auto_options = [
+            '--headless=new',
+            '--disable-gpu',
+            '--disable-plugins',
+            '--disable-extensions',
+            '--disable-java',
+            '--mute-audio',
+            '--disable-software-rasterizer',
+            '--disable-dev-shm-usage',
+            '--disable-blink-features=AutomationControlled',
+            '--disable-web-security',
+            '--allow-running-insecure-content',
+            '--disable-infobars',
+            '--disable-notifications',
+            '--disable-popup-blocking',
+            '--disable-default-apps',
+            '--disable-translate',
+            '--disable-background-networking',
+            '--disable-sync',
+            '--metrics-recording-only',
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--disable-logging',
+            '--disable-permissions-api',
+            '--window-size=1920,1080'
+        ]
+    elif system_info == 'Darwin':
+        # macOS + Chrome
+        auto_options = [
+            '--headless=new',
+            '--disable-gpu',
+            '--disable-plugins',
+            '--disable-extensions',
+            '--disable-java',
+            '--mute-audio',
+            '--disable-software-rasterizer',
+            '--disable-dev-shm-usage',
+            '--disable-blink-features=AutomationControlled',
+            '--disable-web-security',
+            '--allow-running-insecure-content',
+            '--disable-infobars',
+            '--disable-notifications',
+            '--disable-popup-blocking',
+            '--disable-default-apps',
+            '--disable-translate',
+            '--disable-background-networking',
+            '--disable-sync',
+            '--metrics-recording-only',
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--disable-logging',
+            '--disable-permissions-api',
+            '--window-size=1920,1080'
+        ]
+    else:
+        # 默认配置
+        auto_options = [
+            '--headless=new',
+            '--disable-gpu',
+            '--disable-plugins',
+            '--disable-extensions',
+            '--mute-audio',
+            '--disable-blink-features=AutomationControlled',
+            '--disable-infobars',
+            '--window-size=1920,1080'
+        ]
+    
+    for opt in auto_options:
+        options.add_argument(opt)
+    
+    # 添加排除自动化检测的开关
+    options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
+    # 添加prefs配置
+    options.add_experimental_option('prefs', {
+        'profile.default_content_setting_values': {
+            'images': 2,  # 禁用图片加载，加快爬取速度
+            'javascript': 1,
+            'plugins': 2,
+            'popups': 2,
+            'geolocation': 2,
+            'notifications': 2,
+        },
+        'profile.managed_default_content_settings': {
+            'images': 2,
+        },
+        'credentials_enable_service': False,
+        'profile.password_manager_enabled': False,
+    })
+    
+    # 设置User-Agent为真实浏览器
+    options.add_argument('user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36')
+    
+    logger.info(f"自动爬取模式 - {system_info} - 已启用无头模式，添加反检测配置")
 
-    options.add_argument("--auto-open-devtools-for-tabs")
     options.add_argument("--ignore-certificate-errors")
     options = disabled_log_browser(options)
     options.add_experimental_option('excludeSwitches', ['enable-automation'])

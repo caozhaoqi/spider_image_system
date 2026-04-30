@@ -56,7 +56,17 @@ def filter_not_use_url(image_url: str) -> bool:
     try:
         # 移除 'tags' 和 's_mode=s_tag' 从过滤列表中
         filter_urls = [url for url in filter_urls if url != 'tags' and url != 's_mode=s_tag']
-        return any(filter_url in image_url for filter_url in filter_urls) or "artworks" not in image_url
+        
+        # 检查是否包含 artworks 路径（允许 /tags/xxx/artworks/xxx 格式）
+        if "/artworks/" not in image_url:
+            return True
+            
+        # 检查是否包含过滤关键词
+        for filter_url in filter_urls:
+            if filter_url and filter_url in image_url:
+                return True
+                
+        return False
     except Exception as e:
         logger.warning(f"图片URL过滤出错: {e}")
         return True
