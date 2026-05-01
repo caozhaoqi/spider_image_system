@@ -8,9 +8,11 @@ Describe: Github link: https://github.com/caozhaoqi
 
 import os
 import sys
+import urllib.parse
 import threading
 from pathlib import Path
 import time
+import random
 import asyncio
 from typing import Tuple, Optional, List
 
@@ -22,7 +24,6 @@ from selenium.common import NoSuchWindowException
 from selenium.webdriver import ActionChains, Keys
 from selenium.common.exceptions import WebDriverException, StaleElementReferenceException
 from loguru import logger
-from pypinyin import lazy_pinyin, Style
 
 from file.file_process import (
     record_end_spider_image_keyword, record_finish_keyword,
@@ -81,7 +82,7 @@ def send_spider_progress(key_word, current_count, status, page=None, message=Non
 @logger.catch
 def save_img_url(self, driver: WebDriver, key_word: str, cur_page: int) -> bool:
     """Save images from txt file containing artwork URLs"""
-    key_word_pinyin = ''.join(lazy_pinyin(key_word, style=Style.TONE3))
+    key_word_pinyin = constants.get_pinyin(key_word)
     # 使用 spider_image_system/data 目录来查找 URL 文件
     import os
     from pathlib import Path
@@ -229,9 +230,18 @@ def spider_artworks_url(self, key_word: str) -> bool:
     driver = None
     url = None
     cur_page = 1
-    
+
+    # 将角色名转换为拼音
+    key_word_pinyin = constants.get_pinyin(key_word)
+
     # 记录当前角色开始时的URL数量（用于计算本角色新增数量）
     keyword_start_url_count = 0
+
+    # 防火墙重试计数器（连续触发防火墙检测次数）
+    firewall_retry_count = 0
+    MAX_FIREWALL_RETRIES = 3  # 最大连续防火墙检测次数
+    COOLING_DOWN_TIME = 300   # 冷却时间（秒）
+    FIREWALL_RETRY_DELAY = 60 # 防火墙重试延迟（秒）
     
     try:
         # 设置当前爬取状态
@@ -251,9 +261,8 @@ def spider_artworks_url(self, key_word: str) -> bool:
 
         exists_keyword_finish_txt(key_word)
         driver_start_time = time.time()
-        
+
         # 获取当前角色已有的URL数量
-        key_word_pinyin = ''.join(lazy_pinyin(key_word, style=Style.TONE3))
         url_file_path = os.path.join(data_path, "img_url", f"{key_word_pinyin}_img.txt")
         if os.path.exists(url_file_path):
             with open(url_file_path, 'r', encoding='utf-8') as f:
@@ -267,21 +276,51 @@ def spider_artworks_url(self, key_word: str) -> bool:
             if constants.SpiderConfig.stop_spider_url_flag:
                 break
 
+            # 检查防火墙状态
+            if constants.ProcessingConfig.firewall_flag:
+                firewall_retry_count += 1
+                if firewall_retry_count >= MAX_FIREWALL_RETRIES:
+                    logger.warning(f"连续触发防火墙检测 {firewall_retry_count} 次，进入冷却期 {COOLING_DOWN_TIME} 秒")
+                    time.sleep(COOLING_DOWN_TIME)
+                    firewall_retry_count = 0
+                    # 尝试重新初始化驱动
+                    try:
+                        driver.quit()
+                    except Exception:
+                        pass
+                    options = configure_browser_options()
+                    system_info = get_system_info_sim()
+                    driver = initialize_driver(options, system_info)
+                    if driver:
+                        driver_start_time = time.time()
+                        logger.info("驱动重新初始化成功")
+                else:
+                    delay = FIREWALL_RETRY_DELAY * firewall_retry_count
+                    logger.warning(f"防火墙检测触发，第 {firewall_retry_count} 次，等待 {delay} 秒后重试")
+                    time.sleep(delay)
+                constants.ProcessingConfig.firewall_flag = False
+                continue
+
             # 检查是否达到每个角色的URL数量限制
             if constants.SpiderConfig.max_urls_per_keyword > 0:
                 current_url_count = 0
                 if os.path.exists(url_file_path):
                     with open(url_file_path, 'r', encoding='utf-8') as f:
                         current_url_count = len([line for line in f if line.strip()])
-                added_count = current_url_count - keyword_start_url_count
-                if added_count >= constants.SpiderConfig.max_urls_per_keyword:
-                    logger.info(f"角色 {key_word} 已达到URL数量限制: {added_count}/{constants.SpiderConfig.max_urls_per_keyword}")
+                # 检查总量是否已达到目标（而非增量）
+                if current_url_count >= constants.SpiderConfig.max_urls_per_keyword:
+                    logger.info(f"角色 {key_word} 已达到URL数量限制: {current_url_count}/{constants.SpiderConfig.max_urls_per_keyword}")
+                    constants.SpiderConfig.stop_spider_url_flag = True
                     break
 
             key_word_flag, last_page = exists_image_keyword(key_word)
             if key_word_flag:
                 cur_page = int(last_page) + 1
                 logger.warning(f"Continuing from page {cur_page} for {key_word}")
+
+            # 随机延迟（0.5-2秒），模拟人类行为
+            random_delay = random.uniform(0.5, 2.0)
+            time.sleep(random_delay)
 
             url_detail = url_process_page(url, current_page=cur_page)
             if self and hasattr(self, 'spider_progress_show_label') and hasattr(self, 'sys_tips'):
@@ -367,6 +406,10 @@ def spider_artworks_url(self, key_word: str) -> bool:
                     logger.warning(f"重新初始化驱动失败: {type(e2).__name__}, {e2}")
                     break
 
+            # 如果检测到防火墙，不处理当前页
+            if constants.ProcessingConfig.firewall_flag:
+                continue
+
             load_result = load_href_save(driver, key_word)
             if load_result == 1:
                 if not save_img_url(self, driver, key_word, cur_page):
@@ -386,9 +429,9 @@ def spider_artworks_url(self, key_word: str) -> bool:
                     if os.path.exists(url_file_path):
                         with open(url_file_path, 'r', encoding='utf-8') as f:
                             current_url_count = len([line for line in f if line.strip()])
-                    added_count = current_url_count - keyword_start_url_count
-                    if added_count >= constants.SpiderConfig.max_urls_per_keyword:
-                        logger.info(f"角色 {key_word} 已达到URL数量限制: {added_count}/{constants.SpiderConfig.max_urls_per_keyword}")
+                    # 检查总量是否已达到目标（而非增量）
+                    if current_url_count >= constants.SpiderConfig.max_urls_per_keyword:
+                        logger.info(f"角色 {key_word} 已达到URL数量限制: {current_url_count}/{constants.SpiderConfig.max_urls_per_keyword}")
                         constants.SpiderConfig.stop_spider_url_flag = True
                         break
 
@@ -455,7 +498,7 @@ def spider_artworks_url(self, key_word: str) -> bool:
 @logger.catch
 def load_href_save(driver: WebDriver, key_word: str) -> int:
     """Load and save artwork URLs from page"""
-    key_word_pinyin = ''.join(lazy_pinyin(key_word, style=Style.TONE3))
+    key_word_pinyin = constants.get_pinyin(key_word)
     image_urls: List[str] = []
     existing_urls: List[str] = []
 
