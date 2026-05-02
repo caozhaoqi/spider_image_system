@@ -77,7 +77,7 @@ class ProcessingConfig:
 
 # Path configurations
 data_path = Path('./data').resolve()
-basic_path = Path('.').resolve()
+basic_path = Path(__file__).parent.resolve()
 
 # Image tracking
 online_img_list = scan_img_txt(str(data_path))

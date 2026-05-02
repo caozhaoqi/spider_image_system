@@ -146,10 +146,20 @@ def artwork_to_image(key_word_pinyin: str, driver: WebDriver, url: str) -> bool:
 def save_img_element(driver: WebDriver, key_word_pinyin: str) -> None:
     """Save individual image elements from page"""
     try:
+        valid_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'}
         for img in driver.find_elements(By.CSS_SELECTOR, "img"):
             try:
                 image_url = img.get_attribute("src")
                 if not image_url or filter_not_use(image_url):
+                    continue
+                
+                # 检查 URL 是否有有效的图片后缀
+                url_lower = image_url.lower()
+                has_valid_ext = any(url_lower.endswith(ext) for ext in valid_extensions)
+                # 额外检查: 是否包含 master1200 或 img-master (Pixiv 图片特征)
+                is_pixiv_image = 'master1200' in url_lower or 'img-master' in url_lower
+                
+                if not (has_valid_ext or is_pixiv_image):
                     continue
 
                 if filter_exists_images(key_word_pinyin, image_url, "_img"):
@@ -263,7 +273,10 @@ def spider_artworks_url(self, key_word: str) -> bool:
         driver_start_time = time.time()
 
         # 获取当前角色已有的URL数量
-        url_file_path = os.path.join(data_path, "img_url", f"{key_word_pinyin}_img.txt")
+        # 使用 spider_image_system/data 目录（与写入路径一致）
+        project_root = Path(__file__).parent.parent.parent.parent
+        spider_data_path = project_root / "spider_image_system" / "data"
+        url_file_path = os.path.join(spider_data_path, "img_url", f"{key_word_pinyin}_img.txt")
         if os.path.exists(url_file_path):
             with open(url_file_path, 'r', encoding='utf-8') as f:
                 keyword_start_url_count = len([line for line in f if line.strip()])
