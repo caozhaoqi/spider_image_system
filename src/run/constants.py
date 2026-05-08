@@ -190,7 +190,7 @@ PINYIN_MAPPING = {
     '洛可可': 'luo4ke4ke4',
     '鹿目圆': 'lu4mu4yuan2',
     '晓美焰': 'xiao3mei3yan4',
-    '血小板': 'xue3xiao3ban3',
+    '血小板': 'xue4xiao3ban3',
     '雷姆': 'lei2mu3',
     '拉姆': 'la1mu3',
     '康娜': 'kang1na4',
@@ -229,6 +229,9 @@ PINYIN_MAPPING = {
     '伊瑟琳': 'yi1se4lin2',
     '芙兰': 'fu2lan2',
     '菲米莉丝': 'fei1mi3li4si1',
+    '罗可可': 'luo4ke3ke3',
+    '蜜豆子': 'mi2dou4zi',
+    '神乐': 'shen2le4',
 }
 
 def get_pinyin(key_word: str) -> str:

@@ -84,7 +84,15 @@ def artwork_filter(url: str) -> bool:
     """
     parts = url.split("/artworks/")
     if len(parts) > 1:
-        return not parts[1].isdigit()
+        # 提取 artworks/ 后面的部分，去除查询参数
+        after_artworks = parts[1].split('?')[0].split('#')[0]
+        if after_artworks.isdigit():
+            return False  # 保留 /artworks/数字ID 格式
+        # 检查是否是 artworks/数字ID/xxx 格式
+        subparts = after_artworks.split('/')
+        if subparts and subparts[0].isdigit():
+            return False  # 保留 /artworks/数字ID/xxx 格式
+        return True
     return True
 
 
