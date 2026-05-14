@@ -21,3 +21,5 @@ src/build
 /config/
 /data/
 /log_dir/
+./src/database/
+src/data/

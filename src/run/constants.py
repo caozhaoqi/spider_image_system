@@ -22,7 +22,7 @@ check_ini_config()
 @dataclass
 class SpiderConfig:
     """Spider configuration settings"""
-    app_port: int = 33333
+    app_port: int = 33334
     web_flag_start: bool = False
     stop_spider_url_flag: bool = True
     stop_download_image_flag: bool = True
@@ -232,6 +232,7 @@ PINYIN_MAPPING = {
     '罗可可': 'luo4ke3ke3',
     '蜜豆子': 'mi2dou4zi',
     '神乐': 'shen2le4',
+    '克拉拉': 'ke4la1la1',
 }
 
 def get_pinyin(key_word: str) -> str:

@@ -21,8 +21,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DEBUG = True
 
 # Log configuration
-LOG_DIR = Path.cwd().joinpath(
-    'log_dir', 
+# 使用 /tmp 目录避免权限问题
+LOG_DIR = Path('/tmp').joinpath(
+    'sis_logs', 
     f'sis_{constants.sis_server_version}_{time.strftime("%Y-%m-%d")}.log'
 )
 

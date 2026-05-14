@@ -83,6 +83,8 @@ def send_spider_progress(key_word, current_count, status, page=None, message=Non
 def save_img_url(self, driver: WebDriver, key_word: str, cur_page: int) -> bool:
     """Save images from txt file containing artwork URLs"""
     key_word_pinyin = constants.get_pinyin(key_word)
+    role_total_count = 0  # 当前角色本次采集的总数
+    
     # 使用 spider_image_system/data 目录来查找 URL 文件
     import os
     from pathlib import Path
@@ -103,28 +105,36 @@ def save_img_url(self, driver: WebDriver, key_word: str, cur_page: int) -> bool:
                 pid = url[-9:]
                 logger.info(f"Starting spider PID: {pid}, keyword: {key_word_pinyin}")
 
+                save_count = artwork_to_image(key_word_pinyin, driver, url)
+                if save_count == -1:
+                    return False
+                role_total_count += save_count
+                
                 if self and hasattr(self, 'spider_progress_show_label'):
                     self.spider_progress_show_label.setText(
                         f"抓取关键字: {key_word}, 页码: {cur_page},"
                         f" 抓取图片名: {pid},"
-                        f" 已抓取数目: {constants.spider_images_current_count}"
+                        f" 角色计数: {role_total_count}, 总数: {constants.spider_images_current_count}"
                     )
 
-                if not artwork_to_image(key_word_pinyin, driver, url):
-                    return False
-
+    # 输出当前角色采集完成信息
+    logger.info(f"角色 [{key_word}] 本次采集完成: 新增 {role_total_count} 张, 累计总数: {constants.spider_images_current_count}")
     return True
 
 
 @logger.catch 
-def artwork_to_image(key_word_pinyin: str, driver: WebDriver, url: str) -> bool:
-    """Spider images from specific artwork URL"""
+def artwork_to_image(key_word_pinyin: str, driver: WebDriver, url: str) -> int:
+    """Spider images from specific artwork URL
+    
+    Returns:
+        int: 当前URL保存的图片数量，失败返回-1
+    """
     try:
         driver.get(url)
         if driver.title == constants.ban_content:
             logger.warning("Domain blocked - exiting")
             constants.ProcessingConfig.firewall_flag = True
-            return False
+            return -1
 
         if open_look_all(driver):
             logger.success(f"Opened all images for {key_word_pinyin}, PID: {url[-9:]}")
@@ -134,17 +144,22 @@ def artwork_to_image(key_word_pinyin: str, driver: WebDriver, url: str) -> bool:
 
         sys_sleep_time(driver, detail_delta_time, True)
         spider_gif_images(key_word_pinyin, driver)
-        save_img_element(driver, key_word_pinyin)
-        return True
+        save_count = save_img_element(driver, key_word_pinyin)
+        return save_count
 
     except Exception as e:
         logger.warning(f"Error processing URL: {type(e).__name__}")
-        return False
+        return -1
 
 
 @logger.catch
-def save_img_element(driver: WebDriver, key_word_pinyin: str) -> None:
-    """Save individual image elements from page"""
+def save_img_element(driver: WebDriver, key_word_pinyin: str) -> int:
+    """Save individual image elements from page
+    
+    Returns:
+        int: 当前角色本次保存的图片数量
+    """
+    role_save_count = 0  # 当前角色本次保存的数量
     try:
         valid_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'}
         for img in driver.find_elements(By.CSS_SELECTOR, "img"):
@@ -163,7 +178,7 @@ def save_img_element(driver: WebDriver, key_word_pinyin: str) -> None:
                     continue
 
                 if filter_exists_images(key_word_pinyin, image_url, "_img"):
-                    logger.warning(f"Image already exists: {key_word_pinyin}")
+                    logger.debug(f"Image already exists: {key_word_pinyin}")
                     continue
 
                 driver.execute_script("return arguments[0].src;", img)
@@ -172,13 +187,14 @@ def save_img_element(driver: WebDriver, key_word_pinyin: str) -> None:
                     image_url = image_url.replace(s1_url, target_url).replace(s2_url, target_url)
 
                 constants.spider_images_current_count += 1
+                role_save_count += 1  # 当前角色计数+1
                 # 使用 spider_image_system/data 目录来保存图片 URL
                 import os
                 from pathlib import Path
                 project_root = Path(__file__).parent.parent.parent.parent
                 data_path = project_root / "spider_image_system" / "data"
                 write_url_txt(f"{data_path}/img_url/", f"{key_word_pinyin}_img", image_url)
-                logger.debug(f"Saved image {os.path.basename(image_url)}, count: {constants.spider_images_current_count}")
+                logger.debug(f"Saved image {os.path.basename(image_url)}, role_count: {role_save_count}, total_count: {constants.spider_images_current_count}")
 
             except Exception as e:
                 if isinstance(e, WebDriverException):
@@ -189,6 +205,8 @@ def save_img_element(driver: WebDriver, key_word_pinyin: str) -> None:
 
     except Exception as e:
         logger.warning(f"Error processing images: {type(e).__name__}")
+    
+    return role_save_count
 
 
 @logger.catch
@@ -336,18 +354,25 @@ def spider_artworks_url(self, key_word: str) -> bool:
             time.sleep(random_delay)
 
             url_detail = url_process_page(url, current_page=cur_page)
-            if self and hasattr(self, 'spider_progress_show_label') and hasattr(self, 'sys_tips'):
-                self.spider_progress_show_label.setText(
-                    f"抓取关键字: {key_word}, 页码: {cur_page},"
-                    f" 已抓取数目: {constants.spider_images_current_count}"
-                )
-                self.sys_tips(f"抓取关键词: {key_word}中(*^▽^*)...")
-
+            
+            # 获取当前角色的URL数量
             current_url_count = 0
             if os.path.exists(url_file_path):
                 with open(url_file_path, 'r', encoding='utf-8') as f:
                     current_url_count = len([line for line in f if line.strip()])
-            send_spider_progress(key_word, current_url_count, "running", page=cur_page, message=f"爬取中: {current_url_count} URLs")
+            
+            # 计算当前角色本次新增数量
+            role_added_count = current_url_count - keyword_start_url_count
+            
+            if self and hasattr(self, 'spider_progress_show_label') and hasattr(self, 'sys_tips'):
+                self.spider_progress_show_label.setText(
+                    f"抓取关键字: {key_word}, 页码: {cur_page},"
+                    f" 角色: {current_url_count}({role_added_count}+), 总数: {constants.spider_images_current_count}"
+                )
+                self.sys_tips(f"抓取关键词: {key_word}中(*^▽^*)...")
+
+            send_spider_progress(key_word, current_url_count, "running", page=cur_page, 
+                               message=f"爬取中: 角色[{current_url_count}/{constants.SpiderConfig.max_urls_per_keyword}], 新增[{role_added_count}], 总数[{constants.spider_images_current_count}]")
 
             try:
                 logger.info(f"正在访问 URL: {url_detail}")
@@ -473,8 +498,21 @@ def spider_artworks_url(self, key_word: str) -> bool:
             with open(url_file_path, 'r', encoding='utf-8') as f:
                 final_count = len([line for line in f if line.strip()])
         
+        # 计算当前角色本次新增数量
+        role_added_count = final_count - keyword_start_url_count
+        
         # 发送完成进度
-        send_spider_progress(key_word, final_count, "completed", page=cur_page, message=f"爬虫完成，共采集 {final_count} 个URL")
+        send_spider_progress(key_word, final_count, "completed", page=cur_page, 
+                           message=f"爬虫完成: 角色[{final_count}/{constants.SpiderConfig.max_urls_per_keyword}], 新增[{role_added_count}], 总数[{constants.spider_images_current_count}]")
+        
+        # 输出详细统计信息
+        logger.info("=" * 60)
+        logger.info(f"角色 [{key_word}] 采集完成统计:")
+        logger.info(f"  ├── 开始时已有 URL 数量: {keyword_start_url_count}")
+        logger.info(f"  ├── 本次新增 URL 数量: {role_added_count}")
+        logger.info(f"  ├── 当前角色总 URL 数量: {final_count}")
+        logger.info(f"  └── 全局累计采集总数: {constants.spider_images_current_count}")
+        logger.info("=" * 60)
         
         if self and hasattr(self, 'spider_progress_show_label') and hasattr(self, 'success_tips'):
             self.spider_progress_show_label.setText("0/0")
