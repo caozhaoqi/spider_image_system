@@ -23,3 +23,10 @@ src/build
 /log_dir/
 ./src/database/
 src/data/
+archived/spider_image_system/data/
+archived/spider_image_system/data-r18/
+archived/spider_image_system/log_dir/
+*.json
+*.txt
+*.DS_Store
+*.*.log

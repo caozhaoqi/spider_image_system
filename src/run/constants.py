@@ -22,7 +22,7 @@ check_ini_config()
 @dataclass
 class SpiderConfig:
     """Spider configuration settings"""
-    app_port: int = 33334
+    app_port: int = 33333
     web_flag_start: bool = False
     stop_spider_url_flag: bool = True
     stop_download_image_flag: bool = True
