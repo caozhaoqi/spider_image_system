@@ -297,7 +297,7 @@ def main():
     
     parser = argparse.ArgumentParser(description='Danbooru API角色图片采集器')
     parser.add_argument('--character-file', type=str, 
-                        default='/Users/caozhaoqi/PycharmProjects/anime_role_detect/archived/auto_spider_img/loli-role.txt',
+                        default='/Users/caozhaoqi/PycharmProjects/anime_role_detect/archived/auto_spider_img/loli-role-new.txt',
                         help='角色列表文件路径')
     parser.add_argument('--output-dir', type=str, 
                         default='/Users/caozhaoqi/PycharmProjects/anime_role_detect/data/danbooru_images',

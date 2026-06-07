@@ -30,3 +30,6 @@ archived/spider_image_system/log_dir/
 *.txt
 *.DS_Store
 *.*.log
+logs/
+data-r18/
+.DS_Store
