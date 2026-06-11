@@ -33,3 +33,7 @@ archived/spider_image_system/log_dir/
 logs/
 data-r18/
 .DS_Store
+*.mp4
+*.m4a
+*.part
+*.DS_Store
