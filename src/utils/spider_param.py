@@ -313,15 +313,21 @@ def get_driver_service(system_info: str) -> Service:
         Service实例
     """
     import os
+    import glob
     
-    # macOS 使用已安装的 ChromeDriver
+    # macOS 自动查找已安装的最新 ChromeDriver
     if system_info == 'Darwin':
-        chromedriver_path = '/Users/caozhaoqi/.wdm/drivers/chromedriver/mac64/147.0.7727.117/chromedriver-mac-arm64/chromedriver'
-        if os.path.exists(chromedriver_path):
-            logger.info(f"使用已安装的 ChromeDriver: {chromedriver_path}")
-            return Service(chromedriver_path)
+        # 自动查找 wdm 目录下的所有 ChromeDriver
+        wdm_pattern = os.path.expanduser('~/.wdm/drivers/chromedriver/mac64/*/chromedriver-mac-arm64/chromedriver')
+        chromedriver_files = sorted(glob.glob(wdm_pattern), reverse=True)
+        
+        if chromedriver_files:
+            chromedriver_path = chromedriver_files[0]
+            if os.path.exists(chromedriver_path):
+                logger.info(f"使用已安装的 ChromeDriver: {chromedriver_path}")
+                return Service(chromedriver_path)
         else:
-            logger.warning(f"ChromeDriver 不存在: {chromedriver_path}")
+            logger.warning(f"未找到 ChromeDriver: {wdm_pattern}")
     
     try:
         if system_info == 'Linux' or system_info == 'Darwin':

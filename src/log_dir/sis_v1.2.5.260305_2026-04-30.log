@@ -1,2 +1,0 @@
-2026-04-30 16:06:04.338 | DEBUG    | __main__:init_logging:60 - SIS log loaded, log path: /Users/caozhaoqi/PycharmProjects/anime_role_detect/spider_image_system/src/log_dir/sis_v1.2.5.260305_2026-04-30.log
-2026-04-30 16:06:04.338 | INFO     | log.log_record:check_version:111 - System started, SIS version: v1.2.5.260305

@@ -271,6 +271,9 @@ def spider_artworks_url(self, key_word: str) -> bool:
     COOLING_DOWN_TIME = 300   # 冷却时间（秒）
     FIREWALL_RETRY_DELAY = 60 # 防火墙重试延迟（秒）
     
+    # 初始化url_file_path变量（避免finally块中使用时未定义）
+    url_file_path = None
+    
     try:
         # 设置当前爬取状态
         constants.SpiderConfig.current_keyword = key_word
@@ -494,7 +497,7 @@ def spider_artworks_url(self, key_word: str) -> bool:
     finally:
         # 获取最终URL数量
         final_count = 0
-        if os.path.exists(url_file_path):
+        if url_file_path and os.path.exists(url_file_path):
             with open(url_file_path, 'r', encoding='utf-8') as f:
                 final_count = len([line for line in f if line.strip()])
         
